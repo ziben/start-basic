@@ -5,13 +5,29 @@ import { SearchProvider } from '@/context/search-context'
 import { SidebarProvider } from '@/components/ui/sidebar'
 import { AppSidebar } from '@/components/layout/app-sidebar'
 import SkipToMain from '@/components/skip-to-main'
+import SignIn from '@/features/auth/sign-in'
+import { useAuth } from '@/hooks/useAuth'
+import { authMiddleware } from '@/global-middleware'
+import { authClient } from '@/lib/auth-client'
 
 export const Route = createFileRoute('/_authenticated')({
+  beforeLoad: async ({ context }) => {
+    await authMiddleware(Route);
+  },
+  errorComponent: ({ error }) => {
+    if (error.message === 'Not authenticated') {
+      return <SignIn />
+    }
+
+    throw error
+  },
   component: RouteComponent,
 })
 
 function RouteComponent() {
   const defaultOpen = Cookies.get('sidebar_state') !== 'false'
+  const { data: authData, isLoading, error } = useAuth()
+
   return (
     <SearchProvider>
       <SidebarProvider defaultOpen={defaultOpen}>

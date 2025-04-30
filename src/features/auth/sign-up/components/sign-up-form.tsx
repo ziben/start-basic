@@ -15,6 +15,8 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/password-input'
+import { authClient } from '../../../../lib/auth-client'
+import { useNavigate } from '@tanstack/react-router'
 
 type SignUpFormProps = HTMLAttributes<HTMLFormElement>
 
@@ -51,14 +53,24 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
     },
   })
 
-  function onSubmit(data: z.infer<typeof formSchema>) {
-    setIsLoading(true)
-    // eslint-disable-next-line no-console
-    console.log(data)
+  const navigate = useNavigate();
 
-    setTimeout(() => {
+  async function onSubmit(data: z.infer<typeof formSchema>) {
+    setIsLoading(true)
+    try {
+      await authClient.signUp.email({
+        email: data.email,
+        name: data.email.split('@')[0], // 使用邮箱前缀作为用户名
+        password: data.password,
+      });
+      // 注册成功后重定向到登录页面或首页
+      navigate({ to: '/sign-in', replace: true });
+    } catch (error) {
+      console.error('注册失败:', error);
+      // 这里可以添加错误处理逻辑，例如显示错误消息
+    } finally {
       setIsLoading(false)
-    }, 3000)
+    }
   }
 
   return (
