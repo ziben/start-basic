@@ -10,11 +10,13 @@ registerGlobalMiddleware({
 
 // 全局中间件，用于检查用户认证和权限
 export const authMiddleware = async (route: AnyRoute) => {
-  try {
+
     const sessionResponse = await authClient.getSession();
     console.log(sessionResponse)
-    if (!sessionResponse) {
+    console.log(!sessionResponse.data)
+    if (!sessionResponse || !sessionResponse.data) {
       // 如果用户未登录，重定向到登录页面
+      console.log('未登录')
       throw redirect({ to: '/sign-in' })
     }
     // 这里可以添加权限检查逻辑
@@ -23,8 +25,4 @@ export const authMiddleware = async (route: AnyRoute) => {
     //   navigate({ to: '/unauthorized', replace: true });
     //   throw new Error('Unauthorized');
     // }
-  } catch (error) {
-    // 如果出现错误，也重定向到登录页面
-    throw redirect({ to: '/sign-in' })
-  }
 };

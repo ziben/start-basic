@@ -7,14 +7,31 @@ import { DefaultCatchBoundary } from '~/components/DefaultCatchBoundary'
 import { NavigationProgress } from '~/components/navigation-progress'
 import { NotFound } from '~/components/NotFound'
 import { Toaster } from '~/components/ui/sonner'
+import { authClient } from '~/lib/auth-client'
 import appCss from '~/styles/app.css?url'
 import { seo } from '~/utils/seo'
+import { createServerFn } from "@tanstack/react-start";
+import { getWebRequest } from "@tanstack/react-start/server";
+import { auth } from '~/lib/auth'
 
-const queryClient = new QueryClient()
+const getUser = createServerFn({ method: "GET" }).handler(async () => {
+  const { headers } = getWebRequest()!;
+  const session = await auth.api.getSession({ headers });
+
+  return session?.user || null;
+});
 
 export const Route = createRootRouteWithContext<{
-  queryClient: QueryClient
+  queryClient: QueryClient,
+  user: Awaited<ReturnType<typeof getUser>>;
 }>()({
+  beforeLoad: async ({ context }) => {
+    const user = await context.queryClient.fetchQuery({
+      queryKey: ["user"],
+      queryFn: ({ signal }) => getUser({ signal }),
+    }); // we're using react-query for caching, see router.tsx
+    return { user };
+  },  
   head: () => ({
     meta: [
       {
@@ -81,7 +98,7 @@ function RootComponent() {
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html>
+    <html suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>

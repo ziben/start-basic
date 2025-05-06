@@ -12,11 +12,12 @@ import { Input } from '@/components/ui/input'
 import { authClient } from "@/lib/auth-client"
 import { cn } from '@/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { IconBrandFacebook, IconBrandGithub } from '@tabler/icons-react'
-import { Link } from '@tanstack/react-router'
+import { Link, useNavigate, useRouter } from '@tanstack/react-router'
 import { HTMLAttributes, useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 import { z } from 'zod'
+import { Route } from '~/routes/(auth)/sign-in'
 
 type UserAuthFormProps = HTMLAttributes<HTMLFormElement>
 
@@ -37,12 +38,14 @@ const formSchema = z.object({
 
 export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   const [isLoading, setIsLoading] = useState(false)
+  const { queryClient } = Route.useRouteContext();
+  const navigate = useNavigate();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: '',
-      password: '',
+      email: 'test@local.com',
+      password: 'test1234',
     },
   })
 
@@ -51,30 +54,38 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
     // eslint-disable-next-line no-console
     console.log(data)
     const result = await authClient.signIn.email({
-            /**
-             * The user email
-             */
-            email: data.email,
-            /**
-             * The user password
-             */
-            password: data.password,
-            /**
-             * A URL to redirect to after the user verifies their email (optional)
-             */
-            callbackURL: "/",
-            /**
-             * remember the user session after the browser is closed. 
-             * @default true
-             */
-            rememberMe: false
+      /**
+       * The user email
+       */
+      email: data.email,
+      /**
+       * The user password
+       */
+      password: data.password,
+      /**
+       * remember the user session after the browser is closed. 
+       * @default true
+       */
+      rememberMe: false,
+      callbackURL: '/'
     }, {
-        //callbacks
+      onSuccess: async () => {
+        await queryClient.invalidateQueries({ queryKey: ["user"] });
+        navigate({ to: '/' });
+      },
+      onError: (ctx) => {
+        setIsLoading(false);
+        // Handle the error
+        if (ctx.error.status === 403) {
+          toast.error("Please verify your email address")
+        }
+        //you can also show the original error message
+        toast.error(ctx.error.message);
+      },
     })
-    console.log(result)
-    setTimeout(() => {
-      setIsLoading(false)
-    }, 3000)
+    const sessionResponse = await authClient.getSession();
+    console.log(sessionResponse)
+
   }
 
   return (
@@ -119,26 +130,6 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
         <Button className='mt-2' disabled={isLoading}>
           Login
         </Button>
-
-        <div className='relative my-2'>
-          <div className='absolute inset-0 flex items-center'>
-            <span className='w-full border-t' />
-          </div>
-          <div className='relative flex justify-center text-xs uppercase'>
-            <span className='bg-background text-muted-foreground px-2'>
-              Or continue with
-            </span>
-          </div>
-        </div>
-
-        <div className='grid grid-cols-2 gap-2'>
-          <Button variant='outline' type='button' disabled={isLoading}>
-            <IconBrandGithub className='h-4 w-4' /> GitHub
-          </Button>
-          <Button variant='outline' type='button' disabled={isLoading}>
-            <IconBrandFacebook className='h-4 w-4' /> Facebook
-          </Button>
-        </div>
       </form>
     </Form>
   )

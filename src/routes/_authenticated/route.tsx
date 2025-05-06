@@ -1,5 +1,5 @@
 import Cookies from 'js-cookie'
-import { createFileRoute, Outlet } from '@tanstack/react-router'
+import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
 import { cn } from '@/lib/utils'
 import { SearchProvider } from '@/context/search-context'
 import { SidebarProvider } from '@/components/ui/sidebar'
@@ -12,14 +12,9 @@ import { authClient } from '@/lib/auth-client'
 
 export const Route = createFileRoute('/_authenticated')({
   beforeLoad: async ({ context }) => {
-    await authMiddleware(Route);
-  },
-  errorComponent: ({ error }) => {
-    if (error.message === 'Not authenticated') {
-      return <SignIn />
+    if (!context.user) {
+      throw redirect({ to: "/sign-in" });
     }
-
-    throw error
   },
   component: RouteComponent,
 })
