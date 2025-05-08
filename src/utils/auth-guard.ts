@@ -9,7 +9,13 @@ import { auth } from "~/lib/auth";
  * Middleware to force authentication on a server function, and add the user to the context.
  */
 export const authMiddleware = createMiddleware().server(async ({ next }) => {
-  const { headers } = getWebRequest()!;
+  const { headers, url } = getWebRequest()!;
+  
+  // 排除登录相关的API
+  const pathname = new URL(url).pathname;
+  if (pathname.startsWith('/api/auth/')) {
+    return next({ context: { user: undefined } });
+  }
 
   const session = await auth.api.getSession({
     headers,

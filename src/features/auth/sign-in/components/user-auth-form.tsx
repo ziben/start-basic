@@ -9,6 +9,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { Checkbox } from '@/components/ui/checkbox'
 import { authClient } from "@/lib/auth-client"
 import { cn } from '@/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -34,6 +35,7 @@ const formSchema = z.object({
     .min(7, {
       message: 'Password must be at least 7 characters long',
     }),
+  rememberMe: z.boolean().default(false),
 })
 
 export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
@@ -46,8 +48,9 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
     defaultValues: {
       email: 'test@local.com',
       password: 'test1234',
+      rememberMe: false,
     },
-  })
+  } as any)
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
     setIsLoading(true)
@@ -66,7 +69,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
        * remember the user session after the browser is closed. 
        * @default true
        */
-      rememberMe: false,
+      rememberMe: data.rememberMe,
       callbackURL: '/'
     }, {
       onSuccess: async () => {
@@ -124,6 +127,38 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
               >
                 Forgot password?
               </Link>
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name='rememberMe'
+          render={({ field }) => (
+            <FormItem className='flex items-center space-x-2'>
+              <FormControl>
+                <input
+                  type='checkbox'
+                  checked={field.value}
+                  onChange={field.onChange}
+                  className='rounded text-primary focus:ring-primary h-4 w-4'
+                />
+              </FormControl>
+              <FormLabel className='text-sm'>记住我</FormLabel>
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name='rememberMe'
+          render={({ field }) => (
+            <FormItem className='flex items-center space-x-2'>
+              <FormControl>
+                <Checkbox
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
+              <FormLabel className='text-sm'>记住我</FormLabel>
             </FormItem>
           )}
         />

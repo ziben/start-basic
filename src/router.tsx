@@ -6,21 +6,23 @@ import { NotFound } from './components/NotFound'
 import { routeTree } from './routeTree.gen'
 
 export function createRouter() {
+  // 创建 QueryClient，用于管理数据获取和缓存
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: {
         refetchOnWindowFocus: false,
-        staleTime: 1000 * 60, // 1 minute
+        staleTime: 1000 * 300, // 5 minutes for dashboard data
       },
     },
   });
 
+  // 创建并返回结合了 React Query 的路由器
   return routerWithQueryClient(
     createTanStackRouter({
       routeTree,
       context: { queryClient, user: null },
       defaultPreload: 'intent',
-      defaultPreloadStaleTime: 0,
+      defaultPreloadStaleTime: 30000, // 30 seconds
       defaultErrorComponent: DefaultCatchBoundary,
       defaultNotFoundComponent: () => <NotFound />,
       scrollRestoration: true,

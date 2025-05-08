@@ -31,7 +31,7 @@ export const Route = createRootRouteWithContext<{
       queryFn: ({ signal }) => getUser({ signal }),
     }); // we're using react-query for caching, see router.tsx
     return { user };
-  },  
+  },
   head: () => ({
     meta: [
       {

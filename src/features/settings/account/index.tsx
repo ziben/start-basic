@@ -1,12 +1,14 @@
 import ContentSection from '../components/content-section'
 import { AccountForm } from './account-form'
+import { useTranslation } from '~/hooks/useTranslation'
 
 export default function SettingsAccount() {
+  const { t } = useTranslation()
+  
   return (
     <ContentSection
-      title='Account'
-      desc='Update your account settings. Set your preferred language and
-          timezone.'
+      title={t('settings.account.title')}
+      desc={t('settings.account.desc')}
     >
       <AccountForm />
     </ContentSection>
