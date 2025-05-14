@@ -1,0 +1,23 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# 代码风格
+
+本项目遵循以下代码风格规范：
+
+- **组件命名**：使用PascalCase命名组件文件和组件名，如 [AppSidebar](mdc:src/components/layout/app-sidebar.tsx)
+- **钩子命名**：使用camelCase并以`use`前缀命名自定义钩子，如 [useSidebar](mdc:src/lib/sidebar/index.ts)
+- **文件组织**：
+  - 相关组件放在同一目录下
+  - 数据相关逻辑放在`data`子目录，如 [layout/data](mdc:src/components/layout/data)
+- **导入排序**：
+  - 第三方库导入在顶部
+  - 自定义组件和工具库次之
+  - 类型和样式导入在最后
+- **类型定义**：使用TypeScript接口和类型别名定义数据结构
+- **注释风格**：使用JSDoc风格的注释说明函数和复杂逻辑
+- **异步处理**：使用async/await而非Promise链
+- **错误处理**：使用try/catch捕获异常并提供降级方案
+

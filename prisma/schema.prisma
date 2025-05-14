@@ -1,4 +1,3 @@
-
 datasource db {
   provider = "sqlite"
   url      = "file:./dev.db"
@@ -30,9 +29,77 @@ model User {
   members     Member[]
   invitations Invitation[]
 
+  // 角色与侧边栏的关联
+  roleNavGroups UserRoleNavGroup[]
+
   @@unique([email])
   @@map("user")
   @@unique([username])
+}
+
+// 侧边栏导航组 - 顶层分组
+model NavGroup {
+  id          String   @id @default(cuid())
+  title       String   // 分组标题
+  orderIndex  Int      // 排序索引
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // 关联 
+  navItems    NavItem[]        // 导航项
+  roleNavGroups RoleNavGroup[] // 关联角色
+  userRoleNavGroups UserRoleNavGroup[] // 用户角色关联
+
+  @@map("nav_group")
+}
+
+// 导航项 - 可以是链接或子菜单
+model NavItem {
+  id          String   @id @default(cuid())
+  title       String   // 菜单项标题
+  url         String?  // 链接地址，如为子菜单则为null
+  icon        String?  // 图标名称
+  badge       String?  // 徽章内容
+  orderIndex  Int      // 排序索引
+  isCollapsible Boolean @default(false) // 是否为可折叠菜单
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // 关联
+  navGroupId  String?   // 父导航组ID
+  navGroup    NavGroup? @relation(fields: [navGroupId], references: [id], onDelete: Cascade)
+  
+  parentId    String?   // 父级菜单项ID，用于子菜单
+  parent      NavItem?  @relation("NavItemToNavItem", fields: [parentId], references: [id], onDelete: Cascade)
+  children    NavItem[] @relation("NavItemToNavItem")
+
+  @@map("nav_item")
+}
+
+// 角色与导航组关联表
+model RoleNavGroup {
+  id         String   @id @default(cuid())
+  role       String   // 角色名称
+  navGroupId String
+  navGroup   NavGroup @relation(fields: [navGroupId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+
+  @@unique([role, navGroupId])
+  @@map("role_nav_group")
+}
+
+// 用户与导航组关联表 - 用于个性化设置
+model UserRoleNavGroup {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  navGroupId String
+  navGroup   NavGroup @relation(fields: [navGroupId], references: [id], onDelete: Cascade)
+  visible    Boolean  @default(true) // 用户是否可见此导航组
+  createdAt  DateTime @default(now())
+
+  @@unique([userId, navGroupId])
+  @@map("user_role_nav_group")
 }
 
 model Session {

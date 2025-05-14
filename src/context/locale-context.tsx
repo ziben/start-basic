@@ -9,6 +9,9 @@ interface LocaleContextType {
 
 const LocaleContext = createContext<LocaleContextType | undefined>(undefined)
 
+// 检测是否在浏览器环境中
+const isBrowser = typeof window !== 'undefined'
+
 // 将嵌套的消息对象扁平化为 Record<string, string> 格式
 const flattenMessages = (nestedMessages: any, prefix = ''): Record<string, string> => {
   return Object.keys(nestedMessages).reduce((acc, key) => {
@@ -25,26 +28,48 @@ const flattenMessages = (nestedMessages: any, prefix = ''): Record<string, strin
   }, {} as Record<string, string>)
 }
 
-export const LocaleProvider = ({ children }: { children: ReactNode }) => {
-  // 从本地存储中获取语言设置，如果没有则使用默认语言
-  const [locale, _setLocale] = useState<LocaleType>(() => {
+// 安全地从localStorage获取语言设置
+const getSavedLocale = (): LocaleType => {
+  if (!isBrowser) {
+    return DEFAULT_LOCALE
+  }
+  
+  try {
     const savedLocale = localStorage.getItem('locale')
     return (savedLocale === LOCALES.en || savedLocale === LOCALES.zh) 
       ? savedLocale 
       : DEFAULT_LOCALE
-  })
+  } catch (e) {
+    return DEFAULT_LOCALE
+  }
+}
+
+export const LocaleProvider = ({ children }: { children: ReactNode }) => {
+  // 从本地存储中获取语言设置，如果没有则使用默认语言
+  const [locale, _setLocale] = useState<LocaleType>(getSavedLocale)
 
   const setLocale = (locale: LocaleType) => {
-    localStorage.setItem('locale', locale)
+    if (isBrowser) {
+      try {
+        localStorage.setItem('locale', locale)
+      } catch (e) {
+        console.error('Failed to save locale to localStorage:', e)
+      }
+    }
     _setLocale(locale)
+    
     // 可选：设置 HTML lang 属性
-    document.documentElement.setAttribute('lang', locale)
+    if (isBrowser) {
+      document.documentElement.setAttribute('lang', locale)
+    }
   }
 
   // 初始化时设置 HTML lang 属性
   useEffect(() => {
-    document.documentElement.setAttribute('lang', locale)
-  }, [])
+    if (isBrowser) {
+      document.documentElement.setAttribute('lang', locale)
+    }
+  }, [locale])
 
   // 扁平化消息对象
   const flatMessages = flattenMessages(messages[locale])

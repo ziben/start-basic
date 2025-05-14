@@ -1,0 +1,20 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# 技术栈
+
+本项目使用以下技术栈：
+
+- **前端框架**：React 和 [TanStack React](mdc:package.json)
+- **数据库ORM**：[Prisma](mdc:prisma/schema.prisma)
+- **状态管理**：[React Query](mdc:src/lib/sidebar/index.ts)
+- **国际化**：react-intl 实现 [i18n](mdc:src/hooks/useTranslation.ts)
+- **UI组件**：自定义UI组件库 [components/ui](mdc:src/components/ui)
+- **图标**：[Tabler Icons](mdc:src/components/layout/app-sidebar.tsx) 和 [Lucide Icons](mdc:src/components/layout/app-sidebar.tsx)
+- **认证**：自定义认证方案 [lib/auth](mdc:src/lib/auth.ts)
+- **路由**：基于文件系统的路由 [routes](mdc:src/routes)
+- **类型系统**：TypeScript
+- **API**：使用TanStack的createServerFn来创建服务器函数
+

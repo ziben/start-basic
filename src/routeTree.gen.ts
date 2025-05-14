@@ -33,6 +33,17 @@ import { Route as AuthenticatedSettingsNotificationsImport } from './routes/_aut
 import { Route as AuthenticatedSettingsDisplayImport } from './routes/_authenticated/settings/display'
 import { Route as AuthenticatedSettingsAppearanceImport } from './routes/_authenticated/settings/appearance'
 import { Route as AuthenticatedSettingsAccountImport } from './routes/_authenticated/settings/account'
+import { Route as AuthenticatedAdminVerificationImport } from './routes/_authenticated/admin/verification'
+import { Route as AuthenticatedAdminUserrolenavgroupImport } from './routes/_authenticated/admin/userrolenavgroup'
+import { Route as AuthenticatedAdminUserImport } from './routes/_authenticated/admin/user'
+import { Route as AuthenticatedAdminSessionImport } from './routes/_authenticated/admin/session'
+import { Route as AuthenticatedAdminRolenavgroupImport } from './routes/_authenticated/admin/rolenavgroup'
+import { Route as AuthenticatedAdminOrganizationImport } from './routes/_authenticated/admin/organization'
+import { Route as AuthenticatedAdminNavitemImport } from './routes/_authenticated/admin/navitem'
+import { Route as AuthenticatedAdminNavgroupImport } from './routes/_authenticated/admin/navgroup'
+import { Route as AuthenticatedAdminMemberImport } from './routes/_authenticated/admin/member'
+import { Route as AuthenticatedAdminInvitationImport } from './routes/_authenticated/admin/invitation'
+import { Route as AuthenticatedAdminAccountImport } from './routes/_authenticated/admin/account'
 
 // Create/Update Routes
 
@@ -176,6 +187,79 @@ const AuthenticatedSettingsAccountRoute =
     getParentRoute: () => AuthenticatedSettingsRouteRoute,
   } as any)
 
+const AuthenticatedAdminVerificationRoute =
+  AuthenticatedAdminVerificationImport.update({
+    id: '/admin/verification',
+    path: '/admin/verification',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+
+const AuthenticatedAdminUserrolenavgroupRoute =
+  AuthenticatedAdminUserrolenavgroupImport.update({
+    id: '/admin/userrolenavgroup',
+    path: '/admin/userrolenavgroup',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+
+const AuthenticatedAdminUserRoute = AuthenticatedAdminUserImport.update({
+  id: '/admin/user',
+  path: '/admin/user',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+
+const AuthenticatedAdminSessionRoute = AuthenticatedAdminSessionImport.update({
+  id: '/admin/session',
+  path: '/admin/session',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+
+const AuthenticatedAdminRolenavgroupRoute =
+  AuthenticatedAdminRolenavgroupImport.update({
+    id: '/admin/rolenavgroup',
+    path: '/admin/rolenavgroup',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+
+const AuthenticatedAdminOrganizationRoute =
+  AuthenticatedAdminOrganizationImport.update({
+    id: '/admin/organization',
+    path: '/admin/organization',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+
+const AuthenticatedAdminNavitemRoute = AuthenticatedAdminNavitemImport.update({
+  id: '/admin/navitem',
+  path: '/admin/navitem',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+
+const AuthenticatedAdminNavgroupRoute = AuthenticatedAdminNavgroupImport.update(
+  {
+    id: '/admin/navgroup',
+    path: '/admin/navgroup',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any,
+)
+
+const AuthenticatedAdminMemberRoute = AuthenticatedAdminMemberImport.update({
+  id: '/admin/member',
+  path: '/admin/member',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+
+const AuthenticatedAdminInvitationRoute =
+  AuthenticatedAdminInvitationImport.update({
+    id: '/admin/invitation',
+    path: '/admin/invitation',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+
+const AuthenticatedAdminAccountRoute = AuthenticatedAdminAccountImport.update({
+  id: '/admin/account',
+  path: '/admin/account',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -262,6 +346,83 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof AuthenticatedIndexImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
+    '/_authenticated/admin/account': {
+      id: '/_authenticated/admin/account'
+      path: '/admin/account'
+      fullPath: '/admin/account'
+      preLoaderRoute: typeof AuthenticatedAdminAccountImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
+    '/_authenticated/admin/invitation': {
+      id: '/_authenticated/admin/invitation'
+      path: '/admin/invitation'
+      fullPath: '/admin/invitation'
+      preLoaderRoute: typeof AuthenticatedAdminInvitationImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
+    '/_authenticated/admin/member': {
+      id: '/_authenticated/admin/member'
+      path: '/admin/member'
+      fullPath: '/admin/member'
+      preLoaderRoute: typeof AuthenticatedAdminMemberImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
+    '/_authenticated/admin/navgroup': {
+      id: '/_authenticated/admin/navgroup'
+      path: '/admin/navgroup'
+      fullPath: '/admin/navgroup'
+      preLoaderRoute: typeof AuthenticatedAdminNavgroupImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
+    '/_authenticated/admin/navitem': {
+      id: '/_authenticated/admin/navitem'
+      path: '/admin/navitem'
+      fullPath: '/admin/navitem'
+      preLoaderRoute: typeof AuthenticatedAdminNavitemImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
+    '/_authenticated/admin/organization': {
+      id: '/_authenticated/admin/organization'
+      path: '/admin/organization'
+      fullPath: '/admin/organization'
+      preLoaderRoute: typeof AuthenticatedAdminOrganizationImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
+    '/_authenticated/admin/rolenavgroup': {
+      id: '/_authenticated/admin/rolenavgroup'
+      path: '/admin/rolenavgroup'
+      fullPath: '/admin/rolenavgroup'
+      preLoaderRoute: typeof AuthenticatedAdminRolenavgroupImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
+    '/_authenticated/admin/session': {
+      id: '/_authenticated/admin/session'
+      path: '/admin/session'
+      fullPath: '/admin/session'
+      preLoaderRoute: typeof AuthenticatedAdminSessionImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
+    '/_authenticated/admin/user': {
+      id: '/_authenticated/admin/user'
+      path: '/admin/user'
+      fullPath: '/admin/user'
+      preLoaderRoute: typeof AuthenticatedAdminUserImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
+    '/_authenticated/admin/userrolenavgroup': {
+      id: '/_authenticated/admin/userrolenavgroup'
+      path: '/admin/userrolenavgroup'
+      fullPath: '/admin/userrolenavgroup'
+      preLoaderRoute: typeof AuthenticatedAdminUserrolenavgroupImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
+    '/_authenticated/admin/verification': {
+      id: '/_authenticated/admin/verification'
+      path: '/admin/verification'
+      fullPath: '/admin/verification'
+      preLoaderRoute: typeof AuthenticatedAdminVerificationImport
       parentRoute: typeof AuthenticatedRouteImport
     }
     '/_authenticated/settings/account': {
@@ -365,6 +526,17 @@ const AuthenticatedSettingsRouteRouteWithChildren =
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedSettingsRouteRoute: typeof AuthenticatedSettingsRouteRouteWithChildren
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+  AuthenticatedAdminAccountRoute: typeof AuthenticatedAdminAccountRoute
+  AuthenticatedAdminInvitationRoute: typeof AuthenticatedAdminInvitationRoute
+  AuthenticatedAdminMemberRoute: typeof AuthenticatedAdminMemberRoute
+  AuthenticatedAdminNavgroupRoute: typeof AuthenticatedAdminNavgroupRoute
+  AuthenticatedAdminNavitemRoute: typeof AuthenticatedAdminNavitemRoute
+  AuthenticatedAdminOrganizationRoute: typeof AuthenticatedAdminOrganizationRoute
+  AuthenticatedAdminRolenavgroupRoute: typeof AuthenticatedAdminRolenavgroupRoute
+  AuthenticatedAdminSessionRoute: typeof AuthenticatedAdminSessionRoute
+  AuthenticatedAdminUserRoute: typeof AuthenticatedAdminUserRoute
+  AuthenticatedAdminUserrolenavgroupRoute: typeof AuthenticatedAdminUserrolenavgroupRoute
+  AuthenticatedAdminVerificationRoute: typeof AuthenticatedAdminVerificationRoute
   AuthenticatedAppsIndexRoute: typeof AuthenticatedAppsIndexRoute
   AuthenticatedChatsIndexRoute: typeof AuthenticatedChatsIndexRoute
   AuthenticatedHelpCenterIndexRoute: typeof AuthenticatedHelpCenterIndexRoute
@@ -375,6 +547,18 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedSettingsRouteRoute: AuthenticatedSettingsRouteRouteWithChildren,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+  AuthenticatedAdminAccountRoute: AuthenticatedAdminAccountRoute,
+  AuthenticatedAdminInvitationRoute: AuthenticatedAdminInvitationRoute,
+  AuthenticatedAdminMemberRoute: AuthenticatedAdminMemberRoute,
+  AuthenticatedAdminNavgroupRoute: AuthenticatedAdminNavgroupRoute,
+  AuthenticatedAdminNavitemRoute: AuthenticatedAdminNavitemRoute,
+  AuthenticatedAdminOrganizationRoute: AuthenticatedAdminOrganizationRoute,
+  AuthenticatedAdminRolenavgroupRoute: AuthenticatedAdminRolenavgroupRoute,
+  AuthenticatedAdminSessionRoute: AuthenticatedAdminSessionRoute,
+  AuthenticatedAdminUserRoute: AuthenticatedAdminUserRoute,
+  AuthenticatedAdminUserrolenavgroupRoute:
+    AuthenticatedAdminUserrolenavgroupRoute,
+  AuthenticatedAdminVerificationRoute: AuthenticatedAdminVerificationRoute,
   AuthenticatedAppsIndexRoute: AuthenticatedAppsIndexRoute,
   AuthenticatedChatsIndexRoute: AuthenticatedChatsIndexRoute,
   AuthenticatedHelpCenterIndexRoute: AuthenticatedHelpCenterIndexRoute,
@@ -398,6 +582,17 @@ export interface FileRoutesByFullPath {
   '/500': typeof errors500Route
   '/503': typeof errors503Route
   '/': typeof AuthenticatedIndexRoute
+  '/admin/account': typeof AuthenticatedAdminAccountRoute
+  '/admin/invitation': typeof AuthenticatedAdminInvitationRoute
+  '/admin/member': typeof AuthenticatedAdminMemberRoute
+  '/admin/navgroup': typeof AuthenticatedAdminNavgroupRoute
+  '/admin/navitem': typeof AuthenticatedAdminNavitemRoute
+  '/admin/organization': typeof AuthenticatedAdminOrganizationRoute
+  '/admin/rolenavgroup': typeof AuthenticatedAdminRolenavgroupRoute
+  '/admin/session': typeof AuthenticatedAdminSessionRoute
+  '/admin/user': typeof AuthenticatedAdminUserRoute
+  '/admin/userrolenavgroup': typeof AuthenticatedAdminUserrolenavgroupRoute
+  '/admin/verification': typeof AuthenticatedAdminVerificationRoute
   '/settings/account': typeof AuthenticatedSettingsAccountRoute
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
   '/settings/display': typeof AuthenticatedSettingsDisplayRoute
@@ -421,6 +616,17 @@ export interface FileRoutesByTo {
   '/500': typeof errors500Route
   '/503': typeof errors503Route
   '/': typeof AuthenticatedIndexRoute
+  '/admin/account': typeof AuthenticatedAdminAccountRoute
+  '/admin/invitation': typeof AuthenticatedAdminInvitationRoute
+  '/admin/member': typeof AuthenticatedAdminMemberRoute
+  '/admin/navgroup': typeof AuthenticatedAdminNavgroupRoute
+  '/admin/navitem': typeof AuthenticatedAdminNavitemRoute
+  '/admin/organization': typeof AuthenticatedAdminOrganizationRoute
+  '/admin/rolenavgroup': typeof AuthenticatedAdminRolenavgroupRoute
+  '/admin/session': typeof AuthenticatedAdminSessionRoute
+  '/admin/user': typeof AuthenticatedAdminUserRoute
+  '/admin/userrolenavgroup': typeof AuthenticatedAdminUserrolenavgroupRoute
+  '/admin/verification': typeof AuthenticatedAdminVerificationRoute
   '/settings/account': typeof AuthenticatedSettingsAccountRoute
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
   '/settings/display': typeof AuthenticatedSettingsDisplayRoute
@@ -447,6 +653,17 @@ export interface FileRoutesById {
   '/(errors)/500': typeof errors500Route
   '/(errors)/503': typeof errors503Route
   '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/_authenticated/admin/account': typeof AuthenticatedAdminAccountRoute
+  '/_authenticated/admin/invitation': typeof AuthenticatedAdminInvitationRoute
+  '/_authenticated/admin/member': typeof AuthenticatedAdminMemberRoute
+  '/_authenticated/admin/navgroup': typeof AuthenticatedAdminNavgroupRoute
+  '/_authenticated/admin/navitem': typeof AuthenticatedAdminNavitemRoute
+  '/_authenticated/admin/organization': typeof AuthenticatedAdminOrganizationRoute
+  '/_authenticated/admin/rolenavgroup': typeof AuthenticatedAdminRolenavgroupRoute
+  '/_authenticated/admin/session': typeof AuthenticatedAdminSessionRoute
+  '/_authenticated/admin/user': typeof AuthenticatedAdminUserRoute
+  '/_authenticated/admin/userrolenavgroup': typeof AuthenticatedAdminUserrolenavgroupRoute
+  '/_authenticated/admin/verification': typeof AuthenticatedAdminVerificationRoute
   '/_authenticated/settings/account': typeof AuthenticatedSettingsAccountRoute
   '/_authenticated/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
   '/_authenticated/settings/display': typeof AuthenticatedSettingsDisplayRoute
@@ -474,6 +691,17 @@ export interface FileRouteTypes {
     | '/500'
     | '/503'
     | '/'
+    | '/admin/account'
+    | '/admin/invitation'
+    | '/admin/member'
+    | '/admin/navgroup'
+    | '/admin/navitem'
+    | '/admin/organization'
+    | '/admin/rolenavgroup'
+    | '/admin/session'
+    | '/admin/user'
+    | '/admin/userrolenavgroup'
+    | '/admin/verification'
     | '/settings/account'
     | '/settings/appearance'
     | '/settings/display'
@@ -496,6 +724,17 @@ export interface FileRouteTypes {
     | '/500'
     | '/503'
     | '/'
+    | '/admin/account'
+    | '/admin/invitation'
+    | '/admin/member'
+    | '/admin/navgroup'
+    | '/admin/navitem'
+    | '/admin/organization'
+    | '/admin/rolenavgroup'
+    | '/admin/session'
+    | '/admin/user'
+    | '/admin/userrolenavgroup'
+    | '/admin/verification'
     | '/settings/account'
     | '/settings/appearance'
     | '/settings/display'
@@ -520,6 +759,17 @@ export interface FileRouteTypes {
     | '/(errors)/500'
     | '/(errors)/503'
     | '/_authenticated/'
+    | '/_authenticated/admin/account'
+    | '/_authenticated/admin/invitation'
+    | '/_authenticated/admin/member'
+    | '/_authenticated/admin/navgroup'
+    | '/_authenticated/admin/navitem'
+    | '/_authenticated/admin/organization'
+    | '/_authenticated/admin/rolenavgroup'
+    | '/_authenticated/admin/session'
+    | '/_authenticated/admin/user'
+    | '/_authenticated/admin/userrolenavgroup'
+    | '/_authenticated/admin/verification'
     | '/_authenticated/settings/account'
     | '/_authenticated/settings/appearance'
     | '/_authenticated/settings/display'
@@ -586,6 +836,17 @@ export const routeTree = rootRoute
       "children": [
         "/_authenticated/settings",
         "/_authenticated/",
+        "/_authenticated/admin/account",
+        "/_authenticated/admin/invitation",
+        "/_authenticated/admin/member",
+        "/_authenticated/admin/navgroup",
+        "/_authenticated/admin/navitem",
+        "/_authenticated/admin/organization",
+        "/_authenticated/admin/rolenavgroup",
+        "/_authenticated/admin/session",
+        "/_authenticated/admin/user",
+        "/_authenticated/admin/userrolenavgroup",
+        "/_authenticated/admin/verification",
         "/_authenticated/apps/",
         "/_authenticated/chats/",
         "/_authenticated/help-center/",
@@ -633,6 +894,50 @@ export const routeTree = rootRoute
     },
     "/_authenticated/": {
       "filePath": "_authenticated/index.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/admin/account": {
+      "filePath": "_authenticated/admin/account.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/admin/invitation": {
+      "filePath": "_authenticated/admin/invitation.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/admin/member": {
+      "filePath": "_authenticated/admin/member.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/admin/navgroup": {
+      "filePath": "_authenticated/admin/navgroup.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/admin/navitem": {
+      "filePath": "_authenticated/admin/navitem.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/admin/organization": {
+      "filePath": "_authenticated/admin/organization.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/admin/rolenavgroup": {
+      "filePath": "_authenticated/admin/rolenavgroup.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/admin/session": {
+      "filePath": "_authenticated/admin/session.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/admin/user": {
+      "filePath": "_authenticated/admin/user.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/admin/userrolenavgroup": {
+      "filePath": "_authenticated/admin/userrolenavgroup.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/admin/verification": {
+      "filePath": "_authenticated/admin/verification.tsx",
       "parent": "/_authenticated"
     },
     "/_authenticated/settings/account": {

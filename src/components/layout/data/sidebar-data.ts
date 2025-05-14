@@ -18,11 +18,20 @@ import {
   IconUserCog,
   IconUserOff,
   IconUsers,
+  IconShieldCheck,
+  IconBuilding,
+  IconMail,
+  IconList,
+  IconMenu,
+  IconKey,
+  IconUserCheck,
 } from '@tabler/icons-react'
 import { AudioWaveform, Command, GalleryVerticalEnd } from 'lucide-react'
 import { type SidebarData } from '../types'
 
-export const sidebarData: SidebarData = {
+// 这个文件不能直接使用hooks，因为它不是组件
+// 所以我们创建一个函数来生成带有翻译的侧边栏数据
+export const createSidebarData = (t: (key: string) => string): SidebarData => ({
   user: {
     name: 'satnaing',
     email: 'satnaingdev@gmail.com',
@@ -30,108 +39,108 @@ export const sidebarData: SidebarData = {
   },
   teams: [
     {
-      name: 'Shadcn Admin',
+      name: 'Shadcn 管理系统',
       logo: Command,
       plan: 'Vite + ShadcnUI',
     },
     {
-      name: 'Acme Inc',
+      name: 'Acme 公司',
       logo: GalleryVerticalEnd,
-      plan: 'Enterprise',
+      plan: '企业版',
     },
     {
-      name: 'Acme Corp.',
+      name: 'Acme 集团',
       logo: AudioWaveform,
-      plan: 'Startup',
+      plan: '创业版',
     },
   ],
   navGroups: [
     {
-      title: 'General',
+      title: t('sidebar.general'),
       items: [
         {
-          title: 'Dashboard',
+          title: t('navigation.dashboard'),
           url: '/',
           icon: IconLayoutDashboard,
         },
         {
-          title: 'Tasks',
+          title: t('navigation.tasks'),
           url: '/tasks',
           icon: IconChecklist,
         },
         {
-          title: 'Apps',
+          title: t('navigation.apps'),
           url: '/apps',
           icon: IconPackages,
         },
         {
-          title: 'Chats',
+          title: t('navigation.chats'),
           url: '/chats',
           badge: '3',
           icon: IconMessages,
         },
         {
-          title: 'Users',
+          title: t('navigation.users'),
           url: '/users',
           icon: IconUsers,
         },
       ],
     },
     {
-      title: 'Pages',
+      title: t('sidebar.pages'),
       items: [
         {
-          title: 'Auth',
+          title: t('auth.authentication'),
           icon: IconLockAccess,
           items: [
             {
-              title: 'Sign In',
+              title: t('auth.signIn'),
               url: '/sign-in',
             },
             {
-              title: 'Sign In (2 Col)',
+              title: t('auth.twoColumn'),
               url: '/sign-in-2',
             },
             {
-              title: 'Sign Up',
+              title: t('auth.signUp'),
               url: '/sign-up',
             },
             {
-              title: 'Forgot Password',
+              title: t('auth.forgotPassword'),
               url: '/forgot-password',
             },
             {
-              title: 'OTP',
+              title: t('auth.otp'),
               url: '/otp',
             },
           ],
         },
         {
-          title: 'Errors',
+          title: t('errors.errorPages'),
           icon: IconBug,
           items: [
             {
-              title: 'Unauthorized',
+              title: t('errors.unauthorized'),
               url: '/401',
               icon: IconLock,
             },
             {
-              title: 'Forbidden',
+              title: t('errors.forbidden'),
               url: '/403',
               icon: IconUserOff,
             },
             {
-              title: 'Not Found',
+              title: t('errors.notFound'),
               url: '/404',
               icon: IconError404,
             },
             {
-              title: 'Internal Server Error',
+              title: t('errors.serverError'),
               url: '/500',
               icon: IconServerOff,
             },
             {
-              title: 'Maintenance Error',
+              title: t('errors.serviceUnavailable'),
               url: '/503',
               icon: IconBarrierBlock,
             },
@@ -140,45 +149,116 @@ export const sidebarData: SidebarData = {
       ],
     },
     {
-      title: 'Other',
+      title: t('sidebar.others'),
       items: [
         {
-          title: 'Settings',
+          title: t('navigation.settings'),
           icon: IconSettings,
           items: [
             {
-              title: 'Profile',
+              title: t('settings.profile.title'),
               url: '/settings',
               icon: IconUserCog,
             },
             {
-              title: 'Account',
+              title: t('settings.account.title'),
               url: '/settings/account',
               icon: IconTool,
             },
             {
-              title: 'Appearance',
+              title: t('settings.appearance.title'),
               url: '/settings/appearance',
               icon: IconPalette,
             },
             {
-              title: 'Notifications',
+              title: t('settings.notifications.title'),
               url: '/settings/notifications',
               icon: IconNotification,
             },
             {
-              title: 'Display',
+              title: t('settings.display.title'),
               url: '/settings/display',
               icon: IconBrowserCheck,
             },
           ],
         },
         {
-          title: 'Help Center',
+          title: t('navigation.helpCenter'),
           url: '/help-center',
           icon: IconHelp,
         },
       ],
     },
+    {
+      title: t('sidebar.system'),
+      items: [
+        {
+          title: t('sidebar.User'),
+          url: '/admin/user',
+          icon: IconUsers,
+        },
+        {
+          title: t('sidebar.Session'),
+          url: '/admin/session',
+          icon: IconLock,
+        },
+        {
+          title: t('sidebar.Account'),
+          url: '/admin/account',
+          icon: IconUserCog,
+        },
+        {
+          title: t('sidebar.Verification'),
+          url: '/admin/verification',
+          icon: IconShieldCheck,
+        },
+        {
+          title: t('sidebar.Organization'),
+          url: '/admin/organization',
+          icon: IconBuilding,
+        },
+        {
+          title: t('sidebar.Member'),
+          url: '/admin/member',
+          icon: IconUsers,
+        },
+        {
+          title: t('sidebar.Invitation'),
+          url: '/admin/invitation',
+          icon: IconMail,
+        },
+        {
+          title: t('sidebar.NavGroup'),
+          url: '/admin/navgroup',
+          icon: IconList,
+        },
+        {
+          title: t('sidebar.NavItem'),
+          url: '/admin/navitem',
+          icon: IconMenu,
+        },
+        {
+          title: t('sidebar.RoleNavGroup'),
+          url: '/admin/rolenavgroup',
+          icon: IconKey,
+        },
+        {
+          title: t('sidebar.UserRoleNavGroup'),
+          url: '/admin/userrolenavgroup',
+          icon: IconUserCheck,
+        },
+      ],
+    },
   ],
+})
+
+// 导出一个空的初始数据结构，将在组件中填充
+export const sidebarData: SidebarData = {
+  user: {
+    name: '',
+    email: '',
+    avatar: '',
+  },
+  teams: [],
+  navGroups: [],
 }

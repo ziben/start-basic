@@ -12,9 +12,40 @@ import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
+import { useTranslation } from '~/hooks/useTranslation'
 import SidebarNav from './components/sidebar-nav'
 
 export default function Settings() {
+  const { t } = useTranslation()
+  
+  const sidebarNavItems = [
+    {
+      title: t('settings.profile.title'),
+      icon: <IconUser size={18} />,
+      href: '/settings',
+    },
+    {
+      title: t('settings.account.title'),
+      icon: <IconTool size={18} />,
+      href: '/settings/account',
+    },
+    {
+      title: t('settings.appearance.title'),
+      icon: <IconPalette size={18} />,
+      href: '/settings/appearance',
+    },
+    {
+      title: t('settings.notifications.title'),
+      icon: <IconNotification size={18} />,
+      href: '/settings/notifications',
+    },
+    {
+      title: t('settings.display.title'),
+      icon: <IconBrowserCheck size={18} />,
+      href: '/settings/display',
+    },
+  ]
+  
   return (
     <>
       {/* ===== Top Heading ===== */}
@@ -29,10 +60,10 @@ export default function Settings() {
       <Main fixed>
         <div className='space-y-0.5'>
           <h1 className='text-2xl font-bold tracking-tight md:text-3xl'>
-            Settings
+            {t('navigation.settings')}
           </h1>
           <p className='text-muted-foreground'>
-            Manage your account settings and set e-mail preferences.
+            {t('settings.desc')}
           </p>
         </div>
         <Separator className='my-4 lg:my-6' />
@@ -48,31 +79,3 @@ export default function Settings() {
     </>
   )
 }
-
-const sidebarNavItems = [
-  {
-    title: 'Profile',
-    icon: <IconUser size={18} />,
-    href: '/settings',
-  },
-  {
-    title: 'Account',
-    icon: <IconTool size={18} />,
-    href: '/settings/account',
-  },
-  {
-    title: 'Appearance',
-    icon: <IconPalette size={18} />,
-    href: '/settings/appearance',
-  },
-  {
-    title: 'Notifications',
-    icon: <IconNotification size={18} />,
-    href: '/settings/notifications',
-  },
-  {
-    title: 'Display',
-    icon: <IconBrowserCheck size={18} />,
-    href: '/settings/display',
-  },
-]

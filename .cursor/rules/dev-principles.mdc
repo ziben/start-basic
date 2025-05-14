@@ -1,0 +1,49 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# 开发原则
+
+本项目遵循以下开发原则和最佳实践：
+
+## 数据获取
+
+- 使用React Query进行数据获取和缓存，如 [useSidebar](mdc:src/lib/sidebar/index.ts)
+- API调用集中在功能模块的data目录中
+- 服务端函数使用TanStack的createServerFn创建，如 [getSidebarDataFn](mdc:src/server/api/sidebar/routes.ts)
+
+## 组件设计
+
+- 遵循组件功能单一原则
+- 使用自定义钩子抽象复杂逻辑
+- 将UI与数据处理分离
+- 避免深层嵌套的组件树
+- 支持组件的扩展性，通过props透传未知属性
+
+## 国际化和本地化
+
+- 使用React-Intl实现国际化
+- 所有用户可见文本应使用翻译函数
+- 支持动态切换语言
+- 默认语言为中文
+
+## 状态管理
+
+- 本地状态使用React的useState和useReducer
+- 共享状态使用Context API
+- 服务器状态使用React Query管理
+
+## 安全性
+
+- 验证所有用户输入
+- 使用角色基础的访问控制(RBAC)
+- 不在客户端存储敏感信息
+
+## 错误处理
+
+- 使用try/catch捕获异常
+- 在UI中优雅地显示错误
+- 提供降级UI和功能
+- 错误发生时维持应用稳定性
+

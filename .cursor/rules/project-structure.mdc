@@ -1,0 +1,46 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# 项目结构
+
+项目遵循以下目录结构组织规范：
+
+## 主要目录
+
+- **src/**：源代码主目录
+  - **assets/**：静态资源文件
+  - **components/**：React组件
+    - **layout/**：布局相关组件，如 [app-sidebar.tsx](mdc:src/components/layout/app-sidebar.tsx)
+    - **ui/**：基础UI组件
+  - **config/**：应用配置
+  - **context/**：React上下文
+  - **features/**：按功能模块组织的代码
+    - **功能名称/**：每个功能一个目录，包含组件、数据和上下文
+  - **generated/**：自动生成的代码，如Prisma客户端
+  - **hooks/**：自定义React钩子
+  - **i18n/**：国际化相关代码和语言文件
+  - **lib/**：工具库和功能封装
+  - **routes/**：应用路由
+    - **_authenticated/**：需要身份验证的路由
+    - **(auth)/**：认证相关路由
+    - **(errors)/**：错误页面
+    - **api/**：API端点
+  - **server/**：服务端代码
+  - **styles/**：全局样式
+  - **utils/**：通用工具函数
+
+## 数据模型
+
+- **prisma/schema.prisma**：数据库模型定义
+  - 遵循"模型名"对应"表名"的命名约定
+  - 使用关系映射连接相关模型
+
+## 功能模块结构
+
+- **features/功能名称/**：
+  - **components/**：功能特有组件
+  - **context/**：功能特有上下文
+  - **data/**：数据获取、处理和缓存
+
