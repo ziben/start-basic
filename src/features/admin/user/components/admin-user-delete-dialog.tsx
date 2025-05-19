@@ -7,9 +7,9 @@ import { AdminUser } from '../data/schema'
 import { useTranslation } from '~/hooks/useTranslation'
 
 interface Props {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  currentRow: AdminUser
+  readonly open: boolean
+  readonly onOpenChange: (open: boolean) => void
+  readonly currentRow: AdminUser
 }
 
 export function AdminUserDeleteDialog({ open, onOpenChange, currentRow }: Props) {
@@ -27,19 +27,19 @@ export function AdminUserDeleteDialog({ open, onOpenChange, currentRow }: Props)
       <DialogContent>
         <DialogHeader>
           <DialogTitle className='text-destructive flex items-center gap-2'>
-            <IconAlertTriangle className='stroke-destructive' size={18} /> {t('删除用户')}
+            <IconAlertTriangle className='stroke-destructive' size={18} /> {t('admin.user.dialog.delete')}
           </DialogTitle>
           <DialogDescription>
-            {t('确定要删除用户')} <span className='font-bold'>{currentRow.username}</span>？
+            {t('admin.user.dialog.delete.confirm')} <span className='font-bold'>{currentRow.username}</span>?
             <br />
-            {t('此操作不可撤销')}
+            {t('admin.user.dialog.delete.cannotUndo')}
           </DialogDescription>
         </DialogHeader>
         <div className='my-4'>
           <Input
             value={value}
             onChange={(e) => setValue(e.target.value)}
-            placeholder={t('请输入用户名以确认删除')}
+            placeholder={t('admin.user.dialog.delete.input')}
           />
         </div>
         <DialogFooter>

@@ -3,13 +3,15 @@ import { Button } from '@/components/ui/button'
 import { IconDotsVertical, IconEdit, IconTrash } from '@tabler/icons-react'
 import { useAdminUser } from '../context/admin-user-context'
 import { AdminUser } from '../data/schema'
+import { useTranslation } from '~/hooks/useTranslation'
 
 interface Props {
-  row: { original: AdminUser }
+  readonly row: { original: AdminUser }
 }
 
 export function DataTableRowActions({ row }: Props) {
   const { setOpen, setCurrentRow } = useAdminUser()
+  const { t } = useTranslation()
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -24,7 +26,7 @@ export function DataTableRowActions({ row }: Props) {
             setOpen('edit')
           }}
         >
-          <IconEdit size={16} className='mr-2' /> 编辑
+          <IconEdit size={16} className='mr-2' /> {t('admin.user.dialog.edit')}
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => {
@@ -32,7 +34,7 @@ export function DataTableRowActions({ row }: Props) {
             setOpen('delete')
           }}
         >
-          <IconTrash size={16} className='mr-2 text-destructive' /> 删除
+          <IconTrash size={16} className='mr-2 text-destructive' /> {t('admin.user.dialog.delete')}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

@@ -10,15 +10,22 @@ import AdminUserDialogs from './components/admin-user-dialogs'
 import AdminUserProvider from './context/admin-user-context'
 import { useQuery } from '@tanstack/react-query'
 import { adminUserListSchema } from './data/schema'
+import { authClient } from '~/lib/auth-client'
 
 export default function AdminUser() {
   const { t } = useTranslation()
   const { data: userList = [], isLoading, error } = useQuery({
     queryKey: ['admin-users'],
     queryFn: async () => {
-      const res = await fetch('/api/admin/user')
-      const data = await res.json()
-      return adminUserListSchema.parse(data)
+      const res = await authClient.admin.listUsers({
+        query: {
+          limit: 10,
+        },
+      });
+      if (!res.data) {
+        return [];
+      }
+      return adminUserListSchema.parse(res.data.users)
     },
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,

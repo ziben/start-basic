@@ -2,6 +2,7 @@ import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 import {
   Dialog,
   DialogContent,
@@ -13,80 +14,159 @@ import {
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { Switch } from '@/components/ui/switch'
 import { AdminUser } from '../data/schema'
 import { useTranslation } from '~/hooks/useTranslation'
-
-const formSchema = z.object({
-  username: z.string().min(1, { message: '用户名必填' }),
-  email: z.string().min(1, { message: '邮箱必填' }).email({ message: '邮箱格式不正确' }),
-  role: z.string().min(1, { message: '角色必填' }),
-  status: z.string().min(1, { message: '状态必填' }),
-})
-
-type AdminUserForm = z.infer<typeof formSchema>
+import { authClient } from '~/lib/auth-client'
+import { useAdminUser } from '../context/admin-user-context'
+import { useQueryClient } from '@tanstack/react-query'
+import { toast } from 'sonner'
 
 interface Props {
-  currentRow?: AdminUser
-  open: boolean
-  onOpenChange: (open: boolean) => void
+  readonly currentRow?: AdminUser
+  readonly open: boolean
+  readonly onOpenChange: (open: boolean) => void
 }
 
 export function AdminUserActionDialog({ currentRow, open, onOpenChange }: Props) {
   const { t } = useTranslation()
   const isEdit = !!currentRow
-  const form = useForm<AdminUserForm>({
+
+  // 可用的角色列表
+  const availableRoles = [
+    { id: 'admin', label: 'Admin' },
+    { id: 'user', label: 'User' },
+  ]
+
+  // 定义表单schema
+  const formSchema = z.object({
+    name: z.string().min(1, { message: t('admin.user.table.name') + t('common.required') }),
+    username: z.string().optional(),
+    displayUsername: z.string().optional(),
+    email: z.string().min(1, { message: t('admin.user.table.email') + t('common.required') }).email({ message: t('admin.user.table.email') + t('common.invalidFormat') }),
+    role: z.array(z.string()).min(1, { message: t('admin.user.table.role') + t('common.required') }),
+    banned: z.boolean().default(false),
+    banReason: z.string().optional(),
+    banExpires: z.string().optional(),
+  })
+
+  type FormValues = z.infer<typeof formSchema>
+
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: isEdit
       ? {
-          username: currentRow?.username || '',
-          email: currentRow?.email || '',
-          role: currentRow?.role || '',
-          status: currentRow?.status || '',
-        }
+        name: currentRow?.name ?? '',
+        username: currentRow?.username ?? '',
+        displayUsername: currentRow?.displayUsername ?? '',
+        email: currentRow?.email ?? '',
+        role: currentRow?.role ? [currentRow.role] : [],
+        banned: currentRow?.banned ?? false,
+        banReason: currentRow?.banReason ?? '',
+        banExpires: currentRow?.banExpires ? new Date(currentRow.banExpires).toISOString().split('T')[0] : '',
+      }
       : {
-          username: '',
-          email: '',
-          role: '',
-          status: '',
-        },
+        name: '',
+        username: '',
+        displayUsername: '',
+        email: '',
+        role: ['user'],
+        banned: false,
+        banReason: '',
+        banExpires: '',
+      },
   })
 
-  const onSubmit = (values: AdminUserForm) => {
-    // TODO: 调用API保存
-    form.reset()
-    onOpenChange(false)
+  const onSubmit = async (values: FormValues) => {
+    try {
+      if (isEdit && currentRow) {
+        // 编辑用户 - 简化为控制台输出
+        toast.warning(t('admin.user.dialog.updateNotImplemented'))
+      } else {
+        // 创建用户 - 简化为控制台输出
+        await authClient.admin.createUser({
+          name: values.name,
+          email: values.email,
+          password: "123456",
+          role: values.role,
+          data: {
+            username: values.username,
+            displayUsername: values.displayUsername,
+            banned: values.banned,
+            banReason: values.banReason,
+            banExpires: values.banExpires ? new Date(values.banExpires) : undefined,
+          },
+        });
+      }
+      // 刷新用户列表
+      // window.location.reload()
+      form.reset()
+      onOpenChange(false)
+      useQueryClient().refetchQueries({ queryKey: ['admin-users'] })
+    } catch (error) {
+      console.error('保存用户失败', error)
+    }
   }
 
   return (
     <Dialog open={open} onOpenChange={(state) => { form.reset(); onOpenChange(state) }}>
       <DialogContent>
         <DialogHeader className='text-left'>
-          <DialogTitle>{isEdit ? t('编辑用户') : t('添加用户')}</DialogTitle>
+          <DialogTitle>{isEdit ? t('admin.user.dialog.edit') : t('admin.user.dialog.add')}</DialogTitle>
           <DialogDescription>
-            {isEdit ? t('更新用户信息') : t('创建新用户')}
+            {isEdit ? t('admin.user.dialog.update') : t('admin.user.dialog.create')}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form id='admin-user-form' onSubmit={form.handleSubmit(onSubmit)} className='space-y-4 p-0.5'>
+          <form id='admin-user-form' onSubmit={form.handleSubmit(onSubmit as any)} className='space-y-4 p-0.5'>
             <FormField
               control={form.control}
-              name='username'
+              name='name'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('admin.user.table.username')}</FormLabel>
+                  <FormLabel>{t('admin.user.table.name')}</FormLabel>
                   <FormControl>
-                    <Input placeholder={t('admin.user.table.username')} {...field} />
+                    <Input placeholder={t('admin.user.table.name')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name='username'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('admin.user.table.username')}</FormLabel>
+                    <FormControl>
+                      <Input placeholder={t('admin.user.table.username')} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name='displayUsername'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('admin.user.table.displayUsername')}</FormLabel>
+                    <FormControl>
+                      <Input placeholder={t('admin.user.table.displayUsername')} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
             <FormField
               control={form.control}
               name='email'
@@ -103,29 +183,101 @@ export function AdminUserActionDialog({ currentRow, open, onOpenChange }: Props)
             <FormField
               control={form.control}
               name='role'
-              render={({ field }) => (
+              render={() => (
                 <FormItem>
-                  <FormLabel>{t('admin.user.table.role')}</FormLabel>
-                  <FormControl>
-                    <Input placeholder={t('admin.user.table.role')} {...field} />
-                  </FormControl>
-                  <FormMessage />
+                  <div className="mb-4">
+                    <FormLabel>{t('admin.user.table.role')}</FormLabel>
+                    <FormMessage />
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    {availableRoles.map((role) => (
+                      <FormField
+                        key={role.id}
+                        control={form.control}
+                        name="role"
+                        render={({ field }) => {
+                          return (
+                            <FormItem
+                              key={role.id}
+                              className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4"
+                            >
+                              <FormControl>
+                                <Checkbox
+                                  checked={field.value?.includes(role.id)}
+                                  onCheckedChange={(checked) => {
+                                    return checked
+                                      ? field.onChange([...field.value, role.id])
+                                      : field.onChange(
+                                        field.value?.filter(
+                                          (value) => value !== role.id
+                                        )
+                                      )
+                                  }}
+                                />
+                              </FormControl>
+                              <FormLabel className="font-normal">
+                                {role.label}
+                              </FormLabel>
+                            </FormItem>
+                          )
+                        }}
+                      />
+                    ))}
+                  </div>
                 </FormItem>
               )}
             />
             <FormField
               control={form.control}
-              name='status'
+              name='banned'
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('admin.user.table.status')}</FormLabel>
+                <FormItem className='flex flex-row items-center justify-between rounded-lg border p-3'>
+                  <div className='space-y-0.5'>
+                    <FormLabel>{t('admin.user.table.status')}</FormLabel>
+                    <FormDescription>
+                      {field.value ? t('admin.user.table.status.banned') : t('admin.user.table.status.normal')}
+                    </FormDescription>
+                  </div>
                   <FormControl>
-                    <Input placeholder={t('admin.user.table.status')} {...field} />
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
                   </FormControl>
-                  <FormMessage />
                 </FormItem>
               )}
             />
+
+            {form.watch('banned') && (
+              <>
+                <FormField
+                  control={form.control}
+                  name='banReason'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('admin.user.dialog.ban.reason')}</FormLabel>
+                      <FormControl>
+                        <Input placeholder={t('admin.user.dialog.ban.reason')} {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name='banExpires'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('admin.user.dialog.ban.expires')}</FormLabel>
+                      <FormControl>
+                        <Input type="date" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </>
+            )}
           </form>
         </Form>
         <DialogFooter>
@@ -136,4 +288,4 @@ export function AdminUserActionDialog({ currentRow, open, onOpenChange }: Props)
       </DialogContent>
     </Dialog>
   )
-} 
+}
