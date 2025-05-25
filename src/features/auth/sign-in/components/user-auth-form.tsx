@@ -86,9 +86,6 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
         toast.error(ctx.error.message);
       },
     })
-    const sessionResponse = await authClient.getSession();
-    console.log(sessionResponse)
-
   }
 
   return (
@@ -127,23 +124,6 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
               >
                 忘记密码？
               </Link>
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name='rememberMe'
-          render={({ field }) => (
-            <FormItem className='flex items-center space-x-2'>
-              <FormControl>
-                <input
-                  type='checkbox'
-                  checked={field.value}
-                  onChange={field.onChange}
-                  className='rounded text-primary focus:ring-primary h-4 w-4'
-                />
-              </FormControl>
-              <FormLabel className='text-sm'>记住我</FormLabel>
             </FormItem>
           )}
         />

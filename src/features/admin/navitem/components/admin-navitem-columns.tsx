@@ -1,0 +1,223 @@
+import { ColumnDef, FilterFn, Row } from '@tanstack/react-table'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
+import { AdminNavItem } from '../data/schema'
+import { useTranslation } from '~/hooks/useTranslation'
+import { DataTableRowActions } from './admin-navitem-row-actions'
+import { ChevronDown, ChevronRight } from 'lucide-react'
+import { useNavgroups } from '~/hooks/useNavgroupApi'; 
+import React from 'react'; 
+
+interface UseAdminNavItemColumnsProps {
+  navGroupId?: string;
+}
+
+export function useAdminNavItemColumns({ navGroupId: currentNavGroupIdProp }: UseAdminNavItemColumnsProps = {}) {
+  const { t } = useTranslation()
+  const { data: navgroups } = useNavgroups();
+
+  const navgroupMap = React.useMemo(() => {
+    if (!navgroups) return new Map<string, string>();
+    return new Map(navgroups.map(ng => [ng.id, ng.title]));
+  }, [navgroups]);
+
+  const formatDate = (date: string | Date | null | undefined) => {
+    if (!date) return '-'
+    return new Date(date).toLocaleString()
+  }
+
+  const arrIncludesSomeFilterFn: FilterFn<AdminNavItem> = (
+    row: Row<AdminNavItem>,
+    columnId: string,
+    filterValue: any
+  ): boolean => {
+    if (!filterValue || !Array.isArray(filterValue) || filterValue.length === 0) {
+      return true; 
+    }
+    const rowValue = row.getValue<string>(columnId);
+    if (typeof rowValue === 'string' && filterValue.every(item => typeof item === 'string')) {
+      return filterValue.includes(rowValue);
+    }
+    return false;
+  };
+
+  const navGroupColumn: ColumnDef<AdminNavItem> = {
+    accessorKey: 'navGroupId',
+    header: () => t('admin.navitem.table.navgroup', { defaultMessage: '所属导航组' }),
+    cell: ({ row }) => {
+      const navGroupIdValue = row.getValue<string>('navGroupId');
+      const navGroupName = navgroupMap.get(navGroupIdValue) || navGroupIdValue;
+      return <div className="truncate max-w-[120px]" title={navGroupName}>
+        {t(`navgroup.${navGroupName}`, { defaultMessage: navGroupName })}
+      </div>;
+    },
+    meta: { className: 'w-32' },
+    filterFn: arrIncludesSomeFilterFn,
+  };
+
+  const columns: ColumnDef<AdminNavItem>[] = [
+    {
+      id: 'select',
+      header: ({ table }) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && 'indeterminate')
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label={t('common.selectAll', { defaultMessage: '全选' })}
+          className='translate-y-[2px]'
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label={t('common.selectRow', { defaultMessage: '选择行' })}
+          className='translate-y-[2px]'
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+      meta: { className: 'w-10 sticky left-0 z-10 bg-background' },
+    },
+    {
+      accessorKey: 'id',
+      header: () => t('admin.navitem.table.id', { defaultMessage: 'ID' }),
+      cell: ({ row }) => <div className="truncate max-w-[120px]" title={row.getValue('id')}>{row.getValue('id')}</div>,
+      meta: { className: 'w-24' },
+    },
+    {
+      accessorKey: 'title',
+      header: () => t('admin.navitem.table.title', { defaultMessage: '标题' }),
+      cell: ({ row }) => {
+        const navItem = row.original as AdminNavItem;
+        const depth = navItem.depth ?? 0;
+        const canExpand = row.getCanExpand();
+        const titleValue = row.getValue<string>('title');
+        
+        return (
+          <div className="flex items-center">
+            {depth > 0 && (
+              <div style={{ width: `${depth * 20}px` }} className="shrink-0" />
+            )}
+            {canExpand && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-6 w-6 p-0 mr-1"
+                onClick={() => row.toggleExpanded()}
+                aria-label={row.getIsExpanded() ? t('common.collapse', {defaultMessage: '折叠'}) : t('common.expand', {defaultMessage: '展开'})}
+              >
+                {row.getIsExpanded() ? (
+                  <ChevronDown className="h-4 w-4" />
+                ) : (
+                  <ChevronRight className="h-4 w-4" />
+                )}
+              </Button>
+            )}
+            {navItem.icon && (
+              <span className="mr-2">{navItem.icon}</span>
+            )}
+            <span className="truncate" title={titleValue}>{titleValue}</span>
+          </div>
+        );
+      },
+      meta: { className: 'w-40' },
+    },
+    {
+      accessorKey: 'url',
+      header: () => t('admin.navitem.table.url', { defaultMessage: 'URL' }),
+      cell: ({ row }) => {
+        const urlValue = row.getValue<string | null>('url');
+        return <div title={urlValue ?? ''}>{urlValue ?? '-'}</div>;
+      },
+      meta: { className: 'w-40' },
+    },
+    ...(!currentNavGroupIdProp ? [navGroupColumn] : []),
+    {
+      accessorKey: 'icon',
+      header: () => t('admin.navitem.table.icon', { defaultMessage: '图标' }),
+      cell: ({ row }) => {
+        const iconValue = row.getValue<string | null>('icon');
+        return <div title={iconValue ?? ''}>{iconValue ?? '-'}</div>;
+      },
+      meta: { className: 'w-24' },
+    },
+    {
+      accessorKey: 'badge',
+      header: () => t('admin.navitem.table.badge', { defaultMessage: '标记' }),
+      cell: ({ row }) => {
+        const badgeValue = row.getValue<string | null>('badge');
+        const isVisible = !row.original.badge; 
+
+        if (badgeValue === '隐藏' || (row.original as any).isVisible === false) { 
+          return (
+            <Badge variant="outline" className="bg-red-50 text-red-700 border-red-300">
+              {t('admin.navitem.visibility.hidden', { defaultMessage: '隐藏' })}
+            </Badge>
+          )
+        }
+        
+        if (badgeValue) {
+          return (
+            <Badge className="bg-primary text-primary-foreground">
+              {badgeValue}
+            </Badge>
+          )
+        }
+        return (
+          <Badge variant="outline" className="bg-green-50 text-green-700 border-green-300">
+            {t('admin.navitem.visibility.visible', { defaultMessage: '可见' })}
+          </Badge>
+        )
+      },
+      meta: { className: 'w-20' },
+    },
+    {
+      accessorKey: 'orderIndex',
+      header: () => t('admin.navitem.table.orderIndex', { defaultMessage: '排序' }),
+      cell: ({ row }) => row.getValue('orderIndex'),
+      meta: { className: 'w-20' },
+    },
+    {
+      accessorKey: 'isCollapsible',
+      header: () => t('admin.navitem.table.type', { defaultMessage: '类型' }),
+      cell: ({ row }) => (
+        <Badge variant='outline' className={cn('capitalize', {
+          'bg-blue-50 text-blue-700 border-blue-300': row.getValue('isCollapsible'),
+          'bg-gray-50 text-gray-700 border-gray-300': !row.getValue('isCollapsible')
+        })}>
+          {row.getValue<boolean>('isCollapsible') 
+            ? t('admin.navitem.table.type.collapsible', { defaultMessage: '可折叠' }) 
+            : t('admin.navitem.table.type.link', { defaultMessage: '链接' })}
+        </Badge>
+      ),
+      meta: { className: 'w-20' },
+    },
+    {
+      id: 'children_count', 
+      header: () => t('admin.navitem.table.children', { defaultMessage: '子项数量' }),
+      cell: ({ row }) => {
+        const children = row.original.children ?? []
+        return children.length > 0 ? `${children.length} ${t('admin.navitem.table.childrenCountSuffix', { defaultMessage: '项' })}` : '-'
+      },
+      meta: { className: 'w-20 text-center' },
+    },
+    {
+      accessorKey: 'createdAt',
+      header: () => t('admin.navitem.table.createdAt', { defaultMessage: '创建时间' }),
+      cell: ({ row }) => formatDate(row.getValue('createdAt')),
+      meta: { className: 'w-32' },
+    },
+    {
+      id: 'actions',
+      header: () => t('common.actions', { defaultMessage: '操作' }),
+      cell: ({ row }) => <DataTableRowActions row={row} />,
+      meta: { className: 'w-20 text-right sticky right-0 z-10 bg-background' },
+    },
+  ]
+  return { columns }
+}

@@ -34,6 +34,7 @@ import { Route as AuthenticatedSettingsDisplayImport } from './routes/_authentic
 import { Route as AuthenticatedSettingsAppearanceImport } from './routes/_authenticated/settings/appearance'
 import { Route as AuthenticatedSettingsAccountImport } from './routes/_authenticated/settings/account'
 import { Route as AuthenticatedAdminVerificationImport } from './routes/_authenticated/admin/verification'
+import { Route as AuthenticatedAdminUsersImport } from './routes/_authenticated/admin/users'
 import { Route as AuthenticatedAdminUserrolenavgroupImport } from './routes/_authenticated/admin/userrolenavgroup'
 import { Route as AuthenticatedAdminUserImport } from './routes/_authenticated/admin/user'
 import { Route as AuthenticatedAdminSessionImport } from './routes/_authenticated/admin/session'
@@ -193,6 +194,12 @@ const AuthenticatedAdminVerificationRoute =
     path: '/admin/verification',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+
+const AuthenticatedAdminUsersRoute = AuthenticatedAdminUsersImport.update({
+  id: '/admin/users',
+  path: '/admin/users',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 
 const AuthenticatedAdminUserrolenavgroupRoute =
   AuthenticatedAdminUserrolenavgroupImport.update({
@@ -418,6 +425,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminUserrolenavgroupImport
       parentRoute: typeof AuthenticatedRouteImport
     }
+    '/_authenticated/admin/users': {
+      id: '/_authenticated/admin/users'
+      path: '/admin/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AuthenticatedAdminUsersImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
     '/_authenticated/admin/verification': {
       id: '/_authenticated/admin/verification'
       path: '/admin/verification'
@@ -536,6 +550,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminSessionRoute: typeof AuthenticatedAdminSessionRoute
   AuthenticatedAdminUserRoute: typeof AuthenticatedAdminUserRoute
   AuthenticatedAdminUserrolenavgroupRoute: typeof AuthenticatedAdminUserrolenavgroupRoute
+  AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
   AuthenticatedAdminVerificationRoute: typeof AuthenticatedAdminVerificationRoute
   AuthenticatedAppsIndexRoute: typeof AuthenticatedAppsIndexRoute
   AuthenticatedChatsIndexRoute: typeof AuthenticatedChatsIndexRoute
@@ -558,6 +573,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminUserRoute: AuthenticatedAdminUserRoute,
   AuthenticatedAdminUserrolenavgroupRoute:
     AuthenticatedAdminUserrolenavgroupRoute,
+  AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
   AuthenticatedAdminVerificationRoute: AuthenticatedAdminVerificationRoute,
   AuthenticatedAppsIndexRoute: AuthenticatedAppsIndexRoute,
   AuthenticatedChatsIndexRoute: AuthenticatedChatsIndexRoute,
@@ -592,6 +608,7 @@ export interface FileRoutesByFullPath {
   '/admin/session': typeof AuthenticatedAdminSessionRoute
   '/admin/user': typeof AuthenticatedAdminUserRoute
   '/admin/userrolenavgroup': typeof AuthenticatedAdminUserrolenavgroupRoute
+  '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/admin/verification': typeof AuthenticatedAdminVerificationRoute
   '/settings/account': typeof AuthenticatedSettingsAccountRoute
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
@@ -626,6 +643,7 @@ export interface FileRoutesByTo {
   '/admin/session': typeof AuthenticatedAdminSessionRoute
   '/admin/user': typeof AuthenticatedAdminUserRoute
   '/admin/userrolenavgroup': typeof AuthenticatedAdminUserrolenavgroupRoute
+  '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/admin/verification': typeof AuthenticatedAdminVerificationRoute
   '/settings/account': typeof AuthenticatedSettingsAccountRoute
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
@@ -663,6 +681,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/session': typeof AuthenticatedAdminSessionRoute
   '/_authenticated/admin/user': typeof AuthenticatedAdminUserRoute
   '/_authenticated/admin/userrolenavgroup': typeof AuthenticatedAdminUserrolenavgroupRoute
+  '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/admin/verification': typeof AuthenticatedAdminVerificationRoute
   '/_authenticated/settings/account': typeof AuthenticatedSettingsAccountRoute
   '/_authenticated/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
@@ -701,6 +720,7 @@ export interface FileRouteTypes {
     | '/admin/session'
     | '/admin/user'
     | '/admin/userrolenavgroup'
+    | '/admin/users'
     | '/admin/verification'
     | '/settings/account'
     | '/settings/appearance'
@@ -734,6 +754,7 @@ export interface FileRouteTypes {
     | '/admin/session'
     | '/admin/user'
     | '/admin/userrolenavgroup'
+    | '/admin/users'
     | '/admin/verification'
     | '/settings/account'
     | '/settings/appearance'
@@ -769,6 +790,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/session'
     | '/_authenticated/admin/user'
     | '/_authenticated/admin/userrolenavgroup'
+    | '/_authenticated/admin/users'
     | '/_authenticated/admin/verification'
     | '/_authenticated/settings/account'
     | '/_authenticated/settings/appearance'
@@ -846,6 +868,7 @@ export const routeTree = rootRoute
         "/_authenticated/admin/session",
         "/_authenticated/admin/user",
         "/_authenticated/admin/userrolenavgroup",
+        "/_authenticated/admin/users",
         "/_authenticated/admin/verification",
         "/_authenticated/apps/",
         "/_authenticated/chats/",
@@ -934,6 +957,10 @@ export const routeTree = rootRoute
     },
     "/_authenticated/admin/userrolenavgroup": {
       "filePath": "_authenticated/admin/userrolenavgroup.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/admin/users": {
+      "filePath": "_authenticated/admin/users.tsx",
       "parent": "/_authenticated"
     },
     "/_authenticated/admin/verification": {

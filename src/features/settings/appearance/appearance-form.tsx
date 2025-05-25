@@ -81,7 +81,10 @@ export function AppearanceForm() {
                 <ChevronDownIcon className='absolute top-2.5 right-3 h-4 w-4 opacity-50' />
               </div>
               <FormDescription className='font-hwmct'>
-                Set the font you want to use in the dashboard.
+                汇文明朝体：Set the font you want to use in the dashboard.
+              </FormDescription>
+              <FormDescription className='font-maple-mono-cn'>
+                MapleMono：Set the font you want to use in the dashboard.
               </FormDescription>
               <FormMessage />
             </FormItem>
