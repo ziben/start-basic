@@ -55,12 +55,12 @@ export default function AdminNavItemPage() {
           <div>
             <h2 className='text-2xl font-bold tracking-tight'>
               {navGroupId && navGroup 
-                ? t('admin.navitem.titleForGroup', { defaultMessage: '导航项管理: {title}', values: { title: navGroup.title } })
-                : t('admin.navitem.title', { defaultMessage: '导航项管理' })}
+                ? t('admin.navitem.titleForGroup', { title: t(navGroup.title) })
+                : t('admin.navitem.title')}
             </h2>
             <p className='text-muted-foreground'>
               {navGroupId
-                ? t('admin.navitem.descForGroup', { defaultMessage: '管理特定导航组下的导航项。' })
+                ? t('admin.navitem.descForGroup')
                 : t('admin.navitem.desc', { defaultMessage: '管理所有导航项数据。' })}
             </p>
           </div>

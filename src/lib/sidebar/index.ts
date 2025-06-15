@@ -4,12 +4,10 @@ import { createSidebarData } from '~/components/layout/data/sidebar-data'
 import { SidebarData } from '~/components/layout/types'
 import { useTranslation } from '~/hooks/useTranslation'
 import { getSidebarDataFn } from '../../routes/api/sidebar/routes'
+import { IconResolver } from '~/utils/icon-resolver'
 
 // 用于获取侧边栏数据的React Query键
 export const SIDEBAR_QUERY_KEY = ['sidebar']
-
-// 将数据库获取的图标名称转换为组件的函数类型
-export type IconResolver = (iconName: string | null | undefined) => React.ElementType | undefined
 
 /**
  * 处理侧边栏数据的React Hook，包括数据获取、翻译和处理

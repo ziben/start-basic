@@ -136,7 +136,7 @@ export default {
   'admin.common.resetFilters': '重置',
   'admin.common.rowsSelected': '行已选择',
   'admin.common.rowsPerPage': '每页行数',
-  'admin.common.pageCount': '第 {{current}} 页，共 {{total}} 页',
+  'admin.common.pageCount': '第 {current} 页，共 {total} 页',
   'admin.common.firstPage': '第一页',
   'admin.common.prevPage': '上一页',
   'admin.common.nextPage': '下一页',
@@ -300,4 +300,95 @@ export default {
   'admin.user.dialog.ban.reason': '封禁原因',
   'admin.user.dialog.ban.expires': '封禁到期时间',
   'admin.user.context.error': 'useAdminUser必须在AdminUserProvider中使用',
+
+  // 导航项图标相关
+  'admin.navitem.icon.notFound': '未找到图标',
+  'admin.navitem.icon.select': '选择图标',
+  'admin.navitem.icon.preview': '图标预览',
+  'admin.navitem.icon.tabler': 'Tabler图标',
+  'admin.navitem.icon.lucide': 'Lucide图标',
+  
+  // 导航项状态
+  'admin.navitem.status.active': '活跃',
+  'admin.navitem.status.inactive': '非活跃',
+  'admin.navitem.status.draft': '草稿',
+  
+  // 导航项操作提示
+  'admin.navitem.tips.dragToReorder': '拖动重新排序',
+  'admin.navitem.tips.clickToExpand': '点击展开',
+  'admin.navitem.tips.doubleClickToEdit': '双击编辑',
+  'admin.navitem.tips.iconNotFound': '图标未找到或不支持',
+  
+  // 导航项表单验证
+  'admin.navitem.validation.titleRequired': '标题为必填项',
+  'admin.navitem.validation.urlRequired': '链接项必须提供URL',
+  'admin.navitem.validation.urlFormat': 'URL格式不正确',
+  'admin.navitem.validation.orderIndexFormat': '排序必须是数字',
+  
+  // 导航项拖拽排序
+  'admin.navitem.dnd.moveUp': '上移',
+  'admin.navitem.dnd.moveDown': '下移',
+  'admin.navitem.dnd.reordering': '重新排序中...',
+  'admin.navitem.dnd.reorderSuccess': '排序更新成功',
+  'admin.navitem.dnd.reorderError': '排序更新失败',
+  
+  // 导航项按钮
+  'admin.navitem.buttons.create': '新建导航项',
+  'admin.navitem.buttons.createInGroup': '在此导航组中新建导航项',
+  'admin.navitem.buttons.save': '保存导航项',
+  'admin.navitem.buttons.cancel': '取消',
+  'admin.navitem.buttons.delete': '删除',
+  'admin.navitem.buttons.confirm': '确认',
+  
+  // 导航项表格列
+  'admin.navitem.table.name': '名称',
+  'admin.navitem.table.path': '路径',
+  'admin.navitem.table.order': '排序',
+  'admin.navitem.table.status': '状态',
+  'admin.navitem.table.external': '外部链接',
+  'admin.navitem.table.target': '打开方式',
+  'admin.navitem.table.description': '描述',
+  
+  // 导航项筛选
+  'admin.navitem.navgroupFilterTitle': '导航组',
+  'common.noResults': '无结果',
+  'common.loading': '加载中...',
+  'common.clearFilters': '清除筛选',
+  
+  // 导航项表单验证
+  'admin.navitem.validation.navGroupRequired': '必须选择导航组',
+  'admin.navitem.validation.minLength': '最小长度为{{min}}个字符',
+  'admin.navitem.validation.maxLength': '最大长度为{{max}}个字符',
+  'admin.navitem.validation.invalidIcon': '无效的图标名称',
+  
+  // 导航项图标选择器
+  'admin.navitem.iconSelector.title': '选择图标',
+  'admin.navitem.iconSelector.search': '搜索图标...',
+  'admin.navitem.iconSelector.noResults': '未找到图标',
+  'admin.navitem.iconSelector.categories': '图标分类',
+  'admin.navitem.iconSelector.preview': '预览',
+  'admin.navitem.iconSelector.selected': '已选择',
+  'admin.navitem.iconSelector.clear': '清除选择',
+  
+  // 导航项批量操作
+  'admin.navitem.bulkActions.title': '批量操作',
+  'admin.navitem.bulkActions.delete': '删除所选',
+  'admin.navitem.bulkActions.move': '移动到导航组',
+  'admin.navitem.bulkActions.hide': '隐藏所选',
+  'admin.navitem.bulkActions.show': '显示所选',
+  'admin.navitem.bulkActions.selected': '已选择{{count}}项',
+  'admin.navitem.bulkActions.confirm': '确认批量操作',
+  'admin.navitem.bulkActions.confirmDesc': '您确定要对所选项执行此操作吗？',
+  
+  // 导航项导入导出
+  'admin.navitem.import.title': '导入导航项',
+  'admin.navitem.import.desc': '上传JSON文件导入导航项',
+  'admin.navitem.import.button': '选择文件',
+  'admin.navitem.import.success': '导入成功',
+  'admin.navitem.import.error': '导入失败',
+  'admin.navitem.export.title': '导出导航项',
+  'admin.navitem.export.desc': '导出所有导航项为JSON文件',
+  'admin.navitem.export.button': '导出',
+  'admin.navitem.export.success': '导出成功',
+  'admin.navitem.export.error': '导出失败',
 }

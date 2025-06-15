@@ -55,7 +55,6 @@ export function DataTablePagination<TData>({
         </div>
         <div className="flex w-[100px] items-center justify-center text-sm font-medium">
           {t('admin.common.pageCount', { 
-            defaultMessage: "第 {{current}} 页，共 {{total}} 页",
             current: table.getState().pagination.pageIndex + 1,
             total: table.getPageCount()
           })}

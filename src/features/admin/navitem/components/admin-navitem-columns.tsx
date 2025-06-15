@@ -9,6 +9,7 @@ import { DataTableRowActions } from './admin-navitem-row-actions'
 import { ChevronDown, ChevronRight } from 'lucide-react'
 import { useNavgroups } from '~/hooks/useNavgroupApi'; 
 import React from 'react'; 
+import { iconResolver } from '~/utils/icon-resolver'
 
 interface UseAdminNavItemColumnsProps {
   navGroupId?: string;
@@ -48,9 +49,9 @@ export function useAdminNavItemColumns({ navGroupId: currentNavGroupIdProp }: Us
     header: () => t('admin.navitem.table.navgroup', { defaultMessage: '所属导航组' }),
     cell: ({ row }) => {
       const navGroupIdValue = row.getValue<string>('navGroupId');
-      const navGroupName = navgroupMap.get(navGroupIdValue) || navGroupIdValue;
+      const navGroupName = navgroupMap.get(navGroupIdValue) ?? navGroupIdValue;
       return <div className="truncate max-w-[120px]" title={navGroupName}>
-        {t(`navgroup.${navGroupName}`, { defaultMessage: navGroupName })}
+        {t(`${navGroupName}`, { defaultMessage: navGroupName })}
       </div>;
     },
     meta: { className: 'w-32' },
@@ -96,7 +97,7 @@ export function useAdminNavItemColumns({ navGroupId: currentNavGroupIdProp }: Us
         const navItem = row.original as AdminNavItem;
         const depth = navItem.depth ?? 0;
         const canExpand = row.getCanExpand();
-        const titleValue = row.getValue<string>('title');
+        const titleValue = t(row.getValue<string>('title'));
         
         return (
           <div className="flex items-center">
@@ -119,7 +120,12 @@ export function useAdminNavItemColumns({ navGroupId: currentNavGroupIdProp }: Us
               </Button>
             )}
             {navItem.icon && (
-              <span className="mr-2">{navItem.icon}</span>
+              <span className="mr-2">
+                {(() => {
+                  const IconComponent = iconResolver(navItem.icon);
+                  return IconComponent ? <IconComponent className="h-4 w-4" /> : null;
+                })()}
+              </span>
             )}
             <span className="truncate" title={titleValue}>{titleValue}</span>
           </div>

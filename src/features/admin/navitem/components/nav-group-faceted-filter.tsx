@@ -43,7 +43,7 @@ export function NavGroupFacetedFilter<TData, TValue>({
 
   const options: IFacetOption[] = React.useMemo(() => {
     return navgroups.map((group: NavGroup) => ({ 
-      label: group.title,
+      label: t(`${group.title}`),
       value: group.id,
     }))
   }, [navgroups])
