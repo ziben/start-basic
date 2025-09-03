@@ -2,11 +2,11 @@ import { useNavigate, useRouter } from '@tanstack/react-router'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 
-interface GeneralErrorProps extends React.HTMLAttributes<HTMLDivElement> {
+type GeneralErrorProps = React.HTMLAttributes<HTMLDivElement> & {
   minimal?: boolean
 }
 
-export default function GeneralError({
+export function GeneralError({
   className,
   minimal = false,
 }: GeneralErrorProps) {

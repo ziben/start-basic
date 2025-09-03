@@ -1,14 +1,12 @@
-import Cookies from 'js-cookie'
-import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
-import { cn } from '@/lib/utils'
-import { SearchProvider } from '@/context/search-context'
-import { SidebarProvider } from '@/components/ui/sidebar'
 import { AppSidebar } from '@/components/layout/app-sidebar'
+import { AuthenticatedLayout } from '@/components/layout/authenticated-layout'
 import SkipToMain from '@/components/skip-to-main'
-import SignIn from '@/features/auth/sign-in'
+import { SidebarProvider } from '@/components/ui/sidebar'
+import { SearchProvider } from '@/context/search-context'
 import { useAuth } from '@/hooks/useAuth'
-import { authMiddleware } from '@/global-middleware'
-import { authClient } from '@/lib/auth-client'
+import { cn } from '@/lib/utils'
+import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
+import Cookies from 'js-cookie'
 
 export const Route = createFileRoute('/_authenticated')({
   beforeLoad: async ({ context }) => {
@@ -16,7 +14,7 @@ export const Route = createFileRoute('/_authenticated')({
       throw redirect({ to: "/sign-in" });
     }
   },
-  component: RouteComponent,
+  component: AuthenticatedLayout,
 })
 
 function RouteComponent() {

@@ -1,18 +1,21 @@
-import { QueryClient } from '@tanstack/react-query'
+import { GeneralError } from '@/features/errors/general-error'
+import { NotFoundError } from '@/features/errors/not-found-error'
+import { type QueryClient } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { HeadContent, Link, Outlet, Scripts, createRootRouteWithContext } from '@tanstack/react-router'
+import { HeadContent, Outlet, Scripts, createRootRouteWithContext } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
+import { createServerFn } from "@tanstack/react-start"
+import { getWebRequest } from "@tanstack/react-start/server"
 import * as React from 'react'
-import { DefaultCatchBoundary } from '~/components/DefaultCatchBoundary'
 import { NavigationProgress } from '~/components/navigation-progress'
-import { NotFound } from '~/components/NotFound'
 import { Toaster } from '~/components/ui/sonner'
-import { authClient } from '~/lib/auth-client'
-import appCss from '~/styles/app.css?url'
-import { seo } from '~/utils/seo'
-import { createServerFn } from "@tanstack/react-start";
-import { getWebRequest } from "@tanstack/react-start/server";
+import { AuthProvider } from '~/context/auth-context'
+import { FontProvider } from '~/context/font-context'
+import { LocaleProvider } from '~/context/locale-context'
+import { ThemeProvider } from '~/context/theme-context'
 import { auth } from '~/lib/auth'
+import appCss from '~/styles/index.css?url'
+import { seo } from '~/utils/seo'
 
 const getUser = createServerFn({ method: "GET" }).handler(async () => {
   const { headers } = getWebRequest()!;
@@ -69,30 +72,34 @@ export const Route = createRootRouteWithContext<{
       { rel: 'icon', href: '/favicon.ico' },
     ],
   }),
-  errorComponent: (props) => {
-    return (
-      <RootDocument>
-        <DefaultCatchBoundary {...props} />
-      </RootDocument>
-    )
-  },
-  notFoundComponent: () => <NotFound />,
+  notFoundComponent: NotFoundError,
+  errorComponent: GeneralError,
   component: RootComponent,
 })
 
 function RootComponent() {
   return (
-    <RootDocument>
-      <NavigationProgress />
-      <Outlet />
-      <Toaster duration={50000} />
-      {import.meta.env.MODE === 'development' && (
-        <>
-          <ReactQueryDevtools buttonPosition='bottom-left' />
-          <TanStackRouterDevtools position='bottom-right' />
-        </>
-      )}
-    </RootDocument>
+    <React.StrictMode>
+      <ThemeProvider defaultTheme='light' storageKey='vite-ui-theme'>
+        <FontProvider>
+          <LocaleProvider>
+            <AuthProvider>
+              <RootDocument>
+                <NavigationProgress />
+                <Outlet />
+                <Toaster duration={5000} />
+                {import.meta.env.MODE === 'development' && (
+                  <>
+                    <ReactQueryDevtools buttonPosition='bottom-left' />
+                    <TanStackRouterDevtools position='bottom-right' />
+                  </>
+                )}
+              </RootDocument>
+            </AuthProvider>
+          </LocaleProvider>
+        </FontProvider>
+      </ThemeProvider>
+    </React.StrictMode>
   )
 }
 

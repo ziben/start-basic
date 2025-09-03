@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { createSidebarData } from '~/components/layout/data/sidebar-data'
 import { SidebarData } from '~/components/layout/types'
 import { useTranslation } from '~/hooks/useTranslation'
-import { getSidebarDataFn } from '../../routes/api/sidebar/routes'
+import { getSidebarDataFn } from '~/components/layout/app-sidebar'
 import { IconResolver } from '~/utils/icon-resolver'
 
 // 用于获取侧边栏数据的React Query键

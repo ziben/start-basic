@@ -1,10 +1,5 @@
-import {
-  IconCash,
-  IconShield,
-  IconUsersGroup,
-  IconUserShield,
-} from '@tabler/icons-react'
-import { UserStatus } from './schema'
+import { Shield, UserCheck, Users, CreditCard } from 'lucide-react'
+import { type UserStatus } from './schema'
 
 export const callTypes = new Map<UserStatus, string>([
   ['active', 'bg-teal-100/30 text-teal-900 dark:text-teal-200 border-teal-200'],
@@ -16,25 +11,25 @@ export const callTypes = new Map<UserStatus, string>([
   ],
 ])
 
-export const userTypes = [
+export const roles = [
   {
     label: 'Superadmin',
     value: 'superadmin',
-    icon: IconShield,
+    icon: Shield,
   },
   {
     label: 'Admin',
     value: 'admin',
-    icon: IconUserShield,
+    icon: UserCheck,
   },
   {
     label: 'Manager',
     value: 'manager',
-    icon: IconUsersGroup,
+    icon: Users,
   },
   {
     label: 'Cashier',
     value: 'cashier',
-    icon: IconCash,
+    icon: CreditCard,
   },
 ] as const

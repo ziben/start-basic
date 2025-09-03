@@ -1,10 +1,10 @@
-import { createAPIFileRoute } from '@tanstack/react-start/api'
+import { createServerFileRoute } from '@tanstack/react-start/server'
 import { z } from 'zod'
-import { toggleNavItemVisibility } from './controller'
-import { withAdminAuth } from '../middleware'
+import { toggleNavItemVisibility } from './index'
+import { withAdminAuth } from '../../../../middleware'
 
 // 导航项可见性API路由
-export const APIRoute = createAPIFileRoute('/api/admin/navitem/visibility')({
+export const ServerRoute = createServerFileRoute('/api/admin/navitem/visibility').methods({
   // 更新导航项可见性
   PUT: withAdminAuth(async ({ request }) => {
     try {

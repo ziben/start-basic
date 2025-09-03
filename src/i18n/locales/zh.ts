@@ -125,10 +125,11 @@ export default {
     Organization: '组织',
     Member: '成员',
     Invitation: '邀请',
-    NavGroup: '导航分组',
+    NavGroup: '导航组',
     NavItem: '导航项',
-    RoleNavGroup: '角色导航分组',
-    UserRoleNavGroup: '用户导航分组',
+    RoleNavGroup: '角色导航组',
+    UserRoleNavGroup: '用户导航组',
+    questions: '试题'
   },
   // 管理员通用
   'admin.common.viewOptions': '列显示',

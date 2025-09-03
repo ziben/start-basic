@@ -1,14 +1,14 @@
-import { createAPIFileRoute } from '@tanstack/react-start/api'
+import { createServerFileRoute } from '@tanstack/react-start/server'
 import { z } from 'zod'
 import {
   getNavItemById,
   updateNavItem,
   deleteNavItem
-} from './controller'
-import { withAdminAuth } from '../middleware'
+} from './index'
+import { withAdminAuth } from '../../../../middleware'
 
 // 创建单个导航项API路由
-export const APIRoute = createAPIFileRoute('/api/admin/navitem/$id')({
+export const ServerRoute = createServerFileRoute('/api/admin/navitem/$id').methods({
   // 获取单个导航项
   GET: withAdminAuth(async ({ params }) => {
     const { id } = params

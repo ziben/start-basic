@@ -1,7 +1,7 @@
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { showSubmittedData } from '@/utils/show-submitted-data'
+import { showSubmittedData } from '@/lib/show-submitted-data'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -34,12 +34,15 @@ const formSchema = z.object({
     ),
 })
 
-interface Props {
+type TaskImportDialogProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
 }
 
-export function TasksImportDialog({ open, onOpenChange }: Props) {
+export function TasksImportDialog({
+  open,
+  onOpenChange,
+}: TaskImportDialogProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: { file: undefined },
@@ -70,7 +73,7 @@ export function TasksImportDialog({ open, onOpenChange }: Props) {
       }}
     >
       <DialogContent className='gap-2 sm:max-w-sm'>
-        <DialogHeader className='text-left'>
+        <DialogHeader className='text-start'>
           <DialogTitle>Import Tasks</DialogTitle>
           <DialogDescription>
             Import tasks quickly from a CSV file.
@@ -82,10 +85,10 @@ export function TasksImportDialog({ open, onOpenChange }: Props) {
               control={form.control}
               name='file'
               render={() => (
-                <FormItem className='mb-2 space-y-1'>
+                <FormItem className='my-2'>
                   <FormLabel>File</FormLabel>
                   <FormControl>
-                    <Input type='file' {...fileRef} className='h-8' />
+                    <Input type='file' {...fileRef} className='h-8 py-0' />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

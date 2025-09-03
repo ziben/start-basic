@@ -1,5 +1,6 @@
 import { PasswordInput } from '@/components/password-input'
 import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 import {
   Form,
   FormControl,
@@ -9,39 +10,39 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Checkbox } from '@/components/ui/checkbox'
 import { authClient } from "@/lib/auth-client"
 import { cn } from '@/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Link, useNavigate, useRouter } from '@tanstack/react-router'
-import { HTMLAttributes, useState } from 'react'
+import { Link, useNavigate } from '@tanstack/react-router'
+import { Loader2, LogIn } from 'lucide-react'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
 import { Route } from '~/routes/(auth)/sign-in'
 
-type UserAuthFormProps = HTMLAttributes<HTMLFormElement>
-
 const formSchema = z.object({
-  email: z
-    .string()
-    .min(1, { message: '请输入您的邮箱' })
-    .email({ message: '邮箱地址无效' }),
-  password: z
-    .string()
-    .min(1, {
-      message: '请输入您的密码',
-    })
-    .min(7, {
-      message: '密码长度必须至少为7个字符',
-    }),
-  rememberMe: z.boolean().default(false),
+  email: z.email({
+    error: (iss) => (iss.input === '' ? '请输入您的邮箱' : undefined),
+  }),
+  password: z.string()
+    .min(1, 'Please enter your password')
+    .min(7, 'Password must be at least 7 characters long'),
 })
 
-export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
+interface UserAuthFormProps extends React.HTMLAttributes<HTMLFormElement> {
+  redirectTo?: string
+}
+
+export function UserAuthForm({
+  className,
+  redirectTo,
+  ...props
+}: UserAuthFormProps) {
   const [isLoading, setIsLoading] = useState(false)
+  const navigate = useNavigate()
+  // const { auth } = useAuthStore()
   const { queryClient } = Route.useRouteContext();
-  const navigate = useNavigate();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -143,6 +144,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
           )}
         />
         <Button className='mt-2' disabled={isLoading}>
+          {isLoading ? <Loader2 className='animate-spin' /> : <LogIn />}
           登录
         </Button>
       </form>

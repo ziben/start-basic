@@ -8,266 +8,665 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-// Import Routes
+import { createServerRootRoute } from '@tanstack/react-start/server'
 
-import { Route as rootRoute } from './routes/__root'
-import { Route as AuthenticatedRouteImport } from './routes/_authenticated/route'
-import { Route as AuthenticatedIndexImport } from './routes/_authenticated/index'
-import { Route as errors503Import } from './routes/(errors)/503'
-import { Route as errors500Import } from './routes/(errors)/500'
-import { Route as errors404Import } from './routes/(errors)/404'
-import { Route as errors403Import } from './routes/(errors)/403'
-import { Route as errors401Import } from './routes/(errors)/401'
-import { Route as authSignUpImport } from './routes/(auth)/sign-up'
-import { Route as authSignIn2Import } from './routes/(auth)/sign-in-2'
-import { Route as authSignInImport } from './routes/(auth)/sign-in'
-import { Route as authForgotPasswordImport } from './routes/(auth)/forgot-password'
-import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings/route'
-import { Route as AuthenticatedUsersIndexImport } from './routes/_authenticated/users/index'
-import { Route as AuthenticatedTasksIndexImport } from './routes/_authenticated/tasks/index'
-import { Route as AuthenticatedSettingsIndexImport } from './routes/_authenticated/settings/index'
-import { Route as AuthenticatedHelpCenterIndexImport } from './routes/_authenticated/help-center/index'
-import { Route as AuthenticatedChatsIndexImport } from './routes/_authenticated/chats/index'
-import { Route as AuthenticatedAppsIndexImport } from './routes/_authenticated/apps/index'
-import { Route as AuthenticatedSettingsNotificationsImport } from './routes/_authenticated/settings/notifications'
-import { Route as AuthenticatedSettingsDisplayImport } from './routes/_authenticated/settings/display'
-import { Route as AuthenticatedSettingsAppearanceImport } from './routes/_authenticated/settings/appearance'
-import { Route as AuthenticatedSettingsAccountImport } from './routes/_authenticated/settings/account'
-import { Route as AuthenticatedAdminVerificationImport } from './routes/_authenticated/admin/verification'
-import { Route as AuthenticatedAdminUsersImport } from './routes/_authenticated/admin/users'
-import { Route as AuthenticatedAdminUserrolenavgroupImport } from './routes/_authenticated/admin/userrolenavgroup'
-import { Route as AuthenticatedAdminUserImport } from './routes/_authenticated/admin/user'
-import { Route as AuthenticatedAdminSessionImport } from './routes/_authenticated/admin/session'
-import { Route as AuthenticatedAdminRolenavgroupImport } from './routes/_authenticated/admin/rolenavgroup'
-import { Route as AuthenticatedAdminOrganizationImport } from './routes/_authenticated/admin/organization'
-import { Route as AuthenticatedAdminNavitemImport } from './routes/_authenticated/admin/navitem'
-import { Route as AuthenticatedAdminNavgroupImport } from './routes/_authenticated/admin/navgroup'
-import { Route as AuthenticatedAdminMemberImport } from './routes/_authenticated/admin/member'
-import { Route as AuthenticatedAdminInvitationImport } from './routes/_authenticated/admin/invitation'
-import { Route as AuthenticatedAdminAccountImport } from './routes/_authenticated/admin/account'
+import { Route as rootRouteImport } from './routes/__root'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
+import { Route as errors503RouteImport } from './routes/(errors)/503'
+import { Route as errors500RouteImport } from './routes/(errors)/500'
+import { Route as errors404RouteImport } from './routes/(errors)/404'
+import { Route as errors403RouteImport } from './routes/(errors)/403'
+import { Route as errors401RouteImport } from './routes/(errors)/401'
+import { Route as authSignUpRouteImport } from './routes/(auth)/sign-up'
+import { Route as authSignIn2RouteImport } from './routes/(auth)/sign-in-2'
+import { Route as authSignInRouteImport } from './routes/(auth)/sign-in'
+import { Route as authForgotPasswordRouteImport } from './routes/(auth)/forgot-password'
+import { Route as AuthenticatedSettingsRouteRouteImport } from './routes/_authenticated/settings/route'
+import { Route as AuthenticatedUsersIndexRouteImport } from './routes/_authenticated/users/index'
+import { Route as AuthenticatedTasksIndexRouteImport } from './routes/_authenticated/tasks/index'
+import { Route as AuthenticatedSettingsIndexRouteImport } from './routes/_authenticated/settings/index'
+import { Route as AuthenticatedSessionsIndexRouteImport } from './routes/_authenticated/sessions/index'
+import { Route as AuthenticatedHelpCenterIndexRouteImport } from './routes/_authenticated/help-center/index'
+import { Route as AuthenticatedChatsIndexRouteImport } from './routes/_authenticated/chats/index'
+import { Route as AuthenticatedAppsIndexRouteImport } from './routes/_authenticated/apps/index'
+import { Route as AuthenticatedSettingsNotificationsRouteImport } from './routes/_authenticated/settings/notifications'
+import { Route as AuthenticatedSettingsDisplayRouteImport } from './routes/_authenticated/settings/display'
+import { Route as AuthenticatedSettingsAppearanceRouteImport } from './routes/_authenticated/settings/appearance'
+import { Route as AuthenticatedSettingsAccountRouteImport } from './routes/_authenticated/settings/account'
+import { Route as AuthenticatedAdminVerificationRouteImport } from './routes/_authenticated/admin/verification'
+import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin/users'
+import { Route as AuthenticatedAdminUserrolenavgroupRouteImport } from './routes/_authenticated/admin/userrolenavgroup'
+import { Route as AuthenticatedAdminUserRouteImport } from './routes/_authenticated/admin/user'
+import { Route as AuthenticatedAdminSessionRouteImport } from './routes/_authenticated/admin/session'
+import { Route as AuthenticatedAdminRolenavgroupRouteImport } from './routes/_authenticated/admin/rolenavgroup'
+import { Route as AuthenticatedAdminOrganizationRouteImport } from './routes/_authenticated/admin/organization'
+import { Route as AuthenticatedAdminNavitemRouteImport } from './routes/_authenticated/admin/navitem'
+import { Route as AuthenticatedAdminNavgroupRouteImport } from './routes/_authenticated/admin/navgroup'
+import { Route as AuthenticatedAdminMemberRouteImport } from './routes/_authenticated/admin/member'
+import { Route as AuthenticatedAdminInvitationRouteImport } from './routes/_authenticated/admin/invitation'
+import { Route as AuthenticatedAdminAccountRouteImport } from './routes/_authenticated/admin/account'
+import { ServerRoute as ApiUsersServerRouteImport } from './routes/api/users'
+import { ServerRoute as ApiSessionsServerRouteImport } from './routes/api/sessions'
+import { ServerRoute as ApiUsersIdServerRouteImport } from './routes/api/users.$id'
+import { ServerRoute as ApiAuthSplatServerRouteImport } from './routes/api/auth/$'
+import { ServerRoute as ApiAdminUserIndexServerRouteImport } from './routes/api/admin/user/index'
+import { ServerRoute as ApiAdminNavitemIndexServerRouteImport } from './routes/api/admin/navitem/index'
+import { ServerRoute as ApiAdminNavgroupIndexServerRouteImport } from './routes/api/admin/navgroup/index'
+import { ServerRoute as ApiAdminNavitemVisibilityServerRouteImport } from './routes/api/admin/navitem/visibility'
+import { ServerRoute as ApiAdminNavitemOrderServerRouteImport } from './routes/api/admin/navitem/order'
+import { ServerRoute as ApiAdminNavitemIdServerRouteImport } from './routes/api/admin/navitem/$id'
+import { ServerRoute as ApiAdminNavgroupVisibilityServerRouteImport } from './routes/api/admin/navgroup/visibility'
+import { ServerRoute as ApiAdminNavgroupOrderServerRouteImport } from './routes/api/admin/navgroup/order'
+import { ServerRoute as ApiAdminNavgroupIdServerRouteImport } from './routes/api/admin/navgroup/$id'
 
-// Create/Update Routes
+const rootServerRouteImport = createServerRootRoute()
 
-const AuthenticatedRouteRoute = AuthenticatedRouteImport.update({
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const AuthenticatedIndexRoute = AuthenticatedIndexImport.update({
+const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-
-const errors503Route = errors503Import.update({
+const errors503Route = errors503RouteImport.update({
   id: '/(errors)/503',
   path: '/503',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const errors500Route = errors500Import.update({
+const errors500Route = errors500RouteImport.update({
   id: '/(errors)/500',
   path: '/500',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const errors404Route = errors404Import.update({
+const errors404Route = errors404RouteImport.update({
   id: '/(errors)/404',
   path: '/404',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const errors403Route = errors403Import.update({
+const errors403Route = errors403RouteImport.update({
   id: '/(errors)/403',
   path: '/403',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const errors401Route = errors401Import.update({
+const errors401Route = errors401RouteImport.update({
   id: '/(errors)/401',
   path: '/401',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const authSignUpRoute = authSignUpImport.update({
+const authSignUpRoute = authSignUpRouteImport.update({
   id: '/(auth)/sign-up',
   path: '/sign-up',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const authSignIn2Route = authSignIn2Import.update({
+const authSignIn2Route = authSignIn2RouteImport.update({
   id: '/(auth)/sign-in-2',
   path: '/sign-in-2',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const authSignInRoute = authSignInImport.update({
+const authSignInRoute = authSignInRouteImport.update({
   id: '/(auth)/sign-in',
   path: '/sign-in',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const authForgotPasswordRoute = authForgotPasswordImport.update({
+const authForgotPasswordRoute = authForgotPasswordRouteImport.update({
   id: '/(auth)/forgot-password',
   path: '/forgot-password',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const AuthenticatedSettingsRouteRoute = AuthenticatedSettingsRouteImport.update(
-  {
+const AuthenticatedSettingsRouteRoute =
+  AuthenticatedSettingsRouteRouteImport.update({
     id: '/settings',
     path: '/settings',
     getParentRoute: () => AuthenticatedRouteRoute,
-  } as any,
-)
-
-const AuthenticatedUsersIndexRoute = AuthenticatedUsersIndexImport.update({
+  } as any)
+const AuthenticatedUsersIndexRoute = AuthenticatedUsersIndexRouteImport.update({
   id: '/users/',
   path: '/users/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-
-const AuthenticatedTasksIndexRoute = AuthenticatedTasksIndexImport.update({
+const AuthenticatedTasksIndexRoute = AuthenticatedTasksIndexRouteImport.update({
   id: '/tasks/',
   path: '/tasks/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-
-const AuthenticatedSettingsIndexRoute = AuthenticatedSettingsIndexImport.update(
-  {
+const AuthenticatedSettingsIndexRoute =
+  AuthenticatedSettingsIndexRouteImport.update({
     id: '/',
     path: '/',
     getParentRoute: () => AuthenticatedSettingsRouteRoute,
-  } as any,
-)
-
+  } as any)
+const AuthenticatedSessionsIndexRoute =
+  AuthenticatedSessionsIndexRouteImport.update({
+    id: '/sessions/',
+    path: '/sessions/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedHelpCenterIndexRoute =
-  AuthenticatedHelpCenterIndexImport.update({
+  AuthenticatedHelpCenterIndexRouteImport.update({
     id: '/help-center/',
     path: '/help-center/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-
-const AuthenticatedChatsIndexRoute = AuthenticatedChatsIndexImport.update({
+const AuthenticatedChatsIndexRoute = AuthenticatedChatsIndexRouteImport.update({
   id: '/chats/',
   path: '/chats/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-
-const AuthenticatedAppsIndexRoute = AuthenticatedAppsIndexImport.update({
+const AuthenticatedAppsIndexRoute = AuthenticatedAppsIndexRouteImport.update({
   id: '/apps/',
   path: '/apps/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-
 const AuthenticatedSettingsNotificationsRoute =
-  AuthenticatedSettingsNotificationsImport.update({
+  AuthenticatedSettingsNotificationsRouteImport.update({
     id: '/notifications',
     path: '/notifications',
     getParentRoute: () => AuthenticatedSettingsRouteRoute,
   } as any)
-
 const AuthenticatedSettingsDisplayRoute =
-  AuthenticatedSettingsDisplayImport.update({
+  AuthenticatedSettingsDisplayRouteImport.update({
     id: '/display',
     path: '/display',
     getParentRoute: () => AuthenticatedSettingsRouteRoute,
   } as any)
-
 const AuthenticatedSettingsAppearanceRoute =
-  AuthenticatedSettingsAppearanceImport.update({
+  AuthenticatedSettingsAppearanceRouteImport.update({
     id: '/appearance',
     path: '/appearance',
     getParentRoute: () => AuthenticatedSettingsRouteRoute,
   } as any)
-
 const AuthenticatedSettingsAccountRoute =
-  AuthenticatedSettingsAccountImport.update({
+  AuthenticatedSettingsAccountRouteImport.update({
     id: '/account',
     path: '/account',
     getParentRoute: () => AuthenticatedSettingsRouteRoute,
   } as any)
-
 const AuthenticatedAdminVerificationRoute =
-  AuthenticatedAdminVerificationImport.update({
+  AuthenticatedAdminVerificationRouteImport.update({
     id: '/admin/verification',
     path: '/admin/verification',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-
-const AuthenticatedAdminUsersRoute = AuthenticatedAdminUsersImport.update({
+const AuthenticatedAdminUsersRoute = AuthenticatedAdminUsersRouteImport.update({
   id: '/admin/users',
   path: '/admin/users',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-
 const AuthenticatedAdminUserrolenavgroupRoute =
-  AuthenticatedAdminUserrolenavgroupImport.update({
+  AuthenticatedAdminUserrolenavgroupRouteImport.update({
     id: '/admin/userrolenavgroup',
     path: '/admin/userrolenavgroup',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-
-const AuthenticatedAdminUserRoute = AuthenticatedAdminUserImport.update({
+const AuthenticatedAdminUserRoute = AuthenticatedAdminUserRouteImport.update({
   id: '/admin/user',
   path: '/admin/user',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-
-const AuthenticatedAdminSessionRoute = AuthenticatedAdminSessionImport.update({
-  id: '/admin/session',
-  path: '/admin/session',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-
+const AuthenticatedAdminSessionRoute =
+  AuthenticatedAdminSessionRouteImport.update({
+    id: '/admin/session',
+    path: '/admin/session',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminRolenavgroupRoute =
-  AuthenticatedAdminRolenavgroupImport.update({
+  AuthenticatedAdminRolenavgroupRouteImport.update({
     id: '/admin/rolenavgroup',
     path: '/admin/rolenavgroup',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-
 const AuthenticatedAdminOrganizationRoute =
-  AuthenticatedAdminOrganizationImport.update({
+  AuthenticatedAdminOrganizationRouteImport.update({
     id: '/admin/organization',
     path: '/admin/organization',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-
-const AuthenticatedAdminNavitemRoute = AuthenticatedAdminNavitemImport.update({
-  id: '/admin/navitem',
-  path: '/admin/navitem',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-
-const AuthenticatedAdminNavgroupRoute = AuthenticatedAdminNavgroupImport.update(
-  {
+const AuthenticatedAdminNavitemRoute =
+  AuthenticatedAdminNavitemRouteImport.update({
+    id: '/admin/navitem',
+    path: '/admin/navitem',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminNavgroupRoute =
+  AuthenticatedAdminNavgroupRouteImport.update({
     id: '/admin/navgroup',
     path: '/admin/navgroup',
     getParentRoute: () => AuthenticatedRouteRoute,
-  } as any,
-)
-
-const AuthenticatedAdminMemberRoute = AuthenticatedAdminMemberImport.update({
-  id: '/admin/member',
-  path: '/admin/member',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-
+  } as any)
+const AuthenticatedAdminMemberRoute =
+  AuthenticatedAdminMemberRouteImport.update({
+    id: '/admin/member',
+    path: '/admin/member',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminInvitationRoute =
-  AuthenticatedAdminInvitationImport.update({
+  AuthenticatedAdminInvitationRouteImport.update({
     id: '/admin/invitation',
     path: '/admin/invitation',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-
-const AuthenticatedAdminAccountRoute = AuthenticatedAdminAccountImport.update({
-  id: '/admin/account',
-  path: '/admin/account',
-  getParentRoute: () => AuthenticatedRouteRoute,
+const AuthenticatedAdminAccountRoute =
+  AuthenticatedAdminAccountRouteImport.update({
+    id: '/admin/account',
+    path: '/admin/account',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const ApiUsersServerRoute = ApiUsersServerRouteImport.update({
+  id: '/api/users',
+  path: '/api/users',
+  getParentRoute: () => rootServerRouteImport,
 } as any)
+const ApiSessionsServerRoute = ApiSessionsServerRouteImport.update({
+  id: '/api/sessions',
+  path: '/api/sessions',
+  getParentRoute: () => rootServerRouteImport,
+} as any)
+const ApiUsersIdServerRoute = ApiUsersIdServerRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => ApiUsersServerRoute,
+} as any)
+const ApiAuthSplatServerRoute = ApiAuthSplatServerRouteImport.update({
+  id: '/api/auth/$',
+  path: '/api/auth/$',
+  getParentRoute: () => rootServerRouteImport,
+} as any)
+const ApiAdminUserIndexServerRoute = ApiAdminUserIndexServerRouteImport.update({
+  id: '/api/admin/user/',
+  path: '/api/admin/user/',
+  getParentRoute: () => rootServerRouteImport,
+} as any)
+const ApiAdminNavitemIndexServerRoute =
+  ApiAdminNavitemIndexServerRouteImport.update({
+    id: '/api/admin/navitem/',
+    path: '/api/admin/navitem/',
+    getParentRoute: () => rootServerRouteImport,
+  } as any)
+const ApiAdminNavgroupIndexServerRoute =
+  ApiAdminNavgroupIndexServerRouteImport.update({
+    id: '/api/admin/navgroup/',
+    path: '/api/admin/navgroup/',
+    getParentRoute: () => rootServerRouteImport,
+  } as any)
+const ApiAdminNavitemVisibilityServerRoute =
+  ApiAdminNavitemVisibilityServerRouteImport.update({
+    id: '/api/admin/navitem/visibility',
+    path: '/api/admin/navitem/visibility',
+    getParentRoute: () => rootServerRouteImport,
+  } as any)
+const ApiAdminNavitemOrderServerRoute =
+  ApiAdminNavitemOrderServerRouteImport.update({
+    id: '/api/admin/navitem/order',
+    path: '/api/admin/navitem/order',
+    getParentRoute: () => rootServerRouteImport,
+  } as any)
+const ApiAdminNavitemIdServerRoute = ApiAdminNavitemIdServerRouteImport.update({
+  id: '/api/admin/navitem/$id',
+  path: '/api/admin/navitem/$id',
+  getParentRoute: () => rootServerRouteImport,
+} as any)
+const ApiAdminNavgroupVisibilityServerRoute =
+  ApiAdminNavgroupVisibilityServerRouteImport.update({
+    id: '/api/admin/navgroup/visibility',
+    path: '/api/admin/navgroup/visibility',
+    getParentRoute: () => rootServerRouteImport,
+  } as any)
+const ApiAdminNavgroupOrderServerRoute =
+  ApiAdminNavgroupOrderServerRouteImport.update({
+    id: '/api/admin/navgroup/order',
+    path: '/api/admin/navgroup/order',
+    getParentRoute: () => rootServerRouteImport,
+  } as any)
+const ApiAdminNavgroupIdServerRoute =
+  ApiAdminNavgroupIdServerRouteImport.update({
+    id: '/api/admin/navgroup/$id',
+    path: '/api/admin/navgroup/$id',
+    getParentRoute: () => rootServerRouteImport,
+  } as any)
 
-// Populate the FileRoutesByPath interface
+export interface FileRoutesByFullPath {
+  '/settings': typeof AuthenticatedSettingsRouteRouteWithChildren
+  '/forgot-password': typeof authForgotPasswordRoute
+  '/sign-in': typeof authSignInRoute
+  '/sign-in-2': typeof authSignIn2Route
+  '/sign-up': typeof authSignUpRoute
+  '/401': typeof errors401Route
+  '/403': typeof errors403Route
+  '/404': typeof errors404Route
+  '/500': typeof errors500Route
+  '/503': typeof errors503Route
+  '/': typeof AuthenticatedIndexRoute
+  '/admin/account': typeof AuthenticatedAdminAccountRoute
+  '/admin/invitation': typeof AuthenticatedAdminInvitationRoute
+  '/admin/member': typeof AuthenticatedAdminMemberRoute
+  '/admin/navgroup': typeof AuthenticatedAdminNavgroupRoute
+  '/admin/navitem': typeof AuthenticatedAdminNavitemRoute
+  '/admin/organization': typeof AuthenticatedAdminOrganizationRoute
+  '/admin/rolenavgroup': typeof AuthenticatedAdminRolenavgroupRoute
+  '/admin/session': typeof AuthenticatedAdminSessionRoute
+  '/admin/user': typeof AuthenticatedAdminUserRoute
+  '/admin/userrolenavgroup': typeof AuthenticatedAdminUserrolenavgroupRoute
+  '/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/admin/verification': typeof AuthenticatedAdminVerificationRoute
+  '/settings/account': typeof AuthenticatedSettingsAccountRoute
+  '/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
+  '/settings/display': typeof AuthenticatedSettingsDisplayRoute
+  '/settings/notifications': typeof AuthenticatedSettingsNotificationsRoute
+  '/apps': typeof AuthenticatedAppsIndexRoute
+  '/chats': typeof AuthenticatedChatsIndexRoute
+  '/help-center': typeof AuthenticatedHelpCenterIndexRoute
+  '/sessions': typeof AuthenticatedSessionsIndexRoute
+  '/settings/': typeof AuthenticatedSettingsIndexRoute
+  '/tasks': typeof AuthenticatedTasksIndexRoute
+  '/users': typeof AuthenticatedUsersIndexRoute
+}
+export interface FileRoutesByTo {
+  '/forgot-password': typeof authForgotPasswordRoute
+  '/sign-in': typeof authSignInRoute
+  '/sign-in-2': typeof authSignIn2Route
+  '/sign-up': typeof authSignUpRoute
+  '/401': typeof errors401Route
+  '/403': typeof errors403Route
+  '/404': typeof errors404Route
+  '/500': typeof errors500Route
+  '/503': typeof errors503Route
+  '/': typeof AuthenticatedIndexRoute
+  '/admin/account': typeof AuthenticatedAdminAccountRoute
+  '/admin/invitation': typeof AuthenticatedAdminInvitationRoute
+  '/admin/member': typeof AuthenticatedAdminMemberRoute
+  '/admin/navgroup': typeof AuthenticatedAdminNavgroupRoute
+  '/admin/navitem': typeof AuthenticatedAdminNavitemRoute
+  '/admin/organization': typeof AuthenticatedAdminOrganizationRoute
+  '/admin/rolenavgroup': typeof AuthenticatedAdminRolenavgroupRoute
+  '/admin/session': typeof AuthenticatedAdminSessionRoute
+  '/admin/user': typeof AuthenticatedAdminUserRoute
+  '/admin/userrolenavgroup': typeof AuthenticatedAdminUserrolenavgroupRoute
+  '/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/admin/verification': typeof AuthenticatedAdminVerificationRoute
+  '/settings/account': typeof AuthenticatedSettingsAccountRoute
+  '/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
+  '/settings/display': typeof AuthenticatedSettingsDisplayRoute
+  '/settings/notifications': typeof AuthenticatedSettingsNotificationsRoute
+  '/apps': typeof AuthenticatedAppsIndexRoute
+  '/chats': typeof AuthenticatedChatsIndexRoute
+  '/help-center': typeof AuthenticatedHelpCenterIndexRoute
+  '/sessions': typeof AuthenticatedSessionsIndexRoute
+  '/settings': typeof AuthenticatedSettingsIndexRoute
+  '/tasks': typeof AuthenticatedTasksIndexRoute
+  '/users': typeof AuthenticatedUsersIndexRoute
+}
+export interface FileRoutesById {
+  __root__: typeof rootRouteImport
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/_authenticated/settings': typeof AuthenticatedSettingsRouteRouteWithChildren
+  '/(auth)/forgot-password': typeof authForgotPasswordRoute
+  '/(auth)/sign-in': typeof authSignInRoute
+  '/(auth)/sign-in-2': typeof authSignIn2Route
+  '/(auth)/sign-up': typeof authSignUpRoute
+  '/(errors)/401': typeof errors401Route
+  '/(errors)/403': typeof errors403Route
+  '/(errors)/404': typeof errors404Route
+  '/(errors)/500': typeof errors500Route
+  '/(errors)/503': typeof errors503Route
+  '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/_authenticated/admin/account': typeof AuthenticatedAdminAccountRoute
+  '/_authenticated/admin/invitation': typeof AuthenticatedAdminInvitationRoute
+  '/_authenticated/admin/member': typeof AuthenticatedAdminMemberRoute
+  '/_authenticated/admin/navgroup': typeof AuthenticatedAdminNavgroupRoute
+  '/_authenticated/admin/navitem': typeof AuthenticatedAdminNavitemRoute
+  '/_authenticated/admin/organization': typeof AuthenticatedAdminOrganizationRoute
+  '/_authenticated/admin/rolenavgroup': typeof AuthenticatedAdminRolenavgroupRoute
+  '/_authenticated/admin/session': typeof AuthenticatedAdminSessionRoute
+  '/_authenticated/admin/user': typeof AuthenticatedAdminUserRoute
+  '/_authenticated/admin/userrolenavgroup': typeof AuthenticatedAdminUserrolenavgroupRoute
+  '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/_authenticated/admin/verification': typeof AuthenticatedAdminVerificationRoute
+  '/_authenticated/settings/account': typeof AuthenticatedSettingsAccountRoute
+  '/_authenticated/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
+  '/_authenticated/settings/display': typeof AuthenticatedSettingsDisplayRoute
+  '/_authenticated/settings/notifications': typeof AuthenticatedSettingsNotificationsRoute
+  '/_authenticated/apps/': typeof AuthenticatedAppsIndexRoute
+  '/_authenticated/chats/': typeof AuthenticatedChatsIndexRoute
+  '/_authenticated/help-center/': typeof AuthenticatedHelpCenterIndexRoute
+  '/_authenticated/sessions/': typeof AuthenticatedSessionsIndexRoute
+  '/_authenticated/settings/': typeof AuthenticatedSettingsIndexRoute
+  '/_authenticated/tasks/': typeof AuthenticatedTasksIndexRoute
+  '/_authenticated/users/': typeof AuthenticatedUsersIndexRoute
+}
+export interface FileRouteTypes {
+  fileRoutesByFullPath: FileRoutesByFullPath
+  fullPaths:
+    | '/settings'
+    | '/forgot-password'
+    | '/sign-in'
+    | '/sign-in-2'
+    | '/sign-up'
+    | '/401'
+    | '/403'
+    | '/404'
+    | '/500'
+    | '/503'
+    | '/'
+    | '/admin/account'
+    | '/admin/invitation'
+    | '/admin/member'
+    | '/admin/navgroup'
+    | '/admin/navitem'
+    | '/admin/organization'
+    | '/admin/rolenavgroup'
+    | '/admin/session'
+    | '/admin/user'
+    | '/admin/userrolenavgroup'
+    | '/admin/users'
+    | '/admin/verification'
+    | '/settings/account'
+    | '/settings/appearance'
+    | '/settings/display'
+    | '/settings/notifications'
+    | '/apps'
+    | '/chats'
+    | '/help-center'
+    | '/sessions'
+    | '/settings/'
+    | '/tasks'
+    | '/users'
+  fileRoutesByTo: FileRoutesByTo
+  to:
+    | '/forgot-password'
+    | '/sign-in'
+    | '/sign-in-2'
+    | '/sign-up'
+    | '/401'
+    | '/403'
+    | '/404'
+    | '/500'
+    | '/503'
+    | '/'
+    | '/admin/account'
+    | '/admin/invitation'
+    | '/admin/member'
+    | '/admin/navgroup'
+    | '/admin/navitem'
+    | '/admin/organization'
+    | '/admin/rolenavgroup'
+    | '/admin/session'
+    | '/admin/user'
+    | '/admin/userrolenavgroup'
+    | '/admin/users'
+    | '/admin/verification'
+    | '/settings/account'
+    | '/settings/appearance'
+    | '/settings/display'
+    | '/settings/notifications'
+    | '/apps'
+    | '/chats'
+    | '/help-center'
+    | '/sessions'
+    | '/settings'
+    | '/tasks'
+    | '/users'
+  id:
+    | '__root__'
+    | '/_authenticated'
+    | '/_authenticated/settings'
+    | '/(auth)/forgot-password'
+    | '/(auth)/sign-in'
+    | '/(auth)/sign-in-2'
+    | '/(auth)/sign-up'
+    | '/(errors)/401'
+    | '/(errors)/403'
+    | '/(errors)/404'
+    | '/(errors)/500'
+    | '/(errors)/503'
+    | '/_authenticated/'
+    | '/_authenticated/admin/account'
+    | '/_authenticated/admin/invitation'
+    | '/_authenticated/admin/member'
+    | '/_authenticated/admin/navgroup'
+    | '/_authenticated/admin/navitem'
+    | '/_authenticated/admin/organization'
+    | '/_authenticated/admin/rolenavgroup'
+    | '/_authenticated/admin/session'
+    | '/_authenticated/admin/user'
+    | '/_authenticated/admin/userrolenavgroup'
+    | '/_authenticated/admin/users'
+    | '/_authenticated/admin/verification'
+    | '/_authenticated/settings/account'
+    | '/_authenticated/settings/appearance'
+    | '/_authenticated/settings/display'
+    | '/_authenticated/settings/notifications'
+    | '/_authenticated/apps/'
+    | '/_authenticated/chats/'
+    | '/_authenticated/help-center/'
+    | '/_authenticated/sessions/'
+    | '/_authenticated/settings/'
+    | '/_authenticated/tasks/'
+    | '/_authenticated/users/'
+  fileRoutesById: FileRoutesById
+}
+export interface RootRouteChildren {
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  authForgotPasswordRoute: typeof authForgotPasswordRoute
+  authSignInRoute: typeof authSignInRoute
+  authSignIn2Route: typeof authSignIn2Route
+  authSignUpRoute: typeof authSignUpRoute
+  errors401Route: typeof errors401Route
+  errors403Route: typeof errors403Route
+  errors404Route: typeof errors404Route
+  errors500Route: typeof errors500Route
+  errors503Route: typeof errors503Route
+}
+export interface FileServerRoutesByFullPath {
+  '/api/sessions': typeof ApiSessionsServerRoute
+  '/api/users': typeof ApiUsersServerRouteWithChildren
+  '/api/auth/$': typeof ApiAuthSplatServerRoute
+  '/api/users/$id': typeof ApiUsersIdServerRoute
+  '/api/admin/navgroup/$id': typeof ApiAdminNavgroupIdServerRoute
+  '/api/admin/navgroup/order': typeof ApiAdminNavgroupOrderServerRoute
+  '/api/admin/navgroup/visibility': typeof ApiAdminNavgroupVisibilityServerRoute
+  '/api/admin/navitem/$id': typeof ApiAdminNavitemIdServerRoute
+  '/api/admin/navitem/order': typeof ApiAdminNavitemOrderServerRoute
+  '/api/admin/navitem/visibility': typeof ApiAdminNavitemVisibilityServerRoute
+  '/api/admin/navgroup': typeof ApiAdminNavgroupIndexServerRoute
+  '/api/admin/navitem': typeof ApiAdminNavitemIndexServerRoute
+  '/api/admin/user': typeof ApiAdminUserIndexServerRoute
+}
+export interface FileServerRoutesByTo {
+  '/api/sessions': typeof ApiSessionsServerRoute
+  '/api/users': typeof ApiUsersServerRouteWithChildren
+  '/api/auth/$': typeof ApiAuthSplatServerRoute
+  '/api/users/$id': typeof ApiUsersIdServerRoute
+  '/api/admin/navgroup/$id': typeof ApiAdminNavgroupIdServerRoute
+  '/api/admin/navgroup/order': typeof ApiAdminNavgroupOrderServerRoute
+  '/api/admin/navgroup/visibility': typeof ApiAdminNavgroupVisibilityServerRoute
+  '/api/admin/navitem/$id': typeof ApiAdminNavitemIdServerRoute
+  '/api/admin/navitem/order': typeof ApiAdminNavitemOrderServerRoute
+  '/api/admin/navitem/visibility': typeof ApiAdminNavitemVisibilityServerRoute
+  '/api/admin/navgroup': typeof ApiAdminNavgroupIndexServerRoute
+  '/api/admin/navitem': typeof ApiAdminNavitemIndexServerRoute
+  '/api/admin/user': typeof ApiAdminUserIndexServerRoute
+}
+export interface FileServerRoutesById {
+  __root__: typeof rootServerRouteImport
+  '/api/sessions': typeof ApiSessionsServerRoute
+  '/api/users': typeof ApiUsersServerRouteWithChildren
+  '/api/auth/$': typeof ApiAuthSplatServerRoute
+  '/api/users/$id': typeof ApiUsersIdServerRoute
+  '/api/admin/navgroup/$id': typeof ApiAdminNavgroupIdServerRoute
+  '/api/admin/navgroup/order': typeof ApiAdminNavgroupOrderServerRoute
+  '/api/admin/navgroup/visibility': typeof ApiAdminNavgroupVisibilityServerRoute
+  '/api/admin/navitem/$id': typeof ApiAdminNavitemIdServerRoute
+  '/api/admin/navitem/order': typeof ApiAdminNavitemOrderServerRoute
+  '/api/admin/navitem/visibility': typeof ApiAdminNavitemVisibilityServerRoute
+  '/api/admin/navgroup/': typeof ApiAdminNavgroupIndexServerRoute
+  '/api/admin/navitem/': typeof ApiAdminNavitemIndexServerRoute
+  '/api/admin/user/': typeof ApiAdminUserIndexServerRoute
+}
+export interface FileServerRouteTypes {
+  fileServerRoutesByFullPath: FileServerRoutesByFullPath
+  fullPaths:
+    | '/api/sessions'
+    | '/api/users'
+    | '/api/auth/$'
+    | '/api/users/$id'
+    | '/api/admin/navgroup/$id'
+    | '/api/admin/navgroup/order'
+    | '/api/admin/navgroup/visibility'
+    | '/api/admin/navitem/$id'
+    | '/api/admin/navitem/order'
+    | '/api/admin/navitem/visibility'
+    | '/api/admin/navgroup'
+    | '/api/admin/navitem'
+    | '/api/admin/user'
+  fileServerRoutesByTo: FileServerRoutesByTo
+  to:
+    | '/api/sessions'
+    | '/api/users'
+    | '/api/auth/$'
+    | '/api/users/$id'
+    | '/api/admin/navgroup/$id'
+    | '/api/admin/navgroup/order'
+    | '/api/admin/navgroup/visibility'
+    | '/api/admin/navitem/$id'
+    | '/api/admin/navitem/order'
+    | '/api/admin/navitem/visibility'
+    | '/api/admin/navgroup'
+    | '/api/admin/navitem'
+    | '/api/admin/user'
+  id:
+    | '__root__'
+    | '/api/sessions'
+    | '/api/users'
+    | '/api/auth/$'
+    | '/api/users/$id'
+    | '/api/admin/navgroup/$id'
+    | '/api/admin/navgroup/order'
+    | '/api/admin/navgroup/visibility'
+    | '/api/admin/navitem/$id'
+    | '/api/admin/navitem/order'
+    | '/api/admin/navitem/visibility'
+    | '/api/admin/navgroup/'
+    | '/api/admin/navitem/'
+    | '/api/admin/user/'
+  fileServerRoutesById: FileServerRoutesById
+}
+export interface RootServerRouteChildren {
+  ApiSessionsServerRoute: typeof ApiSessionsServerRoute
+  ApiUsersServerRoute: typeof ApiUsersServerRouteWithChildren
+  ApiAuthSplatServerRoute: typeof ApiAuthSplatServerRoute
+  ApiAdminNavgroupIdServerRoute: typeof ApiAdminNavgroupIdServerRoute
+  ApiAdminNavgroupOrderServerRoute: typeof ApiAdminNavgroupOrderServerRoute
+  ApiAdminNavgroupVisibilityServerRoute: typeof ApiAdminNavgroupVisibilityServerRoute
+  ApiAdminNavitemIdServerRoute: typeof ApiAdminNavitemIdServerRoute
+  ApiAdminNavitemOrderServerRoute: typeof ApiAdminNavitemOrderServerRoute
+  ApiAdminNavitemVisibilityServerRoute: typeof ApiAdminNavitemVisibilityServerRoute
+  ApiAdminNavgroupIndexServerRoute: typeof ApiAdminNavgroupIndexServerRoute
+  ApiAdminNavitemIndexServerRoute: typeof ApiAdminNavitemIndexServerRoute
+  ApiAdminUserIndexServerRoute: typeof ApiAdminUserIndexServerRoute
+}
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
@@ -275,244 +674,344 @@ declare module '@tanstack/react-router' {
       id: '/_authenticated'
       path: ''
       fullPath: ''
-      preLoaderRoute: typeof AuthenticatedRouteImport
-      parentRoute: typeof rootRoute
-    }
-    '/_authenticated/settings': {
-      id: '/_authenticated/settings'
-      path: '/settings'
-      fullPath: '/settings'
-      preLoaderRoute: typeof AuthenticatedSettingsRouteImport
-      parentRoute: typeof AuthenticatedRouteImport
-    }
-    '/(auth)/forgot-password': {
-      id: '/(auth)/forgot-password'
-      path: '/forgot-password'
-      fullPath: '/forgot-password'
-      preLoaderRoute: typeof authForgotPasswordImport
-      parentRoute: typeof rootRoute
-    }
-    '/(auth)/sign-in': {
-      id: '/(auth)/sign-in'
-      path: '/sign-in'
-      fullPath: '/sign-in'
-      preLoaderRoute: typeof authSignInImport
-      parentRoute: typeof rootRoute
-    }
-    '/(auth)/sign-in-2': {
-      id: '/(auth)/sign-in-2'
-      path: '/sign-in-2'
-      fullPath: '/sign-in-2'
-      preLoaderRoute: typeof authSignIn2Import
-      parentRoute: typeof rootRoute
-    }
-    '/(auth)/sign-up': {
-      id: '/(auth)/sign-up'
-      path: '/sign-up'
-      fullPath: '/sign-up'
-      preLoaderRoute: typeof authSignUpImport
-      parentRoute: typeof rootRoute
-    }
-    '/(errors)/401': {
-      id: '/(errors)/401'
-      path: '/401'
-      fullPath: '/401'
-      preLoaderRoute: typeof errors401Import
-      parentRoute: typeof rootRoute
-    }
-    '/(errors)/403': {
-      id: '/(errors)/403'
-      path: '/403'
-      fullPath: '/403'
-      preLoaderRoute: typeof errors403Import
-      parentRoute: typeof rootRoute
-    }
-    '/(errors)/404': {
-      id: '/(errors)/404'
-      path: '/404'
-      fullPath: '/404'
-      preLoaderRoute: typeof errors404Import
-      parentRoute: typeof rootRoute
-    }
-    '/(errors)/500': {
-      id: '/(errors)/500'
-      path: '/500'
-      fullPath: '/500'
-      preLoaderRoute: typeof errors500Import
-      parentRoute: typeof rootRoute
-    }
-    '/(errors)/503': {
-      id: '/(errors)/503'
-      path: '/503'
-      fullPath: '/503'
-      preLoaderRoute: typeof errors503Import
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/': {
       id: '/_authenticated/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof AuthenticatedIndexImport
-      parentRoute: typeof AuthenticatedRouteImport
+      preLoaderRoute: typeof AuthenticatedIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/admin/account': {
-      id: '/_authenticated/admin/account'
-      path: '/admin/account'
-      fullPath: '/admin/account'
-      preLoaderRoute: typeof AuthenticatedAdminAccountImport
-      parentRoute: typeof AuthenticatedRouteImport
+    '/(errors)/503': {
+      id: '/(errors)/503'
+      path: '/503'
+      fullPath: '/503'
+      preLoaderRoute: typeof errors503RouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/admin/invitation': {
-      id: '/_authenticated/admin/invitation'
-      path: '/admin/invitation'
-      fullPath: '/admin/invitation'
-      preLoaderRoute: typeof AuthenticatedAdminInvitationImport
-      parentRoute: typeof AuthenticatedRouteImport
+    '/(errors)/500': {
+      id: '/(errors)/500'
+      path: '/500'
+      fullPath: '/500'
+      preLoaderRoute: typeof errors500RouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/admin/member': {
-      id: '/_authenticated/admin/member'
-      path: '/admin/member'
-      fullPath: '/admin/member'
-      preLoaderRoute: typeof AuthenticatedAdminMemberImport
-      parentRoute: typeof AuthenticatedRouteImport
+    '/(errors)/404': {
+      id: '/(errors)/404'
+      path: '/404'
+      fullPath: '/404'
+      preLoaderRoute: typeof errors404RouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/admin/navgroup': {
-      id: '/_authenticated/admin/navgroup'
-      path: '/admin/navgroup'
-      fullPath: '/admin/navgroup'
-      preLoaderRoute: typeof AuthenticatedAdminNavgroupImport
-      parentRoute: typeof AuthenticatedRouteImport
+    '/(errors)/403': {
+      id: '/(errors)/403'
+      path: '/403'
+      fullPath: '/403'
+      preLoaderRoute: typeof errors403RouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/admin/navitem': {
-      id: '/_authenticated/admin/navitem'
-      path: '/admin/navitem'
-      fullPath: '/admin/navitem'
-      preLoaderRoute: typeof AuthenticatedAdminNavitemImport
-      parentRoute: typeof AuthenticatedRouteImport
+    '/(errors)/401': {
+      id: '/(errors)/401'
+      path: '/401'
+      fullPath: '/401'
+      preLoaderRoute: typeof errors401RouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/admin/organization': {
-      id: '/_authenticated/admin/organization'
-      path: '/admin/organization'
-      fullPath: '/admin/organization'
-      preLoaderRoute: typeof AuthenticatedAdminOrganizationImport
-      parentRoute: typeof AuthenticatedRouteImport
+    '/(auth)/sign-up': {
+      id: '/(auth)/sign-up'
+      path: '/sign-up'
+      fullPath: '/sign-up'
+      preLoaderRoute: typeof authSignUpRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/admin/rolenavgroup': {
-      id: '/_authenticated/admin/rolenavgroup'
-      path: '/admin/rolenavgroup'
-      fullPath: '/admin/rolenavgroup'
-      preLoaderRoute: typeof AuthenticatedAdminRolenavgroupImport
-      parentRoute: typeof AuthenticatedRouteImport
+    '/(auth)/sign-in-2': {
+      id: '/(auth)/sign-in-2'
+      path: '/sign-in-2'
+      fullPath: '/sign-in-2'
+      preLoaderRoute: typeof authSignIn2RouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/admin/session': {
-      id: '/_authenticated/admin/session'
-      path: '/admin/session'
-      fullPath: '/admin/session'
-      preLoaderRoute: typeof AuthenticatedAdminSessionImport
-      parentRoute: typeof AuthenticatedRouteImport
+    '/(auth)/sign-in': {
+      id: '/(auth)/sign-in'
+      path: '/sign-in'
+      fullPath: '/sign-in'
+      preLoaderRoute: typeof authSignInRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/admin/user': {
-      id: '/_authenticated/admin/user'
-      path: '/admin/user'
-      fullPath: '/admin/user'
-      preLoaderRoute: typeof AuthenticatedAdminUserImport
-      parentRoute: typeof AuthenticatedRouteImport
+    '/(auth)/forgot-password': {
+      id: '/(auth)/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof authForgotPasswordRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/admin/userrolenavgroup': {
-      id: '/_authenticated/admin/userrolenavgroup'
-      path: '/admin/userrolenavgroup'
-      fullPath: '/admin/userrolenavgroup'
-      preLoaderRoute: typeof AuthenticatedAdminUserrolenavgroupImport
-      parentRoute: typeof AuthenticatedRouteImport
-    }
-    '/_authenticated/admin/users': {
-      id: '/_authenticated/admin/users'
-      path: '/admin/users'
-      fullPath: '/admin/users'
-      preLoaderRoute: typeof AuthenticatedAdminUsersImport
-      parentRoute: typeof AuthenticatedRouteImport
-    }
-    '/_authenticated/admin/verification': {
-      id: '/_authenticated/admin/verification'
-      path: '/admin/verification'
-      fullPath: '/admin/verification'
-      preLoaderRoute: typeof AuthenticatedAdminVerificationImport
-      parentRoute: typeof AuthenticatedRouteImport
-    }
-    '/_authenticated/settings/account': {
-      id: '/_authenticated/settings/account'
-      path: '/account'
-      fullPath: '/settings/account'
-      preLoaderRoute: typeof AuthenticatedSettingsAccountImport
-      parentRoute: typeof AuthenticatedSettingsRouteImport
-    }
-    '/_authenticated/settings/appearance': {
-      id: '/_authenticated/settings/appearance'
-      path: '/appearance'
-      fullPath: '/settings/appearance'
-      preLoaderRoute: typeof AuthenticatedSettingsAppearanceImport
-      parentRoute: typeof AuthenticatedSettingsRouteImport
-    }
-    '/_authenticated/settings/display': {
-      id: '/_authenticated/settings/display'
-      path: '/display'
-      fullPath: '/settings/display'
-      preLoaderRoute: typeof AuthenticatedSettingsDisplayImport
-      parentRoute: typeof AuthenticatedSettingsRouteImport
-    }
-    '/_authenticated/settings/notifications': {
-      id: '/_authenticated/settings/notifications'
-      path: '/notifications'
-      fullPath: '/settings/notifications'
-      preLoaderRoute: typeof AuthenticatedSettingsNotificationsImport
-      parentRoute: typeof AuthenticatedSettingsRouteImport
-    }
-    '/_authenticated/apps/': {
-      id: '/_authenticated/apps/'
-      path: '/apps'
-      fullPath: '/apps'
-      preLoaderRoute: typeof AuthenticatedAppsIndexImport
-      parentRoute: typeof AuthenticatedRouteImport
-    }
-    '/_authenticated/chats/': {
-      id: '/_authenticated/chats/'
-      path: '/chats'
-      fullPath: '/chats'
-      preLoaderRoute: typeof AuthenticatedChatsIndexImport
-      parentRoute: typeof AuthenticatedRouteImport
-    }
-    '/_authenticated/help-center/': {
-      id: '/_authenticated/help-center/'
-      path: '/help-center'
-      fullPath: '/help-center'
-      preLoaderRoute: typeof AuthenticatedHelpCenterIndexImport
-      parentRoute: typeof AuthenticatedRouteImport
-    }
-    '/_authenticated/settings/': {
-      id: '/_authenticated/settings/'
-      path: '/'
-      fullPath: '/settings/'
-      preLoaderRoute: typeof AuthenticatedSettingsIndexImport
-      parentRoute: typeof AuthenticatedSettingsRouteImport
-    }
-    '/_authenticated/tasks/': {
-      id: '/_authenticated/tasks/'
-      path: '/tasks'
-      fullPath: '/tasks'
-      preLoaderRoute: typeof AuthenticatedTasksIndexImport
-      parentRoute: typeof AuthenticatedRouteImport
+    '/_authenticated/settings': {
+      id: '/_authenticated/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AuthenticatedSettingsRouteRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/users/': {
       id: '/_authenticated/users/'
       path: '/users'
       fullPath: '/users'
-      preLoaderRoute: typeof AuthenticatedUsersIndexImport
-      parentRoute: typeof AuthenticatedRouteImport
+      preLoaderRoute: typeof AuthenticatedUsersIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/tasks/': {
+      id: '/_authenticated/tasks/'
+      path: '/tasks'
+      fullPath: '/tasks'
+      preLoaderRoute: typeof AuthenticatedTasksIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/settings/': {
+      id: '/_authenticated/settings/'
+      path: '/'
+      fullPath: '/settings/'
+      preLoaderRoute: typeof AuthenticatedSettingsIndexRouteImport
+      parentRoute: typeof AuthenticatedSettingsRouteRoute
+    }
+    '/_authenticated/sessions/': {
+      id: '/_authenticated/sessions/'
+      path: '/sessions'
+      fullPath: '/sessions'
+      preLoaderRoute: typeof AuthenticatedSessionsIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/help-center/': {
+      id: '/_authenticated/help-center/'
+      path: '/help-center'
+      fullPath: '/help-center'
+      preLoaderRoute: typeof AuthenticatedHelpCenterIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/chats/': {
+      id: '/_authenticated/chats/'
+      path: '/chats'
+      fullPath: '/chats'
+      preLoaderRoute: typeof AuthenticatedChatsIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/apps/': {
+      id: '/_authenticated/apps/'
+      path: '/apps'
+      fullPath: '/apps'
+      preLoaderRoute: typeof AuthenticatedAppsIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/settings/notifications': {
+      id: '/_authenticated/settings/notifications'
+      path: '/notifications'
+      fullPath: '/settings/notifications'
+      preLoaderRoute: typeof AuthenticatedSettingsNotificationsRouteImport
+      parentRoute: typeof AuthenticatedSettingsRouteRoute
+    }
+    '/_authenticated/settings/display': {
+      id: '/_authenticated/settings/display'
+      path: '/display'
+      fullPath: '/settings/display'
+      preLoaderRoute: typeof AuthenticatedSettingsDisplayRouteImport
+      parentRoute: typeof AuthenticatedSettingsRouteRoute
+    }
+    '/_authenticated/settings/appearance': {
+      id: '/_authenticated/settings/appearance'
+      path: '/appearance'
+      fullPath: '/settings/appearance'
+      preLoaderRoute: typeof AuthenticatedSettingsAppearanceRouteImport
+      parentRoute: typeof AuthenticatedSettingsRouteRoute
+    }
+    '/_authenticated/settings/account': {
+      id: '/_authenticated/settings/account'
+      path: '/account'
+      fullPath: '/settings/account'
+      preLoaderRoute: typeof AuthenticatedSettingsAccountRouteImport
+      parentRoute: typeof AuthenticatedSettingsRouteRoute
+    }
+    '/_authenticated/admin/verification': {
+      id: '/_authenticated/admin/verification'
+      path: '/admin/verification'
+      fullPath: '/admin/verification'
+      preLoaderRoute: typeof AuthenticatedAdminVerificationRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/users': {
+      id: '/_authenticated/admin/users'
+      path: '/admin/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AuthenticatedAdminUsersRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/userrolenavgroup': {
+      id: '/_authenticated/admin/userrolenavgroup'
+      path: '/admin/userrolenavgroup'
+      fullPath: '/admin/userrolenavgroup'
+      preLoaderRoute: typeof AuthenticatedAdminUserrolenavgroupRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/user': {
+      id: '/_authenticated/admin/user'
+      path: '/admin/user'
+      fullPath: '/admin/user'
+      preLoaderRoute: typeof AuthenticatedAdminUserRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/session': {
+      id: '/_authenticated/admin/session'
+      path: '/admin/session'
+      fullPath: '/admin/session'
+      preLoaderRoute: typeof AuthenticatedAdminSessionRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/rolenavgroup': {
+      id: '/_authenticated/admin/rolenavgroup'
+      path: '/admin/rolenavgroup'
+      fullPath: '/admin/rolenavgroup'
+      preLoaderRoute: typeof AuthenticatedAdminRolenavgroupRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/organization': {
+      id: '/_authenticated/admin/organization'
+      path: '/admin/organization'
+      fullPath: '/admin/organization'
+      preLoaderRoute: typeof AuthenticatedAdminOrganizationRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/navitem': {
+      id: '/_authenticated/admin/navitem'
+      path: '/admin/navitem'
+      fullPath: '/admin/navitem'
+      preLoaderRoute: typeof AuthenticatedAdminNavitemRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/navgroup': {
+      id: '/_authenticated/admin/navgroup'
+      path: '/admin/navgroup'
+      fullPath: '/admin/navgroup'
+      preLoaderRoute: typeof AuthenticatedAdminNavgroupRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/member': {
+      id: '/_authenticated/admin/member'
+      path: '/admin/member'
+      fullPath: '/admin/member'
+      preLoaderRoute: typeof AuthenticatedAdminMemberRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/invitation': {
+      id: '/_authenticated/admin/invitation'
+      path: '/admin/invitation'
+      fullPath: '/admin/invitation'
+      preLoaderRoute: typeof AuthenticatedAdminInvitationRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/account': {
+      id: '/_authenticated/admin/account'
+      path: '/admin/account'
+      fullPath: '/admin/account'
+      preLoaderRoute: typeof AuthenticatedAdminAccountRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
   }
 }
-
-// Create and export the route tree
+declare module '@tanstack/react-start/server' {
+  interface ServerFileRoutesByPath {
+    '/api/users': {
+      id: '/api/users'
+      path: '/api/users'
+      fullPath: '/api/users'
+      preLoaderRoute: typeof ApiUsersServerRouteImport
+      parentRoute: typeof rootServerRouteImport
+    }
+    '/api/sessions': {
+      id: '/api/sessions'
+      path: '/api/sessions'
+      fullPath: '/api/sessions'
+      preLoaderRoute: typeof ApiSessionsServerRouteImport
+      parentRoute: typeof rootServerRouteImport
+    }
+    '/api/users/$id': {
+      id: '/api/users/$id'
+      path: '/$id'
+      fullPath: '/api/users/$id'
+      preLoaderRoute: typeof ApiUsersIdServerRouteImport
+      parentRoute: typeof ApiUsersServerRoute
+    }
+    '/api/auth/$': {
+      id: '/api/auth/$'
+      path: '/api/auth/$'
+      fullPath: '/api/auth/$'
+      preLoaderRoute: typeof ApiAuthSplatServerRouteImport
+      parentRoute: typeof rootServerRouteImport
+    }
+    '/api/admin/user/': {
+      id: '/api/admin/user/'
+      path: '/api/admin/user'
+      fullPath: '/api/admin/user'
+      preLoaderRoute: typeof ApiAdminUserIndexServerRouteImport
+      parentRoute: typeof rootServerRouteImport
+    }
+    '/api/admin/navitem/': {
+      id: '/api/admin/navitem/'
+      path: '/api/admin/navitem'
+      fullPath: '/api/admin/navitem'
+      preLoaderRoute: typeof ApiAdminNavitemIndexServerRouteImport
+      parentRoute: typeof rootServerRouteImport
+    }
+    '/api/admin/navgroup/': {
+      id: '/api/admin/navgroup/'
+      path: '/api/admin/navgroup'
+      fullPath: '/api/admin/navgroup'
+      preLoaderRoute: typeof ApiAdminNavgroupIndexServerRouteImport
+      parentRoute: typeof rootServerRouteImport
+    }
+    '/api/admin/navitem/visibility': {
+      id: '/api/admin/navitem/visibility'
+      path: '/api/admin/navitem/visibility'
+      fullPath: '/api/admin/navitem/visibility'
+      preLoaderRoute: typeof ApiAdminNavitemVisibilityServerRouteImport
+      parentRoute: typeof rootServerRouteImport
+    }
+    '/api/admin/navitem/order': {
+      id: '/api/admin/navitem/order'
+      path: '/api/admin/navitem/order'
+      fullPath: '/api/admin/navitem/order'
+      preLoaderRoute: typeof ApiAdminNavitemOrderServerRouteImport
+      parentRoute: typeof rootServerRouteImport
+    }
+    '/api/admin/navitem/$id': {
+      id: '/api/admin/navitem/$id'
+      path: '/api/admin/navitem/$id'
+      fullPath: '/api/admin/navitem/$id'
+      preLoaderRoute: typeof ApiAdminNavitemIdServerRouteImport
+      parentRoute: typeof rootServerRouteImport
+    }
+    '/api/admin/navgroup/visibility': {
+      id: '/api/admin/navgroup/visibility'
+      path: '/api/admin/navgroup/visibility'
+      fullPath: '/api/admin/navgroup/visibility'
+      preLoaderRoute: typeof ApiAdminNavgroupVisibilityServerRouteImport
+      parentRoute: typeof rootServerRouteImport
+    }
+    '/api/admin/navgroup/order': {
+      id: '/api/admin/navgroup/order'
+      path: '/api/admin/navgroup/order'
+      fullPath: '/api/admin/navgroup/order'
+      preLoaderRoute: typeof ApiAdminNavgroupOrderServerRouteImport
+      parentRoute: typeof rootServerRouteImport
+    }
+    '/api/admin/navgroup/$id': {
+      id: '/api/admin/navgroup/$id'
+      path: '/api/admin/navgroup/$id'
+      fullPath: '/api/admin/navgroup/$id'
+      preLoaderRoute: typeof ApiAdminNavgroupIdServerRouteImport
+      parentRoute: typeof rootServerRouteImport
+    }
+  }
+}
 
 interface AuthenticatedSettingsRouteRouteChildren {
   AuthenticatedSettingsAccountRoute: typeof AuthenticatedSettingsAccountRoute
@@ -555,6 +1054,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAppsIndexRoute: typeof AuthenticatedAppsIndexRoute
   AuthenticatedChatsIndexRoute: typeof AuthenticatedChatsIndexRoute
   AuthenticatedHelpCenterIndexRoute: typeof AuthenticatedHelpCenterIndexRoute
+  AuthenticatedSessionsIndexRoute: typeof AuthenticatedSessionsIndexRoute
   AuthenticatedTasksIndexRoute: typeof AuthenticatedTasksIndexRoute
   AuthenticatedUsersIndexRoute: typeof AuthenticatedUsersIndexRoute
 }
@@ -578,6 +1078,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAppsIndexRoute: AuthenticatedAppsIndexRoute,
   AuthenticatedChatsIndexRoute: AuthenticatedChatsIndexRoute,
   AuthenticatedHelpCenterIndexRoute: AuthenticatedHelpCenterIndexRoute,
+  AuthenticatedSessionsIndexRoute: AuthenticatedSessionsIndexRoute,
   AuthenticatedTasksIndexRoute: AuthenticatedTasksIndexRoute,
   AuthenticatedUsersIndexRoute: AuthenticatedUsersIndexRoute,
 }
@@ -585,238 +1086,17 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
-export interface FileRoutesByFullPath {
-  '': typeof AuthenticatedRouteRouteWithChildren
-  '/settings': typeof AuthenticatedSettingsRouteRouteWithChildren
-  '/forgot-password': typeof authForgotPasswordRoute
-  '/sign-in': typeof authSignInRoute
-  '/sign-in-2': typeof authSignIn2Route
-  '/sign-up': typeof authSignUpRoute
-  '/401': typeof errors401Route
-  '/403': typeof errors403Route
-  '/404': typeof errors404Route
-  '/500': typeof errors500Route
-  '/503': typeof errors503Route
-  '/': typeof AuthenticatedIndexRoute
-  '/admin/account': typeof AuthenticatedAdminAccountRoute
-  '/admin/invitation': typeof AuthenticatedAdminInvitationRoute
-  '/admin/member': typeof AuthenticatedAdminMemberRoute
-  '/admin/navgroup': typeof AuthenticatedAdminNavgroupRoute
-  '/admin/navitem': typeof AuthenticatedAdminNavitemRoute
-  '/admin/organization': typeof AuthenticatedAdminOrganizationRoute
-  '/admin/rolenavgroup': typeof AuthenticatedAdminRolenavgroupRoute
-  '/admin/session': typeof AuthenticatedAdminSessionRoute
-  '/admin/user': typeof AuthenticatedAdminUserRoute
-  '/admin/userrolenavgroup': typeof AuthenticatedAdminUserrolenavgroupRoute
-  '/admin/users': typeof AuthenticatedAdminUsersRoute
-  '/admin/verification': typeof AuthenticatedAdminVerificationRoute
-  '/settings/account': typeof AuthenticatedSettingsAccountRoute
-  '/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
-  '/settings/display': typeof AuthenticatedSettingsDisplayRoute
-  '/settings/notifications': typeof AuthenticatedSettingsNotificationsRoute
-  '/apps': typeof AuthenticatedAppsIndexRoute
-  '/chats': typeof AuthenticatedChatsIndexRoute
-  '/help-center': typeof AuthenticatedHelpCenterIndexRoute
-  '/settings/': typeof AuthenticatedSettingsIndexRoute
-  '/tasks': typeof AuthenticatedTasksIndexRoute
-  '/users': typeof AuthenticatedUsersIndexRoute
+interface ApiUsersServerRouteChildren {
+  ApiUsersIdServerRoute: typeof ApiUsersIdServerRoute
 }
 
-export interface FileRoutesByTo {
-  '/forgot-password': typeof authForgotPasswordRoute
-  '/sign-in': typeof authSignInRoute
-  '/sign-in-2': typeof authSignIn2Route
-  '/sign-up': typeof authSignUpRoute
-  '/401': typeof errors401Route
-  '/403': typeof errors403Route
-  '/404': typeof errors404Route
-  '/500': typeof errors500Route
-  '/503': typeof errors503Route
-  '/': typeof AuthenticatedIndexRoute
-  '/admin/account': typeof AuthenticatedAdminAccountRoute
-  '/admin/invitation': typeof AuthenticatedAdminInvitationRoute
-  '/admin/member': typeof AuthenticatedAdminMemberRoute
-  '/admin/navgroup': typeof AuthenticatedAdminNavgroupRoute
-  '/admin/navitem': typeof AuthenticatedAdminNavitemRoute
-  '/admin/organization': typeof AuthenticatedAdminOrganizationRoute
-  '/admin/rolenavgroup': typeof AuthenticatedAdminRolenavgroupRoute
-  '/admin/session': typeof AuthenticatedAdminSessionRoute
-  '/admin/user': typeof AuthenticatedAdminUserRoute
-  '/admin/userrolenavgroup': typeof AuthenticatedAdminUserrolenavgroupRoute
-  '/admin/users': typeof AuthenticatedAdminUsersRoute
-  '/admin/verification': typeof AuthenticatedAdminVerificationRoute
-  '/settings/account': typeof AuthenticatedSettingsAccountRoute
-  '/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
-  '/settings/display': typeof AuthenticatedSettingsDisplayRoute
-  '/settings/notifications': typeof AuthenticatedSettingsNotificationsRoute
-  '/apps': typeof AuthenticatedAppsIndexRoute
-  '/chats': typeof AuthenticatedChatsIndexRoute
-  '/help-center': typeof AuthenticatedHelpCenterIndexRoute
-  '/settings': typeof AuthenticatedSettingsIndexRoute
-  '/tasks': typeof AuthenticatedTasksIndexRoute
-  '/users': typeof AuthenticatedUsersIndexRoute
+const ApiUsersServerRouteChildren: ApiUsersServerRouteChildren = {
+  ApiUsersIdServerRoute: ApiUsersIdServerRoute,
 }
 
-export interface FileRoutesById {
-  __root__: typeof rootRoute
-  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
-  '/_authenticated/settings': typeof AuthenticatedSettingsRouteRouteWithChildren
-  '/(auth)/forgot-password': typeof authForgotPasswordRoute
-  '/(auth)/sign-in': typeof authSignInRoute
-  '/(auth)/sign-in-2': typeof authSignIn2Route
-  '/(auth)/sign-up': typeof authSignUpRoute
-  '/(errors)/401': typeof errors401Route
-  '/(errors)/403': typeof errors403Route
-  '/(errors)/404': typeof errors404Route
-  '/(errors)/500': typeof errors500Route
-  '/(errors)/503': typeof errors503Route
-  '/_authenticated/': typeof AuthenticatedIndexRoute
-  '/_authenticated/admin/account': typeof AuthenticatedAdminAccountRoute
-  '/_authenticated/admin/invitation': typeof AuthenticatedAdminInvitationRoute
-  '/_authenticated/admin/member': typeof AuthenticatedAdminMemberRoute
-  '/_authenticated/admin/navgroup': typeof AuthenticatedAdminNavgroupRoute
-  '/_authenticated/admin/navitem': typeof AuthenticatedAdminNavitemRoute
-  '/_authenticated/admin/organization': typeof AuthenticatedAdminOrganizationRoute
-  '/_authenticated/admin/rolenavgroup': typeof AuthenticatedAdminRolenavgroupRoute
-  '/_authenticated/admin/session': typeof AuthenticatedAdminSessionRoute
-  '/_authenticated/admin/user': typeof AuthenticatedAdminUserRoute
-  '/_authenticated/admin/userrolenavgroup': typeof AuthenticatedAdminUserrolenavgroupRoute
-  '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
-  '/_authenticated/admin/verification': typeof AuthenticatedAdminVerificationRoute
-  '/_authenticated/settings/account': typeof AuthenticatedSettingsAccountRoute
-  '/_authenticated/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
-  '/_authenticated/settings/display': typeof AuthenticatedSettingsDisplayRoute
-  '/_authenticated/settings/notifications': typeof AuthenticatedSettingsNotificationsRoute
-  '/_authenticated/apps/': typeof AuthenticatedAppsIndexRoute
-  '/_authenticated/chats/': typeof AuthenticatedChatsIndexRoute
-  '/_authenticated/help-center/': typeof AuthenticatedHelpCenterIndexRoute
-  '/_authenticated/settings/': typeof AuthenticatedSettingsIndexRoute
-  '/_authenticated/tasks/': typeof AuthenticatedTasksIndexRoute
-  '/_authenticated/users/': typeof AuthenticatedUsersIndexRoute
-}
-
-export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | ''
-    | '/settings'
-    | '/forgot-password'
-    | '/sign-in'
-    | '/sign-in-2'
-    | '/sign-up'
-    | '/401'
-    | '/403'
-    | '/404'
-    | '/500'
-    | '/503'
-    | '/'
-    | '/admin/account'
-    | '/admin/invitation'
-    | '/admin/member'
-    | '/admin/navgroup'
-    | '/admin/navitem'
-    | '/admin/organization'
-    | '/admin/rolenavgroup'
-    | '/admin/session'
-    | '/admin/user'
-    | '/admin/userrolenavgroup'
-    | '/admin/users'
-    | '/admin/verification'
-    | '/settings/account'
-    | '/settings/appearance'
-    | '/settings/display'
-    | '/settings/notifications'
-    | '/apps'
-    | '/chats'
-    | '/help-center'
-    | '/settings/'
-    | '/tasks'
-    | '/users'
-  fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/forgot-password'
-    | '/sign-in'
-    | '/sign-in-2'
-    | '/sign-up'
-    | '/401'
-    | '/403'
-    | '/404'
-    | '/500'
-    | '/503'
-    | '/'
-    | '/admin/account'
-    | '/admin/invitation'
-    | '/admin/member'
-    | '/admin/navgroup'
-    | '/admin/navitem'
-    | '/admin/organization'
-    | '/admin/rolenavgroup'
-    | '/admin/session'
-    | '/admin/user'
-    | '/admin/userrolenavgroup'
-    | '/admin/users'
-    | '/admin/verification'
-    | '/settings/account'
-    | '/settings/appearance'
-    | '/settings/display'
-    | '/settings/notifications'
-    | '/apps'
-    | '/chats'
-    | '/help-center'
-    | '/settings'
-    | '/tasks'
-    | '/users'
-  id:
-    | '__root__'
-    | '/_authenticated'
-    | '/_authenticated/settings'
-    | '/(auth)/forgot-password'
-    | '/(auth)/sign-in'
-    | '/(auth)/sign-in-2'
-    | '/(auth)/sign-up'
-    | '/(errors)/401'
-    | '/(errors)/403'
-    | '/(errors)/404'
-    | '/(errors)/500'
-    | '/(errors)/503'
-    | '/_authenticated/'
-    | '/_authenticated/admin/account'
-    | '/_authenticated/admin/invitation'
-    | '/_authenticated/admin/member'
-    | '/_authenticated/admin/navgroup'
-    | '/_authenticated/admin/navitem'
-    | '/_authenticated/admin/organization'
-    | '/_authenticated/admin/rolenavgroup'
-    | '/_authenticated/admin/session'
-    | '/_authenticated/admin/user'
-    | '/_authenticated/admin/userrolenavgroup'
-    | '/_authenticated/admin/users'
-    | '/_authenticated/admin/verification'
-    | '/_authenticated/settings/account'
-    | '/_authenticated/settings/appearance'
-    | '/_authenticated/settings/display'
-    | '/_authenticated/settings/notifications'
-    | '/_authenticated/apps/'
-    | '/_authenticated/chats/'
-    | '/_authenticated/help-center/'
-    | '/_authenticated/settings/'
-    | '/_authenticated/tasks/'
-    | '/_authenticated/users/'
-  fileRoutesById: FileRoutesById
-}
-
-export interface RootRouteChildren {
-  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
-  authForgotPasswordRoute: typeof authForgotPasswordRoute
-  authSignInRoute: typeof authSignInRoute
-  authSignIn2Route: typeof authSignIn2Route
-  authSignUpRoute: typeof authSignUpRoute
-  errors401Route: typeof errors401Route
-  errors403Route: typeof errors403Route
-  errors404Route: typeof errors404Route
-  errors500Route: typeof errors500Route
-  errors503Route: typeof errors503Route
-}
+const ApiUsersServerRouteWithChildren = ApiUsersServerRoute._addFileChildren(
+  ApiUsersServerRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
@@ -830,183 +1110,23 @@ const rootRouteChildren: RootRouteChildren = {
   errors500Route: errors500Route,
   errors503Route: errors503Route,
 }
-
-export const routeTree = rootRoute
+export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-/* ROUTE_MANIFEST_START
-{
-  "routes": {
-    "__root__": {
-      "filePath": "__root.tsx",
-      "children": [
-        "/_authenticated",
-        "/(auth)/forgot-password",
-        "/(auth)/sign-in",
-        "/(auth)/sign-in-2",
-        "/(auth)/sign-up",
-        "/(errors)/401",
-        "/(errors)/403",
-        "/(errors)/404",
-        "/(errors)/500",
-        "/(errors)/503"
-      ]
-    },
-    "/_authenticated": {
-      "filePath": "_authenticated/route.tsx",
-      "children": [
-        "/_authenticated/settings",
-        "/_authenticated/",
-        "/_authenticated/admin/account",
-        "/_authenticated/admin/invitation",
-        "/_authenticated/admin/member",
-        "/_authenticated/admin/navgroup",
-        "/_authenticated/admin/navitem",
-        "/_authenticated/admin/organization",
-        "/_authenticated/admin/rolenavgroup",
-        "/_authenticated/admin/session",
-        "/_authenticated/admin/user",
-        "/_authenticated/admin/userrolenavgroup",
-        "/_authenticated/admin/users",
-        "/_authenticated/admin/verification",
-        "/_authenticated/apps/",
-        "/_authenticated/chats/",
-        "/_authenticated/help-center/",
-        "/_authenticated/tasks/",
-        "/_authenticated/users/"
-      ]
-    },
-    "/_authenticated/settings": {
-      "filePath": "_authenticated/settings/route.tsx",
-      "parent": "/_authenticated",
-      "children": [
-        "/_authenticated/settings/account",
-        "/_authenticated/settings/appearance",
-        "/_authenticated/settings/display",
-        "/_authenticated/settings/notifications",
-        "/_authenticated/settings/"
-      ]
-    },
-    "/(auth)/forgot-password": {
-      "filePath": "(auth)/forgot-password.tsx"
-    },
-    "/(auth)/sign-in": {
-      "filePath": "(auth)/sign-in.tsx"
-    },
-    "/(auth)/sign-in-2": {
-      "filePath": "(auth)/sign-in-2.tsx"
-    },
-    "/(auth)/sign-up": {
-      "filePath": "(auth)/sign-up.tsx"
-    },
-    "/(errors)/401": {
-      "filePath": "(errors)/401.tsx"
-    },
-    "/(errors)/403": {
-      "filePath": "(errors)/403.tsx"
-    },
-    "/(errors)/404": {
-      "filePath": "(errors)/404.tsx"
-    },
-    "/(errors)/500": {
-      "filePath": "(errors)/500.tsx"
-    },
-    "/(errors)/503": {
-      "filePath": "(errors)/503.tsx"
-    },
-    "/_authenticated/": {
-      "filePath": "_authenticated/index.tsx",
-      "parent": "/_authenticated"
-    },
-    "/_authenticated/admin/account": {
-      "filePath": "_authenticated/admin/account.tsx",
-      "parent": "/_authenticated"
-    },
-    "/_authenticated/admin/invitation": {
-      "filePath": "_authenticated/admin/invitation.tsx",
-      "parent": "/_authenticated"
-    },
-    "/_authenticated/admin/member": {
-      "filePath": "_authenticated/admin/member.tsx",
-      "parent": "/_authenticated"
-    },
-    "/_authenticated/admin/navgroup": {
-      "filePath": "_authenticated/admin/navgroup.tsx",
-      "parent": "/_authenticated"
-    },
-    "/_authenticated/admin/navitem": {
-      "filePath": "_authenticated/admin/navitem.tsx",
-      "parent": "/_authenticated"
-    },
-    "/_authenticated/admin/organization": {
-      "filePath": "_authenticated/admin/organization.tsx",
-      "parent": "/_authenticated"
-    },
-    "/_authenticated/admin/rolenavgroup": {
-      "filePath": "_authenticated/admin/rolenavgroup.tsx",
-      "parent": "/_authenticated"
-    },
-    "/_authenticated/admin/session": {
-      "filePath": "_authenticated/admin/session.tsx",
-      "parent": "/_authenticated"
-    },
-    "/_authenticated/admin/user": {
-      "filePath": "_authenticated/admin/user.tsx",
-      "parent": "/_authenticated"
-    },
-    "/_authenticated/admin/userrolenavgroup": {
-      "filePath": "_authenticated/admin/userrolenavgroup.tsx",
-      "parent": "/_authenticated"
-    },
-    "/_authenticated/admin/users": {
-      "filePath": "_authenticated/admin/users.tsx",
-      "parent": "/_authenticated"
-    },
-    "/_authenticated/admin/verification": {
-      "filePath": "_authenticated/admin/verification.tsx",
-      "parent": "/_authenticated"
-    },
-    "/_authenticated/settings/account": {
-      "filePath": "_authenticated/settings/account.tsx",
-      "parent": "/_authenticated/settings"
-    },
-    "/_authenticated/settings/appearance": {
-      "filePath": "_authenticated/settings/appearance.tsx",
-      "parent": "/_authenticated/settings"
-    },
-    "/_authenticated/settings/display": {
-      "filePath": "_authenticated/settings/display.tsx",
-      "parent": "/_authenticated/settings"
-    },
-    "/_authenticated/settings/notifications": {
-      "filePath": "_authenticated/settings/notifications.tsx",
-      "parent": "/_authenticated/settings"
-    },
-    "/_authenticated/apps/": {
-      "filePath": "_authenticated/apps/index.tsx",
-      "parent": "/_authenticated"
-    },
-    "/_authenticated/chats/": {
-      "filePath": "_authenticated/chats/index.tsx",
-      "parent": "/_authenticated"
-    },
-    "/_authenticated/help-center/": {
-      "filePath": "_authenticated/help-center/index.tsx",
-      "parent": "/_authenticated"
-    },
-    "/_authenticated/settings/": {
-      "filePath": "_authenticated/settings/index.tsx",
-      "parent": "/_authenticated/settings"
-    },
-    "/_authenticated/tasks/": {
-      "filePath": "_authenticated/tasks/index.tsx",
-      "parent": "/_authenticated"
-    },
-    "/_authenticated/users/": {
-      "filePath": "_authenticated/users/index.tsx",
-      "parent": "/_authenticated"
-    }
-  }
+const rootServerRouteChildren: RootServerRouteChildren = {
+  ApiSessionsServerRoute: ApiSessionsServerRoute,
+  ApiUsersServerRoute: ApiUsersServerRouteWithChildren,
+  ApiAuthSplatServerRoute: ApiAuthSplatServerRoute,
+  ApiAdminNavgroupIdServerRoute: ApiAdminNavgroupIdServerRoute,
+  ApiAdminNavgroupOrderServerRoute: ApiAdminNavgroupOrderServerRoute,
+  ApiAdminNavgroupVisibilityServerRoute: ApiAdminNavgroupVisibilityServerRoute,
+  ApiAdminNavitemIdServerRoute: ApiAdminNavitemIdServerRoute,
+  ApiAdminNavitemOrderServerRoute: ApiAdminNavitemOrderServerRoute,
+  ApiAdminNavitemVisibilityServerRoute: ApiAdminNavitemVisibilityServerRoute,
+  ApiAdminNavgroupIndexServerRoute: ApiAdminNavgroupIndexServerRoute,
+  ApiAdminNavitemIndexServerRoute: ApiAdminNavitemIndexServerRoute,
+  ApiAdminUserIndexServerRoute: ApiAdminUserIndexServerRoute,
 }
-ROUTE_MANIFEST_END */
+export const serverRouteTree = rootServerRouteImport
+  ._addFileChildren(rootServerRouteChildren)
+  ._addFileTypes<FileServerRouteTypes>()

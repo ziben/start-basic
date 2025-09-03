@@ -2,8 +2,8 @@ import { z } from 'zod'
 import { useFieldArray, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Link } from '@tanstack/react-router'
+import { showSubmittedData } from '@/lib/show-submitted-data'
 import { cn } from '@/lib/utils'
-import { showSubmittedData } from '@/utils/show-submitted-data'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -26,23 +26,20 @@ import { Textarea } from '@/components/ui/textarea'
 
 const profileFormSchema = z.object({
   username: z
-    .string()
-    .min(2, {
-      message: 'Username must be at least 2 characters.',
-    })
-    .max(30, {
-      message: 'Username must not be longer than 30 characters.',
-    }),
-  email: z
-    .string({
-      required_error: 'Please select an email to display.',
-    })
-    .email(),
+    .string('Please enter your username.')
+    .min(2, 'Username must be at least 2 characters.')
+    .max(30, 'Username must not be longer than 30 characters.'),
+  email: z.email({
+    error: (iss) =>
+      iss.input === undefined
+        ? 'Please select an email to display.'
+        : undefined,
+  }),
   bio: z.string().max(160).min(4),
   urls: z
     .array(
       z.object({
-        value: z.string().url({ message: 'Please enter a valid URL.' }),
+        value: z.url('Please enter a valid URL.'),
       })
     )
     .optional(),
@@ -59,7 +56,7 @@ const defaultValues: Partial<ProfileFormValues> = {
   ],
 }
 
-export default function ProfileForm() {
+export function ProfileForm() {
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
     defaultValues,

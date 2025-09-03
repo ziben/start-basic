@@ -2,7 +2,7 @@ import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Link } from '@tanstack/react-router'
-import { showSubmittedData } from '@/utils/show-submitted-data'
+import { showSubmittedData } from '@/lib/show-submitted-data'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
@@ -19,7 +19,10 @@ import { Switch } from '@/components/ui/switch'
 
 const notificationsFormSchema = z.object({
   type: z.enum(['all', 'mentions', 'none'], {
-    required_error: 'You need to select a notification type.',
+    error: (iss) =>
+      iss.input === undefined
+        ? 'Please select a notification type.'
+        : undefined,
   }),
   mobile: z.boolean().default(false).optional(),
   communication_emails: z.boolean().default(false).optional(),
@@ -60,9 +63,9 @@ export function NotificationsForm() {
                 <RadioGroup
                   onValueChange={field.onChange}
                   defaultValue={field.value}
-                  className='flex flex-col space-y-1'
+                  className='flex flex-col gap-2'
                 >
-                  <FormItem className='flex items-center space-y-0 space-x-3'>
+                  <FormItem className='flex items-center'>
                     <FormControl>
                       <RadioGroupItem value='all' />
                     </FormControl>
@@ -70,7 +73,7 @@ export function NotificationsForm() {
                       All new messages
                     </FormLabel>
                   </FormItem>
-                  <FormItem className='flex items-center space-y-0 space-x-3'>
+                  <FormItem className='flex items-center'>
                     <FormControl>
                       <RadioGroupItem value='mentions' />
                     </FormControl>
@@ -78,7 +81,7 @@ export function NotificationsForm() {
                       Direct messages and mentions
                     </FormLabel>
                   </FormItem>
-                  <FormItem className='flex items-center space-y-0 space-x-3'>
+                  <FormItem className='flex items-center'>
                     <FormControl>
                       <RadioGroupItem value='none' />
                     </FormControl>
@@ -185,7 +188,7 @@ export function NotificationsForm() {
           control={form.control}
           name='mobile'
           render={({ field }) => (
-            <FormItem className='relative flex flex-row items-start space-y-0 space-x-3'>
+            <FormItem className='relative flex flex-row items-start'>
               <FormControl>
                 <Checkbox
                   checked={field.value}

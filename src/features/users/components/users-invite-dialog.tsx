@@ -1,8 +1,8 @@
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { IconMailPlus, IconSend } from '@tabler/icons-react'
-import { showSubmittedData } from '@/utils/show-submitted-data'
+import { MailPlus, Send } from 'lucide-react'
+import { showSubmittedData } from '@/lib/show-submitted-data'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -24,24 +24,28 @@ import {
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { SelectDropdown } from '@/components/select-dropdown'
-import { userTypes } from '../data/data'
+import { roles } from '../data/data'
 
 const formSchema = z.object({
-  email: z
-    .string()
-    .min(1, { message: 'Email is required.' })
-    .email({ message: 'Email is invalid.' }),
-  role: z.string().min(1, { message: 'Role is required.' }),
+  email: z.email({
+    error: (iss) =>
+      iss.input === '' ? 'Please enter an email to invite.' : undefined,
+  }),
+  role: z.string().min(1, 'Role is required.'),
   desc: z.string().optional(),
 })
+
 type UserInviteForm = z.infer<typeof formSchema>
 
-interface Props {
+type UserInviteDialogProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
 }
 
-export function UsersInviteDialog({ open, onOpenChange }: Props) {
+export function UsersInviteDialog({
+  open,
+  onOpenChange,
+}: UserInviteDialogProps) {
   const form = useForm<UserInviteForm>({
     resolver: zodResolver(formSchema),
     defaultValues: { email: '', role: '', desc: '' },
@@ -62,9 +66,9 @@ export function UsersInviteDialog({ open, onOpenChange }: Props) {
       }}
     >
       <DialogContent className='sm:max-w-md'>
-        <DialogHeader className='text-left'>
+        <DialogHeader className='text-start'>
           <DialogTitle className='flex items-center gap-2'>
-            <IconMailPlus /> Invite User
+            <MailPlus /> Invite User
           </DialogTitle>
           <DialogDescription>
             Invite new user to join your team by sending them an email
@@ -98,13 +102,13 @@ export function UsersInviteDialog({ open, onOpenChange }: Props) {
               control={form.control}
               name='role'
               render={({ field }) => (
-                <FormItem className='space-y-1'>
+                <FormItem>
                   <FormLabel>Role</FormLabel>
                   <SelectDropdown
                     defaultValue={field.value}
                     onValueChange={field.onChange}
                     placeholder='Select a role'
-                    items={userTypes.map(({ label, value }) => ({
+                    items={roles.map(({ label, value }) => ({
                       label,
                       value,
                     }))}
@@ -137,7 +141,7 @@ export function UsersInviteDialog({ open, onOpenChange }: Props) {
             <Button variant='outline'>Cancel</Button>
           </DialogClose>
           <Button type='submit' form='user-invite-form'>
-            Invite <IconSend />
+            Invite <Send />
           </Button>
         </DialogFooter>
       </DialogContent>

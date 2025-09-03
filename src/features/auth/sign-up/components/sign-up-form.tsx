@@ -1,9 +1,5 @@
-import { HTMLAttributes, useState } from 'react'
-import { z } from 'zod'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { IconBrandFacebook, IconBrandGithub } from '@tabler/icons-react'
-import { cn } from '@/lib/utils'
+import { IconFacebook, IconGithub } from '@/assets/brand-icons'
+import { PasswordInput } from '@/components/password-input'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -14,18 +10,20 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { PasswordInput } from '@/components/password-input'
-import { authClient } from '../../../../lib/auth-client'
+import { cn } from '@/lib/utils'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate } from '@tanstack/react-router'
-
-type SignUpFormProps = HTMLAttributes<HTMLFormElement>
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+import { authClient } from '../../../../lib/auth-client'
 
 const formSchema = z
   .object({
-    email: z
-      .string()
-      .min(1, { message: 'Please enter your email' })
-      .email({ message: 'Invalid email address' }),
+    email: z.email({
+      error: (iss) =>
+        iss.input === '' ? 'Please enter your email' : undefined,
+    }),
     password: z
       .string()
       .min(1, {
@@ -34,14 +32,19 @@ const formSchema = z
       .min(7, {
         message: 'Password must be at least 7 characters long',
       }),
-    confirmPassword: z.string(),
+    confirmPassword: z.string()
+      .min(1, 'Please enter your password')
+      .min(7, 'Password must be at least 7 characters long  '),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match.",
     path: ['confirmPassword'],
   })
 
-export function SignUpForm({ className, ...props }: SignUpFormProps) {
+export function SignUpForm({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLFormElement>) {
   const [isLoading, setIsLoading] = useState(false)
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -141,7 +144,7 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
             type='button'
             disabled={isLoading}
           >
-            <IconBrandGithub className='h-4 w-4' /> GitHub
+            <IconGithub className='h-4 w-4' /> GitHub
           </Button>
           <Button
             variant='outline'
@@ -149,7 +152,7 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
             type='button'
             disabled={isLoading}
           >
-            <IconBrandFacebook className='h-4 w-4' /> Facebook
+            <IconFacebook className='h-4 w-4' /> Facebook
           </Button>
         </div>
       </form>

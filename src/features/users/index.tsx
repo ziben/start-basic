@@ -1,55 +1,29 @@
+import { getRouteApi } from '@tanstack/react-router'
+import { ConfigDrawer } from '@/components/config-drawer'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
-import { columns } from './components/users-columns'
 import { UsersDialogs } from './components/users-dialogs'
 import { UsersPrimaryButtons } from './components/users-primary-buttons'
+import { UsersProvider } from './components/users-provider'
 import { UsersTable } from './components/users-table'
-import UsersProvider from './context/users-context'
-import { userListSchema } from './data/schema'
-import { useQuery } from '@tanstack/react-query'
+import { users } from './data/users'
 
-export default function Users() {
-  const { data: userList, isLoading, error } = useQuery({
-    queryKey: ['users'],
-    queryFn: async () => {
-      try {
-        // 使用正确的 API 端点来获取用户列表
-        const response = await fetch('/api/users', {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-        const data = await response.json();
-        if (data) {
-          return userListSchema.parse(data);
-        }
-        return [];
-      } catch (err) {
-        console.error('获取用户列表失败:', err);
-        return [];
-      }
-    },
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes
-  });
+const route = getRouteApi('/_authenticated/users/')
 
-  if (isLoading) {
-    return <div>加载用户列表中...</div>;
-  }
-
-  if (error) {
-    return <div>获取用户列表时出错: {error.message}</div>;
-  }
+export function Users() {
+  const search = route.useSearch()
+  const navigate = route.useNavigate()
 
   return (
     <UsersProvider>
       <Header fixed>
         <Search />
-        <div className='ml-auto flex items-center space-x-4'>
+        <div className='ms-auto flex items-center space-x-4'>
           <ThemeSwitch />
+          <ConfigDrawer />
           <ProfileDropdown />
         </div>
       </Header>
@@ -65,10 +39,7 @@ export default function Users() {
           <UsersPrimaryButtons />
         </div>
         <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-y-0 lg:space-x-12'>
-          <UsersTable
-            data={userList || []}
-            columns={columns}
-          />
+          <UsersTable data={users} search={search} navigate={navigate} />
         </div>
       </Main>
 

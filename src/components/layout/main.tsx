@@ -1,22 +1,27 @@
-import React from 'react'
 import { cn } from '@/lib/utils'
 
-interface MainProps extends React.HTMLAttributes<HTMLElement> {
+type MainProps = React.HTMLAttributes<HTMLElement> & {
   fixed?: boolean
+  fluid?: boolean
   ref?: React.Ref<HTMLElement>
 }
 
-export const Main = ({ fixed, ...props }: MainProps) => {
+export function Main({ fixed, className, fluid, ...props }: MainProps) {
   return (
     <main
+      data-layout={fixed ? 'fixed' : 'auto'}
       className={cn(
-        'peer-[.header-fixed]/header:mt-16',
         'px-4 py-6',
-        fixed && 'fixed-main flex grow flex-col overflow-hidden'
+
+        // If layout is fixed, make the main container flex and grow
+        fixed && 'flex grow flex-col overflow-hidden',
+
+        // If layout is not fluid, set the max-width
+        !fluid &&
+          '@7xl/content:mx-auto @7xl/content:w-full @7xl/content:max-w-7xl',
+        className
       )}
       {...props}
     />
   )
 }
-
-Main.displayName = 'Main'

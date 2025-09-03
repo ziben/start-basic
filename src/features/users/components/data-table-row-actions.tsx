@@ -1,6 +1,6 @@
 import { DotsHorizontalIcon } from '@radix-ui/react-icons'
-import { Row } from '@tanstack/react-table'
-import { IconEdit, IconTrash } from '@tabler/icons-react'
+import { type Row } from '@tanstack/react-table'
+import { Trash2, UserPen } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -10,10 +10,10 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { useUsers } from '../context/users-context'
-import { User } from '../data/schema'
+import { type User } from '../data/schema'
+import { useUsers } from './users-provider'
 
-interface DataTableRowActionsProps {
+type DataTableRowActionsProps = {
   row: Row<User>
 }
 
@@ -40,7 +40,7 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
           >
             Edit
             <DropdownMenuShortcut>
-              <IconEdit size={16} />
+              <UserPen size={16} />
             </DropdownMenuShortcut>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
@@ -53,7 +53,7 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
           >
             Delete
             <DropdownMenuShortcut>
-              <IconTrash size={16} />
+              <Trash2 size={16} />
             </DropdownMenuShortcut>
           </DropdownMenuItem>
         </DropdownMenuContent>

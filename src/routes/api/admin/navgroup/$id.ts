@@ -1,14 +1,14 @@
-import { createAPIFileRoute } from '@tanstack/react-start/api'
+import { createServerFileRoute } from '@tanstack/react-start/server'
 import { z } from 'zod'
 import {
   getNavGroupById,
   updateNavGroup,
   deleteNavGroup
-} from './controller'
-import { withAdminAuth } from '../middleware'
+} from './index'
+import { withAdminAuth } from '../../../../middleware'
 
 // 创建单个导航组API路由
-export const APIRoute = createAPIFileRoute('/api/admin/navgroup/$id')({
+export const ServerRoute = createServerFileRoute('/api/admin/navgroup/$id').methods({
   // 获取单个导航组
   GET: withAdminAuth(async ({ params }) => {
     const { id } = params

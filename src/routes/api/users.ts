@@ -1,8 +1,8 @@
 import { json } from '@tanstack/react-start'
-import { createAPIFileRoute } from '@tanstack/react-start/api'
 import type { User } from '../../utils/users'
+import { createServerFileRoute } from '@tanstack/react-start/server'
 
-export const APIRoute = createAPIFileRoute('/api/users')({
+export const ServerRoute = createServerFileRoute('/api/users').methods({
   GET: async ({ request }) => {
     console.info('Fetching users... @', request.url)
     // 由于无法直接访问上下文，暂时不进行权限检查
@@ -19,3 +19,4 @@ export const APIRoute = createAPIFileRoute('/api/users')({
     return json(list.map((u) => ({ id: u.id, name: u.name, email: u.email })))
   },
 })
+  

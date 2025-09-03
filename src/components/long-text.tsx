@@ -12,17 +12,17 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 
-interface Props {
+type LongTextProps = {
   children: React.ReactNode
   className?: string
   contentClassName?: string
 }
 
-export default function LongText({
+export function LongText({
   children,
   className = '',
   contentClassName = '',
-}: Props) {
+}: LongTextProps) {
   const ref = useRef<HTMLDivElement>(null)
   const [isOverflown, setIsOverflown] = useState(false)
 

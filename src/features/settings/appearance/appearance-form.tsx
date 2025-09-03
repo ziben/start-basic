@@ -3,10 +3,10 @@ import { useForm } from 'react-hook-form'
 import { ChevronDownIcon } from '@radix-ui/react-icons'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { fonts } from '@/config/fonts'
+import { showSubmittedData } from '@/lib/show-submitted-data'
 import { cn } from '@/lib/utils'
-import { showSubmittedData } from '@/utils/show-submitted-data'
-import { useFont } from '@/context/font-context'
-import { useTheme } from '@/context/theme-context'
+import { useFont } from '@/context/font-provider'
+import { useTheme } from '@/context/theme-provider'
 import { Button, buttonVariants } from '@/components/ui/button'
 import {
   Form,
@@ -20,13 +20,8 @@ import {
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 
 const appearanceFormSchema = z.object({
-  theme: z.enum(['light', 'dark'], {
-    required_error: 'Please select a theme.',
-  }),
-  font: z.enum(fonts, {
-    invalid_type_error: 'Select a font',
-    required_error: 'Please select a font.',
-  }),
+  theme: z.enum(['light', 'dark']),
+  font: z.enum(fonts),
 })
 
 type AppearanceFormValues = z.infer<typeof appearanceFormSchema>
@@ -67,7 +62,8 @@ export function AppearanceForm() {
                   <select
                     className={cn(
                       buttonVariants({ variant: 'outline' }),
-                      'w-[200px] appearance-none font-normal capitalize'
+                      'w-[200px] appearance-none font-normal capitalize',
+                      'dark:bg-background dark:hover:bg-background'
                     )}
                     {...field}
                   >
@@ -78,13 +74,10 @@ export function AppearanceForm() {
                     ))}
                   </select>
                 </FormControl>
-                <ChevronDownIcon className='absolute top-2.5 right-3 h-4 w-4 opacity-50' />
+                <ChevronDownIcon className='absolute end-3 top-2.5 h-4 w-4 opacity-50' />
               </div>
-              <FormDescription className='font-hwmct'>
-                汇文明朝体：Set the font you want to use in the dashboard.
-              </FormDescription>
-              <FormDescription className='font-maple-mono-cn'>
-                MapleMono：Set the font you want to use in the dashboard.
+              <FormDescription className='font-manrope'>
+                Set the font you want to use in the dashboard.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -94,7 +87,7 @@ export function AppearanceForm() {
           control={form.control}
           name='theme'
           render={({ field }) => (
-            <FormItem className='space-y-1'>
+            <FormItem>
               <FormLabel>Theme</FormLabel>
               <FormDescription>
                 Select the theme for the dashboard.

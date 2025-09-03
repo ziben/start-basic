@@ -1,10 +1,10 @@
-import { createAPIFileRoute } from '@tanstack/react-start/api'
+import { createServerFileRoute } from '@tanstack/react-start/server'
 import { z } from 'zod'
-import { updateUserNavGroupVisibility } from './controller'
-import { withAdminAuth } from '../middleware'
+import { updateUserNavGroupVisibility } from './index'
+import { withAdminAuth } from '../../../../middleware'
 
 // 导航组可见性API路由
-export const APIRoute = createAPIFileRoute('/api/admin/navgroup/visibility')({
+export const ServerRoute = createServerFileRoute('/api/admin/navgroup/visibility').methods({
   // 更新导航组可见性
   PUT: withAdminAuth(async ({ request }) => {
     try {

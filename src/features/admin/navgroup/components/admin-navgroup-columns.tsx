@@ -48,7 +48,7 @@ export function useAdminNavgroupColumns() {
     {
       accessorKey: 'title',
       header: () => t('admin.navgroup.table.title', { defaultMessage: '标题' }),
-      cell: ({ row }) => row.getValue('title'),
+      cell: ({ row }) => t(row.getValue<string>('title')),
       meta: { className: 'w-40' },
     },
     {

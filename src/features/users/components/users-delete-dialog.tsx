@@ -1,21 +1,25 @@
 'use client'
 
 import { useState } from 'react'
-import { IconAlertTriangle } from '@tabler/icons-react'
-import { showSubmittedData } from '@/utils/show-submitted-data'
+import { AlertTriangle } from 'lucide-react'
+import { showSubmittedData } from '@/lib/show-submitted-data'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { ConfirmDialog } from '@/components/confirm-dialog'
-import { User } from '../data/schema'
+import { type User } from '../data/schema'
 
-interface Props {
+type UserDeleteDialogProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
   currentRow: User
 }
 
-export function UsersDeleteDialog({ open, onOpenChange, currentRow }: Props) {
+export function UsersDeleteDialog({
+  open,
+  onOpenChange,
+  currentRow,
+}: UserDeleteDialogProps) {
   const [value, setValue] = useState('')
 
   const handleDelete = () => {
@@ -33,8 +37,8 @@ export function UsersDeleteDialog({ open, onOpenChange, currentRow }: Props) {
       disabled={value.trim() !== currentRow.username}
       title={
         <span className='text-destructive'>
-          <IconAlertTriangle
-            className='stroke-destructive mr-1 inline-block'
+          <AlertTriangle
+            className='stroke-destructive me-1 inline-block'
             size={18}
           />{' '}
           Delete User
@@ -65,7 +69,7 @@ export function UsersDeleteDialog({ open, onOpenChange, currentRow }: Props) {
           <Alert variant='destructive'>
             <AlertTitle>Warning!</AlertTitle>
             <AlertDescription>
-              Please be carefull, this operation can not be rolled back.
+              Please be careful, this operation can not be rolled back.
             </AlertDescription>
           </Alert>
         </div>

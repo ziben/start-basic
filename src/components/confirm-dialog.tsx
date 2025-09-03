@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 
-interface ConfirmDialogProps {
+type ConfirmDialogProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
   title: React.ReactNode
@@ -42,7 +42,7 @@ export function ConfirmDialog(props: ConfirmDialogProps) {
   return (
     <AlertDialog {...actions}>
       <AlertDialogContent className={cn(className && className)}>
-        <AlertDialogHeader className='text-left'>
+        <AlertDialogHeader className='text-start'>
           <AlertDialogTitle>{title}</AlertDialogTitle>
           <AlertDialogDescription asChild>
             <div>{desc}</div>

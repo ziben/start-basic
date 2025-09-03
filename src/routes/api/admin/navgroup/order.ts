@@ -1,10 +1,10 @@
-import { createAPIFileRoute } from '@tanstack/react-start/api'
+import { createServerFileRoute } from '@tanstack/react-start/server'
 import { z } from 'zod'
-import { updateNavGroupOrder } from './controller'
-import { withAdminAuth } from '../middleware'
+import { updateNavGroupOrder } from './index'
+import { withAdminAuth } from '../../../../middleware'
 
 // 导航组顺序API路由
-export const APIRoute = createAPIFileRoute('/api/admin/navgroup/order')({
+export const ServerRoute = createServerFileRoute('/api/admin/navgroup/order').methods({
   // 更新导航组顺序
   PUT: withAdminAuth(async ({ request }) => {
     try {

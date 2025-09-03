@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import { IconCheck, IconX } from '@tabler/icons-react'
-import { showSubmittedData } from '@/utils/show-submitted-data'
+import { Check, X } from 'lucide-react'
+import { showSubmittedData } from '@/lib/show-submitted-data'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -17,16 +17,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { ChatUser } from '../data/chat-types'
+import { type ChatUser } from '../data/chat-types'
 
 type User = Omit<ChatUser, 'messages'>
 
-type Props = {
+type NewChatProps = {
   users: User[]
   open: boolean
   onOpenChange: (open: boolean) => void
 }
-export function NewChat({ users, onOpenChange, open }: Props) {
+export function NewChat({ users, onOpenChange, open }: NewChatProps) {
   const [selectedUsers, setSelectedUsers] = useState<User[]>([])
 
   const handleSelectUser = (user: User) => {
@@ -54,13 +54,13 @@ export function NewChat({ users, onOpenChange, open }: Props) {
           <DialogTitle>New message</DialogTitle>
         </DialogHeader>
         <div className='flex flex-col gap-4'>
-          <div className='flex flex-wrap items-center gap-2'>
-            <span className='text-muted-foreground text-sm'>To:</span>
+          <div className='flex flex-wrap items-baseline-last gap-2'>
+            <span className='text-muted-foreground min-h-6 text-sm'>To:</span>
             {selectedUsers.map((user) => (
               <Badge key={user.id} variant='default'>
                 {user.fullName}
                 <button
-                  className='ring-offset-background focus:ring-ring ml-1 rounded-full outline-hidden focus:ring-2 focus:ring-offset-2'
+                  className='ring-offset-background focus:ring-ring ms-1 rounded-full outline-hidden focus:ring-2 focus:ring-offset-2'
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
                       handleRemoveUser(user.id)
@@ -68,7 +68,7 @@ export function NewChat({ users, onOpenChange, open }: Props) {
                   }}
                   onClick={() => handleRemoveUser(user.id)}
                 >
-                  <IconX className='text-muted-foreground hover:text-foreground h-3 w-3' />
+                  <X className='text-muted-foreground hover:text-foreground h-3 w-3' />
                 </button>
               </Badge>
             ))}
@@ -85,7 +85,7 @@ export function NewChat({ users, onOpenChange, open }: Props) {
                   <CommandItem
                     key={user.id}
                     onSelect={() => handleSelectUser(user)}
-                    className='flex items-center justify-between gap-2'
+                    className='hover:bg-accent hover:text-accent-foreground flex items-center justify-between gap-2'
                   >
                     <div className='flex items-center gap-2'>
                       <img
@@ -97,14 +97,14 @@ export function NewChat({ users, onOpenChange, open }: Props) {
                         <span className='text-sm font-medium'>
                           {user.fullName}
                         </span>
-                        <span className='text-muted-foreground text-xs'>
-                          {user.username} aa
+                        <span className='text-accent-foreground/70 text-xs'>
+                          {user.username}
                         </span>
                       </div>
                     </div>
 
                     {selectedUsers.find((u) => u.id === user.id) && (
-                      <IconCheck className='h-4 w-4' />
+                      <Check className='h-4 w-4' />
                     )}
                   </CommandItem>
                 ))}

@@ -1,6 +1,5 @@
 import { useState, type JSX } from 'react'
-import { useLocation, useNavigate } from '@tanstack/react-router'
-import { Link } from '@tanstack/react-router'
+import { useLocation, useNavigate, Link } from '@tanstack/react-router'
 import { cn } from '@/lib/utils'
 import { buttonVariants } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -12,7 +11,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 
-interface SidebarNavProps extends React.HTMLAttributes<HTMLElement> {
+type SidebarNavProps = React.HTMLAttributes<HTMLElement> & {
   items: {
     href: string
     title: string
@@ -20,11 +19,7 @@ interface SidebarNavProps extends React.HTMLAttributes<HTMLElement> {
   }[]
 }
 
-export default function SidebarNav({
-  className,
-  items,
-  ...props
-}: SidebarNavProps) {
+export function SidebarNav({ className, items, ...props }: SidebarNavProps) {
   const { pathname } = useLocation()
   const navigate = useNavigate()
   const [val, setVal] = useState(pathname ?? '/settings')
@@ -73,12 +68,12 @@ export default function SidebarNav({
               className={cn(
                 buttonVariants({ variant: 'ghost' }),
                 pathname === item.href
-                  ? 'bg-muted hover:bg-muted'
-                  : 'hover:bg-transparent hover:underline',
+                  ? 'bg-muted hover:bg-accent'
+                  : 'hover:bg-accent hover:underline',
                 'justify-start'
               )}
             >
-              <span className='mr-2'>{item.icon}</span>
+              <span className='me-2'>{item.icon}</span>
               {item.title}
             </Link>
           ))}

@@ -17,8 +17,9 @@ import { DataCard } from '@/components/ui/data-card'
 import { Overview } from './components/overview'
 import { RecentSales } from './components/recent-sales'
 import { useTranslation } from '~/hooks/useTranslation'
+import { ConfigDrawer } from '@/components/config-drawer'
 
-export default function Dashboard() {
+export function Dashboard() {
   const { t } = useTranslation()
   
   return (
@@ -29,6 +30,7 @@ export default function Dashboard() {
         <div className='ml-auto flex items-center space-x-4'>
           <Search />
           <ThemeSwitch />
+          <ConfigDrawer />
           <ProfileDropdown />
         </div>
       </Header>
