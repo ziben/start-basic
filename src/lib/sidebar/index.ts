@@ -5,6 +5,7 @@ import { SidebarData } from '~/components/layout/types'
 import { useTranslation } from '~/hooks/useTranslation'
 import { getSidebarDataFn } from '~/components/layout/app-sidebar'
 import { IconResolver } from '~/utils/icon-resolver'
+import { AudioWaveform, Command, GalleryVerticalEnd } from 'lucide-react'
 
 // 用于获取侧边栏数据的React Query键
 export const SIDEBAR_QUERY_KEY = ['sidebar']
@@ -63,6 +64,23 @@ function processSidebarData(
 ): SidebarData {
   return {
     ...data,
+    teams: [
+      {
+        name: 'Shadcn 管理系统',
+        logo: Command,
+        plan: 'Vite + ShadcnUI',
+      },
+      {
+        name: 'Acme 公司',
+        logo: GalleryVerticalEnd,
+        plan: '企业版',
+      },
+      {
+        name: 'Acme 集团',
+        logo: AudioWaveform,
+        plan: '创业版',
+      },
+    ],
     navGroups: data.navGroups.map((group) => ({
       ...group,
       title: translate(group.title), // 翻译标题

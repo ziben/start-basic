@@ -17,6 +17,7 @@ import { getWebRequest } from '@tanstack/react-start/server'
 import { auth } from '~/lib/auth'
 import { PrismaClient } from '@prisma/client'
 import { useLayout } from '~/context/layout-provider'
+import { AppTitle } from './app-title'
 const prisma = new PrismaClient()
 
 /**
@@ -55,11 +56,11 @@ export function AppSidebar() {
     return (
       <Sidebar collapsible={collapsible} variant={variant}>
         <SidebarHeader>
-          <TeamSwitcher teams={defaultData.teams} />
+          {/* <TeamSwitcher teams={defaultData.teams} /> */}
 
           {/* Replace <TeamSwitch /> with the following <AppTitle />
          /* if you want to use the normal app title instead of TeamSwitch dropdown */}
-          {/* <AppTitle /> */}
+          <AppTitle />
         </SidebarHeader>
         <SidebarContent>
           {defaultData.navGroups.map((props) => (
@@ -78,7 +79,8 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible={collapsible} variant={variant}>
       <SidebarHeader>
-        <TeamSwitcher teams={sidebarData.teams} />
+        {/* <TeamSwitcher teams={sidebarData.teams} /> */}
+        <AppTitle />
       </SidebarHeader>
       <SidebarContent>
         {sidebarData.navGroups.map((props) => (
