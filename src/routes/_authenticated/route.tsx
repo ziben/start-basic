@@ -1,12 +1,12 @@
 import { AppSidebar } from '@/components/layout/app-sidebar'
 import { AuthenticatedLayout } from '@/components/layout/authenticated-layout'
-import SkipToMain from '@/components/skip-to-main'
+import { SkipToMain } from '@/components/skip-to-main'
 import { SidebarProvider } from '@/components/ui/sidebar'
-import { SearchProvider } from '@/context/search-context'
+import { SearchProvider } from '@/context/search-provider'
 import { useAuth } from '@/hooks/useAuth'
 import { cn } from '@/lib/utils'
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
-import Cookies from 'js-cookie'
+import { getCookie } from '@/lib/cookies'
 
 export const Route = createFileRoute('/_authenticated')({
   beforeLoad: async ({ context }) => {
@@ -18,7 +18,7 @@ export const Route = createFileRoute('/_authenticated')({
 })
 
 function RouteComponent() {
-  const defaultOpen = Cookies.get('sidebar_state') !== 'false'
+  const defaultOpen = getCookie('sidebar_state') !== 'false'
   const { data: authData, isLoading, error } = useAuth()
 
   return (

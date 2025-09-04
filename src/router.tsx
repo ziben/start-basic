@@ -4,6 +4,8 @@ import { routerWithQueryClient } from '@tanstack/react-router-with-query'
 import { DefaultCatchBoundary } from './components/DefaultCatchBoundary'
 import { NotFound } from './components/NotFound'
 import { routeTree } from './routeTree.gen'
+import { NotFoundError } from './features/errors/not-found-error'
+import { GeneralError } from './features/errors/general-error'
 
 export function createRouter() {
   // 创建 QueryClient，用于管理数据获取和缓存
@@ -23,8 +25,8 @@ export function createRouter() {
       context: { queryClient, user: null },
       defaultPreload: 'intent',
       defaultPreloadStaleTime: 30000, // 30 seconds
-      defaultErrorComponent: DefaultCatchBoundary,
-      defaultNotFoundComponent: () => <NotFound />,
+      defaultErrorComponent: GeneralError,
+      defaultNotFoundComponent: NotFoundError,
       scrollRestoration: true,
       defaultStructuralSharing: true,
     }),

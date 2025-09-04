@@ -10,9 +10,10 @@ import * as React from 'react'
 import { NavigationProgress } from '~/components/navigation-progress'
 import { Toaster } from '~/components/ui/sonner'
 import { AuthProvider } from '~/context/auth-context'
-import { FontProvider } from '~/context/font-context'
+import { DirectionProvider } from '~/context/direction-provider'
+import { FontProvider } from '~/context/font-provider'
 import { LocaleProvider } from '~/context/locale-context'
-import { ThemeProvider } from '~/context/theme-context'
+import { ThemeProvider } from '~/context/theme-provider'
 import { auth } from '~/lib/auth'
 import appCss from '~/styles/index.css?url'
 import { seo } from '~/utils/seo'
@@ -81,23 +82,25 @@ function RootComponent() {
   return (
     <React.StrictMode>
       <ThemeProvider defaultTheme='light' storageKey='vite-ui-theme'>
-        <FontProvider>
-          <LocaleProvider>
-            <AuthProvider>
-              <RootDocument>
-                <NavigationProgress />
-                <Outlet />
-                <Toaster duration={5000} />
-                {import.meta.env.MODE === 'development' && (
-                  <>
-                    <ReactQueryDevtools buttonPosition='bottom-left' />
-                    <TanStackRouterDevtools position='bottom-right' />
-                  </>
-                )}
-              </RootDocument>
-            </AuthProvider>
-          </LocaleProvider>
-        </FontProvider>
+        <DirectionProvider>
+          <FontProvider>
+            <LocaleProvider>
+              <AuthProvider>
+                <RootDocument>
+                  <NavigationProgress />
+                  <Outlet />
+                  <Toaster duration={5000} />
+                  {import.meta.env.MODE === 'development' && (
+                    <>
+                      <ReactQueryDevtools buttonPosition='bottom-left' />
+                      <TanStackRouterDevtools position='bottom-right' />
+                    </>
+                  )}
+                </RootDocument>
+              </AuthProvider>
+            </LocaleProvider>
+          </FontProvider>
+        </DirectionProvider>
       </ThemeProvider>
     </React.StrictMode>
   )

@@ -1,4 +1,3 @@
-import * as TablerIcons from '@tabler/icons-react'
 import * as LucideIcons from 'lucide-react'
 
 // 将数据库获取的图标名称转换为组件的函数类型
@@ -11,14 +10,6 @@ export type IconResolver = (iconName: string | null | undefined) => React.Elemen
  */
 export const iconResolver: IconResolver = (iconName) => {
   if (!iconName) return undefined
-
-  // 处理Tabler图标 (IconXxx格式)
-  if (iconName.startsWith('Icon')) {
-    const tabler = TablerIcons as Record<string, unknown>
-    if (tabler[iconName]) {
-      return tabler[iconName]
-    }
-  }
 
   // 处理Lucide图标
   const lucide = LucideIcons as Record<string, unknown>

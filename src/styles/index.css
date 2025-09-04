@@ -1,10 +1,9 @@
+@import url('https://chinese-fonts-cdn.deno.dev/packages/hwmct/dist/汇文明朝体/result.css');
+@import url('https://chinese-fonts-cdn.deno.dev/packages/maple-mono-cn/dist/MapleMono-CN-Regular/result.css');
 @import 'tailwindcss';
 @import 'tw-animate-css';
 @import './theme.css';
-@import url('https://chinese-fonts-cdn.deno.dev/packages/hwmct/dist/汇文明朝体/result.css');
-@import url('https://chinese-fonts-cdn.deno.dev/packages/maple-mono-cn/dist/MapleMono-CN-Regular/result.css');
 @custom-variant dark (&:is(.dark *));
-
 
 @layer base {
   * {
