@@ -1,29 +1,29 @@
-import { ConfirmDialog } from '@/components/confirm-dialog'
 import { showSubmittedData } from '@/lib/show-submitted-data'
-import { AdminUserImportDialog } from './admin-users-import-dialog'
-import { AdminUsersMutateDrawer } from './admin-users-mutate-drawer'
-import { useAdminUsers } from './admin-users-provider'
+import { ConfirmDialog } from '@/components/confirm-dialog'
+import { NavGroupsImportDialog } from './navgroups-import-dialog'
+import { NavGroupsMutateDrawer } from './navgroups-mutate-drawer'
+import { useNavGroups } from './navgroups-provider'
 
-export function AdminUsersDialogs() {
-  const { open, setOpen, currentRow, setCurrentRow } = useAdminUsers()
+export function NavGroupsDialogs() {
+  const { open, setOpen, currentRow, setCurrentRow } = useNavGroups()
   return (
     <>
-      <AdminUsersMutateDrawer
-        key='task-create'
+      <NavGroupsMutateDrawer
+        key='navgroup-create'
         open={open === 'create'}
         onOpenChange={() => setOpen('create')}
       />
 
-      <AdminUserImportDialog
-        key='tasks-import'
+      <NavGroupsImportDialog
+        key='navgroups-import'
         open={open === 'import'}
         onOpenChange={() => setOpen('import')}
       />
 
       {currentRow && (
         <>
-          <AdminUsersMutateDrawer
-            key={`task-update-${currentRow.id}`}
+          <NavGroupsMutateDrawer
+            key={`navgroup-update-${currentRow.id}`}
             open={open === 'update'}
             onOpenChange={() => {
               setOpen('update')
@@ -35,7 +35,7 @@ export function AdminUsersDialogs() {
           />
 
           <ConfirmDialog
-            key='task-delete'
+            key='navgroup-delete'
             destructive
             open={open === 'delete'}
             onOpenChange={() => {
@@ -51,14 +51,14 @@ export function AdminUsersDialogs() {
               }, 500)
               showSubmittedData(
                 currentRow,
-                'The following task has been deleted:'
+                'The following navgroup has been deleted:'
               )
             }}
             className='max-w-md'
-            title={`Delete this task: ${currentRow.id} ?`}
+            title={`Delete this navgroup: ${currentRow.id} ?`}
             desc={
               <>
-                You are about to delete a task with the ID{' '}
+                You are about to delete a navgroup with the ID{' '}
                 <strong>{currentRow.id}</strong>. <br />
                 This action cannot be undone.
               </>

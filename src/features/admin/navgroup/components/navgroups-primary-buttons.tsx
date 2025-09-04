@@ -1,9 +1,9 @@
 import { Download, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { useAdminUsers } from './admin-users-provider'
+import { useNavGroups } from './navgroups-provider'
 
-export function AdminUsersPrimaryButtons() {
-  const { setOpen } = useAdminUsers()
+export function NavGroupsPrimaryButtons() {
+  const { setOpen } = useNavGroups()
   return (
     <div className='flex gap-2'>
       <Button

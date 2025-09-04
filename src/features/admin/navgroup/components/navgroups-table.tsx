@@ -1,4 +1,13 @@
-import { useEffect, useState } from 'react'
+import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import { useTableUrlState } from '@/hooks/use-table-url-state'
 import { getRouteApi } from '@tanstack/react-router'
 import {
   type SortingState,
@@ -12,27 +21,18 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-import { useTableUrlState } from '@/hooks/use-table-url-state'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
-import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
-import { type AdminUsers } from '../data/schema'
+import { useEffect, useState } from 'react'
+import { type AdminNavgroup } from '../data/schema'
 import { DataTableBulkActions } from './data-table-bulk-actions'
-import { adminUsersColumns as columns } from './admin-users-columns'
+import { navGroupsColumns as columns } from './navgroups-columns'
 
-const route = getRouteApi('/_authenticated/admin/users')
+const route = getRouteApi('/_authenticated/admin/navgroup')
 
 type DataTableProps = {
-  data: AdminUsers[]
+  data: AdminNavgroup[]
 }
 
-export function AdminUsersTable({ data }: DataTableProps) {
+export function NavGroupsTable({ data }: DataTableProps) {
   // Local UI-only states
   const [rowSelection, setRowSelection] = useState({})
   const [sorting, setSorting] = useState<SortingState>([])
@@ -58,8 +58,8 @@ export function AdminUsersTable({ data }: DataTableProps) {
     pagination: { defaultPage: 1, defaultPageSize: 10 },
     globalFilter: { enabled: true, key: 'filter' },
     columnFilters: [
-      { columnId: 'status', searchKey: 'status', type: 'array' },
-      { columnId: 'priority', searchKey: 'priority', type: 'array' },
+      { columnId: 'title', searchKey: 'title', type: 'string' },
+      { columnId: 'description', searchKey: 'description', type: 'string' },
     ],
   })
 
@@ -80,10 +80,10 @@ export function AdminUsersTable({ data }: DataTableProps) {
     onColumnVisibilityChange: setColumnVisibility,
     globalFilterFn: (row, _columnId, filterValue) => {
       const id = String(row.getValue('id')).toLowerCase()
-      const name = String(row.getValue('name')).toLowerCase()
+      const title = String(row.getValue('title')).toLowerCase()
       const searchValue = String(filterValue).toLowerCase()
 
-      return id.includes(searchValue) || name.includes(searchValue)
+      return id.includes(searchValue) || title.includes(searchValue)
     },
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -105,8 +105,19 @@ export function AdminUsersTable({ data }: DataTableProps) {
     <div className='space-y-4 max-sm:has-[div[role="toolbar"]]:mb-16'>
       <DataTableToolbar
         table={table}
-        searchPlaceholder='Filter by name or ID...'
-        filters={[]}
+        searchPlaceholder='Filter by title or ID...'
+        filters={[
+          {
+            columnId: 'title',
+            title: 'Title',
+            options: [],
+          },
+          {
+            columnId: 'description',
+            title: 'Description',
+            options: [],
+          },
+        ]}
       />
       <div className='overflow-hidden rounded-md border'>
         <Table>
