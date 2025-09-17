@@ -16,4 +16,4 @@
  *      --font-roboto: 'Roboto', var(--font-sans);
  *   }
  */
-export const fonts = ['hwmct', 'maple-mono-cn', 'system'] as const
+export const fonts = ['plex-sans-sc', 'hwmct', 'maple-mono-cn', 'system'] as const

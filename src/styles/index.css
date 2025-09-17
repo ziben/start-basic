@@ -1,5 +1,6 @@
 @import url('https://chinese-fonts-cdn.deno.dev/packages/hwmct/dist/汇文明朝体/result.css');
 @import url('https://chinese-fonts-cdn.deno.dev/packages/maple-mono-cn/dist/MapleMono-CN-Regular/result.css');
+@import '@ibm/plex-sans-sc/css/ibm-plex-sans-sc-all.css';
 @import 'tailwindcss';
 @import 'tw-animate-css';
 @import './theme.css';

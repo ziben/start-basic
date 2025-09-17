@@ -1,8 +1,3 @@
-import React from 'react'
-import { useNavigate } from '@tanstack/react-router'
-import { ArrowRight, ChevronRight, Laptop, Moon, Sun } from 'lucide-react'
-import { useSearch } from '@/context/search-provider'
-import { useTheme } from '@/context/theme-provider'
 import {
   CommandDialog,
   CommandEmpty,
@@ -12,7 +7,13 @@ import {
   CommandList,
   CommandSeparator,
 } from '@/components/ui/command'
-import { sidebarData } from './layout/data/sidebar-data'
+import { useSearch } from '@/context/search-provider'
+import { useTheme } from '@/context/theme-provider'
+import { useNavigate } from '@tanstack/react-router'
+import { ArrowRight, ChevronRight, Laptop, Moon, Sun } from 'lucide-react'
+import React from 'react'
+import { useSidebar } from '~/lib/sidebar'
+import { iconResolver } from '~/utils/icon-resolver'
 import { ScrollArea } from './ui/scroll-area'
 
 export function CommandMenu() {
@@ -27,6 +28,8 @@ export function CommandMenu() {
     },
     [setOpen]
   )
+
+  const { data: sidebarData, isLoading } = useSidebar(iconResolver)
 
   return (
     <CommandDialog modal open={open} onOpenChange={setOpen}>

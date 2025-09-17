@@ -32,12 +32,16 @@ type AdminUsersMutateDrawerProps = {
 }
 
 const formSchema = z.object({
-  title: z.string().min(1, 'Title is required.'),
-  status: z.string().min(1, 'Please select a status.'),
-  label: z.string().min(1, 'Please select a label.'),
-  priority: z.string().min(1, 'Please choose a priority.'),
+  name: z.string().min(1, 'Name is required.'),
+  email: z.string().min(1, 'Email is required.'),
+  role: z.string().min(1, 'Please select a role.'),
+  banned: z.boolean().optional().catch(false),
+  image: z.string().optional().catch(''),
+  banReason: z.string().optional().catch(''),
+  banExpires: z.string().optional().catch(''),
+  username: z.string().optional().catch(''),
 })
-type TaskForm = z.infer<typeof formSchema>
+type AdminUserForm = z.infer<typeof formSchema>
 
 export function AdminUsersMutateDrawer({
   open,
@@ -46,17 +50,21 @@ export function AdminUsersMutateDrawer({
 }: AdminUsersMutateDrawerProps) {
   const isUpdate = !!currentRow
 
-  const form = useForm<TaskForm>({
+  const form = useForm<AdminUserForm>({
     resolver: zodResolver(formSchema),
     defaultValues: currentRow ?? {
-      title: '',
-      status: '',
-      label: '',
-      priority: '',
+      name: '',
+      email: '',
+      role: '',
+      banned: false,
+      image: '',
+      banReason: '',
+      banExpires: '',
+      username: '',
     },
   })
 
-  const onSubmit = (data: TaskForm) => {
+  const onSubmit = (data: AdminUserForm) => {
     // do something with the form data
     onOpenChange(false)
     form.reset()
@@ -89,7 +97,7 @@ export function AdminUsersMutateDrawer({
           >
             <FormField
               control={form.control}
-              name='title'
+              name='name'
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Title</FormLabel>
@@ -102,7 +110,7 @@ export function AdminUsersMutateDrawer({
             />
             <FormField
               control={form.control}
-              name='status'
+              name='role'
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Status</FormLabel>
@@ -124,7 +132,7 @@ export function AdminUsersMutateDrawer({
             />
             <FormField
               control={form.control}
-              name='label'
+              name='banned'
               render={({ field }) => (
                 <FormItem className='relative'>
                   <FormLabel>Label</FormLabel>
@@ -162,7 +170,7 @@ export function AdminUsersMutateDrawer({
             />
             <FormField
               control={form.control}
-              name='priority'
+              name='banReason'
               render={({ field }) => (
                 <FormItem className='relative'>
                   <FormLabel>Priority</FormLabel>
