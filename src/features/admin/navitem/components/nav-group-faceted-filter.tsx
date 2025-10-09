@@ -84,11 +84,11 @@ export function NavGroupFacetedFilter<TData, TValue>({
       </PopoverTrigger>
       <PopoverContent className="w-[200px] p-0" align="start">
         <Command>
-          <CommandInput placeholder={title || t('admin.navitem.filterByNavgroup', { defaultMessage: "按导航组筛选" })} />
+          <CommandInput placeholder={title || t('admin.navitem.filterByNavgroup')} />
           <CommandList>
-            <CommandEmpty>{t('common.noResults', { defaultMessage: "无结果" })}</CommandEmpty>
+            <CommandEmpty>{t('common.noResults')}</CommandEmpty>
             <CommandGroup>
-              {isLoading && <CommandItem disabled>{t('common.loading', { defaultMessage: "加载中..."})}</CommandItem>}
+              {isLoading && <CommandItem disabled>{t('common.loading')}</CommandItem>}
               {options.map((option: IFacetOption) => { 
                 const isSelected = selectedValues.has(option.value)
                 return (
@@ -138,7 +138,7 @@ export function NavGroupFacetedFilter<TData, TValue>({
                     onSelect={() => column?.setFilterValue(undefined)}
                     className="justify-center text-center"
                   >
-                    {t('common.clearFilters', { defaultMessage: "清除筛选" })}
+                    {t('common.clearFilters')}
                   </CommandItem>
                 </CommandGroup>
               </>

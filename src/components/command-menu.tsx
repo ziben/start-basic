@@ -13,6 +13,7 @@ import { useNavigate } from '@tanstack/react-router'
 import { ArrowRight, ChevronRight, Laptop, Moon, Sun } from 'lucide-react'
 import React from 'react'
 import { useSidebar } from '~/lib/sidebar'
+import type { SidebarData, NavGroup, NavItem } from '@/components/layout/types'
 import { iconResolver } from '~/utils/icon-resolver'
 import { ScrollArea } from './ui/scroll-area'
 
@@ -37,16 +38,16 @@ export function CommandMenu() {
       <CommandList>
         <ScrollArea type='hover' className='h-72 pe-1'>
           <CommandEmpty>No results found.</CommandEmpty>
-          {sidebarData.navGroups.map((group) => (
+          {sidebarData.navGroups.map((group: any) => (
             <CommandGroup key={group.title} heading={group.title}>
-              {group.items.map((navItem, i) => {
-                if (navItem.url)
+              {group.items.map((navItem: any, i: number) => {
+                if ("url" in navItem && navItem.url)
                   return (
                     <CommandItem
-                      key={`${navItem.url}-${i}`}
+                      key={`${(navItem as any).url}-${i}`}
                       value={navItem.title}
                       onSelect={() => {
-                        runCommand(() => navigate({ to: navItem.url }))
+                        runCommand(() => navigate({ to: (navItem as any).url }))
                       }}
                     >
                       <div className='flex size-4 items-center justify-center'>
@@ -56,7 +57,7 @@ export function CommandMenu() {
                     </CommandItem>
                   )
 
-                return navItem.items?.map((subItem, i) => (
+                return (navItem as any).items?.map((subItem: any, i: number) => (
                   <CommandItem
                     key={`${navItem.title}-${subItem.url}-${i}`}
                     value={`${navItem.title}-${subItem.url}`}

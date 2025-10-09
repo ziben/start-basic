@@ -22,8 +22,8 @@ const AdminNavItemPrimaryButtons: React.FC<Props> = ({ navGroupId }) => {
       >
         <Plus className="mr-2 h-4 w-4" />
         {navGroupId 
-          ? t('admin.navitem.buttons.createInGroup', { defaultMessage: '在此导航组中新建导航项' })
-          : t('admin.navitem.buttons.create', { defaultMessage: '新建导航项' })}
+          ? t('admin.navitem.buttons.createInGroup')
+          : t('admin.navitem.buttons.create')}
       </Button>
     </div>
   );

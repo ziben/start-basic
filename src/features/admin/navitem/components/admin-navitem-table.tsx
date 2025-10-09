@@ -240,7 +240,7 @@ export default function AdminNavItemTable({ data, isLoading, error, navGroupId }
             ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} className='h-24 text-center'>
-                  {t('admin.navitem.noData', { defaultMessage: '暂无导航项数据' })}
+                  {t('admin.navitem.noData')}
                 </TableCell>
               </TableRow>
             )}

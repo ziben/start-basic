@@ -10,6 +10,7 @@ import { type Table } from '@tanstack/react-table'
 import { Download, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
+import { useTranslation } from '~/hooks/useTranslation'
 import { type AdminNavgroup } from '../data/schema'
 import { NavGroupsMultiDeleteDialog } from './navgroups-multi-delete-dialog'
 
@@ -20,18 +21,22 @@ type DataTableBulkActionsProps<TData> = {
 export function DataTableBulkActions<TData>({
   table,
 }: DataTableBulkActionsProps<TData>) {
+  const { t } = useTranslation()
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const selectedRows = table.getFilteredSelectedRowModel().rows
 
   const handleBulkStatusChange = (status: string) => {
     const selectedNavGroups = selectedRows.map((row) => row.original as AdminNavgroup)
     toast.promise(sleep(2000), {
-      loading: 'Updating status...',
+      loading: t('admin.navgroup.toast.updatingStatus.loading'),
       success: () => {
         table.resetRowSelection()
-        return `Status updated to "${status}" for ${selectedNavGroups.length} navgroup${selectedNavGroups.length > 1 ? 's' : ''}.`
+        return t('admin.navgroup.toast.updatingStatus.success', {
+          status,
+          count: selectedNavGroups.length,
+        })
       },
-      error: 'Error',
+      error: t('admin.navgroup.toast.updatingStatus.error'),
     })
     table.resetRowSelection()
   }
@@ -39,12 +44,15 @@ export function DataTableBulkActions<TData>({
   const handleBulkPriorityChange = (priority: string) => {
     const selectedNavGroups = selectedRows.map((row) => row.original as AdminNavgroup)
     toast.promise(sleep(2000), {
-      loading: 'Updating priority...',
+      loading: t('admin.navgroup.toast.updatingPriority.loading'),
       success: () => {
         table.resetRowSelection()
-        return `Priority updated to "${priority}" for ${selectedNavGroups.length} navgroup${selectedNavGroups.length > 1 ? 's' : ''}.`
+        return t('admin.navgroup.toast.updatingPriority.success', {
+          priority,
+          count: selectedNavGroups.length,
+        })
       },
-      error: 'Error',
+      error: t('admin.navgroup.toast.updatingPriority.error'),
     })
     table.resetRowSelection()
   }
@@ -52,12 +60,14 @@ export function DataTableBulkActions<TData>({
   const handleBulkExport = () => {
     const selectedNavGroups = selectedRows.map((row) => row.original as AdminNavgroup)
     toast.promise(sleep(2000), {
-      loading: 'Exporting navgroups...',
+      loading: t('admin.navgroup.toast.exporting.loading'),
       success: () => {
         table.resetRowSelection()
-        return `Exported ${selectedNavGroups.length} navgroup${selectedNavGroups.length > 1 ? 's' : ''} to CSV.`
+        return t('admin.navgroup.toast.exporting.success', {
+          count: selectedNavGroups.length,
+        })
       },
-      error: 'Error',
+      error: t('admin.navgroup.toast.exporting.error'),
     })
     table.resetRowSelection()
   }

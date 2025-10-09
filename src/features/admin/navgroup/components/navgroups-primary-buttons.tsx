@@ -1,9 +1,11 @@
 import { Download, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useNavGroups } from './navgroups-provider'
+import { useTranslation } from '~/hooks/useTranslation'
 
 export function NavGroupsPrimaryButtons() {
   const { setOpen } = useNavGroups()
+  const { t } = useTranslation()
   return (
     <div className='flex gap-2'>
       <Button
@@ -11,10 +13,12 @@ export function NavGroupsPrimaryButtons() {
         className='space-x-1'
         onClick={() => setOpen('import')}
       >
-        <span>Import</span> <Download size={18} />
+  <span>{t('admin.navgroup.button.import')}</span>
+        <Download size={18} />
       </Button>
       <Button className='space-x-1' onClick={() => setOpen('create')}>
-        <span>Create</span> <Plus size={18} />
+        <span>{t('common.buttons.create', { defaultMessage: 'Create' })}</span>
+        <Plus size={18} />
       </Button>
     </div>
   )

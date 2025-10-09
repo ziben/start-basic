@@ -1,4 +1,4 @@
-import { initSidebarData } from '../src/routes/api/sidebar/controller'
+import { initSidebarData } from '../src/components/layout/app-sidebar'
 import { PrismaClient } from '@prisma/client'
 import { randomUUID } from 'crypto'
 

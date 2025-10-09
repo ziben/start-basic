@@ -23,6 +23,7 @@ import {
 } from '@tanstack/react-table'
 import { useEffect, useState } from 'react'
 import { type AdminNavgroup } from '../data/schema'
+import { useTranslation } from '~/hooks/useTranslation'
 import { DataTableBulkActions } from './data-table-bulk-actions'
 import { navGroupsColumns as columns } from './navgroups-columns'
 
@@ -33,6 +34,7 @@ type DataTableProps = {
 }
 
 export function NavGroupsTable({ data }: DataTableProps) {
+  const { t } = useTranslation()
   // Local UI-only states
   const [rowSelection, setRowSelection] = useState({})
   const [sorting, setSorting] = useState<SortingState>([])
@@ -105,7 +107,7 @@ export function NavGroupsTable({ data }: DataTableProps) {
     <div className='space-y-4 max-sm:has-[div[role="toolbar"]]:mb-16'>
       <DataTableToolbar
         table={table}
-        searchPlaceholder='Filter by title or ID...'
+  searchPlaceholder={t('admin.navgroup.table.searchPlaceholder')}
         filters={[
           {
             columnId: 'title',
@@ -162,7 +164,7 @@ export function NavGroupsTable({ data }: DataTableProps) {
                   colSpan={columns.length}
                   className='h-24 text-center'
                 >
-                  No results.
+                      {t('admin.common.noData')}
                 </TableCell>
               </TableRow>
             )}

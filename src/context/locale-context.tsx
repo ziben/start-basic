@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 import { IntlProvider } from 'react-intl'
 import { DEFAULT_LOCALE, LocaleType, LOCALES, messages } from '~/i18n'
+import i18n from '~/i18n/i18n'
 
 interface LocaleContextType {
   locale: LocaleType
@@ -58,17 +59,19 @@ export const LocaleProvider = ({ children }: { children: ReactNode }) => {
     }
     _setLocale(locale)
     
-    // 可选：设置 HTML lang 属性
-    if (isBrowser) {
-      document.documentElement.setAttribute('lang', locale)
+    // 同步到 i18next
+    try {
+      i18n.changeLanguage(locale)
+    } catch (e) {
+      // ignore if i18n not initialized
     }
   }
 
   // 初始化时设置 HTML lang 属性
+  // i18next 初始化和 languageChanged 事件会设置 HTML lang；保留空的 effect to keep SSR-safety
   useEffect(() => {
-    if (isBrowser) {
-      document.documentElement.setAttribute('lang', locale)
-    }
+    if (!isBrowser) return
+    // no-op: i18n handles html lang
   }, [locale])
 
   // 扁平化消息对象

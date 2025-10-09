@@ -42,11 +42,11 @@ export default function AdminNavItemPage() {
           <div className="mb-4 flex items-center text-sm text-muted-foreground">
             <Link to="/admin/navgroup" className="hover:text-primary">
               <Home className="mr-1 h-4 w-4 inline" />
-              {t('admin.navitem.breadcrumb.navgroups', { defaultMessage: '导航组管理' })}
+              {t('admin.navitem.breadcrumb.navgroups')}
             </Link>
             <ChevronRight className="mx-2 h-4 w-4" />
             <span className="font-medium text-foreground">
-              {navGroup?.title ?? t('admin.navitem.breadcrumb.loading', { defaultMessage: '加载中...' })}
+              {navGroup?.title ?? t('admin.navitem.breadcrumb.loading')}
             </span>
           </div>
         )}
@@ -61,7 +61,7 @@ export default function AdminNavItemPage() {
             <p className='text-muted-foreground'>
               {navGroupId
                 ? t('admin.navitem.descForGroup')
-                : t('admin.navitem.desc', { defaultMessage: '管理所有导航项数据。' })}
+                : t('admin.navitem.desc')}
             </p>
           </div>
           <AdminNavItemPrimaryButtons navGroupId={navGroupId} />

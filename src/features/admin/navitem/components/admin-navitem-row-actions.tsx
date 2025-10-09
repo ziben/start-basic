@@ -40,12 +40,12 @@ export function DataTableRowActions<TData>({ row }: DataTableRowActionsProps<TDa
       })
       
       toast.success(
-        t('admin.navitem.toast.visibilitySuccess.title', { defaultMessage: '可见性更新成功' }),
-        { description: t('admin.navitem.toast.visibilitySuccess.description', { defaultMessage: '导航项可见性已更新' }) }
+        t('admin.navitem.toast.visibilitySuccess.title'),
+        { description: t('admin.navitem.toast.visibilitySuccess.description') }
       )
     } catch (error) {
       toast.error(
-        t('admin.navitem.toast.visibilityError.title', { defaultMessage: '可见性更新失败' }),
+        t('admin.navitem.toast.visibilityError.title'),
         { description: String(error) }
       )
     }
@@ -59,11 +59,11 @@ export function DataTableRowActions<TData>({ row }: DataTableRowActionsProps<TDa
           <TooltipTrigger asChild>
             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleEdit}>
               <Pencil className="h-4 w-4" />
-              <span className="sr-only">{t('admin.navitem.actions.edit', { defaultMessage: '编辑' })}</span>
+              <span className="sr-only">{t('admin.navitem.actions.edit')}</span>
             </Button>
           </TooltipTrigger>
           <TooltipContent>
-            <p>{t('admin.navitem.actions.edit', { defaultMessage: '编辑' })}</p>
+            <p>{t('admin.navitem.actions.edit')}</p>
           </TooltipContent>
         </Tooltip>
 
@@ -72,11 +72,11 @@ export function DataTableRowActions<TData>({ row }: DataTableRowActionsProps<TDa
           <TooltipTrigger asChild>
             <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={handleDelete}>
               <Trash className="h-4 w-4" />
-              <span className="sr-only">{t('admin.navitem.actions.delete', { defaultMessage: '删除' })}</span>
+              <span className="sr-only">{t('admin.navitem.actions.delete')}</span>
             </Button>
           </TooltipTrigger>
           <TooltipContent>
-            <p>{t('admin.navitem.actions.delete', { defaultMessage: '删除' })}</p>
+            <p>{t('admin.navitem.actions.delete')}</p>
           </TooltipContent>
         </Tooltip>
 
@@ -91,8 +91,8 @@ export function DataTableRowActions<TData>({ row }: DataTableRowActionsProps<TDa
               )}
               <span className="sr-only">
                 {navitem.badge !== '隐藏' 
-                  ? t('admin.navitem.actions.hide', { defaultMessage: '隐藏' })
-                  : t('admin.navitem.actions.show', { defaultMessage: '显示' })
+                  ? t('admin.navitem.actions.hide')
+                    : t('admin.navitem.actions.show')
                 }
               </span>
             </Button>
@@ -100,8 +100,8 @@ export function DataTableRowActions<TData>({ row }: DataTableRowActionsProps<TDa
           <TooltipContent>
             <p>
               {navitem.badge !== '隐藏' 
-                ? t('admin.navitem.actions.hide', { defaultMessage: '隐藏' })
-                : t('admin.navitem.actions.show', { defaultMessage: '显示' })
+                ? t('admin.navitem.actions.hide')
+                : t('admin.navitem.actions.show')
               }
             </p>
           </TooltipContent>

@@ -46,7 +46,7 @@ export function useAdminNavItemColumns({ navGroupId: currentNavGroupIdProp }: Us
 
   const navGroupColumn: ColumnDef<AdminNavItem> = {
     accessorKey: 'navGroupId',
-    header: () => t('admin.navitem.table.navgroup', { defaultMessage: '所属导航组' }),
+  header: () => t('admin.navitem.table.navgroup'),
     cell: ({ row }) => {
       const navGroupIdValue = row.getValue<string>('navGroupId');
       const navGroupName = navgroupMap.get(navGroupIdValue) ?? navGroupIdValue;
@@ -86,13 +86,13 @@ export function useAdminNavItemColumns({ navGroupId: currentNavGroupIdProp }: Us
     },
     {
       accessorKey: 'id',
-      header: () => t('admin.navitem.table.id', { defaultMessage: 'ID' }),
+  header: () => t('admin.navitem.table.id'),
       cell: ({ row }) => <div className="truncate max-w-[120px]" title={row.getValue('id')}>{row.getValue('id')}</div>,
       meta: { className: 'w-24' },
     },
     {
       accessorKey: 'title',
-      header: () => t('admin.navitem.table.title', { defaultMessage: '标题' }),
+  header: () => t('admin.navitem.table.title'),
       cell: ({ row }) => {
         const navItem = row.original as AdminNavItem;
         const depth = navItem.depth ?? 0;
@@ -135,7 +135,7 @@ export function useAdminNavItemColumns({ navGroupId: currentNavGroupIdProp }: Us
     },
     {
       accessorKey: 'url',
-      header: () => t('admin.navitem.table.url', { defaultMessage: 'URL' }),
+  header: () => t('admin.navitem.table.url'),
       cell: ({ row }) => {
         const urlValue = row.getValue<string | null>('url');
         return <div title={urlValue ?? ''}>{urlValue ?? '-'}</div>;
@@ -145,7 +145,7 @@ export function useAdminNavItemColumns({ navGroupId: currentNavGroupIdProp }: Us
     ...(!currentNavGroupIdProp ? [navGroupColumn] : []),
     {
       accessorKey: 'icon',
-      header: () => t('admin.navitem.table.icon', { defaultMessage: '图标' }),
+  header: () => t('admin.navitem.table.icon'),
       cell: ({ row }) => {
         const iconValue = row.getValue<string | null>('icon');
         return <div title={iconValue ?? ''}>{iconValue ?? '-'}</div>;
@@ -154,7 +154,7 @@ export function useAdminNavItemColumns({ navGroupId: currentNavGroupIdProp }: Us
     },
     {
       accessorKey: 'badge',
-      header: () => t('admin.navitem.table.badge', { defaultMessage: '标记' }),
+  header: () => t('admin.navitem.table.badge'),
       cell: ({ row }) => {
         const badgeValue = row.getValue<string | null>('badge');
         const isVisible = !row.original.badge; 
@@ -162,7 +162,7 @@ export function useAdminNavItemColumns({ navGroupId: currentNavGroupIdProp }: Us
         if (badgeValue === '隐藏' || (row.original as any).isVisible === false) { 
           return (
             <Badge variant="outline" className="bg-red-50 text-red-700 border-red-300">
-              {t('admin.navitem.visibility.hidden', { defaultMessage: '隐藏' })}
+              {t('admin.navitem.visibility.hidden')}
             </Badge>
           )
         }
@@ -176,7 +176,7 @@ export function useAdminNavItemColumns({ navGroupId: currentNavGroupIdProp }: Us
         }
         return (
           <Badge variant="outline" className="bg-green-50 text-green-700 border-green-300">
-            {t('admin.navitem.visibility.visible', { defaultMessage: '可见' })}
+            {t('admin.navitem.visibility.visible')}
           </Badge>
         )
       },
@@ -184,37 +184,37 @@ export function useAdminNavItemColumns({ navGroupId: currentNavGroupIdProp }: Us
     },
     {
       accessorKey: 'orderIndex',
-      header: () => t('admin.navitem.table.orderIndex', { defaultMessage: '排序' }),
+  header: () => t('admin.navitem.table.orderIndex'),
       cell: ({ row }) => row.getValue('orderIndex'),
       meta: { className: 'w-20' },
     },
     {
       accessorKey: 'isCollapsible',
-      header: () => t('admin.navitem.table.type', { defaultMessage: '类型' }),
+  header: () => t('admin.navitem.table.type'),
       cell: ({ row }) => (
         <Badge variant='outline' className={cn('capitalize', {
           'bg-blue-50 text-blue-700 border-blue-300': row.getValue('isCollapsible'),
           'bg-gray-50 text-gray-700 border-gray-300': !row.getValue('isCollapsible')
         })}>
           {row.getValue<boolean>('isCollapsible') 
-            ? t('admin.navitem.table.type.collapsible', { defaultMessage: '可折叠' }) 
-            : t('admin.navitem.table.type.link', { defaultMessage: '链接' })}
+            ? t('admin.navitem.table.type.collapsible') 
+            : t('admin.navitem.table.type.link')}
         </Badge>
       ),
       meta: { className: 'w-20' },
     },
     {
       id: 'children_count', 
-      header: () => t('admin.navitem.table.children', { defaultMessage: '子项数量' }),
+  header: () => t('admin.navitem.table.children'),
       cell: ({ row }) => {
         const children = row.original.children ?? []
-        return children.length > 0 ? `${children.length} ${t('admin.navitem.table.childrenCountSuffix', { defaultMessage: '项' })}` : '-'
+  return children.length > 0 ? `${children.length} ${t('admin.navitem.table.childrenCountSuffix')}` : '-'
       },
       meta: { className: 'w-20 text-center' },
     },
     {
       accessorKey: 'createdAt',
-      header: () => t('admin.navitem.table.createdAt', { defaultMessage: '创建时间' }),
+  header: () => t('admin.navitem.table.createdAt'),
       cell: ({ row }) => formatDate(row.getValue('createdAt')),
       meta: { className: 'w-32' },
     },

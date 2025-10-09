@@ -31,7 +31,7 @@ export function AdminNavGroups() {
           <div>
             <h2 className='text-2xl font-bold tracking-tight'>导航组管理</h2>
             <p className='text-muted-foreground'>
-              {t('admin.navgroup.desc', { defaultMessage: '管理导航组数据。' })}
+              {t('admin.navgroup.desc')}
             </p>
           </div>
           <NavGroupsPrimaryButtons />

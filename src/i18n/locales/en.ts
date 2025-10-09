@@ -181,4 +181,86 @@ export default {
   'admin.navitem.table.badge': 'Badge',
   'admin.navitem.table.orderIndex': 'Order',
   'admin.navitem.table.createdAt': 'Created At',
-}
+  
+  // NavGroup toasts (added for i18next plural/interpolation)
+  'admin.navgroup.toast.updatingStatus.loading': 'Updating status...',
+  'admin.navgroup.toast.updatingStatus.success': 'Status updated to "{{status}}" for {{count}} navgroup',
+  'admin.navgroup.toast.updatingStatus.success_plural': 'Status updated to "{{status}}" for {{count}} navgroups',
+  'admin.navgroup.toast.updatingStatus.error': 'Error',
+
+  'admin.navgroup.toast.updatingPriority.loading': 'Updating priority...',
+  'admin.navgroup.toast.updatingPriority.success': 'Priority updated to "{{priority}}" for {{count}} navgroup',
+  'admin.navgroup.toast.updatingPriority.success_plural': 'Priority updated to "{{priority}}" for {{count}} navgroups',
+  'admin.navgroup.toast.updatingPriority.error': 'Error',
+
+  'admin.navgroup.toast.exporting.loading': 'Exporting navgroups...',
+  'admin.navgroup.toast.exporting.success': 'Exported {{count}} navgroup to CSV',
+  'admin.navgroup.toast.exporting.success_plural': 'Exported {{count}} navgroups to CSV',
+  'admin.navgroup.toast.exporting.error': 'Error',
+
+  // Added missing admin.* keys found in code usage (auto-merged)
+  'admin.account.title': 'Account',
+  'admin.account.desc': 'Manage account settings.',
+
+  'admin.common.firstPage': 'First page',
+  'admin.common.lastPage': 'Last page',
+  'admin.common.nextPage': 'Next page',
+  'admin.common.prevPage': 'Previous page',
+  'admin.common.rowsPerPage': 'Rows per page',
+  'admin.common.rowsSelected': '{count} rows selected',
+  'admin.common.viewOptions': 'View options',
+
+  'admin.invitation.title': 'Invitations',
+  'admin.invitation.desc': 'Manage invitations.',
+
+  'admin.member.title': 'Members',
+  'admin.member.desc': 'Manage members.',
+
+  'admin.navgroup.title': 'Nav Group Management',
+  'admin.navgroup.desc': 'Manage all nav group data.',
+
+  'admin.navitem.title': 'Nav Item Management',
+  'admin.navitem.desc': 'Manage all nav item data.',
+  'admin.navitem.descForGroup': 'Manage nav items for a specific nav group.',
+  'admin.navitem.breadcrumb.navgroups': 'Nav Group Management',
+  'admin.navitem.breadcrumb.loading': 'Loading...',
+  'admin.navitem.noData': 'No nav items.',
+  'admin.navitem.search': 'Search nav items...',
+  'admin.navitem.resetFilters': 'Reset',
+  'admin.navitem.filterByNavgroup': 'Filter by nav group',
+  'admin.navitem.navgroupFilterTitle': 'Nav Group',
+
+  'admin.navitem.actions.edit': 'Edit',
+  'admin.navitem.actions.delete': 'Delete',
+  'admin.navitem.actions.hide': 'Hide',
+  'admin.navitem.actions.show': 'Show',
+
+  'admin.navitem.table.name': 'Name',
+  'admin.navitem.table.path': 'Path',
+  'admin.navitem.table.order': 'Order',
+  'admin.navitem.table.status': 'Status',
+  'admin.navitem.table.target': 'Target',
+  'admin.navitem.table.external': 'External',
+  'admin.navitem.table.description': 'Description',
+  'admin.navitem.table.updatedAt': 'Updated At',
+
+  'admin.navitem.toast.visibilitySuccess.title': 'Visibility updated',
+  'admin.navitem.toast.visibilitySuccess.description': 'Nav item visibility has been updated',
+  'admin.navitem.toast.visibilityError.title': 'Visibility update failed',
+
+  'admin.organization.title': 'Organization',
+  'admin.organization.desc': 'Manage organizations.',
+
+  'admin.rolenavgroup.title': 'Role Nav Group',
+  'admin.rolenavgroup.desc': 'Manage role nav groups.',
+
+  'admin.session.title': 'Sessions',
+  'admin.session.desc': 'Manage sessions.',
+
+  'admin.userrolenavgroup.title': 'User Role Nav Group',
+  'admin.userrolenavgroup.desc': 'Manage user role nav groups.',
+
+  'admin.verification.title': 'Verification',
+  'admin.verification.desc': 'Manage verification records.',
+
+};

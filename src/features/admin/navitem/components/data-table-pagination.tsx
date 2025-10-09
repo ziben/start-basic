@@ -28,12 +28,12 @@ export function DataTablePagination<TData>({
     <div className="flex items-center justify-between px-2">
       <div className="flex-1 text-sm text-muted-foreground">
         {table.getFilteredSelectedRowModel().rows.length} / {" "}
-        {table.getFilteredRowModel().rows.length} {t('admin.common.rowsSelected', { defaultMessage: "行已选择" })}
+        {table.getFilteredRowModel().rows.length} {t('admin.common.rowsSelected')}
       </div>
       <div className="flex items-center space-x-6 lg:space-x-8">
         <div className="flex items-center space-x-2">
           <p className="text-sm font-medium">
-            {t('admin.common.rowsPerPage', { defaultMessage: "每页行数" })}
+            {t('admin.common.rowsPerPage')}
           </p>
           <Select
             value={`${table.getState().pagination.pageSize}`}
@@ -66,7 +66,7 @@ export function DataTablePagination<TData>({
             onClick={() => table.setPageIndex(0)}
             disabled={!table.getCanPreviousPage()}
           >
-            <span className="sr-only">{t('admin.common.firstPage', { defaultMessage: "第一页" })}</span>
+            <span className="sr-only">{t('admin.common.firstPage')}</span>
             <DoubleArrowLeftIcon className="h-4 w-4" />
           </Button>
           <Button
@@ -75,7 +75,7 @@ export function DataTablePagination<TData>({
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
-            <span className="sr-only">{t('admin.common.prevPage', { defaultMessage: "上一页" })}</span>
+            <span className="sr-only">{t('admin.common.prevPage')}</span>
             <ChevronLeftIcon className="h-4 w-4" />
           </Button>
           <Button
@@ -84,7 +84,7 @@ export function DataTablePagination<TData>({
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >
-            <span className="sr-only">{t('admin.common.nextPage', { defaultMessage: "下一页" })}</span>
+            <span className="sr-only">{t('admin.common.nextPage')}</span>
             <ChevronRightIcon className="h-4 w-4" />
           </Button>
           <Button
@@ -93,7 +93,7 @@ export function DataTablePagination<TData>({
             onClick={() => table.setPageIndex(table.getPageCount() - 1)}
             disabled={!table.getCanNextPage()}
           >
-            <span className="sr-only">{t('admin.common.lastPage', { defaultMessage: "最后一页" })}</span>
+            <span className="sr-only">{t('admin.common.lastPage')}</span>
             <DoubleArrowRightIcon className="h-4 w-4" />
           </Button>
         </div>

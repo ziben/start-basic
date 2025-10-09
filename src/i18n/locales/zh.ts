@@ -195,6 +195,22 @@ export default {
   'admin.navgroup.toast.deleteSuccess.description': '导航组已成功删除',
   'admin.navgroup.toast.deleteError.title': '删除失败',
   
+  // NavGroup toasts (plural/interpolation)
+  'admin.navgroup.toast.updatingStatus.loading': '正在更新状态...',
+  'admin.navgroup.toast.updatingStatus.success': '已将状态更新为 "{{status}}"，共 {{count}} 个导航组',
+  'admin.navgroup.toast.updatingStatus.success_plural': '已将状态更新为 "{{status}}"，共 {{count}} 个导航组',
+  'admin.navgroup.toast.updatingStatus.error': '错误',
+
+  'admin.navgroup.toast.updatingPriority.loading': '正在更新优先级...',
+  'admin.navgroup.toast.updatingPriority.success': '已将优先级更新为 "{{priority}}"，共 {{count}} 个导航组',
+  'admin.navgroup.toast.updatingPriority.success_plural': '已将优先级更新为 "{{priority}}"，共 {{count}} 个导航组',
+  'admin.navgroup.toast.updatingPriority.error': '错误',
+
+  'admin.navgroup.toast.exporting.loading': '正在导出导航组...',
+  'admin.navgroup.toast.exporting.success': '已导出 {{count}} 个导航组为 CSV',
+  'admin.navgroup.toast.exporting.success_plural': '已导出 {{count}} 个导航组为 CSV',
+  'admin.navgroup.toast.exporting.error': '错误',
+  
   // 导航项管理
   'admin.navitem.title': '导航项管理',
   'admin.navitem.titleForGroup': '导航项管理: {title}',
@@ -392,4 +408,31 @@ export default {
   'admin.navitem.export.button': '导出',
   'admin.navitem.export.success': '导出成功',
   'admin.navitem.export.error': '导出失败',
+
+  // Added missing admin.* keys from code usage
+  'admin.account.title': '账户',
+  'admin.account.desc': '更新您的账户设置。',
+
+  'admin.invitation.title': '邀请',
+  'admin.invitation.desc': '管理邀请。',
+
+  'admin.member.title': '成员',
+  'admin.member.desc': '管理成员数据。',
+
+  'admin.navitem.noData': '暂无导航项数据',
+
+  'admin.organization.title': '组织',
+  'admin.organization.desc': '管理组织。',
+
+  'admin.rolenavgroup.title': '角色导航组',
+  'admin.rolenavgroup.desc': '管理角色导航组。',
+
+  'admin.session.title': '会话',
+  'admin.session.desc': '管理会话。',
+
+  'admin.userrolenavgroup.title': '用户导航组',
+  'admin.userrolenavgroup.desc': '管理用户导航组。',
+
+  'admin.verification.title': '验证',
+  'admin.verification.desc': '管理验证记录。',
 }

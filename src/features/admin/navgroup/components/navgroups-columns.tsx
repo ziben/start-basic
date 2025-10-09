@@ -47,19 +47,19 @@ export const navGroupsColumns: ColumnDef<AdminNavgroup>[] = [
   },
   {
     accessorKey: 'title',
-    header: () => t('admin.navgroup.table.title', { defaultMessage: '标题' }),
+  header: () => t('admin.navgroup.table.title'),
     cell: ({ row }) => t(row.getValue<string>('title')),
     meta: { className: 'w-40' },
   },
   {
     accessorKey: 'orderIndex',
-    header: () => t('admin.navgroup.table.orderIndex', { defaultMessage: '排序' }),
+  header: () => t('admin.navgroup.table.orderIndex'),
     cell: ({ row }) => row.getValue('orderIndex'),
     meta: { className: 'w-20' },
   },
   {
     id: 'roles',
-    header: () => t('admin.navgroup.table.roles', { defaultMessage: '角色' }),
+  header: () => t('admin.navgroup.table.roles'),
     cell: ({ row }) => {
       const roleNavGroups = row.original.roleNavGroups || []
       return (
@@ -77,13 +77,13 @@ export const navGroupsColumns: ColumnDef<AdminNavgroup>[] = [
   },
   {
     id: 'navItems',
-    header: () => t('admin.navgroup.table.navItems', { defaultMessage: '导航项' }),
+  header: () => t('admin.navgroup.table.navItems'),
     cell: ({ row }) => {
       const navItems = row.original.navItems || []
       return (
         <div>
           {navItems.length > 0
-            ? `${navItems.length} ${t('admin.navgroup.table.itemsCount', { defaultMessage: '项' })}`
+            ? `${navItems.length} ${t('admin.navgroup.table.itemsCount')}`
             : '-'}
         </div>
       )
@@ -92,13 +92,13 @@ export const navGroupsColumns: ColumnDef<AdminNavgroup>[] = [
   },
   {
     accessorKey: 'createdAt',
-    header: () => t('admin.navgroup.table.createdAt', { defaultMessage: '创建时间' }),
+  header: () => t('admin.navgroup.table.createdAt'),
     cell: ({ row }) => formatDate(row.getValue('createdAt')),
     meta: { className: 'w-32' },
   },
   {
     accessorKey: 'updatedAt',
-    header: () => t('admin.navgroup.table.updatedAt', { defaultMessage: '更新时间' }),
+  header: () => t('admin.navgroup.table.updatedAt'),
     cell: ({ row }) => formatDate(row.getValue('updatedAt')),
     meta: { className: 'w-32' },
   },

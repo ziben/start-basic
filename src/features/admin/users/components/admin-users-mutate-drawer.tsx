@@ -56,7 +56,8 @@ export function AdminUsersMutateDrawer({
       name: '',
       email: '',
       role: '',
-      banned: false,
+      // normalize banned to boolean | undefined to match form schema
+      banned: (currentRow?.banned ?? false) as boolean,
       image: '',
       banReason: '',
       banExpires: '',
@@ -137,30 +138,23 @@ export function AdminUsersMutateDrawer({
                 <FormItem className='relative'>
                   <FormLabel>Label</FormLabel>
                   <FormControl>
+                    {/* RadioGroup / Radix expects string values for defaultValue; map boolean to strings */}
                     <RadioGroup
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      onValueChange={(v) => field.onChange(v === 'true')}
+                      defaultValue={String(field.value)}
                       className='flex flex-col space-y-1'
                     >
                       <FormItem className='flex items-center'>
                         <FormControl>
-                          <RadioGroupItem value='documentation' />
+                          <RadioGroupItem value='true' />
                         </FormControl>
-                        <FormLabel className='font-normal'>
-                          Documentation
-                        </FormLabel>
+                        <FormLabel className='font-normal'>True</FormLabel>
                       </FormItem>
                       <FormItem className='flex items-center'>
                         <FormControl>
-                          <RadioGroupItem value='feature' />
+                          <RadioGroupItem value='false' />
                         </FormControl>
-                        <FormLabel className='font-normal'>Feature</FormLabel>
-                      </FormItem>
-                      <FormItem className='flex items-center'>
-                        <FormControl>
-                          <RadioGroupItem value='bug' />
-                        </FormControl>
-                        <FormLabel className='font-normal'>Bug</FormLabel>
+                        <FormLabel className='font-normal'>False</FormLabel>
                       </FormItem>
                     </RadioGroup>
                   </FormControl>

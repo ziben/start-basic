@@ -5,7 +5,7 @@ import {
   SidebarHeader,
   SidebarRail,
 } from '@/components/ui/sidebar'
-import { NavGroup } from '@/components/layout/nav-group'
+import { NavGroup as NavGroupComponent } from '@/components/layout/nav-group'
 import { NavUser } from '@/components/layout/nav-user'
 import { TeamSwitcher } from '@/components/layout/team-switcher'
 import { useTranslation } from '~/hooks/useTranslation'
@@ -16,6 +16,7 @@ import { createServerFn } from '@tanstack/react-start'
 import { getWebRequest } from '@tanstack/react-start/server'
 import { auth } from '~/lib/auth'
 import { PrismaClient } from '@prisma/client'
+import type { SidebarData, NavGroup as NavGroupType, NavItem } from './types'
 import { useLayout } from '~/context/layout-provider'
 import { AppTitle } from './app-title'
 const prisma = new PrismaClient()
@@ -63,8 +64,8 @@ export function AppSidebar() {
           <AppTitle />
         </SidebarHeader>
         <SidebarContent>
-          {defaultData.navGroups.map((props) => (
-            <NavGroup key={props.title} {...props} />
+          {defaultData.navGroups.map((props: NavGroupType) => (
+            <NavGroupComponent key={props.title} {...props} />
           ))}
         </SidebarContent>
         <SidebarFooter>
@@ -83,8 +84,8 @@ export function AppSidebar() {
         <AppTitle />
       </SidebarHeader>
       <SidebarContent>
-        {sidebarData.navGroups.map((props) => (
-          <NavGroup key={props.title} {...props} />
+        {sidebarData.navGroups.map((props: NavGroupType) => (
+          <NavGroupComponent key={props.title} {...props} />
         ))}
       </SidebarContent>
       <SidebarFooter>
@@ -138,7 +139,7 @@ export async function getSidebarData(userId?: string, role?: string): Promise<Si
     })
 
     // 转换为前端需要的格式
-    const adaptedGroups = mapNavGroupsToFrontend(filteredNavGroups)
+  const adaptedGroups = mapNavGroupsToFrontend(filteredNavGroups as any)
 
     // 获取用户数据
     const user = userId
@@ -217,7 +218,7 @@ export async function initSidebarData() {
 }
 
 // 递归创建导航项及其子项
-async function createNavItem(tx: PrismaClient, item: any, orderIndex: number, navGroupId: string, parentId?: string) {
+async function createNavItem(tx: any, item: any, orderIndex: number, navGroupId: string, parentId?: string) {
   // 确定是否为可折叠菜单
   const isCollapsible = !!item.items && item.items.length > 0
 
@@ -247,7 +248,7 @@ async function createNavItem(tx: PrismaClient, item: any, orderIndex: number, na
 
 // 将数据库模型转换为前端需要的格式
 function mapNavGroupsToFrontend(dbGroups: any[]): NavGroup[] {
-  return dbGroups.map((group) => ({
+  return dbGroups.map((group: any) => ({
     title: group.title,
     items: mapNavItemsToFrontend(group.navItems),
   }))
@@ -255,7 +256,7 @@ function mapNavGroupsToFrontend(dbGroups: any[]): NavGroup[] {
 
 // 递归转换导航项
 function mapNavItemsToFrontend(dbItems: any[]): NavItem[] {
-  return dbItems.map((item) => {
+  return (dbItems || []).map((item: any) => {
     // 基础项目信息
     const baseItem = {
       title: item.title,
@@ -264,7 +265,7 @@ function mapNavItemsToFrontend(dbItems: any[]): NavItem[] {
     }
 
     // 如果是可折叠菜单，添加子项
-    if (item.isCollapsible) {
+    if (item && item.isCollapsible) {
       return {
         ...baseItem,
         items: mapNavItemsToFrontend(item.children),

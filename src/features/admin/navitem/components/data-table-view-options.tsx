@@ -21,18 +21,18 @@ export function DataTableViewOptions<TData>({
   const { t } = useTranslation()
   
   const getColumnLabel = (columnId: string) => {
-    const labels: Record<string, string> = {
-      name: t('admin.navitem.table.name', { defaultMessage: "名称" }),
-      path: t('admin.navitem.table.path', { defaultMessage: "路径" }),
-      navgroupId: t('admin.navitem.table.navgroup', { defaultMessage: "所属导航组" }),
-      icon: t('admin.navitem.table.icon', { defaultMessage: "图标" }),
-      order: t('admin.navitem.table.order', { defaultMessage: "排序" }),
-      isVisible: t('admin.navitem.table.status', { defaultMessage: "状态" }),
-      external: t('admin.navitem.table.external', { defaultMessage: "外部链接" }),
-      target: t('admin.navitem.table.target', { defaultMessage: "打开方式" }),
-      createdAt: t('admin.navitem.table.createdAt', { defaultMessage: "创建时间" }),
-      updatedAt: t('admin.navitem.table.updatedAt', { defaultMessage: "更新时间" }),
-      description: t('admin.navitem.table.description', { defaultMessage: "描述" }),
+      const labels: Record<string, string> = {
+      name: t('admin.navitem.table.name'),
+      path: t('admin.navitem.table.path'),
+      navgroupId: t('admin.navitem.table.navgroup'),
+      icon: t('admin.navitem.table.icon'),
+      order: t('admin.navitem.table.order'),
+      isVisible: t('admin.navitem.table.status'),
+      external: t('admin.navitem.table.external'),
+      target: t('admin.navitem.table.target'),
+      createdAt: t('admin.navitem.table.createdAt'),
+      updatedAt: t('admin.navitem.table.updatedAt'),
+      description: t('admin.navitem.table.description'),
     }
     
     return labels[columnId] || columnId
@@ -47,7 +47,7 @@ export function DataTableViewOptions<TData>({
           className="ml-auto h-8 lg:flex"
         >
           <MixerHorizontalIcon className="mr-2 h-4 w-4" />
-          {t('admin.common.viewOptions', { defaultMessage: "列显示" })}
+          {t('admin.common.viewOptions')}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[150px]">

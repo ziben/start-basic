@@ -73,13 +73,13 @@ const CreateNavItemDialog = () => {
     try {
       await createNavitemMutation.mutateAsync(data);
       toast.success(
-        t('admin.navitem.toast.createSuccess.title', { defaultMessage: '创建成功' }),
-        { description: t('admin.navitem.toast.createSuccess.description', { defaultMessage: '导航项已成功创建' }) }
+  t('admin.navitem.toast.createSuccess.title'),
+  { description: t('admin.navitem.toast.createSuccess.description') }
       );
       handleClose();
     } catch (error) {
       toast.error(
-        t('admin.navitem.toast.createError.title', { defaultMessage: '创建失败' }),
+  t('admin.navitem.toast.createError.title'),
         { description: String(error) }
       );
     }
@@ -89,16 +89,16 @@ const CreateNavItemDialog = () => {
     <Dialog open={isCreateDialogOpen} onOpenChange={setCreateDialogOpen}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{t('admin.navitem.dialogs.create.title', { defaultMessage: '创建导航项' })}</DialogTitle>
+          <DialogTitle>{t('admin.navitem.dialogs.create.title')}</DialogTitle>
           <DialogDescription>
-            {t('admin.navitem.dialogs.create.desc', { defaultMessage: '填写下面的表单创建一个新的导航项。' })}
+            {t('admin.navitem.dialogs.create.desc')}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={createForm.handleSubmit(onSubmit)}>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="title" className="text-right">
-                {t('admin.navitem.fields.title', { defaultMessage: '标题' })}
+                {t('admin.navitem.fields.title')}
               </Label>
               <Input
                 id="title"
@@ -114,7 +114,7 @@ const CreateNavItemDialog = () => {
             
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="url" className="text-right">
-                {t('admin.navitem.fields.url', { defaultMessage: 'URL' })}
+                {t('admin.navitem.fields.url')}
               </Label>
               <Input
                 id="url"
@@ -125,7 +125,7 @@ const CreateNavItemDialog = () => {
             
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="icon" className="text-right">
-                {t('admin.navitem.fields.icon', { defaultMessage: '图标' })}
+                {t('admin.navitem.fields.icon')}
               </Label>
               <Input
                 id="icon"
@@ -136,7 +136,7 @@ const CreateNavItemDialog = () => {
             
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="badge" className="text-right">
-                {t('admin.navitem.fields.badge', { defaultMessage: '标记' })}
+                {t('admin.navitem.fields.badge')}
               </Label>
               <Input
                 id="badge"
@@ -147,14 +147,14 @@ const CreateNavItemDialog = () => {
             
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="navGroupId" className="text-right">
-                {t('admin.navitem.fields.navGroupId', { defaultMessage: '导航组' })}
+                {t('admin.navitem.fields.navGroupId')}
               </Label>
               <Select 
                 defaultValue={navGroupId ?? ''} 
                 onValueChange={(value) => createForm.setValue('navGroupId', value)}
               >
                 <SelectTrigger className="col-span-3">
-                  <SelectValue placeholder={t('admin.navitem.fields.navGroupIdPlaceholder', { defaultMessage: '选择导航组' })} />
+                  <SelectValue placeholder={t('admin.navitem.fields.navGroupIdPlaceholder')} />
                 </SelectTrigger>
                 <SelectContent>
                   {navgroups.map((group) => (
@@ -173,7 +173,7 @@ const CreateNavItemDialog = () => {
             
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="orderIndex" className="text-right">
-                {t('admin.navitem.fields.orderIndex', { defaultMessage: '排序' })}
+                {t('admin.navitem.fields.orderIndex')}
               </Label>
               <Input
                 id="orderIndex"
@@ -185,7 +185,7 @@ const CreateNavItemDialog = () => {
             
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="isCollapsible" className="text-right">
-                {t('admin.navitem.fields.isCollapsible', { defaultMessage: '可折叠' })}
+                {t('admin.navitem.fields.isCollapsible')}
               </Label>
               <div className="col-span-3 flex items-center space-x-2">
                 <Checkbox 
@@ -196,7 +196,7 @@ const CreateNavItemDialog = () => {
                   }
                 />
                 <Label htmlFor="isCollapsible">
-                  {t('admin.navitem.fields.isCollapsibleDesc', { defaultMessage: '作为可折叠菜单' })}
+                  {t('admin.navitem.fields.isCollapsibleDesc')}
                 </Label>
               </div>
             </div>
@@ -284,13 +284,13 @@ const EditNavItemDialog = () => {
         data,
       });
       toast.success(
-        t('admin.navitem.toast.updateSuccess.title', { defaultMessage: '更新成功' }),
-        { description: t('admin.navitem.toast.updateSuccess.description', { defaultMessage: '导航项已成功更新' }) }
+  t('admin.navitem.toast.updateSuccess.title'),
+  { description: t('admin.navitem.toast.updateSuccess.description') }
       );
       handleClose();
     } catch (error) {
       toast.error(
-        t('admin.navitem.toast.updateError.title', { defaultMessage: '更新失败' }),
+  t('admin.navitem.toast.updateError.title'),
         { description: String(error) }
       );
     }
@@ -300,16 +300,16 @@ const EditNavItemDialog = () => {
     <Dialog open={isEditDialogOpen} onOpenChange={setEditDialogOpen}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{t('admin.navitem.dialogs.edit.title', { defaultMessage: '编辑导航项' })}</DialogTitle>
+          <DialogTitle>{t('admin.navitem.dialogs.edit.title')}</DialogTitle>
           <DialogDescription>
-            {t('admin.navitem.dialogs.edit.desc', { defaultMessage: '编辑下面的导航项信息。' })}
+            {t('admin.navitem.dialogs.edit.desc')}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={editForm.handleSubmit(onSubmit)}>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="title" className="text-right">
-                {t('admin.navitem.fields.title', { defaultMessage: '标题' })}
+                {t('admin.navitem.fields.title')}
               </Label>
               <Input
                 id="title"
@@ -325,7 +325,7 @@ const EditNavItemDialog = () => {
             
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="url" className="text-right">
-                {t('admin.navitem.fields.url', { defaultMessage: 'URL' })}
+                {t('admin.navitem.fields.url')}
               </Label>
               <Input
                 id="url"
@@ -336,7 +336,7 @@ const EditNavItemDialog = () => {
             
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="icon" className="text-right">
-                {t('admin.navitem.fields.icon', { defaultMessage: '图标' })}
+                {t('admin.navitem.fields.icon')}
               </Label>
               <Input
                 id="icon"
@@ -347,7 +347,7 @@ const EditNavItemDialog = () => {
             
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="badge" className="text-right">
-                {t('admin.navitem.fields.badge', { defaultMessage: '标记' })}
+                {t('admin.navitem.fields.badge')}
               </Label>
               <Input
                 id="badge"
@@ -358,14 +358,14 @@ const EditNavItemDialog = () => {
             
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="navGroupId" className="text-right">
-                {t('admin.navitem.fields.navGroupId', { defaultMessage: '导航组' })}
+                {t('admin.navitem.fields.navGroupId')}
               </Label>
               <Select 
                 defaultValue={selectedNavItem?.navGroupId ?? ''} 
                 onValueChange={(value) => editForm.setValue('navGroupId', value)}
               >
                 <SelectTrigger className="col-span-3">
-                  <SelectValue placeholder={t('admin.navitem.fields.navGroupIdPlaceholder', { defaultMessage: '选择导航组' })} />
+                  <SelectValue placeholder={t('admin.navitem.fields.navGroupIdPlaceholder')} />
                 </SelectTrigger>
                 <SelectContent>
                   {navgroups.map((group) => (
@@ -384,7 +384,7 @@ const EditNavItemDialog = () => {
             
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="orderIndex" className="text-right">
-                {t('admin.navitem.fields.orderIndex', { defaultMessage: '排序' })}
+                {t('admin.navitem.fields.orderIndex')}
               </Label>
               <Input
                 id="orderIndex"
@@ -396,7 +396,7 @@ const EditNavItemDialog = () => {
             
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="isCollapsible" className="text-right">
-                {t('admin.navitem.fields.isCollapsible', { defaultMessage: '可折叠' })}
+                {t('admin.navitem.fields.isCollapsible')}
               </Label>
               <div className="col-span-3 flex items-center space-x-2">
                 <Checkbox 
@@ -407,7 +407,7 @@ const EditNavItemDialog = () => {
                   }
                 />
                 <Label htmlFor="isCollapsible">
-                  {t('admin.navitem.fields.isCollapsibleDesc', { defaultMessage: '作为可折叠菜单' })}
+                  {t('admin.navitem.fields.isCollapsibleDesc')}
                 </Label>
               </div>
             </div>
@@ -461,13 +461,13 @@ const DeleteNavItemDialog = () => {
         navGroupId: selectedNavItem.navGroupId,
       });
       toast.success(
-        t('admin.navitem.toast.deleteSuccess.title', { defaultMessage: '删除成功' }),
-        { description: t('admin.navitem.toast.deleteSuccess.description', { defaultMessage: '导航项已成功删除' }) }
+  t('admin.navitem.toast.deleteSuccess.title'),
+  { description: t('admin.navitem.toast.deleteSuccess.description') }
       );
       handleClose();
     } catch (error) {
       toast.error(
-        t('admin.navitem.toast.deleteError.title', { defaultMessage: '删除失败' }),
+  t('admin.navitem.toast.deleteError.title'),
         { description: String(error) }
       );
     }
@@ -478,7 +478,7 @@ const DeleteNavItemDialog = () => {
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>
-            {t('admin.navitem.dialogs.delete.title', { defaultMessage: '确认删除' })}
+            {t('admin.navitem.dialogs.delete.title')}
           </AlertDialogTitle>
           <AlertDialogDescription>
             {t('admin.navitem.dialogs.delete.desc', {

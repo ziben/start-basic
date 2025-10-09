@@ -10,6 +10,7 @@ import {
 import { DotsHorizontalIcon } from '@radix-ui/react-icons'
 import { type Row } from '@tanstack/react-table'
 import { Trash2 } from 'lucide-react'
+import { useTranslation } from '~/hooks/useTranslation'
 import { adminNavgroupSchema } from '../data/schema'
 import { useNavGroups } from './navgroups-provider'
 
@@ -23,6 +24,7 @@ export function DataTableRowActions<TData>({
   const navgroup = adminNavgroupSchema.parse(row.original)
 
   const { setOpen, setCurrentRow } = useNavGroups()
+  const { t } = useTranslation()
 
   return (
     <DropdownMenu modal={false}>
@@ -42,10 +44,10 @@ export function DataTableRowActions<TData>({
             setOpen('update')
           }}
         >
-          Edit
+          {t('admin.navgroup.actions.edit')}
         </DropdownMenuItem>
-        <DropdownMenuItem disabled>Make a copy</DropdownMenuItem>
-        <DropdownMenuItem disabled>Favorite</DropdownMenuItem>
+  <DropdownMenuItem disabled>{t('admin.navgroup.actions.makeCopy')}</DropdownMenuItem>
+  <DropdownMenuItem disabled>{t('admin.navgroup.actions.favorite')}</DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onClick={() => {
@@ -53,7 +55,7 @@ export function DataTableRowActions<TData>({
             setOpen('delete')
           }}
         >
-          Delete
+          {t('admin.navgroup.actions.delete')}
           <DropdownMenuShortcut>
             <Trash2 size={16} />
           </DropdownMenuShortcut>
