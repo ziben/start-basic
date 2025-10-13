@@ -198,6 +198,15 @@ export default {
   'admin.navgroup.toast.exporting.success_plural': 'Exported {{count}} navgroups to CSV',
   'admin.navgroup.toast.exporting.error': 'Error',
 
+  'admin.navgroup.button.import': 'Import',
+  'admin.navgroup.table.searchPlaceholder': 'Filter nav groups...',
+  'admin.navgroup.table.description': 'Description',
+
+  // Table aria/labels
+  'admin.table.selectAll': 'Select all',
+  'admin.table.selectRow': 'Select row',
+
+
   // Added missing admin.* keys found in code usage (auto-merged)
   'admin.account.title': 'Account',
   'admin.account.desc': 'Manage account settings.',

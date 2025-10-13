@@ -43,9 +43,10 @@ export function ForgotPasswordForm({
     toast.promise(sleep(2000), {
       loading: 'Sending email...',
       success: () => {
-        setIsLoading(false)
-        form.reset()
-        navigate({ to: '/otp' })
+  setIsLoading(false)
+  form.reset()
+  // short-term: relax navigate type to avoid strict route union mismatch
+  navigate({ to: '/otp' } as any)
         return `Email sent to ${data.email}`
       },
       error: 'Error',

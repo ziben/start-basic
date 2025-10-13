@@ -21,7 +21,7 @@ export const navGroupsColumns: ColumnDef<AdminNavgroup>[] = [
           (table.getIsSomePageRowsSelected() && 'indeterminate')
         }
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label='Select all'
+        aria-label={t('admin.table.selectAll')}
         className='translate-y-[2px]'
       />
     ),
@@ -29,7 +29,7 @@ export const navGroupsColumns: ColumnDef<AdminNavgroup>[] = [
       <Checkbox
         checked={row.getIsSelected()}
         onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label='Select row'
+        aria-label={t('admin.table.selectRow')}
         className='translate-y-[2px]'
       />
     ),
@@ -39,7 +39,7 @@ export const navGroupsColumns: ColumnDef<AdminNavgroup>[] = [
   {
     accessorKey: 'id',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Task' />
+      <DataTableColumnHeader column={column} title={t('admin.navgroup.table.id')} />
     ),
     cell: ({ row }) => <div className='w-[80px]'>{row.getValue('id')}</div>,
     enableSorting: false,

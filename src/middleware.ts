@@ -3,8 +3,9 @@ import { auth } from '~/lib/auth'
 import { StartAPIMethodCallback } from '@tanstack/react-start/api'
 
 // 管理员鉴权中间件
-export function withAdminAuth<T extends string>(handler: StartAPIMethodCallback<T>): StartAPIMethodCallback<T> {
-  return async (ctx) => {
+// Short-term: relax types to avoid dependency/type mismatches with StartAPIMethodCallback
+export function withAdminAuth(handler: any): any {
+  return async (ctx: any) => {
     try {
       const { headers } = getWebRequest()!
       const session = await auth.api.getSession({ headers })

@@ -247,11 +247,11 @@ async function createNavItem(tx: any, item: any, orderIndex: number, navGroupId:
 }
 
 // 将数据库模型转换为前端需要的格式
-function mapNavGroupsToFrontend(dbGroups: any[]): NavGroup[] {
+function mapNavGroupsToFrontend(dbGroups: any[]): NavGroupType[] {
   return dbGroups.map((group: any) => ({
     title: group.title,
     items: mapNavItemsToFrontend(group.navItems),
-  }))
+  })) as NavGroupType[]
 }
 
 // 递归转换导航项
@@ -277,5 +277,5 @@ function mapNavItemsToFrontend(dbItems: any[]): NavItem[] {
       ...baseItem,
       url: item.url,
     }
-  })
+  }) as NavItem[]
 }

@@ -49,20 +49,21 @@ export function AdminUsersMutateDrawer({
   currentRow,
 }: AdminUsersMutateDrawerProps) {
   const isUpdate = !!currentRow
+  // 将后端 row 转换为表单期望的默认值形状，避免 null/undefined 导致的类型不匹配
+  const toFormValues = (row?: AdminUsers): AdminUserForm => ({
+    name: row?.name ?? '',
+    email: row?.email ?? '',
+    role: row?.role ?? '',
+    banned: row?.banned ?? false,
+    image: row?.image ?? '',
+    banReason: row?.banReason ?? '',
+    banExpires: row?.banExpires ? String(row.banExpires) : '',
+    username: row?.username ?? '',
+  })
 
   const form = useForm<AdminUserForm>({
     resolver: zodResolver(formSchema),
-    defaultValues: currentRow ?? {
-      name: '',
-      email: '',
-      role: '',
-      // normalize banned to boolean | undefined to match form schema
-      banned: (currentRow?.banned ?? false) as boolean,
-      image: '',
-      banReason: '',
-      banExpires: '',
-      username: '',
-    },
+    defaultValues: toFormValues(currentRow),
   })
 
   const onSubmit = (data: AdminUserForm) => {

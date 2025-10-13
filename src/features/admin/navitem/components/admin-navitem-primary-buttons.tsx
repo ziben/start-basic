@@ -10,13 +10,14 @@ interface Props {
 
 const AdminNavItemPrimaryButtons: React.FC<Props> = ({ navGroupId }) => {
   const { t } = useTranslation();
-  const { setCreateDialogOpen } = useAdminNavItemContext();
+  const { setCreateDialogOpen, setSelectedNavItem } = useAdminNavItemContext();
 
   return (
     <div className="flex items-center space-x-2">
       <Button 
         onClick={() => {
-          // 在上下文中设置导航组ID
+          // ensure no selected item remains when creating a new navitem
+          setSelectedNavItem(null)
           setCreateDialogOpen(true);
         }}
       >

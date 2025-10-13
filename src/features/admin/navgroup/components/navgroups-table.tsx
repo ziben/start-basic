@@ -111,12 +111,12 @@ export function NavGroupsTable({ data }: DataTableProps) {
         filters={[
           {
             columnId: 'title',
-            title: 'Title',
+            title: t('admin.navgroup.table.title'),
             options: [],
           },
           {
             columnId: 'description',
-            title: 'Description',
+            title: t('admin.navgroup.table.description'),
             options: [],
           },
         ]}

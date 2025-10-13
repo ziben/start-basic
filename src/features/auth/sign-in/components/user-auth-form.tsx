@@ -28,6 +28,7 @@ const formSchema = z.object({
   password: z.string()
     .min(1, 'Please enter your password')
     .min(7, 'Password must be at least 7 characters long'),
+  rememberMe: z.boolean().optional(),
 })
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLFormElement> {
@@ -44,7 +45,9 @@ export function UserAuthForm({
   // const { auth } = useAuthStore()
   const { queryClient } = Route.useRouteContext();
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  // include rememberMe in inferred type to satisfy controlled checkbox
+  type FormType = z.infer<typeof formSchema>
+  const form = useForm<FormType>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: 'test@local.com',

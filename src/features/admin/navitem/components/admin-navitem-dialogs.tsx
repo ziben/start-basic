@@ -26,6 +26,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
 import { CreateNavItemData, UpdateNavItemData, createNavItemSchema, updateNavItemSchema } from '../data/schema';
+import { iconResolver } from '~/utils/icon-resolver'
 import { useTranslation } from '~/hooks/useTranslation';
 import { useCreateNavitem, useUpdateNavitem, useDeleteNavitem } from '~/hooks/useNavitemApi';
 import { useNavgroups } from '~/hooks/useNavgroupApi';
@@ -49,17 +50,19 @@ const CreateNavItemDialog = () => {
   const createNavitemMutation = useCreateNavitem();
   
   // 创建表单
+  const toCreateFormValues = (navGroupId?: string): CreateNavItemData => ({
+    title: '',
+    url: '',
+    icon: '',
+    badge: '',
+    isCollapsible: false,
+    navGroupId: navGroupId ?? '',
+    orderIndex: 0,
+  })
+
   const createForm = useForm<CreateNavItemData>({
     resolver: zodResolver(createNavItemSchema),
-    defaultValues: {
-      title: '',
-      url: '',
-      icon: '',
-      badge: '',
-      isCollapsible: false,
-      navGroupId: navGroupId ?? '',
-      orderIndex: 0,
-    },
+    defaultValues: toCreateFormValues(navGroupId),
   });
   
   // 重置表单并关闭对话框
@@ -127,11 +130,20 @@ const CreateNavItemDialog = () => {
               <Label htmlFor="icon" className="text-right">
                 {t('admin.navitem.fields.icon')}
               </Label>
-              <Input
-                id="icon"
-                {...createForm.register('icon')}
-                className="col-span-3"
-              />
+              <div className="col-span-3 flex items-center">
+                <Input
+                  id="icon"
+                  {...createForm.register('icon')}
+                  className="flex-1"
+                />
+                <div className="ml-2">
+                  {(() => {
+                    const name = createForm.watch('icon')
+                    const IconComponent = iconResolver(name)
+                    return IconComponent ? <IconComponent className="h-5 w-5 text-muted-foreground" /> : null
+                  })()}
+                </div>
+              </div>
             </div>
             
             <div className="grid grid-cols-4 items-center gap-4">
@@ -254,16 +266,18 @@ const EditNavItemDialog = () => {
   // 当选中的导航项变更时，重置表单
   useEffect(() => {
     if (selectedNavItem) {
-      editForm.reset({
-        title: selectedNavItem.title,
-        url: selectedNavItem.url ?? '',
-        icon: selectedNavItem.icon ?? '',
-        badge: selectedNavItem.badge ?? '',
-        isCollapsible: selectedNavItem.isCollapsible,
-        navGroupId: selectedNavItem.navGroupId,
-        orderIndex: selectedNavItem.orderIndex,
-        parentId: selectedNavItem.parentId ?? undefined,
-      });
+      const toEditFormValues = (row: typeof selectedNavItem): UpdateNavItemData => ({
+        title: row.title,
+        url: row.url ?? '',
+        icon: row.icon ?? '',
+        badge: row.badge ?? '',
+        isCollapsible: row.isCollapsible ?? false,
+        navGroupId: row.navGroupId,
+        orderIndex: row.orderIndex ?? 0,
+        parentId: row.parentId ?? undefined,
+      })
+
+      editForm.reset(toEditFormValues(selectedNavItem));
     }
   }, [selectedNavItem, editForm]);
 
@@ -338,11 +352,20 @@ const EditNavItemDialog = () => {
               <Label htmlFor="icon" className="text-right">
                 {t('admin.navitem.fields.icon')}
               </Label>
-              <Input
-                id="icon"
-                {...editForm.register('icon')}
-                className="col-span-3"
-              />
+              <div className="col-span-3 flex items-center">
+                <Input
+                  id="icon"
+                  {...editForm.register('icon')}
+                  className="flex-1"
+                />
+                <div className="ml-2">
+                  {(() => {
+                    const name = editForm.watch('icon')
+                    const IconComponent = iconResolver(name)
+                    return IconComponent ? <IconComponent className="h-5 w-5 text-muted-foreground" /> : null
+                  })()}
+                </div>
+              </div>
             </div>
             
             <div className="grid grid-cols-4 items-center gap-4">

@@ -8,14 +8,16 @@ type User = {
 
 type Team = {
   name: string
-  logo: React.ElementType
+  // logo may be a React component (ElementType) or a serialized identifier from DB
+  logo: React.ElementType | string
   plan: string
 }
 
 type BaseNavItem = {
   title: string
   badge?: string
-  icon?: React.ElementType
+  // icon may be resolved to a React component or be a string identifier from DB
+  icon?: React.ElementType | string
 }
 
 type NavLink = BaseNavItem & {

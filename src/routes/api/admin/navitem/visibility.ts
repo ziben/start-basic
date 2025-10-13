@@ -6,7 +6,7 @@ import { withAdminAuth } from '../../../../middleware'
 // 导航项可见性API路由
 export const ServerRoute = createServerFileRoute('/api/admin/navitem/visibility').methods({
   // 更新导航项可见性
-  PUT: withAdminAuth(async ({ request }) => {
+  PUT: withAdminAuth(async ({ request }: any) => {
     try {
       const body = await request.json()
       const visibilitySchema = z.object({

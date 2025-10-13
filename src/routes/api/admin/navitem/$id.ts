@@ -10,7 +10,7 @@ import { withAdminAuth } from '../../../../middleware'
 // 创建单个导航项API路由
 export const ServerRoute = createServerFileRoute('/api/admin/navitem/$id').methods({
   // 获取单个导航项
-  GET: withAdminAuth(async ({ params }) => {
+  GET: withAdminAuth(async ({ params }: any) => {
     const { id } = params
     if (!id) {
       return new Response('ID不能为空', { status: 400 })
@@ -21,7 +21,7 @@ export const ServerRoute = createServerFileRoute('/api/admin/navitem/$id').metho
   }),
   
   // 更新导航项
-  PUT: withAdminAuth(async ({ request, params }) => {
+  PUT: withAdminAuth(async ({ request, params }: any) => {
     try {
       const { id } = params
       if (!id) {
@@ -49,7 +49,7 @@ export const ServerRoute = createServerFileRoute('/api/admin/navitem/$id').metho
   }),
   
   // 删除导航项
-  DELETE: withAdminAuth(async ({ params }) => {
+  DELETE: withAdminAuth(async ({ params }: any) => {
     try {
       const { id } = params
       if (!id) {

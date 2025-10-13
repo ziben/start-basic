@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { createSidebarData } from '~/components/layout/data/sidebar-data'
-import { SidebarData } from '~/components/layout/types'
+import type { SidebarData, NavItem } from '~/components/layout/types'
 import { useTranslation } from '~/hooks/useTranslation'
 import { getSidebarDataFn } from '~/components/layout/app-sidebar'
-import { IconResolver } from '~/utils/icon-resolver'
-import { AudioWaveform, Command, GalleryVerticalEnd } from 'lucide-react'
+import { iconResolver as defaultIconResolver, type IconResolver } from '~/utils/icon-resolver'
+import { AudioWaveform, Command, GalleryVerticalEnd, Menu } from 'lucide-react'
 
 // 用于获取侧边栏数据的React Query键
 export const SIDEBAR_QUERY_KEY = ['sidebar']
@@ -30,8 +30,8 @@ export function useSidebar(iconResolver?: IconResolver) {
   // 处理翻译和图标解析
   useEffect(() => {
     if (data && !localData) {
-      // 处理翻译和图标
-      const processedData = processSidebarData(data, t, iconResolver)
+      // 处理翻译和图标，使用传入的解析器或默认解析器
+      const processedData = processSidebarData(data as SidebarData, t, iconResolver ?? defaultIconResolver)
       setLocalData(processedData)
     }
   }, [data, localData, t, iconResolver])
@@ -60,7 +60,7 @@ export function useSidebar(iconResolver?: IconResolver) {
 function processSidebarData(
   data: SidebarData,
   translate: (key: string) => string,
-  iconResolver?: IconResolver
+  iconResolver: IconResolver
 ): SidebarData {
   return {
     ...data,
@@ -83,7 +83,8 @@ function processSidebarData(
     ],
     navGroups: data.navGroups.map((group) => ({
       ...group,
-      title: translate(group.title), // 翻译标题
+      // 允许传入的 title 为翻译 key 或者已经是展示文本，translate 会尝试返回翻译文本
+      title: translate(group.title),
       items: processNavItems(group.items, translate, iconResolver),
     })),
   }
@@ -92,12 +93,12 @@ function processSidebarData(
 /**
  * 递归处理导航项
  */
-function processNavItems(items: any[], translate: (key: string) => string, iconResolver?: IconResolver): any[] {
+function processNavItems(items: any[], translate: (key: string) => string, iconResolver: IconResolver): NavItem[] {
   return items.map((item) => {
-    // 处理基本属性
-    const processedItem = {
+    // 处理基本属性：入参可能是从后端直接来的原始结构（icon 可能是字符串），这里做一次映射
+    const processedItem: any = {
       ...item,
-      title: translate(item.title), // 翻译标题
+      title: translate(item.title), // 翻译标题或返回原文本
       icon: processIcon(item.icon, iconResolver),
     }
 
@@ -106,20 +107,21 @@ function processNavItems(items: any[], translate: (key: string) => string, iconR
       return {
         ...processedItem,
         items: processNavItems(item.items, translate, iconResolver),
-      }
+      } as NavItem
     }
 
-    return processedItem
+    return processedItem as NavItem
   })
 }
 
 /**
  * 处理图标，将字符串转换为组件
  */
-function processIcon(iconName: string | null | undefined, iconResolver?: IconResolver): React.ElementType | undefined {
-  if (!iconName || !iconResolver) {
-    return undefined
-  }
+function processIcon(iconName: string | null | undefined, iconResolver: IconResolver): React.ElementType | undefined {
+  // 如果没有传入图标名称，返回 undefined（不渲染图标）
+  if (!iconName) return undefined
 
-  return iconResolver(iconName)
+  // 使用传入的解析器去解析图标名称；如果解析失败，返回一个默认的 Menu 图标作为回退
+  const resolved = iconResolver(iconName)
+  return resolved ?? Menu
 }

@@ -11,10 +11,7 @@ export const tasksColumns: ColumnDef<Task>[] = [
     id: 'select',
     header: ({ table }) => (
       <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
-        }
+        checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate')}
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label='Select all'
         className='translate-y-[2px]'
@@ -33,40 +30,32 @@ export const tasksColumns: ColumnDef<Task>[] = [
   },
   {
     accessorKey: 'id',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Task' />
-    ),
+    header: ({ column }) => <DataTableColumnHeader column={column} title='Task' />,
     cell: ({ row }) => <div className='w-[80px]'>{row.getValue('id')}</div>,
     enableSorting: false,
     enableHiding: false,
   },
   {
     accessorKey: 'title',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Title' />
-    ),
+    header: ({ column }) => <DataTableColumnHeader column={column} title='Title' />,
+    meta: { className: 'ps-1', tdClassName: 'ps-4' },
     cell: ({ row }) => {
       const label = labels.find((label) => label.value === row.original.label)
 
       return (
         <div className='flex space-x-2'>
           {label && <Badge variant='outline'>{label.label}</Badge>}
-          <span className='max-w-32 truncate font-medium sm:max-w-72 md:max-w-[31rem]'>
-            {row.getValue('title')}
-          </span>
+          <span className='max-w-32 truncate font-medium sm:max-w-72 md:max-w-[31rem]'>{row.getValue('title')}</span>
         </div>
       )
     },
   },
   {
     accessorKey: 'status',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Status' />
-    ),
+    header: ({ column }) => <DataTableColumnHeader column={column} title='Status' />,
+    meta: { className: 'ps-1', tdClassName: 'ps-4' },
     cell: ({ row }) => {
-      const status = statuses.find(
-        (status) => status.value === row.getValue('status')
-      )
+      const status = statuses.find((status) => status.value === row.getValue('status'))
 
       if (!status) {
         return null
@@ -74,9 +63,7 @@ export const tasksColumns: ColumnDef<Task>[] = [
 
       return (
         <div className='flex w-[100px] items-center gap-2'>
-          {status.icon && (
-            <status.icon className='text-muted-foreground size-4' />
-          )}
+          {status.icon && <status.icon className='text-muted-foreground size-4' />}
           <span>{status.label}</span>
         </div>
       )
@@ -87,13 +74,10 @@ export const tasksColumns: ColumnDef<Task>[] = [
   },
   {
     accessorKey: 'priority',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Priority' />
-    ),
+    header: ({ column }) => <DataTableColumnHeader column={column} title='Priority' />,
+    meta: { className: 'ps-1', tdClassName: 'ps-3' },
     cell: ({ row }) => {
-      const priority = priorities.find(
-        (priority) => priority.value === row.getValue('priority')
-      )
+      const priority = priorities.find((priority) => priority.value === row.getValue('priority'))
 
       if (!priority) {
         return null
@@ -101,9 +85,7 @@ export const tasksColumns: ColumnDef<Task>[] = [
 
       return (
         <div className='flex items-center gap-2'>
-          {priority.icon && (
-            <priority.icon className='text-muted-foreground size-4' />
-          )}
+          {priority.icon && <priority.icon className='text-muted-foreground size-4' />}
           <span>{priority.label}</span>
         </div>
       )

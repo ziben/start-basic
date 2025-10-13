@@ -32,6 +32,7 @@ import {
   type NavLink,
   type NavGroup as NavGroupProps,
 } from './types'
+import type { ElementType } from 'react'
 
 export function NavGroup({ title, items }: NavGroupProps) {
   const { state, isMobile } = useSidebar()
@@ -40,19 +41,21 @@ export function NavGroup({ title, items }: NavGroupProps) {
     <SidebarGroup>
       <SidebarGroupLabel>{title}</SidebarGroupLabel>
       <SidebarMenu>
-        {items.map((item) => {
-          const key = `${item.title}-${item.url}`
+        {items.map((item, idx) => {
+            // 生成稳定 key：优先使用字符串类型的 url，否则回退到索引
+            const urlPart = typeof item.url === 'string' ? item.url : String(idx)
+            const key = `${item.title}-${urlPart}`
 
-          if (!item.items)
-            return <SidebarMenuLink key={key} item={item} href={href} />
+            if (!item.items)
+              return <SidebarMenuLink key={key} item={item} href={href} />
 
-          if (state === 'collapsed' && !isMobile)
-            return (
-              <SidebarMenuCollapsedDropdown key={key} item={item} href={href} />
-            )
+            if (state === 'collapsed' && !isMobile)
+              return (
+                <SidebarMenuCollapsedDropdown key={key} item={item} href={href} />
+              )
 
-          return <SidebarMenuCollapsible key={key} item={item} href={href} />
-        })}
+            return <SidebarMenuCollapsible key={key} item={item} href={href} />
+          })}
       </SidebarMenu>
     </SidebarGroup>
   )
@@ -101,7 +104,7 @@ function SidebarMenuCollapsible({
             {item.icon && <item.icon />}
             <span>{item.title}</span>
             {item.badge && <NavBadge>{item.badge}</NavBadge>}
-            <ChevronRight className='ms-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90' />
+            <ChevronRight className='ms-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90 rtl:rotate-180' />
           </SidebarMenuButton>
         </CollapsibleTrigger>
         <CollapsibleContent className='CollapsibleContent'>

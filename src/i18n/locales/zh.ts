@@ -210,6 +210,13 @@ export default {
   'admin.navgroup.toast.exporting.success': '已导出 {{count}} 个导航组为 CSV',
   'admin.navgroup.toast.exporting.success_plural': '已导出 {{count}} 个导航组为 CSV',
   'admin.navgroup.toast.exporting.error': '错误',
+  'admin.navgroup.button.import': '导入',
+  'admin.navgroup.table.searchPlaceholder': '筛选导航组...',
+  'admin.navgroup.table.description': '描述',
+  
+  // Table aria/labels
+  'admin.table.selectAll': '全选',
+  'admin.table.selectRow': '选择行',
   
   // 导航项管理
   'admin.navitem.title': '导航项管理',

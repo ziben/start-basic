@@ -8,7 +8,7 @@ const prisma = new PrismaClient()
 // 创建导航项API路由
 export const ServerRoute = createServerFileRoute('/api/admin/navitem/').methods({
   // 获取所有导航项
-  GET: withAdminAuth(async ({ request }) => {
+  GET: withAdminAuth(async ({ request }: any) => {
     const url = new URL(request.url)
     const navGroupId = url.searchParams.get('navGroupId')
 
@@ -18,7 +18,7 @@ export const ServerRoute = createServerFileRoute('/api/admin/navitem/').methods(
   }),
 
   // 创建导航项
-  POST: withAdminAuth(async ({ request }) => {
+  POST: withAdminAuth(async ({ request }: any) => {
     try {
       const body = await request.json()
       const createSchema = z.object({

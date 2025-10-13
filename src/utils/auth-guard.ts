@@ -8,7 +8,7 @@ import { auth } from "~/lib/auth";
 /**
  * Middleware to force authentication on a server function, and add the user to the context.
  */
-export const authMiddleware = createMiddleware().server(async ({ next }) => {
+export const authMiddleware = createMiddleware().server(async ({ next }: any) => {
   const { headers, url } = getWebRequest()!;
   
   // 排除登录相关的API

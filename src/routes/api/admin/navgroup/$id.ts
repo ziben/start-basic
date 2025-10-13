@@ -10,7 +10,7 @@ import { withAdminAuth } from '../../../../middleware'
 // 创建单个导航组API路由
 export const ServerRoute = createServerFileRoute('/api/admin/navgroup/$id').methods({
   // 获取单个导航组
-  GET: withAdminAuth(async ({ params }) => {
+  GET: withAdminAuth(async ({ params }: any) => {
     const { id } = params
     if (!id) {
       return new Response('ID不能为空', { status: 400 })
@@ -21,7 +21,7 @@ export const ServerRoute = createServerFileRoute('/api/admin/navgroup/$id').meth
   }),
   
   // 更新导航组
-  PUT: withAdminAuth(async ({ request, params }) => {
+  PUT: withAdminAuth(async ({ request, params }: any) => {
     try {
       const { id } = params
       if (!id) {
@@ -46,7 +46,7 @@ export const ServerRoute = createServerFileRoute('/api/admin/navgroup/$id').meth
   }),
   
   // 删除导航组
-  DELETE: withAdminAuth(async ({ params }) => {
+  DELETE: withAdminAuth(async ({ params }: any) => {
     try {
       const { id } = params
       if (!id) {

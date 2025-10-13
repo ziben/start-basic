@@ -6,7 +6,7 @@ import { withAdminAuth } from '../../../../middleware'
 // 导航组顺序API路由
 export const ServerRoute = createServerFileRoute('/api/admin/navgroup/order').methods({
   // 更新导航组顺序
-  PUT: withAdminAuth(async ({ request }) => {
+  PUT: withAdminAuth(async ({ request }: any) => {
     try {
       const body = await request.json()
       const orderSchema = z.object({

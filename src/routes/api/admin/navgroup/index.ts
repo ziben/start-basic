@@ -7,14 +7,14 @@ const prisma = new PrismaClient()
 // 创建导航组API路由
 export const ServerRoute = createServerFileRoute('/api/admin/navgroup/').methods({
   // 获取导航组
-  GET: withAdminAuth(async ({ request }) => {
+  GET: withAdminAuth(async ({ request }: any) => {
     // 获取所有导航组
     const groups = await getAllNavGroups()
     return Response.json(groups)
   }),
   
   // 创建导航组
-  POST: withAdminAuth(async ({ request }) => {
+  POST: withAdminAuth(async ({ request }: any) => {
     try {
       const body = await request.json()
       const createSchema = z.object({

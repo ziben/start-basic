@@ -16,6 +16,7 @@ import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
 import { Overview } from './components/overview'
 import { RecentSales } from './components/recent-sales'
+import { Analytics } from './components/analytics'
 
 export function Dashboard() {
   return (
@@ -47,9 +48,7 @@ export function Dashboard() {
           <div className='w-full overflow-x-auto pb-2'>
             <TabsList>
               <TabsTrigger value='overview'>Overview</TabsTrigger>
-              <TabsTrigger value='analytics' disabled>
-                Analytics
-              </TabsTrigger>
+              <TabsTrigger value='analytics'>Analytics</TabsTrigger>
               <TabsTrigger value='reports' disabled>
                 Reports
               </TabsTrigger>
@@ -184,6 +183,9 @@ export function Dashboard() {
               </Card>
             </div>
           </TabsContent>
+          <TabsContent value='analytics' className='space-y-4'>
+            <Analytics />
+          </TabsContent>          
         </Tabs>
       </Main>
     </>
