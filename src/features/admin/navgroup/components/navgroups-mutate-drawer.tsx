@@ -23,7 +23,14 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet'
 import { SelectDropdown } from '@/components/select-dropdown'
-import { type AdminNavgroup } from '../data/schema'
+import { type AdminNavgroup, createNavgroupSchema, updateNavgroupSchema } from '../data/schema'
+import {
+  useCreateNavgroup,
+  useUpdateNavgroup,
+} from '~/hooks/useNavgroupApi'
+import type { CreateNavgroupData } from '../data/schema'
+import { toast } from 'sonner'
+import { useTranslation } from '~/hooks/useTranslation'
 
 type NavGroupsMutateDrawerProps = {
   open: boolean
@@ -31,12 +38,8 @@ type NavGroupsMutateDrawerProps = {
   currentRow?: AdminNavgroup
 }
 
-const formSchema = z.object({
-  title: z.string().min(1, 'Title is required.'),
-  status: z.string().min(1, 'Please select a status.'),
-  label: z.string().min(1, 'Please select a label.'),
-  priority: z.string().min(1, 'Please choose a priority.'),
-})
+// Use the existing create/update schemas for validation
+const formSchema = createNavgroupSchema
 type NavGroupForm = z.infer<typeof formSchema>
 
 export function NavGroupsMutateDrawer({
@@ -45,22 +48,50 @@ export function NavGroupsMutateDrawer({
   currentRow,
 }: NavGroupsMutateDrawerProps) {
   const isUpdate = !!currentRow
+  const createMutation = useCreateNavgroup()
+  const updateMutation = useUpdateNavgroup()
+  const { t } = useTranslation()
 
   const form = useForm<NavGroupForm>({
     resolver: zodResolver(formSchema),
-    defaultValues: currentRow ?? {
-      title: '',
-      status: '',
-      label: '',
-      priority: '',
-    },
+    defaultValues: currentRow
+      ? {
+          title: currentRow.title,
+          orderIndex: currentRow.orderIndex,
+          roles: currentRow.roleNavGroups
+            ? currentRow.roleNavGroups.map((r) => r.role)
+            : undefined,
+        }
+      : {
+          title: '',
+          orderIndex: undefined,
+          roles: undefined,
+        },
   })
 
   const onSubmit = (data: NavGroupForm) => {
-    // do something with the form data
-    onOpenChange(false)
-    form.reset()
-    showSubmittedData(data)
+    const payload = {
+      title: data.title,
+      orderIndex: data.orderIndex,
+      roles: data.roles,
+    }
+
+    ;(async () => {
+      try {
+        if (isUpdate && currentRow) {
+          await updateMutation.mutateAsync({ id: currentRow.id, data: payload })
+          toast.success(t('admin.navgroup.toast.updateSuccess.title'))
+        } else {
+          await createMutation.mutateAsync(payload as CreateNavgroupData)
+          toast.success(t('admin.navgroup.toast.createSuccess.title'))
+        }
+        onOpenChange(false)
+        form.reset()
+      } catch (err: any) {
+        console.error(err)
+        toast.error(isUpdate ? t('admin.navgroup.toast.updateError.title') : t('admin.navgroup.toast.createError.title'))
+      }
+    })()
   }
 
   return (
@@ -73,12 +104,17 @@ export function NavGroupsMutateDrawer({
     >
       <SheetContent className='flex flex-col'>
         <SheetHeader className='text-start'>
-          <SheetTitle>{isUpdate ? 'Update' : 'Create'} NavGroup</SheetTitle>
+          <SheetTitle>
+            {isUpdate
+              ? t('admin.navgroup.dialogs.edit.title')
+              : t('admin.navgroup.dialogs.create.title')}
+          </SheetTitle>
           <SheetDescription>
             {isUpdate
-              ? 'Update the navgroup by providing necessary info.'
-              : 'Add a new navgroup by providing necessary info.'}
-            Click save when you&apos;re done.
+              ? t('admin.navgroup.dialogs.edit.desc')
+              : t('admin.navgroup.dialogs.create.desc')}
+            {" "}
+            {t('common.next') /* small hint: use existing common key for flow */}
           </SheetDescription>
         </SheetHeader>
         <Form {...form}>
@@ -92,7 +128,7 @@ export function NavGroupsMutateDrawer({
               name='title'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Title</FormLabel>
+                    <FormLabel>{t('admin.navgroup.fields.title') || 'Title'}</FormLabel>
                   <FormControl>
                     <Input {...field} placeholder='Enter a title' />
                   </FormControl>
@@ -100,97 +136,56 @@ export function NavGroupsMutateDrawer({
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
-              name='status'
+              name='orderIndex'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Status</FormLabel>
-                  <SelectDropdown
-                    defaultValue={field.value}
-                    onValueChange={field.onChange}
-                    placeholder='Select dropdown'
-                    items={[
-                      { label: 'In Progress', value: 'in progress' },
-                      { label: 'Backlog', value: 'backlog' },
-                      { label: 'Todo', value: 'todo' },
-                      { label: 'Canceled', value: 'canceled' },
-                      { label: 'Done', value: 'done' },
-                    ]}
-                  />
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name='label'
-              render={({ field }) => (
-                <FormItem className='relative'>
-                  <FormLabel>Label</FormLabel>
+                  <FormLabel>{t('admin.navgroup.fields.orderIndex') || 'Order Index'}</FormLabel>
                   <FormControl>
-                    <RadioGroup
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                      className='flex flex-col space-y-1'
-                    >
-                      <FormItem className='flex items-center'>
-                        <FormControl>
-                          <RadioGroupItem value='documentation' />
-                        </FormControl>
-                        <FormLabel className='font-normal'>
-                          Documentation
-                        </FormLabel>
-                      </FormItem>
-                      <FormItem className='flex items-center'>
-                        <FormControl>
-                          <RadioGroupItem value='feature' />
-                        </FormControl>
-                        <FormLabel className='font-normal'>Feature</FormLabel>
-                      </FormItem>
-                      <FormItem className='flex items-center'>
-                        <FormControl>
-                          <RadioGroupItem value='bug' />
-                        </FormControl>
-                        <FormLabel className='font-normal'>Bug</FormLabel>
-                      </FormItem>
-                    </RadioGroup>
+                    <Input
+                      {...field}
+                      type='number'
+                      placeholder='Optional order index'
+                      onChange={(e) => {
+                        const v = e.target.value
+                        field.onChange(v === '' ? undefined : Number(v))
+                      }}
+                      value={field.value ?? ''}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
-              name='priority'
+              name='roles'
               render={({ field }) => (
-                <FormItem className='relative'>
-                  <FormLabel>Priority</FormLabel>
+                <FormItem>
+                  <FormLabel>{t('admin.navgroup.fields.roles') || 'Roles'}</FormLabel>
                   <FormControl>
-                    <RadioGroup
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                      className='flex flex-col space-y-1'
-                    >
-                      <FormItem className='flex items-center'>
-                        <FormControl>
-                          <RadioGroupItem value='high' />
-                        </FormControl>
-                        <FormLabel className='font-normal'>High</FormLabel>
-                      </FormItem>
-                      <FormItem className='flex items-center'>
-                        <FormControl>
-                          <RadioGroupItem value='medium' />
-                        </FormControl>
-                        <FormLabel className='font-normal'>Medium</FormLabel>
-                      </FormItem>
-                      <FormItem className='flex items-center'>
-                        <FormControl>
-                          <RadioGroupItem value='low' />
-                        </FormControl>
-                        <FormLabel className='font-normal'>Low</FormLabel>
-                      </FormItem>
-                    </RadioGroup>
+                    <div className='flex flex-wrap gap-2'>
+                      {['admin', 'editor', 'viewer'].map((role) => (
+                        <label key={role} className='inline-flex items-center space-x-2'>
+                          <input
+                            type='checkbox'
+                            checked={(field.value || []).includes(role)}
+                            onChange={(e) => {
+                              const cur = Array.isArray(field.value) ? field.value : []
+                              if (e.target.checked) {
+                                field.onChange([...cur, role])
+                              } else {
+                                field.onChange(cur.filter((r) => r !== role))
+                              }
+                            }}
+                          />
+                          <span className='text-sm'>{role}</span>
+                        </label>
+                      ))}
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -200,10 +195,10 @@ export function NavGroupsMutateDrawer({
         </Form>
         <SheetFooter className='gap-2'>
           <SheetClose asChild>
-            <Button variant='outline'>Close</Button>
+            <Button variant='outline'>{t('common.cancel')}</Button>
           </SheetClose>
           <Button form='navgroups-form' type='submit'>
-            Save changes
+            {t('common.save')}
           </Button>
         </SheetFooter>
       </SheetContent>

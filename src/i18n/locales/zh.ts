@@ -214,6 +214,11 @@ export default {
   'admin.navgroup.table.searchPlaceholder': '筛选导航组...',
   'admin.navgroup.table.description': '描述',
   
+  'admin.navgroup.import.title': '导入导航组',
+  'admin.navgroup.import.desc': '从 CSV 文件快速导入导航组。',
+  'admin.navgroup.import.button': '导入',
+  'admin.navgroup.import.file': '文件',
+  
   // Table aria/labels
   'admin.table.selectAll': '全选',
   'admin.table.selectRow': '选择行',

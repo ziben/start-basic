@@ -17,6 +17,15 @@ export const roleNavGroupSchema = z.object({
   createdAt: z.string().or(z.date()),
 })
 
+// 用户与导航组关联（简化）
+export const userRoleNavGroupSchema = z.object({
+  id: z.string(),
+  userId: z.string(),
+  navGroupId: z.string(),
+  visible: z.boolean().optional(),
+  createdAt: z.string().or(z.date()),
+})
+
 // 导航组schema
 export const adminNavgroupSchema = z.object({
   id: z.string(),
@@ -26,6 +35,7 @@ export const adminNavgroupSchema = z.object({
   updatedAt: z.string().or(z.date()),
   navItems: z.array(navItemSimpleSchema).optional(),
   roleNavGroups: z.array(roleNavGroupSchema).optional(),
+  userRoleNavGroups: z.array(userRoleNavGroupSchema).optional(),
 })
 
 export const adminNavgroupListSchema = z.array(adminNavgroupSchema)
@@ -33,6 +43,7 @@ export const adminNavgroupListSchema = z.array(adminNavgroupSchema)
 export const createNavgroupSchema = z.object({
   title: z.string().min(1, { message: '标题不能为空' }),
   orderIndex: z.number().int().optional(),
+  // roles represents initial RoleNavGroup entries to create alongside NavGroup
   roles: z.array(z.string()).optional(),
 })
 

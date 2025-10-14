@@ -97,7 +97,7 @@ export async function createNavGroup(data: {
       orderIndex = lastNavGroup ? lastNavGroup.orderIndex + 1 : 0
     }
 
-    // 创建导航组及其角色关联
+    // 创建导航组及其角色关联，返回包含关联的完整对象
     const navGroup = await prisma.$transaction(async (tx) => {
       // 创建导航组
       const group = await tx.navGroup.create({
@@ -110,7 +110,7 @@ export async function createNavGroup(data: {
       // 创建角色关联
       if (data.roles && data.roles.length > 0) {
         await tx.roleNavGroup.createMany({
-          data: data.roles.map(role => ({
+          data: data.roles.map((role) => ({
             role,
             navGroupId: group.id,
           })),
@@ -125,7 +125,16 @@ export async function createNavGroup(data: {
         })
       }
 
-      return group
+      // 返回带关联的对象，便于前端立即使用
+      const full = await tx.navGroup.findUnique({
+        where: { id: group.id },
+        include: {
+          navItems: { orderBy: { orderIndex: 'asc' } },
+          roleNavGroups: true,
+        },
+      })
+
+      return full
     })
 
     return navGroup
@@ -153,7 +162,7 @@ export async function updateNavGroup(
       if (data.title !== undefined) updateData.title = data.title
       if (data.orderIndex !== undefined) updateData.orderIndex = data.orderIndex
 
-      const navGroup = await tx.navGroup.update({
+      await tx.navGroup.update({
         where: { id },
         data: updateData,
       })
@@ -168,7 +177,7 @@ export async function updateNavGroup(
         // 然后创建新的角色关联
         if (data.roles.length > 0) {
           await tx.roleNavGroup.createMany({
-            data: data.roles.map(role => ({
+            data: data.roles.map((role) => ({
               role,
               navGroupId: id,
             })),
@@ -176,7 +185,16 @@ export async function updateNavGroup(
         }
       }
 
-      return navGroup
+      // 返回包含关联的最新对象
+      const full = await tx.navGroup.findUnique({
+        where: { id },
+        include: {
+          navItems: { orderBy: { orderIndex: 'asc' } },
+          roleNavGroups: true,
+        },
+      })
+
+      return full
     })
   } catch (error) {
     console.error('更新导航组失败:', error)

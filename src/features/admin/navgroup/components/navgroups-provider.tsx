@@ -18,9 +18,9 @@ export function NavGroupsProvider({ children }: { children: React.ReactNode }) {
   const [currentRow, setCurrentRow] = useState<AdminNavgroup | null>(null)
 
   return (
-    <NavGroupsContext value={{ open, setOpen, currentRow, setCurrentRow }}>
+    <NavGroupsContext.Provider value={{ open, setOpen, currentRow, setCurrentRow }}>
       {children}
-    </NavGroupsContext>
+    </NavGroupsContext.Provider>
   )
 }
 
