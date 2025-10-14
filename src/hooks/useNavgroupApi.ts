@@ -1,33 +1,23 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-
-// Define the NavGroup type based on expected API response
-export interface NavGroup {
-  id: string;
-  title: string;
-  description?: string | null;
-  icon?: string | null;
-  orderIndex: number;
-  isVisible: boolean;
-  // Add other fields if they exist, e.g., createdAt, updatedAt
-}
+import type { AdminNavgroup, CreateNavgroupData, UpdateNavgroupData } from '~/features/admin/navgroup/data/schema'
 
 // 获取所有导航组
 export function useNavgroups() {
-  return useQuery<NavGroup[]>({ // Specify the return type for useQuery
+  return useQuery<AdminNavgroup[]>({ // Specify the return type for useQuery
     queryKey: ['admin', 'navgroups'],
     queryFn: async () => {
       const response = await fetch('/api/admin/navgroup/')
       if (!response.ok) {
         throw new Error(`获取导航组失败: ${response.statusText}`)
       }
-      return await response.json() as NavGroup[] // Assert the type of the JSON response
+      return await response.json() as AdminNavgroup[] // Assert the type of the JSON response
     },
   })
 }
 
 // 获取单个导航组信息
 export function useNavgroup(id?: string) {
-  return useQuery<NavGroup | null>({ // Specify the return type
+  return useQuery<AdminNavgroup | null>({ // Specify the return type
     queryKey: ['admin', 'navgroup', id],
     queryFn: async () => {
       if (!id) return null
@@ -35,25 +25,19 @@ export function useNavgroup(id?: string) {
       if (!response.ok) {
         throw new Error(`获取导航组失败: ${response.statusText}`)
       }
-      return await response.json() as NavGroup // Assert the type
+      return await response.json() as AdminNavgroup // Assert the type
     },
     enabled: !!id
   })
 }
 
-export interface CreateNavgroupData {
-  title: string
-  description?: string
-  icon?: string
-  orderIndex?: number
-  isVisible?: boolean
-}
+// using CreateNavgroupData from schema
 
 // 创建导航组
 export function useCreateNavgroup() {
   const queryClient = useQueryClient()
   
-  return useMutation<NavGroup, Error, CreateNavgroupData>({ // Specify the return type
+  return useMutation<AdminNavgroup, Error, CreateNavgroupData>({ // Specify the return type
     mutationFn: async (data: CreateNavgroupData) => {
       const response = await fetch('/api/admin/navgroup/', {
         method: 'POST',
@@ -67,7 +51,7 @@ export function useCreateNavgroup() {
         throw new Error(`创建导航组失败: ${response.statusText}`)
       }
       
-      return await response.json() as NavGroup // Assert the type
+      return await response.json() as AdminNavgroup // Assert the type
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'navgroups'] })
@@ -75,23 +59,14 @@ export function useCreateNavgroup() {
   })
 }
 
-export interface UpdateNavgroupData {
-  id: string
-  data: {
-    title?: string
-    description?: string
-    icon?: string
-    orderIndex?: number
-    isVisible?: boolean
-  }
-}
+// using UpdateNavgroupData from schema
 
 // 更新导航组
 export function useUpdateNavgroup() {
   const queryClient = useQueryClient()
   
-  return useMutation<NavGroup, Error, UpdateNavgroupData>({ // Specify the return type
-    mutationFn: async ({ id, data }: UpdateNavgroupData) => {
+  return useMutation<AdminNavgroup, Error, { id: string; data: UpdateNavgroupData }>({ // Specify the return type
+    mutationFn: async ({ id, data }: { id: string; data: UpdateNavgroupData }) => {
       const response = await fetch(`/api/admin/navgroup/${encodeURIComponent(id)}`, {
         method: 'PUT',
         headers: {
@@ -104,7 +79,7 @@ export function useUpdateNavgroup() {
         throw new Error(`更新导航组失败: ${response.statusText}`)
       }
       
-      return await response.json() as NavGroup // Assert the type
+      return await response.json() as AdminNavgroup // Assert the type
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'navgroups'] })
@@ -192,3 +167,6 @@ export function useUpdateNavgroupVisibility() {
     },
   })
 }
+
+// Re-export a compact name expected elsewhere in the codebase
+export type NavGroup = AdminNavgroup

@@ -2,6 +2,8 @@ import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { showSubmittedData } from '@/lib/show-submitted-data'
+import { useTranslation } from '~/hooks/useTranslation'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -51,6 +53,8 @@ export function NavGroupsImportDialog({
     defaultValues: { file: undefined },
   })
 
+  const { t } = useTranslation()
+
   const fileRef = form.register('file')
 
   const onSubmit = () => {
@@ -62,7 +66,8 @@ export function NavGroupsImportDialog({
         size: file[0].size,
         type: file[0].type,
       }
-      showSubmittedData(fileDetails, 'You have imported the following file:')
+      showSubmittedData(fileDetails, t('admin.navgroup.import.success') || 'Imported file')
+      toast.success(t('admin.navgroup.toast.exporting.success') || 'Imported')
     }
     onOpenChange(false)
   }
@@ -77,9 +82,9 @@ export function NavGroupsImportDialog({
     >
       <DialogContent className='gap-2 sm:max-w-sm'>
         <DialogHeader className='text-start'>
-          <DialogTitle>Import NavGroups</DialogTitle>
+          <DialogTitle>{t('admin.navgroup.import.title') || 'Import NavGroups'}</DialogTitle>
           <DialogDescription>
-            Import navgroups quickly from a CSV file.
+            {t('admin.navgroup.import.desc') || 'Import navgroups quickly from a CSV file.'}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -89,7 +94,7 @@ export function NavGroupsImportDialog({
               name='file'
               render={() => (
                 <FormItem className='my-2'>
-                  <FormLabel>File</FormLabel>
+                  <FormLabel>{t('admin.navgroup.import.file') || 'File'}</FormLabel>
                   <FormControl>
                     <Input type='file' {...fileRef} className='h-8 py-0' />
                   </FormControl>
@@ -101,10 +106,10 @@ export function NavGroupsImportDialog({
         </Form>
         <DialogFooter className='gap-2'>
           <DialogClose asChild>
-            <Button variant='outline'>Close</Button>
+            <Button variant='outline'>{t('common.cancel') || 'Close'}</Button>
           </DialogClose>
           <Button type='submit' form='navgroup-import-form'>
-            Import
+            {t('admin.navgroup.import.button') || 'Import'}
           </Button>
         </DialogFooter>
       </DialogContent>

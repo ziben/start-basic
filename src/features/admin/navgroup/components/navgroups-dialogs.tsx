@@ -3,9 +3,14 @@ import { ConfirmDialog } from '@/components/confirm-dialog'
 import { NavGroupsImportDialog } from './navgroups-import-dialog'
 import { NavGroupsMutateDrawer } from './navgroups-mutate-drawer'
 import { useNavGroups } from './navgroups-provider'
+import { useDeleteNavgroup } from '~/hooks/useNavgroupApi'
+import { useTranslation } from '~/hooks/useTranslation'
+import { toast } from 'sonner'
 
 export function NavGroupsDialogs() {
   const { open, setOpen, currentRow, setCurrentRow } = useNavGroups()
+  const deleteMutation = useDeleteNavgroup()
+  const { t } = useTranslation()
   return (
     <>
       <NavGroupsMutateDrawer
@@ -44,26 +49,31 @@ export function NavGroupsDialogs() {
                 setCurrentRow(null)
               }, 500)
             }}
-            handleConfirm={() => {
-              setOpen(null)
-              setTimeout(() => {
-                setCurrentRow(null)
-              }, 500)
-              showSubmittedData(
-                currentRow,
-                'The following navgroup has been deleted:'
-              )
+            handleConfirm={async () => {
+              if (!currentRow) return
+              try {
+                await deleteMutation.mutateAsync(currentRow.id)
+                toast.success(t('admin.navgroup.toast.deleteSuccess.title'))
+              } catch (err: any) {
+                console.error(err)
+                toast.error(t('admin.navgroup.toast.deleteError.title'))
+              } finally {
+                setOpen(null)
+                setTimeout(() => {
+                  setCurrentRow(null)
+                }, 500)
+              }
             }}
             className='max-w-md'
-            title={`Delete this navgroup: ${currentRow.id} ?`}
+            title={t('admin.navgroup.dialogs.delete.title')}
             desc={
               <>
-                You are about to delete a navgroup with the ID{' '}
-                <strong>{currentRow.id}</strong>. <br />
-                This action cannot be undone.
+                {t('admin.navgroup.dialogs.delete.desc')}
+                <br />
+                <strong>{currentRow.id}</strong>
               </>
             }
-            confirmText='Delete'
+            confirmText={t('common.delete')}
           />
         </>
       )}

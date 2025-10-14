@@ -202,6 +202,11 @@ export default {
   'admin.navgroup.table.searchPlaceholder': 'Filter nav groups...',
   'admin.navgroup.table.description': 'Description',
 
+  'admin.navgroup.import.title': 'Import NavGroups',
+  'admin.navgroup.import.desc': 'Import navgroups quickly from a CSV file.',
+  'admin.navgroup.import.button': 'Import',
+  'admin.navgroup.import.file': 'File',
+
   // Table aria/labels
   'admin.table.selectAll': 'Select all',
   'admin.table.selectRow': 'Select row',
