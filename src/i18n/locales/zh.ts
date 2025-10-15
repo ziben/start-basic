@@ -175,6 +175,8 @@ export default {
   'admin.navgroup.actions.visibility': '切换可见性',
   'admin.navgroup.actions.manageNavItems': '管理导航项',
   'admin.navgroup.actions.openMenu': '打开菜单',
+  'admin.navgroup.actions.makeCopy': '复制',
+  'admin.navgroup.actions.favorite': '收藏',
   'admin.navgroup.dialogs.create.title': '创建导航组',
   'admin.navgroup.dialogs.create.desc': '填写下面的表单创建一个新的导航组。',
   'admin.navgroup.dialogs.edit.title': '编辑导航组',

@@ -1,13 +1,4 @@
-import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
-import { useTableUrlState } from '@/hooks/use-table-url-state'
+import { useEffect, useState } from 'react'
 import { getRouteApi } from '@tanstack/react-router'
 import {
   type SortingState,
@@ -21,11 +12,13 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-import { useEffect, useState } from 'react'
-import { type AdminNavgroup } from '../data/schema'
 import { useTranslation } from '~/hooks/useTranslation'
+import { useTableUrlState } from '@/hooks/use-table-url-state'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
+import { type AdminNavgroup } from '../data/schema'
 import { DataTableBulkActions } from './data-table-bulk-actions'
-import { navGroupsColumns as columns } from './navgroups-columns'
+import { useNavGroupColumns } from './navgroups-columns'
 
 const route = getRouteApi('/_authenticated/admin/navgroup')
 
@@ -35,6 +28,7 @@ type DataTableProps = {
 
 export function NavGroupsTable({ data }: DataTableProps) {
   const { t } = useTranslation()
+  const columns = useNavGroupColumns()
   // Local UI-only states
   const [rowSelection, setRowSelection] = useState({})
   const [sorting, setSorting] = useState<SortingState>([])
@@ -107,16 +101,11 @@ export function NavGroupsTable({ data }: DataTableProps) {
     <div className='space-y-4 max-sm:has-[div[role="toolbar"]]:mb-16'>
       <DataTableToolbar
         table={table}
-  searchPlaceholder={t('admin.navgroup.table.searchPlaceholder')}
+        searchPlaceholder={t('admin.navgroup.table.searchPlaceholder')}
         filters={[
           {
             columnId: 'title',
             title: t('admin.navgroup.table.title'),
-            options: [],
-          },
-          {
-            columnId: 'description',
-            title: t('admin.navgroup.table.description'),
             options: [],
           },
         ]}
@@ -129,12 +118,7 @@ export function NavGroupsTable({ data }: DataTableProps) {
                 {headerGroup.headers.map((header) => {
                   return (
                     <TableHead key={header.id} colSpan={header.colSpan}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                      {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                     </TableHead>
                   )
                 })}
@@ -144,27 +128,16 @@ export function NavGroupsTable({ data }: DataTableProps) {
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && 'selected'}
-                >
+                <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
+                    <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className='h-24 text-center'
-                >
-                      {t('admin.common.noData')}
+                <TableCell colSpan={columns.length} className='h-24 text-center'>
+                  {t('admin.common.noData')}
                 </TableCell>
               </TableRow>
             )}

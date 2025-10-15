@@ -202,6 +202,16 @@ export default {
   'admin.navgroup.table.searchPlaceholder': 'Filter nav groups...',
   'admin.navgroup.table.description': 'Description',
 
+  // NavGroup Table Columns
+  'admin.navgroup.table.id': 'ID',
+  'admin.navgroup.table.title': 'Title',
+  'admin.navgroup.table.orderIndex': 'Order',
+  'admin.navgroup.table.roles': 'Roles',
+  'admin.navgroup.table.navItems': 'Nav Items',
+  'admin.navgroup.table.itemsCount': 'items',
+  'admin.navgroup.table.createdAt': 'Created At',
+  'admin.navgroup.table.updatedAt': 'Updated At',
+
   'admin.navgroup.import.title': 'Import NavGroups',
   'admin.navgroup.import.desc': 'Import navgroups quickly from a CSV file.',
   'admin.navgroup.import.button': 'Import',
@@ -232,6 +242,10 @@ export default {
 
   'admin.navgroup.title': 'Nav Group Management',
   'admin.navgroup.desc': 'Manage all nav group data.',
+
+  // NavGroup actions that may be rendered in menus
+  'admin.navgroup.actions.makeCopy': 'Make a copy',
+  'admin.navgroup.actions.favorite': 'Add to favorites',
 
   'admin.navitem.title': 'Nav Item Management',
   'admin.navitem.desc': 'Manage all nav item data.',
