@@ -11,9 +11,9 @@ export default defineConfig({
     }),
     tailwindcss(),
     tanstackStart(
-      {
+      ( {
         customViteReactPlugin: true,
-      }
+      } as any )
     ),
     react(),
   ],

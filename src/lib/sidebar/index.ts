@@ -3,9 +3,9 @@ import { useQuery } from '@tanstack/react-query'
 import { createSidebarData } from '~/components/layout/data/sidebar-data'
 import type { SidebarData, NavItem } from '~/components/layout/types'
 import { useTranslation } from '~/hooks/useTranslation'
-import { getSidebarDataFn } from '~/components/layout/app-sidebar'
+import { getSidebarDataFn } from './api'
 import { iconResolver as defaultIconResolver, type IconResolver } from '~/utils/icon-resolver'
-import { AudioWaveform, Command, GalleryVerticalEnd, Menu } from 'lucide-react'
+import { Menu } from 'lucide-react'
 
 // 用于获取侧边栏数据的React Query键
 export const SIDEBAR_QUERY_KEY = ['sidebar']
@@ -22,11 +22,11 @@ export function useSidebar(iconResolver?: IconResolver) {
   // 从API获取侧边栏数据
   const { data, isLoading, error } = useQuery({
     queryKey: SIDEBAR_QUERY_KEY,
-    queryFn: () => getSidebarDataFn({}),
+    queryFn: () => getSidebarDataFn(),
     staleTime: 5 * 60 * 1000, // 5分钟缓存
     refetchOnWindowFocus: false,
   })
-
+  console.info('Sidebar hook data:', { data, localData, isLoading, error })
   // 处理翻译和图标解析
   useEffect(() => {
     if (data && !localData) {
@@ -35,6 +35,8 @@ export function useSidebar(iconResolver?: IconResolver) {
       setLocalData(processedData)
     }
   }, [data, localData, t, iconResolver])
+
+  // console.info('Sidebar hook data:', { data, localData, isLoading, error })
 
   // 如果出错或加载中且没有本地数据，使用默认数据
   if ((error || isLoading) && !localData) {
@@ -64,23 +66,12 @@ function processSidebarData(
 ): SidebarData {
   return {
     ...data,
-    teams: [
-      {
-        name: 'Shadcn 管理系统',
-        logo: Command,
-        plan: 'Vite + ShadcnUI',
-      },
-      {
-        name: 'Acme 公司',
-        logo: GalleryVerticalEnd,
-        plan: '企业版',
-      },
-      {
-        name: 'Acme 集团',
-        logo: AudioWaveform,
-        plan: '创业版',
-      },
-    ],
+    // 使用服务器返回的数据（已被序列化为字符串标识），在客户端解析为组件
+    teams:
+      data.teams?.map((t) => ({
+        ...t,
+        logo: processIcon(t.logo as any, iconResolver),
+      })) ?? [],
     navGroups: data.navGroups.map((group) => ({
       ...group,
       // 允许传入的 title 为翻译 key 或者已经是展示文本，translate 会尝试返回翻译文本
@@ -117,11 +108,11 @@ function processNavItems(items: any[], translate: (key: string) => string, iconR
 /**
  * 处理图标，将字符串转换为组件
  */
-function processIcon(iconName: string | null | undefined, iconResolver: IconResolver): React.ElementType | undefined {
-  // 如果没有传入图标名称，返回 undefined（不渲染图标）
-  if (!iconName) return undefined
+function processIcon(iconName: string | null | undefined, iconResolver: IconResolver): React.ElementType | string {
+  // 如果没有传入图标名称，返回默认的 Menu 名称字符串
+  if (!iconName) return Menu
 
-  // 使用传入的解析器去解析图标名称；如果解析失败，返回一个默认的 Menu 图标作为回退
+  // 使用传入的解析器去解析图标名称；如果解析失败，返回一个默认的 Menu 组件作为回退
   const resolved = iconResolver(iconName)
   return resolved ?? Menu
 }

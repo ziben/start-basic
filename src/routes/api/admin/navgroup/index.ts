@@ -1,38 +1,42 @@
-import { createServerFileRoute } from '@tanstack/react-start/server'
+import { createFileRoute } from '@tanstack/react-router'
 import { z } from 'zod'
-import { withAdminAuth } from '../../../../middleware'
-import { PrismaClient } from '@prisma/client'
+import { withAdminAuth } from '~/middleware'
+import prisma from '~/lib/db'
 
-const prisma = new PrismaClient()
 // 创建导航组API路由
-export const ServerRoute = createServerFileRoute('/api/admin/navgroup/').methods({
-  // 获取导航组
-  GET: withAdminAuth(async ({ request }: any) => {
-    // 获取所有导航组
-    const groups = await getAllNavGroups()
-    return Response.json(groups)
-  }),
-  
-  // 创建导航组
-  POST: withAdminAuth(async ({ request }: any) => {
-    try {
-      const body = await request.json()
-      const createSchema = z.object({
-        title: z.string(),
-        description: z.string().optional(),
-        icon: z.string().optional(),
-        orderIndex: z.number().optional(),
-        isVisible: z.boolean().optional()
+export const Route = createFileRoute('/api/admin/navgroup/')({
+  server: {
+    handlers: {
+      // 获取导航组
+      GET: withAdminAuth(async ({ request }: any) => {
+        // 获取所有导航组
+        const groups = await getAllNavGroups()
+        return Response.json(groups)
+      }),
+
+      // 创建导航组
+      POST: withAdminAuth(async ({ request }: any) => {
+        try {
+          const body = await request.json()
+          const createSchema = z.object({
+            title: z.string(),
+            description: z.string().optional(),
+            icon: z.string().optional(),
+            orderIndex: z.number().optional(),
+            isVisible: z.boolean().optional()
+          })
+
+          const data = createSchema.parse(body)
+          const result = await createNavGroup(data)
+          return Response.json(result)
+        } catch (error) {
+          return new Response(String(error), { status: 400 })
+        }
       })
-      
-      const data = createSchema.parse(body)
-      const result = await createNavGroup(data)
-      return Response.json(result)
-    } catch (error) {
-      return new Response(String(error), { status: 400 })
-    }
-  })
+    },
+  }
 })
+
 
 /**
  * 获取所有导航组

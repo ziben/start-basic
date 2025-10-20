@@ -5,7 +5,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { HeadContent, Outlet, Scripts, createRootRouteWithContext } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 import { createServerFn } from "@tanstack/react-start"
-import { getWebRequest } from "@tanstack/react-start/server"
+import { getRequestHeaders } from "@tanstack/react-start/server"
 import * as React from 'react'
 import { NavigationProgress } from '~/components/navigation-progress'
 import { Toaster } from '~/components/ui/sonner'
@@ -19,7 +19,7 @@ import appCss from '~/styles/index.css?url'
 import { seo } from '~/utils/seo'
 
 const getUser = createServerFn({ method: "GET" }).handler(async () => {
-  const { headers } = getWebRequest()!;
+  const headers = getRequestHeaders()!;
   const session = await auth.api.getSession({ headers });
 
   return session?.user || null;

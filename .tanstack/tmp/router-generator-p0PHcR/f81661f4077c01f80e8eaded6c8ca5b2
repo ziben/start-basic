@@ -1,9 +1,0 @@
-import { createFileRoute } from '@tanstack/react-router'
-
-export const Route = createFileRoute('/api/admin/navitem/')({
-  component: RouteComponent,
-})
-
-function RouteComponent() {
-  return <div>Hello "/api/admin/navitem/"!</div>
-}

@@ -4,8 +4,8 @@ datasource db {
 }
 
 generator client {
-  provider = "prisma-client-js"
-  // output   = "../src/generated/prisma"
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
 }
 
 model User {
@@ -189,4 +189,16 @@ model Invitation {
   user           User         @relation(fields: [inviterId], references: [id], onDelete: Cascade)
 
   @@map("invitation")
+}
+
+// 可选：翻译存储表（用于运行时从数据库加载本地化文本）
+model Translation {
+  id        String   @id @default(cuid())
+  locale    String   // e.g. 'en' or 'zh'
+  key       String   // message key, e.g. 'admin.navgroup.table.title'
+  value     String   // translated text
+  createdAt DateTime @default(now())
+
+  @@unique([locale, key])
+  @@map("translation")
 }

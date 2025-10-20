@@ -1,7 +1,5 @@
 import { createHash } from '@better-auth/utils/hash'
-import { PrismaClient } from '@prisma/client'
-
-const prisma = new PrismaClient()
+import prisma from '~/lib/db'
 
 async function createAdminUser() {
   try {

@@ -1,0 +1,204 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+  // output   = "../src/generated/prisma"
+}
+
+model User {
+  id            String    @id
+  name          String
+  email         String
+  emailVerified Boolean
+  image         String?
+  createdAt     DateTime
+  updatedAt     DateTime
+  sessions      Session[]
+  accounts      Account[]
+
+  role            String?
+  banned          Boolean?
+  banReason       String?
+  banExpires      DateTime?
+  username        String?
+  displayUsername String?
+
+  members     Member[]
+  invitations Invitation[]
+
+  // 角色与侧边栏的关联
+  roleNavGroups UserRoleNavGroup[]
+
+  @@unique([email])
+  @@map("user")
+  @@unique([username])
+}
+
+// 侧边栏导航组 - 顶层分组
+model NavGroup {
+  id          String   @id @default(cuid())
+  title       String   // 分组标题
+  orderIndex  Int      // 排序索引
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // 关联 
+  navItems    NavItem[]        // 导航项
+  roleNavGroups RoleNavGroup[] // 关联角色
+  userRoleNavGroups UserRoleNavGroup[] // 用户角色关联
+
+  @@map("nav_group")
+}
+
+// 导航项 - 可以是链接或子菜单
+model NavItem {
+  id          String   @id @default(cuid())
+  title       String   // 菜单项标题
+  url         String?  // 链接地址，如为子菜单则为null
+  icon        String?  // 图标名称
+  badge       String?  // 徽章内容
+  orderIndex  Int      // 排序索引
+  isCollapsible Boolean @default(false) // 是否为可折叠菜单
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // 关联
+  navGroupId  String?   // 父导航组ID
+  navGroup    NavGroup? @relation(fields: [navGroupId], references: [id], onDelete: Cascade)
+  
+  parentId    String?   // 父级菜单项ID，用于子菜单
+  parent      NavItem?  @relation("NavItemToNavItem", fields: [parentId], references: [id], onDelete: Cascade)
+  children    NavItem[] @relation("NavItemToNavItem")
+
+  @@map("nav_item")
+}
+
+// 角色与导航组关联表
+model RoleNavGroup {
+  id         String   @id @default(cuid())
+  role       String   // 角色名称
+  navGroupId String
+  navGroup   NavGroup @relation(fields: [navGroupId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+
+  @@unique([role, navGroupId])
+  @@map("role_nav_group")
+}
+
+// 用户与导航组关联表 - 用于个性化设置
+model UserRoleNavGroup {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  navGroupId String
+  navGroup   NavGroup @relation(fields: [navGroupId], references: [id], onDelete: Cascade)
+  visible    Boolean  @default(true) // 用户是否可见此导航组
+  createdAt  DateTime @default(now())
+
+  @@unique([userId, navGroupId])
+  @@map("user_role_nav_group")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime
+  updatedAt DateTime
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  impersonatedBy String?
+
+  activeOrganizationId String?
+
+  @@unique([token])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime
+  updatedAt             DateTime
+
+  @@map("account")
+}
+
+model Verification {
+  id         String    @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime?
+  updatedAt  DateTime?
+
+  @@map("verification")
+}
+
+model Organization {
+  id          String       @id
+  name        String
+  slug        String?
+  logo        String?
+  createdAt   DateTime
+  metadata    String?
+  members     Member[]
+  invitations Invitation[]
+
+  @@unique([slug])
+  @@map("organization")
+}
+
+model Member {
+  id             String       @id
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  userId         String
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role           String
+  createdAt      DateTime
+
+  @@map("member")
+}
+
+model Invitation {
+  id             String       @id
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  email          String
+  role           String?
+  status         String
+  expiresAt      DateTime
+  inviterId      String
+  user           User         @relation(fields: [inviterId], references: [id], onDelete: Cascade)
+
+  @@map("invitation")
+}
+
+// 可选：翻译存储表（用于运行时从数据库加载本地化文本）
+model Translation {
+  id        String   @id @default(cuid())
+  locale    String   // e.g. 'en' or 'zh'
+  key       String   // message key, e.g. 'admin.navgroup.table.title'
+  value     String   // translated text
+  createdAt DateTime @default(now())
+
+  @@unique([locale, key])
+  @@map("translation")
+}

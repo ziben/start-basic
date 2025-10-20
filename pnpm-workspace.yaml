@@ -1,0 +1,10 @@
+ignoredBuiltDependencies:
+  - '@ibm/plex-sans-sc'
+  - '@prisma/engines'
+  - '@tailwindcss/oxide'
+  - better-sqlite3
+  - esbuild
+  - prisma
+
+onlyBuiltDependencies:
+  - '@prisma/client'

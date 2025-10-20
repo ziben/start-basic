@@ -1,44 +1,46 @@
+import { createFileRoute } from '@tanstack/react-router'
 import { z } from 'zod'
-import { createServerFileRoute } from '@tanstack/react-start/server'
-import { PrismaClient } from '@prisma/client'
-import { withAdminAuth } from '../../../../middleware'
-
-const prisma = new PrismaClient()
+import { withAdminAuth } from '~/middleware'
+import prisma from '~/lib/db'
 
 // 创建导航项API路由
-export const ServerRoute = createServerFileRoute('/api/admin/navitem/').methods({
-  // 获取所有导航项
-  GET: withAdminAuth(async ({ request }: any) => {
-    const url = new URL(request.url)
-    const navGroupId = url.searchParams.get('navGroupId')
+export const Route = createFileRoute('/api/admin/navitem/')({
+  server: {
+    handlers: {
+      // 获取所有导航项
+      GET: withAdminAuth(async ({ request }: any) => {
+        const url = new URL(request.url)
+        const navGroupId = url.searchParams.get('navGroupId')
 
-    // 获取所有导航项
-    const items = await getAllNavItems(navGroupId ?? undefined)
-    return Response.json(items)
-  }),
+        // 获取所有导航项
+        const items = await getAllNavItems(navGroupId ?? undefined)
+        return Response.json(items)
+      }),
 
-  // 创建导航项
-  POST: withAdminAuth(async ({ request }: any) => {
-    try {
-      const body = await request.json()
-      const createSchema = z.object({
-        title: z.string(),
-        url: z.string().optional(),
-        icon: z.string().optional(),
-        badge: z.string().optional(),
-        isCollapsible: z.boolean().optional(),
-        navGroupId: z.string(),
-        parentId: z.string().optional(),
-        orderIndex: z.number().optional(),
-      })
+      // 创建导航项
+      POST: withAdminAuth(async ({ request }: any) => {
+        try {
+          const body = await request.json()
+          const createSchema = z.object({
+            title: z.string(),
+            url: z.string().optional(),
+            icon: z.string().optional(),
+            badge: z.string().optional(),
+            isCollapsible: z.boolean().optional(),
+            navGroupId: z.string(),
+            parentId: z.string().optional(),
+            orderIndex: z.number().optional(),
+          })
 
-      const data = createSchema.parse(body)
-      const result = await createNavItem(data)
-      return Response.json(result)
-    } catch (error) {
-      return new Response(String(error), { status: 400 })
+          const data = createSchema.parse(body)
+          const result = await createNavItem(data)
+          return Response.json(result)
+        } catch (error) {
+          return new Response(String(error), { status: 400 })
+        }
+      }),
     }
-  }),
+  }
 })
 
 /**

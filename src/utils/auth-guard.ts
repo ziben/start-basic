@@ -1,5 +1,5 @@
 import { createMiddleware } from "@tanstack/react-start";
-import { getWebRequest, setResponseStatus } from "@tanstack/react-start/server";
+import { getRequest, setResponseStatus } from "@tanstack/react-start/server";
 import { auth } from "~/lib/auth";
 
 // https://tanstack.com/start/latest/docs/framework/react/middleware
@@ -9,7 +9,7 @@ import { auth } from "~/lib/auth";
  * Middleware to force authentication on a server function, and add the user to the context.
  */
 export const authMiddleware = createMiddleware().server(async ({ next }: any) => {
-  const { headers, url } = getWebRequest()!;
+  const { headers, url } = getRequest()!;
   
   // 排除登录相关的API
   const pathname = new URL(url).pathname;

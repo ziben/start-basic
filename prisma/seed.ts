@@ -1,68 +1,61 @@
-import { initSidebarData } from '../src/components/layout/app-sidebar'
-import { PrismaClient } from '@prisma/client'
-import { randomUUID } from 'crypto'
+// @ts-nocheck
+import en from '../src/i18n/locales/en.ts'
+import zh from '../src/i18n/locales/zh.ts'
 
-const prisma = new PrismaClient()
 
-async function createAdminUser() {
+function flatten(obj: any, prefix = ''): Record<string, string> {
+  const res: Record<string, string> = {}
+  for (const key of Object.keys(obj)) {
+    const value = obj[key]
+    const path = prefix ? `${prefix}.${key}` : key
+    if (value && typeof value === 'object' && !Array.isArray(value)) {
+      Object.assign(res, flatten(value, path))
+    } else {
+      res[path] = String(value ?? '')
+    }
+  }
+  return res
+}
+
+async function seed() {
   try {
-    const adminEmail = 'admin@example.com'
-    const adminPassword = 'AdminPassword123!'
-    const userId = randomUUID()
-    const now = new Date()
+    const enFlat = flatten(en)
+    const zhFlat = flatten(zh)
 
-    const existingAdmin = await prisma.user.findUnique({
-      where: { email: adminEmail },
-    })
+    let inserted = 0
+    let updated = 0
 
-    if (existingAdmin) {
-      console.log('管理员用户已存在:', adminEmail)
-      return
+    // Upsert en
+    for (const [key, value] of Object.entries(enFlat)) {
+      const existing = await prisma.translation.findUnique({ where: { locale_key: { locale: 'en', key } as any } }).catch(() => null)
+      if (existing) {
+        await prisma.translation.update({ where: { id: existing.id }, data: { value } })
+        updated++
+      } else {
+        await prisma.translation.create({ data: { locale: 'en', key, value } })
+        inserted++
+      }
     }
 
-    // 创建User记录
-    const adminUser = await prisma.user.create({
-      data: {
-        id: userId,
-        email: adminEmail,
-        name: '系统管理员',
-        emailVerified: true,
-        role: 'admin',
-        username: 'admin',
-        createdAt: now,
-        updatedAt: now
-      },
-    })
-    
-    // 创建Account记录，存储密码
-    await prisma.account.create({
-      data: {
-        id: randomUUID(),
-        accountId: 'local',
-        providerId: 'local',
-        userId: userId,
-        password: adminPassword, // 实际环境中应该使用哈希密码
-        createdAt: now,
-        updatedAt: now
+    // Upsert zh
+    for (const [key, value] of Object.entries(zhFlat)) {
+      const existing = await prisma.translation.findUnique({ where: { locale_key: { locale: 'zh', key } as any } }).catch(() => null)
+      if (existing) {
+        await prisma.translation.update({ where: { id: existing.id }, data: { value } })
+        updated++
+      } else {
+        await prisma.translation.create({ data: { locale: 'zh', key, value } })
+        inserted++
       }
-    })
+    }
 
-    console.log('成功创建管理员用户:', adminUser.email)
-  } catch (error) {
-    console.error('创建管理员用户时出错:', error)
+    console.log(`Seed complete. inserted=${inserted}, updated=${updated}`)
+  } catch (err) {
+    console.error('Seeding failed', err)
+  } finally {
+    await prisma.$disconnect()
   }
 }
 
-async function main() {
-  // 初始化侧边栏数据
-  await initSidebarData()
-  console.log('侧边栏数据已初始化')
-  
-  // 初始化admin用户
-  await createAdminUser()
-}
+seed()
 
-main().catch((e) => {
-  console.error(e)
-  process.exit(1)
-})

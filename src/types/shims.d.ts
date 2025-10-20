@@ -13,3 +13,18 @@ declare module '*.svg' {
 declare module '@tanstack/start-client-core' {
   // re-export minimal types if needed (kept empty to avoid errors)
 }
+
+// Minimal shims for @tanstack/react-start to satisfy TypeScript until
+// upstream types are aligned with the project's usage.
+declare module '@tanstack/react-start' {
+  export function createServerFn(opts?: any): any
+  export function createStart(opts?: any): any
+  export function registerGlobalMiddleware(...args: any[]): any
+  export function createMiddleware(...args: any[]): any
+  export function createServerFileRoute(...args: any[]): any
+}
+
+declare module '@tanstack/react-start/plugin/vite' {
+  const tanstackStart: any
+  export { tanstackStart }
+}

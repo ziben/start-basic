@@ -1,4 +1,4 @@
-import { getWebRequest } from '@tanstack/react-start/server'
+import { getRequest } from '@tanstack/react-start/server'
 import { auth } from '~/lib/auth'
 import { StartAPIMethodCallback } from '@tanstack/react-start/api'
 
@@ -7,7 +7,7 @@ import { StartAPIMethodCallback } from '@tanstack/react-start/api'
 export function withAdminAuth(handler: any): any {
   return async (ctx: any) => {
     try {
-      const { headers } = getWebRequest()!
+      const { headers } = getRequest()!
       const session = await auth.api.getSession({ headers })
       
       if (!session || session.user?.role !== 'admin') {

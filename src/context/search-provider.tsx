@@ -1,5 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react'
-import { CommandMenu } from '@/components/command-menu'
+import { createContext, useContext, useEffect, useState, useMemo } from 'react'
 
 type SearchContextType = {
   open: boolean
@@ -8,12 +7,20 @@ type SearchContextType = {
 
 const SearchContext = createContext<SearchContextType | null>(null)
 
-type SearchProviderProps = {
+type SearchProviderProps = Readonly<{
   children: React.ReactNode
-}
+}>
 
 export function SearchProvider({ children }: SearchProviderProps) {
   const [open, setOpen] = useState(false)
+  const [CommandMenu, setCommandMenu] = useState<React.ComponentType | null>(null)
+
+  useEffect(() => {
+    // 仅在客户端动态加载 CommandMenu
+    import('@/components/command-menu').then((mod) => {
+      setCommandMenu(() => mod.CommandMenu)
+    })
+  }, [])
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -26,10 +33,12 @@ export function SearchProvider({ children }: SearchProviderProps) {
     return () => document.removeEventListener('keydown', down)
   }, [])
 
+  const contextValue = useMemo(() => ({ open, setOpen }), [open, setOpen])
+
   return (
-    <SearchContext value={{ open, setOpen }}>
+    <SearchContext value={contextValue}>
       {children}
-      <CommandMenu />
+      {CommandMenu && <CommandMenu />}
     </SearchContext>
   )
 }

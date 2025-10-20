@@ -8,11 +8,11 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { createServerRootRoute } from '@tanstack/react-start/server'
-
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
+import { Route as ApiUsersRouteImport } from './routes/api/users'
+import { Route as ApiSessionsRouteImport } from './routes/api/sessions'
 import { Route as errors503RouteImport } from './routes/(errors)/503'
 import { Route as errors500RouteImport } from './routes/(errors)/500'
 import { Route as errors404RouteImport } from './routes/(errors)/404'
@@ -30,6 +30,9 @@ import { Route as AuthenticatedSessionsIndexRouteImport } from './routes/_authen
 import { Route as AuthenticatedHelpCenterIndexRouteImport } from './routes/_authenticated/help-center/index'
 import { Route as AuthenticatedChatsIndexRouteImport } from './routes/_authenticated/chats/index'
 import { Route as AuthenticatedAppsIndexRouteImport } from './routes/_authenticated/apps/index'
+import { Route as ApiUsersIdRouteImport } from './routes/api/users.$id'
+import { Route as ApiI18nLngRouteImport } from './routes/api/i18n/$lng'
+import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as AuthenticatedSettingsNotificationsRouteImport } from './routes/_authenticated/settings/notifications'
 import { Route as AuthenticatedSettingsDisplayRouteImport } from './routes/_authenticated/settings/display'
 import { Route as AuthenticatedSettingsAppearanceRouteImport } from './routes/_authenticated/settings/appearance'
@@ -39,6 +42,7 @@ import { Route as AuthenticatedAdminVerificationRouteImport } from './routes/_au
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin/users'
 import { Route as AuthenticatedAdminUserrolenavgroupRouteImport } from './routes/_authenticated/admin/userrolenavgroup'
 import { Route as AuthenticatedAdminUserRouteImport } from './routes/_authenticated/admin/user'
+import { Route as AuthenticatedAdminTranslationRouteImport } from './routes/_authenticated/admin/translation'
 import { Route as AuthenticatedAdminSessionRouteImport } from './routes/_authenticated/admin/session'
 import { Route as AuthenticatedAdminRolenavgroupRouteImport } from './routes/_authenticated/admin/rolenavgroup'
 import { Route as AuthenticatedAdminOrganizationRouteImport } from './routes/_authenticated/admin/organization'
@@ -47,21 +51,19 @@ import { Route as AuthenticatedAdminNavgroupRouteImport } from './routes/_authen
 import { Route as AuthenticatedAdminMemberRouteImport } from './routes/_authenticated/admin/member'
 import { Route as AuthenticatedAdminInvitationRouteImport } from './routes/_authenticated/admin/invitation'
 import { Route as AuthenticatedAdminAccountRouteImport } from './routes/_authenticated/admin/account'
-import { ServerRoute as ApiUsersServerRouteImport } from './routes/api/users'
-import { ServerRoute as ApiSessionsServerRouteImport } from './routes/api/sessions'
-import { ServerRoute as ApiUsersIdServerRouteImport } from './routes/api/users.$id'
-import { ServerRoute as ApiAuthSplatServerRouteImport } from './routes/api/auth/$'
-import { ServerRoute as ApiAdminUserIndexServerRouteImport } from './routes/api/admin/user/index'
-import { ServerRoute as ApiAdminNavitemIndexServerRouteImport } from './routes/api/admin/navitem/index'
-import { ServerRoute as ApiAdminNavgroupIndexServerRouteImport } from './routes/api/admin/navgroup/index'
-import { ServerRoute as ApiAdminNavitemVisibilityServerRouteImport } from './routes/api/admin/navitem/visibility'
-import { ServerRoute as ApiAdminNavitemOrderServerRouteImport } from './routes/api/admin/navitem/order'
-import { ServerRoute as ApiAdminNavitemIdServerRouteImport } from './routes/api/admin/navitem/$id'
-import { ServerRoute as ApiAdminNavgroupVisibilityServerRouteImport } from './routes/api/admin/navgroup/visibility'
-import { ServerRoute as ApiAdminNavgroupOrderServerRouteImport } from './routes/api/admin/navgroup/order'
-import { ServerRoute as ApiAdminNavgroupIdServerRouteImport } from './routes/api/admin/navgroup/$id'
-
-const rootServerRouteImport = createServerRootRoute()
+import { Route as ApiAdminUserIndexRouteImport } from './routes/api/admin/user/index'
+import { Route as ApiAdminTranslationIndexRouteImport } from './routes/api/admin/translation/index'
+import { Route as ApiAdminNavitemIndexRouteImport } from './routes/api/admin/navitem/index'
+import { Route as ApiAdminNavgroupIndexRouteImport } from './routes/api/admin/navgroup/index'
+import { Route as ApiAdminTranslationImportRouteImport } from './routes/api/admin/translation/import'
+import { Route as ApiAdminTranslationExportRouteImport } from './routes/api/admin/translation/export'
+import { Route as ApiAdminTranslationIdRouteImport } from './routes/api/admin/translation/$id'
+import { Route as ApiAdminNavitemVisibilityRouteImport } from './routes/api/admin/navitem/visibility'
+import { Route as ApiAdminNavitemOrderRouteImport } from './routes/api/admin/navitem/order'
+import { Route as ApiAdminNavitemIdRouteImport } from './routes/api/admin/navitem/$id'
+import { Route as ApiAdminNavgroupVisibilityRouteImport } from './routes/api/admin/navgroup/visibility'
+import { Route as ApiAdminNavgroupOrderRouteImport } from './routes/api/admin/navgroup/order'
+import { Route as ApiAdminNavgroupIdRouteImport } from './routes/api/admin/navgroup/$id'
 
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
@@ -71,6 +73,16 @@ const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const ApiUsersRoute = ApiUsersRouteImport.update({
+  id: '/api/users',
+  path: '/api/users',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiSessionsRoute = ApiSessionsRouteImport.update({
+  id: '/api/sessions',
+  path: '/api/sessions',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const errors503Route = errors503RouteImport.update({
   id: '/(errors)/503',
@@ -161,6 +173,21 @@ const AuthenticatedAppsIndexRoute = AuthenticatedAppsIndexRouteImport.update({
   path: '/apps/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const ApiUsersIdRoute = ApiUsersIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => ApiUsersRoute,
+} as any)
+const ApiI18nLngRoute = ApiI18nLngRouteImport.update({
+  id: '/api/i18n/$lng',
+  path: '/api/i18n/$lng',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
+  id: '/api/auth/$',
+  path: '/api/auth/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedSettingsNotificationsRoute =
   AuthenticatedSettingsNotificationsRouteImport.update({
     id: '/notifications',
@@ -213,6 +240,12 @@ const AuthenticatedAdminUserRoute = AuthenticatedAdminUserRouteImport.update({
   path: '/admin/user',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminTranslationRoute =
+  AuthenticatedAdminTranslationRouteImport.update({
+    id: '/admin/translation',
+    path: '/admin/translation',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminSessionRoute =
   AuthenticatedAdminSessionRouteImport.update({
     id: '/admin/session',
@@ -261,78 +294,76 @@ const AuthenticatedAdminAccountRoute =
     path: '/admin/account',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const ApiUsersServerRoute = ApiUsersServerRouteImport.update({
-  id: '/api/users',
-  path: '/api/users',
-  getParentRoute: () => rootServerRouteImport,
-} as any)
-const ApiSessionsServerRoute = ApiSessionsServerRouteImport.update({
-  id: '/api/sessions',
-  path: '/api/sessions',
-  getParentRoute: () => rootServerRouteImport,
-} as any)
-const ApiUsersIdServerRoute = ApiUsersIdServerRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => ApiUsersServerRoute,
-} as any)
-const ApiAuthSplatServerRoute = ApiAuthSplatServerRouteImport.update({
-  id: '/api/auth/$',
-  path: '/api/auth/$',
-  getParentRoute: () => rootServerRouteImport,
-} as any)
-const ApiAdminUserIndexServerRoute = ApiAdminUserIndexServerRouteImport.update({
+const ApiAdminUserIndexRoute = ApiAdminUserIndexRouteImport.update({
   id: '/api/admin/user/',
   path: '/api/admin/user/',
-  getParentRoute: () => rootServerRouteImport,
+  getParentRoute: () => rootRouteImport,
 } as any)
-const ApiAdminNavitemIndexServerRoute =
-  ApiAdminNavitemIndexServerRouteImport.update({
-    id: '/api/admin/navitem/',
-    path: '/api/admin/navitem/',
-    getParentRoute: () => rootServerRouteImport,
+const ApiAdminTranslationIndexRoute =
+  ApiAdminTranslationIndexRouteImport.update({
+    id: '/api/admin/translation/',
+    path: '/api/admin/translation/',
+    getParentRoute: () => rootRouteImport,
   } as any)
-const ApiAdminNavgroupIndexServerRoute =
-  ApiAdminNavgroupIndexServerRouteImport.update({
-    id: '/api/admin/navgroup/',
-    path: '/api/admin/navgroup/',
-    getParentRoute: () => rootServerRouteImport,
+const ApiAdminNavitemIndexRoute = ApiAdminNavitemIndexRouteImport.update({
+  id: '/api/admin/navitem/',
+  path: '/api/admin/navitem/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminNavgroupIndexRoute = ApiAdminNavgroupIndexRouteImport.update({
+  id: '/api/admin/navgroup/',
+  path: '/api/admin/navgroup/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminTranslationImportRoute =
+  ApiAdminTranslationImportRouteImport.update({
+    id: '/api/admin/translation/import',
+    path: '/api/admin/translation/import',
+    getParentRoute: () => rootRouteImport,
   } as any)
-const ApiAdminNavitemVisibilityServerRoute =
-  ApiAdminNavitemVisibilityServerRouteImport.update({
+const ApiAdminTranslationExportRoute =
+  ApiAdminTranslationExportRouteImport.update({
+    id: '/api/admin/translation/export',
+    path: '/api/admin/translation/export',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminTranslationIdRoute = ApiAdminTranslationIdRouteImport.update({
+  id: '/api/admin/translation/$id',
+  path: '/api/admin/translation/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminNavitemVisibilityRoute =
+  ApiAdminNavitemVisibilityRouteImport.update({
     id: '/api/admin/navitem/visibility',
     path: '/api/admin/navitem/visibility',
-    getParentRoute: () => rootServerRouteImport,
+    getParentRoute: () => rootRouteImport,
   } as any)
-const ApiAdminNavitemOrderServerRoute =
-  ApiAdminNavitemOrderServerRouteImport.update({
-    id: '/api/admin/navitem/order',
-    path: '/api/admin/navitem/order',
-    getParentRoute: () => rootServerRouteImport,
-  } as any)
-const ApiAdminNavitemIdServerRoute = ApiAdminNavitemIdServerRouteImport.update({
+const ApiAdminNavitemOrderRoute = ApiAdminNavitemOrderRouteImport.update({
+  id: '/api/admin/navitem/order',
+  path: '/api/admin/navitem/order',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminNavitemIdRoute = ApiAdminNavitemIdRouteImport.update({
   id: '/api/admin/navitem/$id',
   path: '/api/admin/navitem/$id',
-  getParentRoute: () => rootServerRouteImport,
+  getParentRoute: () => rootRouteImport,
 } as any)
-const ApiAdminNavgroupVisibilityServerRoute =
-  ApiAdminNavgroupVisibilityServerRouteImport.update({
+const ApiAdminNavgroupVisibilityRoute =
+  ApiAdminNavgroupVisibilityRouteImport.update({
     id: '/api/admin/navgroup/visibility',
     path: '/api/admin/navgroup/visibility',
-    getParentRoute: () => rootServerRouteImport,
+    getParentRoute: () => rootRouteImport,
   } as any)
-const ApiAdminNavgroupOrderServerRoute =
-  ApiAdminNavgroupOrderServerRouteImport.update({
-    id: '/api/admin/navgroup/order',
-    path: '/api/admin/navgroup/order',
-    getParentRoute: () => rootServerRouteImport,
-  } as any)
-const ApiAdminNavgroupIdServerRoute =
-  ApiAdminNavgroupIdServerRouteImport.update({
-    id: '/api/admin/navgroup/$id',
-    path: '/api/admin/navgroup/$id',
-    getParentRoute: () => rootServerRouteImport,
-  } as any)
+const ApiAdminNavgroupOrderRoute = ApiAdminNavgroupOrderRouteImport.update({
+  id: '/api/admin/navgroup/order',
+  path: '/api/admin/navgroup/order',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminNavgroupIdRoute = ApiAdminNavgroupIdRouteImport.update({
+  id: '/api/admin/navgroup/$id',
+  path: '/api/admin/navgroup/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/settings': typeof AuthenticatedSettingsRouteRouteWithChildren
@@ -345,6 +376,8 @@ export interface FileRoutesByFullPath {
   '/404': typeof errors404Route
   '/500': typeof errors500Route
   '/503': typeof errors503Route
+  '/api/sessions': typeof ApiSessionsRoute
+  '/api/users': typeof ApiUsersRouteWithChildren
   '/': typeof AuthenticatedIndexRoute
   '/admin/account': typeof AuthenticatedAdminAccountRoute
   '/admin/invitation': typeof AuthenticatedAdminInvitationRoute
@@ -354,6 +387,7 @@ export interface FileRoutesByFullPath {
   '/admin/organization': typeof AuthenticatedAdminOrganizationRoute
   '/admin/rolenavgroup': typeof AuthenticatedAdminRolenavgroupRoute
   '/admin/session': typeof AuthenticatedAdminSessionRoute
+  '/admin/translation': typeof AuthenticatedAdminTranslationRoute
   '/admin/user': typeof AuthenticatedAdminUserRoute
   '/admin/userrolenavgroup': typeof AuthenticatedAdminUserrolenavgroupRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
@@ -363,6 +397,9 @@ export interface FileRoutesByFullPath {
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
   '/settings/display': typeof AuthenticatedSettingsDisplayRoute
   '/settings/notifications': typeof AuthenticatedSettingsNotificationsRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/i18n/$lng': typeof ApiI18nLngRoute
+  '/api/users/$id': typeof ApiUsersIdRoute
   '/apps': typeof AuthenticatedAppsIndexRoute
   '/chats': typeof AuthenticatedChatsIndexRoute
   '/help-center': typeof AuthenticatedHelpCenterIndexRoute
@@ -370,6 +407,19 @@ export interface FileRoutesByFullPath {
   '/settings/': typeof AuthenticatedSettingsIndexRoute
   '/tasks': typeof AuthenticatedTasksIndexRoute
   '/users': typeof AuthenticatedUsersIndexRoute
+  '/api/admin/navgroup/$id': typeof ApiAdminNavgroupIdRoute
+  '/api/admin/navgroup/order': typeof ApiAdminNavgroupOrderRoute
+  '/api/admin/navgroup/visibility': typeof ApiAdminNavgroupVisibilityRoute
+  '/api/admin/navitem/$id': typeof ApiAdminNavitemIdRoute
+  '/api/admin/navitem/order': typeof ApiAdminNavitemOrderRoute
+  '/api/admin/navitem/visibility': typeof ApiAdminNavitemVisibilityRoute
+  '/api/admin/translation/$id': typeof ApiAdminTranslationIdRoute
+  '/api/admin/translation/export': typeof ApiAdminTranslationExportRoute
+  '/api/admin/translation/import': typeof ApiAdminTranslationImportRoute
+  '/api/admin/navgroup': typeof ApiAdminNavgroupIndexRoute
+  '/api/admin/navitem': typeof ApiAdminNavitemIndexRoute
+  '/api/admin/translation': typeof ApiAdminTranslationIndexRoute
+  '/api/admin/user': typeof ApiAdminUserIndexRoute
 }
 export interface FileRoutesByTo {
   '/forgot-password': typeof authForgotPasswordRoute
@@ -381,6 +431,8 @@ export interface FileRoutesByTo {
   '/404': typeof errors404Route
   '/500': typeof errors500Route
   '/503': typeof errors503Route
+  '/api/sessions': typeof ApiSessionsRoute
+  '/api/users': typeof ApiUsersRouteWithChildren
   '/': typeof AuthenticatedIndexRoute
   '/admin/account': typeof AuthenticatedAdminAccountRoute
   '/admin/invitation': typeof AuthenticatedAdminInvitationRoute
@@ -390,6 +442,7 @@ export interface FileRoutesByTo {
   '/admin/organization': typeof AuthenticatedAdminOrganizationRoute
   '/admin/rolenavgroup': typeof AuthenticatedAdminRolenavgroupRoute
   '/admin/session': typeof AuthenticatedAdminSessionRoute
+  '/admin/translation': typeof AuthenticatedAdminTranslationRoute
   '/admin/user': typeof AuthenticatedAdminUserRoute
   '/admin/userrolenavgroup': typeof AuthenticatedAdminUserrolenavgroupRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
@@ -399,6 +452,9 @@ export interface FileRoutesByTo {
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
   '/settings/display': typeof AuthenticatedSettingsDisplayRoute
   '/settings/notifications': typeof AuthenticatedSettingsNotificationsRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/i18n/$lng': typeof ApiI18nLngRoute
+  '/api/users/$id': typeof ApiUsersIdRoute
   '/apps': typeof AuthenticatedAppsIndexRoute
   '/chats': typeof AuthenticatedChatsIndexRoute
   '/help-center': typeof AuthenticatedHelpCenterIndexRoute
@@ -406,6 +462,19 @@ export interface FileRoutesByTo {
   '/settings': typeof AuthenticatedSettingsIndexRoute
   '/tasks': typeof AuthenticatedTasksIndexRoute
   '/users': typeof AuthenticatedUsersIndexRoute
+  '/api/admin/navgroup/$id': typeof ApiAdminNavgroupIdRoute
+  '/api/admin/navgroup/order': typeof ApiAdminNavgroupOrderRoute
+  '/api/admin/navgroup/visibility': typeof ApiAdminNavgroupVisibilityRoute
+  '/api/admin/navitem/$id': typeof ApiAdminNavitemIdRoute
+  '/api/admin/navitem/order': typeof ApiAdminNavitemOrderRoute
+  '/api/admin/navitem/visibility': typeof ApiAdminNavitemVisibilityRoute
+  '/api/admin/translation/$id': typeof ApiAdminTranslationIdRoute
+  '/api/admin/translation/export': typeof ApiAdminTranslationExportRoute
+  '/api/admin/translation/import': typeof ApiAdminTranslationImportRoute
+  '/api/admin/navgroup': typeof ApiAdminNavgroupIndexRoute
+  '/api/admin/navitem': typeof ApiAdminNavitemIndexRoute
+  '/api/admin/translation': typeof ApiAdminTranslationIndexRoute
+  '/api/admin/user': typeof ApiAdminUserIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -420,6 +489,8 @@ export interface FileRoutesById {
   '/(errors)/404': typeof errors404Route
   '/(errors)/500': typeof errors500Route
   '/(errors)/503': typeof errors503Route
+  '/api/sessions': typeof ApiSessionsRoute
+  '/api/users': typeof ApiUsersRouteWithChildren
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/admin/account': typeof AuthenticatedAdminAccountRoute
   '/_authenticated/admin/invitation': typeof AuthenticatedAdminInvitationRoute
@@ -429,6 +500,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/organization': typeof AuthenticatedAdminOrganizationRoute
   '/_authenticated/admin/rolenavgroup': typeof AuthenticatedAdminRolenavgroupRoute
   '/_authenticated/admin/session': typeof AuthenticatedAdminSessionRoute
+  '/_authenticated/admin/translation': typeof AuthenticatedAdminTranslationRoute
   '/_authenticated/admin/user': typeof AuthenticatedAdminUserRoute
   '/_authenticated/admin/userrolenavgroup': typeof AuthenticatedAdminUserrolenavgroupRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
@@ -438,6 +510,9 @@ export interface FileRoutesById {
   '/_authenticated/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
   '/_authenticated/settings/display': typeof AuthenticatedSettingsDisplayRoute
   '/_authenticated/settings/notifications': typeof AuthenticatedSettingsNotificationsRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/i18n/$lng': typeof ApiI18nLngRoute
+  '/api/users/$id': typeof ApiUsersIdRoute
   '/_authenticated/apps/': typeof AuthenticatedAppsIndexRoute
   '/_authenticated/chats/': typeof AuthenticatedChatsIndexRoute
   '/_authenticated/help-center/': typeof AuthenticatedHelpCenterIndexRoute
@@ -445,6 +520,19 @@ export interface FileRoutesById {
   '/_authenticated/settings/': typeof AuthenticatedSettingsIndexRoute
   '/_authenticated/tasks/': typeof AuthenticatedTasksIndexRoute
   '/_authenticated/users/': typeof AuthenticatedUsersIndexRoute
+  '/api/admin/navgroup/$id': typeof ApiAdminNavgroupIdRoute
+  '/api/admin/navgroup/order': typeof ApiAdminNavgroupOrderRoute
+  '/api/admin/navgroup/visibility': typeof ApiAdminNavgroupVisibilityRoute
+  '/api/admin/navitem/$id': typeof ApiAdminNavitemIdRoute
+  '/api/admin/navitem/order': typeof ApiAdminNavitemOrderRoute
+  '/api/admin/navitem/visibility': typeof ApiAdminNavitemVisibilityRoute
+  '/api/admin/translation/$id': typeof ApiAdminTranslationIdRoute
+  '/api/admin/translation/export': typeof ApiAdminTranslationExportRoute
+  '/api/admin/translation/import': typeof ApiAdminTranslationImportRoute
+  '/api/admin/navgroup/': typeof ApiAdminNavgroupIndexRoute
+  '/api/admin/navitem/': typeof ApiAdminNavitemIndexRoute
+  '/api/admin/translation/': typeof ApiAdminTranslationIndexRoute
+  '/api/admin/user/': typeof ApiAdminUserIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -459,6 +547,8 @@ export interface FileRouteTypes {
     | '/404'
     | '/500'
     | '/503'
+    | '/api/sessions'
+    | '/api/users'
     | '/'
     | '/admin/account'
     | '/admin/invitation'
@@ -468,6 +558,7 @@ export interface FileRouteTypes {
     | '/admin/organization'
     | '/admin/rolenavgroup'
     | '/admin/session'
+    | '/admin/translation'
     | '/admin/user'
     | '/admin/userrolenavgroup'
     | '/admin/users'
@@ -477,6 +568,9 @@ export interface FileRouteTypes {
     | '/settings/appearance'
     | '/settings/display'
     | '/settings/notifications'
+    | '/api/auth/$'
+    | '/api/i18n/$lng'
+    | '/api/users/$id'
     | '/apps'
     | '/chats'
     | '/help-center'
@@ -484,6 +578,19 @@ export interface FileRouteTypes {
     | '/settings/'
     | '/tasks'
     | '/users'
+    | '/api/admin/navgroup/$id'
+    | '/api/admin/navgroup/order'
+    | '/api/admin/navgroup/visibility'
+    | '/api/admin/navitem/$id'
+    | '/api/admin/navitem/order'
+    | '/api/admin/navitem/visibility'
+    | '/api/admin/translation/$id'
+    | '/api/admin/translation/export'
+    | '/api/admin/translation/import'
+    | '/api/admin/navgroup'
+    | '/api/admin/navitem'
+    | '/api/admin/translation'
+    | '/api/admin/user'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/forgot-password'
@@ -495,6 +602,8 @@ export interface FileRouteTypes {
     | '/404'
     | '/500'
     | '/503'
+    | '/api/sessions'
+    | '/api/users'
     | '/'
     | '/admin/account'
     | '/admin/invitation'
@@ -504,6 +613,7 @@ export interface FileRouteTypes {
     | '/admin/organization'
     | '/admin/rolenavgroup'
     | '/admin/session'
+    | '/admin/translation'
     | '/admin/user'
     | '/admin/userrolenavgroup'
     | '/admin/users'
@@ -513,6 +623,9 @@ export interface FileRouteTypes {
     | '/settings/appearance'
     | '/settings/display'
     | '/settings/notifications'
+    | '/api/auth/$'
+    | '/api/i18n/$lng'
+    | '/api/users/$id'
     | '/apps'
     | '/chats'
     | '/help-center'
@@ -520,6 +633,19 @@ export interface FileRouteTypes {
     | '/settings'
     | '/tasks'
     | '/users'
+    | '/api/admin/navgroup/$id'
+    | '/api/admin/navgroup/order'
+    | '/api/admin/navgroup/visibility'
+    | '/api/admin/navitem/$id'
+    | '/api/admin/navitem/order'
+    | '/api/admin/navitem/visibility'
+    | '/api/admin/translation/$id'
+    | '/api/admin/translation/export'
+    | '/api/admin/translation/import'
+    | '/api/admin/navgroup'
+    | '/api/admin/navitem'
+    | '/api/admin/translation'
+    | '/api/admin/user'
   id:
     | '__root__'
     | '/_authenticated'
@@ -533,6 +659,8 @@ export interface FileRouteTypes {
     | '/(errors)/404'
     | '/(errors)/500'
     | '/(errors)/503'
+    | '/api/sessions'
+    | '/api/users'
     | '/_authenticated/'
     | '/_authenticated/admin/account'
     | '/_authenticated/admin/invitation'
@@ -542,6 +670,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/organization'
     | '/_authenticated/admin/rolenavgroup'
     | '/_authenticated/admin/session'
+    | '/_authenticated/admin/translation'
     | '/_authenticated/admin/user'
     | '/_authenticated/admin/userrolenavgroup'
     | '/_authenticated/admin/users'
@@ -551,6 +680,9 @@ export interface FileRouteTypes {
     | '/_authenticated/settings/appearance'
     | '/_authenticated/settings/display'
     | '/_authenticated/settings/notifications'
+    | '/api/auth/$'
+    | '/api/i18n/$lng'
+    | '/api/users/$id'
     | '/_authenticated/apps/'
     | '/_authenticated/chats/'
     | '/_authenticated/help-center/'
@@ -558,6 +690,19 @@ export interface FileRouteTypes {
     | '/_authenticated/settings/'
     | '/_authenticated/tasks/'
     | '/_authenticated/users/'
+    | '/api/admin/navgroup/$id'
+    | '/api/admin/navgroup/order'
+    | '/api/admin/navgroup/visibility'
+    | '/api/admin/navitem/$id'
+    | '/api/admin/navitem/order'
+    | '/api/admin/navitem/visibility'
+    | '/api/admin/translation/$id'
+    | '/api/admin/translation/export'
+    | '/api/admin/translation/import'
+    | '/api/admin/navgroup/'
+    | '/api/admin/navitem/'
+    | '/api/admin/translation/'
+    | '/api/admin/user/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -571,114 +716,23 @@ export interface RootRouteChildren {
   errors404Route: typeof errors404Route
   errors500Route: typeof errors500Route
   errors503Route: typeof errors503Route
-}
-export interface FileServerRoutesByFullPath {
-  '/api/sessions': typeof ApiSessionsServerRoute
-  '/api/users': typeof ApiUsersServerRouteWithChildren
-  '/api/auth/$': typeof ApiAuthSplatServerRoute
-  '/api/users/$id': typeof ApiUsersIdServerRoute
-  '/api/admin/navgroup/$id': typeof ApiAdminNavgroupIdServerRoute
-  '/api/admin/navgroup/order': typeof ApiAdminNavgroupOrderServerRoute
-  '/api/admin/navgroup/visibility': typeof ApiAdminNavgroupVisibilityServerRoute
-  '/api/admin/navitem/$id': typeof ApiAdminNavitemIdServerRoute
-  '/api/admin/navitem/order': typeof ApiAdminNavitemOrderServerRoute
-  '/api/admin/navitem/visibility': typeof ApiAdminNavitemVisibilityServerRoute
-  '/api/admin/navgroup': typeof ApiAdminNavgroupIndexServerRoute
-  '/api/admin/navitem': typeof ApiAdminNavitemIndexServerRoute
-  '/api/admin/user': typeof ApiAdminUserIndexServerRoute
-}
-export interface FileServerRoutesByTo {
-  '/api/sessions': typeof ApiSessionsServerRoute
-  '/api/users': typeof ApiUsersServerRouteWithChildren
-  '/api/auth/$': typeof ApiAuthSplatServerRoute
-  '/api/users/$id': typeof ApiUsersIdServerRoute
-  '/api/admin/navgroup/$id': typeof ApiAdminNavgroupIdServerRoute
-  '/api/admin/navgroup/order': typeof ApiAdminNavgroupOrderServerRoute
-  '/api/admin/navgroup/visibility': typeof ApiAdminNavgroupVisibilityServerRoute
-  '/api/admin/navitem/$id': typeof ApiAdminNavitemIdServerRoute
-  '/api/admin/navitem/order': typeof ApiAdminNavitemOrderServerRoute
-  '/api/admin/navitem/visibility': typeof ApiAdminNavitemVisibilityServerRoute
-  '/api/admin/navgroup': typeof ApiAdminNavgroupIndexServerRoute
-  '/api/admin/navitem': typeof ApiAdminNavitemIndexServerRoute
-  '/api/admin/user': typeof ApiAdminUserIndexServerRoute
-}
-export interface FileServerRoutesById {
-  __root__: typeof rootServerRouteImport
-  '/api/sessions': typeof ApiSessionsServerRoute
-  '/api/users': typeof ApiUsersServerRouteWithChildren
-  '/api/auth/$': typeof ApiAuthSplatServerRoute
-  '/api/users/$id': typeof ApiUsersIdServerRoute
-  '/api/admin/navgroup/$id': typeof ApiAdminNavgroupIdServerRoute
-  '/api/admin/navgroup/order': typeof ApiAdminNavgroupOrderServerRoute
-  '/api/admin/navgroup/visibility': typeof ApiAdminNavgroupVisibilityServerRoute
-  '/api/admin/navitem/$id': typeof ApiAdminNavitemIdServerRoute
-  '/api/admin/navitem/order': typeof ApiAdminNavitemOrderServerRoute
-  '/api/admin/navitem/visibility': typeof ApiAdminNavitemVisibilityServerRoute
-  '/api/admin/navgroup/': typeof ApiAdminNavgroupIndexServerRoute
-  '/api/admin/navitem/': typeof ApiAdminNavitemIndexServerRoute
-  '/api/admin/user/': typeof ApiAdminUserIndexServerRoute
-}
-export interface FileServerRouteTypes {
-  fileServerRoutesByFullPath: FileServerRoutesByFullPath
-  fullPaths:
-    | '/api/sessions'
-    | '/api/users'
-    | '/api/auth/$'
-    | '/api/users/$id'
-    | '/api/admin/navgroup/$id'
-    | '/api/admin/navgroup/order'
-    | '/api/admin/navgroup/visibility'
-    | '/api/admin/navitem/$id'
-    | '/api/admin/navitem/order'
-    | '/api/admin/navitem/visibility'
-    | '/api/admin/navgroup'
-    | '/api/admin/navitem'
-    | '/api/admin/user'
-  fileServerRoutesByTo: FileServerRoutesByTo
-  to:
-    | '/api/sessions'
-    | '/api/users'
-    | '/api/auth/$'
-    | '/api/users/$id'
-    | '/api/admin/navgroup/$id'
-    | '/api/admin/navgroup/order'
-    | '/api/admin/navgroup/visibility'
-    | '/api/admin/navitem/$id'
-    | '/api/admin/navitem/order'
-    | '/api/admin/navitem/visibility'
-    | '/api/admin/navgroup'
-    | '/api/admin/navitem'
-    | '/api/admin/user'
-  id:
-    | '__root__'
-    | '/api/sessions'
-    | '/api/users'
-    | '/api/auth/$'
-    | '/api/users/$id'
-    | '/api/admin/navgroup/$id'
-    | '/api/admin/navgroup/order'
-    | '/api/admin/navgroup/visibility'
-    | '/api/admin/navitem/$id'
-    | '/api/admin/navitem/order'
-    | '/api/admin/navitem/visibility'
-    | '/api/admin/navgroup/'
-    | '/api/admin/navitem/'
-    | '/api/admin/user/'
-  fileServerRoutesById: FileServerRoutesById
-}
-export interface RootServerRouteChildren {
-  ApiSessionsServerRoute: typeof ApiSessionsServerRoute
-  ApiUsersServerRoute: typeof ApiUsersServerRouteWithChildren
-  ApiAuthSplatServerRoute: typeof ApiAuthSplatServerRoute
-  ApiAdminNavgroupIdServerRoute: typeof ApiAdminNavgroupIdServerRoute
-  ApiAdminNavgroupOrderServerRoute: typeof ApiAdminNavgroupOrderServerRoute
-  ApiAdminNavgroupVisibilityServerRoute: typeof ApiAdminNavgroupVisibilityServerRoute
-  ApiAdminNavitemIdServerRoute: typeof ApiAdminNavitemIdServerRoute
-  ApiAdminNavitemOrderServerRoute: typeof ApiAdminNavitemOrderServerRoute
-  ApiAdminNavitemVisibilityServerRoute: typeof ApiAdminNavitemVisibilityServerRoute
-  ApiAdminNavgroupIndexServerRoute: typeof ApiAdminNavgroupIndexServerRoute
-  ApiAdminNavitemIndexServerRoute: typeof ApiAdminNavitemIndexServerRoute
-  ApiAdminUserIndexServerRoute: typeof ApiAdminUserIndexServerRoute
+  ApiSessionsRoute: typeof ApiSessionsRoute
+  ApiUsersRoute: typeof ApiUsersRouteWithChildren
+  ApiAuthSplatRoute: typeof ApiAuthSplatRoute
+  ApiI18nLngRoute: typeof ApiI18nLngRoute
+  ApiAdminNavgroupIdRoute: typeof ApiAdminNavgroupIdRoute
+  ApiAdminNavgroupOrderRoute: typeof ApiAdminNavgroupOrderRoute
+  ApiAdminNavgroupVisibilityRoute: typeof ApiAdminNavgroupVisibilityRoute
+  ApiAdminNavitemIdRoute: typeof ApiAdminNavitemIdRoute
+  ApiAdminNavitemOrderRoute: typeof ApiAdminNavitemOrderRoute
+  ApiAdminNavitemVisibilityRoute: typeof ApiAdminNavitemVisibilityRoute
+  ApiAdminTranslationIdRoute: typeof ApiAdminTranslationIdRoute
+  ApiAdminTranslationExportRoute: typeof ApiAdminTranslationExportRoute
+  ApiAdminTranslationImportRoute: typeof ApiAdminTranslationImportRoute
+  ApiAdminNavgroupIndexRoute: typeof ApiAdminNavgroupIndexRoute
+  ApiAdminNavitemIndexRoute: typeof ApiAdminNavitemIndexRoute
+  ApiAdminTranslationIndexRoute: typeof ApiAdminTranslationIndexRoute
+  ApiAdminUserIndexRoute: typeof ApiAdminUserIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -696,6 +750,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof AuthenticatedIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/api/users': {
+      id: '/api/users'
+      path: '/api/users'
+      fullPath: '/api/users'
+      preLoaderRoute: typeof ApiUsersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/sessions': {
+      id: '/api/sessions'
+      path: '/api/sessions'
+      fullPath: '/api/sessions'
+      preLoaderRoute: typeof ApiSessionsRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/(errors)/503': {
       id: '/(errors)/503'
@@ -816,6 +884,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppsIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/users/$id': {
+      id: '/api/users/$id'
+      path: '/$id'
+      fullPath: '/api/users/$id'
+      preLoaderRoute: typeof ApiUsersIdRouteImport
+      parentRoute: typeof ApiUsersRoute
+    }
+    '/api/i18n/$lng': {
+      id: '/api/i18n/$lng'
+      path: '/api/i18n/$lng'
+      fullPath: '/api/i18n/$lng'
+      preLoaderRoute: typeof ApiI18nLngRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/auth/$': {
+      id: '/api/auth/$'
+      path: '/api/auth/$'
+      fullPath: '/api/auth/$'
+      preLoaderRoute: typeof ApiAuthSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/settings/notifications': {
       id: '/_authenticated/settings/notifications'
       path: '/notifications'
@@ -879,6 +968,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminUserRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/translation': {
+      id: '/_authenticated/admin/translation'
+      path: '/admin/translation'
+      fullPath: '/admin/translation'
+      preLoaderRoute: typeof AuthenticatedAdminTranslationRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/session': {
       id: '/_authenticated/admin/session'
       path: '/admin/session'
@@ -935,100 +1031,96 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminAccountRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-  }
-}
-declare module '@tanstack/react-start/server' {
-  interface ServerFileRoutesByPath {
-    '/api/users': {
-      id: '/api/users'
-      path: '/api/users'
-      fullPath: '/api/users'
-      preLoaderRoute: typeof ApiUsersServerRouteImport
-      parentRoute: typeof rootServerRouteImport
-    }
-    '/api/sessions': {
-      id: '/api/sessions'
-      path: '/api/sessions'
-      fullPath: '/api/sessions'
-      preLoaderRoute: typeof ApiSessionsServerRouteImport
-      parentRoute: typeof rootServerRouteImport
-    }
-    '/api/users/$id': {
-      id: '/api/users/$id'
-      path: '/$id'
-      fullPath: '/api/users/$id'
-      preLoaderRoute: typeof ApiUsersIdServerRouteImport
-      parentRoute: typeof ApiUsersServerRoute
-    }
-    '/api/auth/$': {
-      id: '/api/auth/$'
-      path: '/api/auth/$'
-      fullPath: '/api/auth/$'
-      preLoaderRoute: typeof ApiAuthSplatServerRouteImport
-      parentRoute: typeof rootServerRouteImport
-    }
     '/api/admin/user/': {
       id: '/api/admin/user/'
       path: '/api/admin/user'
       fullPath: '/api/admin/user'
-      preLoaderRoute: typeof ApiAdminUserIndexServerRouteImport
-      parentRoute: typeof rootServerRouteImport
+      preLoaderRoute: typeof ApiAdminUserIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/translation/': {
+      id: '/api/admin/translation/'
+      path: '/api/admin/translation'
+      fullPath: '/api/admin/translation'
+      preLoaderRoute: typeof ApiAdminTranslationIndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/admin/navitem/': {
       id: '/api/admin/navitem/'
       path: '/api/admin/navitem'
       fullPath: '/api/admin/navitem'
-      preLoaderRoute: typeof ApiAdminNavitemIndexServerRouteImport
-      parentRoute: typeof rootServerRouteImport
+      preLoaderRoute: typeof ApiAdminNavitemIndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/admin/navgroup/': {
       id: '/api/admin/navgroup/'
       path: '/api/admin/navgroup'
       fullPath: '/api/admin/navgroup'
-      preLoaderRoute: typeof ApiAdminNavgroupIndexServerRouteImport
-      parentRoute: typeof rootServerRouteImport
+      preLoaderRoute: typeof ApiAdminNavgroupIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/translation/import': {
+      id: '/api/admin/translation/import'
+      path: '/api/admin/translation/import'
+      fullPath: '/api/admin/translation/import'
+      preLoaderRoute: typeof ApiAdminTranslationImportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/translation/export': {
+      id: '/api/admin/translation/export'
+      path: '/api/admin/translation/export'
+      fullPath: '/api/admin/translation/export'
+      preLoaderRoute: typeof ApiAdminTranslationExportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/translation/$id': {
+      id: '/api/admin/translation/$id'
+      path: '/api/admin/translation/$id'
+      fullPath: '/api/admin/translation/$id'
+      preLoaderRoute: typeof ApiAdminTranslationIdRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/admin/navitem/visibility': {
       id: '/api/admin/navitem/visibility'
       path: '/api/admin/navitem/visibility'
       fullPath: '/api/admin/navitem/visibility'
-      preLoaderRoute: typeof ApiAdminNavitemVisibilityServerRouteImport
-      parentRoute: typeof rootServerRouteImport
+      preLoaderRoute: typeof ApiAdminNavitemVisibilityRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/admin/navitem/order': {
       id: '/api/admin/navitem/order'
       path: '/api/admin/navitem/order'
       fullPath: '/api/admin/navitem/order'
-      preLoaderRoute: typeof ApiAdminNavitemOrderServerRouteImport
-      parentRoute: typeof rootServerRouteImport
+      preLoaderRoute: typeof ApiAdminNavitemOrderRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/admin/navitem/$id': {
       id: '/api/admin/navitem/$id'
       path: '/api/admin/navitem/$id'
       fullPath: '/api/admin/navitem/$id'
-      preLoaderRoute: typeof ApiAdminNavitemIdServerRouteImport
-      parentRoute: typeof rootServerRouteImport
+      preLoaderRoute: typeof ApiAdminNavitemIdRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/admin/navgroup/visibility': {
       id: '/api/admin/navgroup/visibility'
       path: '/api/admin/navgroup/visibility'
       fullPath: '/api/admin/navgroup/visibility'
-      preLoaderRoute: typeof ApiAdminNavgroupVisibilityServerRouteImport
-      parentRoute: typeof rootServerRouteImport
+      preLoaderRoute: typeof ApiAdminNavgroupVisibilityRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/admin/navgroup/order': {
       id: '/api/admin/navgroup/order'
       path: '/api/admin/navgroup/order'
       fullPath: '/api/admin/navgroup/order'
-      preLoaderRoute: typeof ApiAdminNavgroupOrderServerRouteImport
-      parentRoute: typeof rootServerRouteImport
+      preLoaderRoute: typeof ApiAdminNavgroupOrderRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/admin/navgroup/$id': {
       id: '/api/admin/navgroup/$id'
       path: '/api/admin/navgroup/$id'
       fullPath: '/api/admin/navgroup/$id'
-      preLoaderRoute: typeof ApiAdminNavgroupIdServerRouteImport
-      parentRoute: typeof rootServerRouteImport
+      preLoaderRoute: typeof ApiAdminNavgroupIdRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
 }
@@ -1067,6 +1159,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminOrganizationRoute: typeof AuthenticatedAdminOrganizationRoute
   AuthenticatedAdminRolenavgroupRoute: typeof AuthenticatedAdminRolenavgroupRoute
   AuthenticatedAdminSessionRoute: typeof AuthenticatedAdminSessionRoute
+  AuthenticatedAdminTranslationRoute: typeof AuthenticatedAdminTranslationRoute
   AuthenticatedAdminUserRoute: typeof AuthenticatedAdminUserRoute
   AuthenticatedAdminUserrolenavgroupRoute: typeof AuthenticatedAdminUserrolenavgroupRoute
   AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
@@ -1091,6 +1184,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminOrganizationRoute: AuthenticatedAdminOrganizationRoute,
   AuthenticatedAdminRolenavgroupRoute: AuthenticatedAdminRolenavgroupRoute,
   AuthenticatedAdminSessionRoute: AuthenticatedAdminSessionRoute,
+  AuthenticatedAdminTranslationRoute: AuthenticatedAdminTranslationRoute,
   AuthenticatedAdminUserRoute: AuthenticatedAdminUserRoute,
   AuthenticatedAdminUserrolenavgroupRoute:
     AuthenticatedAdminUserrolenavgroupRoute,
@@ -1108,16 +1202,16 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
-interface ApiUsersServerRouteChildren {
-  ApiUsersIdServerRoute: typeof ApiUsersIdServerRoute
+interface ApiUsersRouteChildren {
+  ApiUsersIdRoute: typeof ApiUsersIdRoute
 }
 
-const ApiUsersServerRouteChildren: ApiUsersServerRouteChildren = {
-  ApiUsersIdServerRoute: ApiUsersIdServerRoute,
+const ApiUsersRouteChildren: ApiUsersRouteChildren = {
+  ApiUsersIdRoute: ApiUsersIdRoute,
 }
 
-const ApiUsersServerRouteWithChildren = ApiUsersServerRoute._addFileChildren(
-  ApiUsersServerRouteChildren,
+const ApiUsersRouteWithChildren = ApiUsersRoute._addFileChildren(
+  ApiUsersRouteChildren,
 )
 
 const rootRouteChildren: RootRouteChildren = {
@@ -1131,24 +1225,34 @@ const rootRouteChildren: RootRouteChildren = {
   errors404Route: errors404Route,
   errors500Route: errors500Route,
   errors503Route: errors503Route,
+  ApiSessionsRoute: ApiSessionsRoute,
+  ApiUsersRoute: ApiUsersRouteWithChildren,
+  ApiAuthSplatRoute: ApiAuthSplatRoute,
+  ApiI18nLngRoute: ApiI18nLngRoute,
+  ApiAdminNavgroupIdRoute: ApiAdminNavgroupIdRoute,
+  ApiAdminNavgroupOrderRoute: ApiAdminNavgroupOrderRoute,
+  ApiAdminNavgroupVisibilityRoute: ApiAdminNavgroupVisibilityRoute,
+  ApiAdminNavitemIdRoute: ApiAdminNavitemIdRoute,
+  ApiAdminNavitemOrderRoute: ApiAdminNavitemOrderRoute,
+  ApiAdminNavitemVisibilityRoute: ApiAdminNavitemVisibilityRoute,
+  ApiAdminTranslationIdRoute: ApiAdminTranslationIdRoute,
+  ApiAdminTranslationExportRoute: ApiAdminTranslationExportRoute,
+  ApiAdminTranslationImportRoute: ApiAdminTranslationImportRoute,
+  ApiAdminNavgroupIndexRoute: ApiAdminNavgroupIndexRoute,
+  ApiAdminNavitemIndexRoute: ApiAdminNavitemIndexRoute,
+  ApiAdminTranslationIndexRoute: ApiAdminTranslationIndexRoute,
+  ApiAdminUserIndexRoute: ApiAdminUserIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-const rootServerRouteChildren: RootServerRouteChildren = {
-  ApiSessionsServerRoute: ApiSessionsServerRoute,
-  ApiUsersServerRoute: ApiUsersServerRouteWithChildren,
-  ApiAuthSplatServerRoute: ApiAuthSplatServerRoute,
-  ApiAdminNavgroupIdServerRoute: ApiAdminNavgroupIdServerRoute,
-  ApiAdminNavgroupOrderServerRoute: ApiAdminNavgroupOrderServerRoute,
-  ApiAdminNavgroupVisibilityServerRoute: ApiAdminNavgroupVisibilityServerRoute,
-  ApiAdminNavitemIdServerRoute: ApiAdminNavitemIdServerRoute,
-  ApiAdminNavitemOrderServerRoute: ApiAdminNavitemOrderServerRoute,
-  ApiAdminNavitemVisibilityServerRoute: ApiAdminNavitemVisibilityServerRoute,
-  ApiAdminNavgroupIndexServerRoute: ApiAdminNavgroupIndexServerRoute,
-  ApiAdminNavitemIndexServerRoute: ApiAdminNavitemIndexServerRoute,
-  ApiAdminUserIndexServerRoute: ApiAdminUserIndexServerRoute,
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
 }
-export const serverRouteTree = rootServerRouteImport
-  ._addFileChildren(rootServerRouteChildren)
-  ._addFileTypes<FileServerRouteTypes>()

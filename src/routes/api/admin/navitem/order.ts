@@ -1,23 +1,27 @@
-import { createServerFileRoute } from '@tanstack/react-start/server'
+import { createFileRoute } from '@tanstack/react-router'
 import { z } from 'zod'
-import { updateNavItemOrder } from './index'
 import { withAdminAuth } from '../../../../middleware'
+import { updateNavItemOrder } from './index'
 
 // 导航项顺序API路由
-export const ServerRoute = createServerFileRoute('/api/admin/navitem/order').methods({
-  // 更新导航项顺序
-  PUT: withAdminAuth(async ({ request }: any) => {
-    try {
-      const body = await request.json()
-      const orderSchema = z.object({
-        itemIds: z.array(z.string())
+export const Route = createFileRoute('/api/admin/navitem/order')({
+  server: {
+    handlers: {
+      // 更新导航项顺序
+      PUT: withAdminAuth(async ({ request }: any) => {
+        try {
+          const body = await request.json()
+          const orderSchema = z.object({
+            itemIds: z.array(z.string())
+          })
+
+          const data = orderSchema.parse(body)
+          const result = await updateNavItemOrder(data.itemIds)
+          return Response.json(result)
+        } catch (error) {
+          return new Response(String(error), { status: 400 })
+        }
       })
-      
-      const data = orderSchema.parse(body)
-      const result = await updateNavItemOrder(data.itemIds)
-      return Response.json(result)
-    } catch (error) {
-      return new Response(String(error), { status: 400 })
     }
-  })
+  }
 })
