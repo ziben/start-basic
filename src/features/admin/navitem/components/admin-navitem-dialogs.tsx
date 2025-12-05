@@ -26,17 +26,17 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
 import { CreateNavItemData, UpdateNavItemData, createNavItemSchema, updateNavItemSchema } from '../data/schema';
-import { iconResolver } from '~/utils/icon-resolver'
 import { useTranslation } from '~/hooks/useTranslation';
 import { useCreateNavitem, useUpdateNavitem, useDeleteNavitem } from '~/hooks/useNavitemApi';
 import { useNavgroups } from '~/hooks/useNavgroupApi';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { IconPicker } from '~/components/icon-picker';
 
 // 创建导航项对话框组件
 const CreateNavItemDialog = () => {
   const { t } = useTranslation();
   // 直接使用sonner的toast
-  
+
   const {
     isCreateDialogOpen,
     setCreateDialogOpen,
@@ -45,10 +45,10 @@ const CreateNavItemDialog = () => {
 
   // 获取导航组列表
   const { data: navgroups = [] } = useNavgroups();
-  
+
   // 创建导航项的mutation
   const createNavitemMutation = useCreateNavitem();
-  
+
   // 创建表单
   const toCreateFormValues = (navGroupId?: string): CreateNavItemData => ({
     title: '',
@@ -64,30 +64,30 @@ const CreateNavItemDialog = () => {
     resolver: zodResolver(createNavItemSchema),
     defaultValues: toCreateFormValues(navGroupId),
   });
-  
+
   // 重置表单并关闭对话框
   const handleClose = () => {
     createForm.reset();
     setCreateDialogOpen(false);
   };
-  
+
   // 处理表单提交
   const onSubmit = async (data: CreateNavItemData) => {
     try {
       await createNavitemMutation.mutateAsync(data);
       toast.success(
-  t('admin.navitem.toast.createSuccess.title'),
-  { description: t('admin.navitem.toast.createSuccess.description') }
+        t('admin.navitem.toast.createSuccess.title'),
+        { description: t('admin.navitem.toast.createSuccess.description') }
       );
       handleClose();
     } catch (error) {
       toast.error(
-  t('admin.navitem.toast.createError.title'),
+        t('admin.navitem.toast.createError.title'),
         { description: String(error) }
       );
     }
   };
-  
+
   return (
     <Dialog open={isCreateDialogOpen} onOpenChange={setCreateDialogOpen}>
       <DialogContent>
@@ -114,7 +114,7 @@ const CreateNavItemDialog = () => {
                 </p>
               )}
             </div>
-            
+
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="url" className="text-right">
                 {t('admin.navitem.fields.url')}
@@ -125,27 +125,19 @@ const CreateNavItemDialog = () => {
                 className="col-span-3"
               />
             </div>
-            
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="icon" className="text-right">
                 {t('admin.navitem.fields.icon')}
               </Label>
-              <div className="col-span-3 flex items-center">
-                <Input
-                  id="icon"
-                  {...createForm.register('icon')}
-                  className="flex-1"
+              <div className="col-span-3">
+                <IconPicker
+                  value={createForm.watch('icon')}
+                  onValueChange={(value) => createForm.setValue('icon', value)}
+                  className="w-full"
                 />
-                <div className="ml-2">
-                  {(() => {
-                    const name = createForm.watch('icon')
-                    const IconComponent = iconResolver(name)
-                    return IconComponent ? <IconComponent className="h-5 w-5 text-muted-foreground" /> : null
-                  })()}
-                </div>
               </div>
             </div>
-            
+
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="badge" className="text-right">
                 {t('admin.navitem.fields.badge')}
@@ -156,13 +148,13 @@ const CreateNavItemDialog = () => {
                 className="col-span-3"
               />
             </div>
-            
+
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="navGroupId" className="text-right">
                 {t('admin.navitem.fields.navGroupId')}
               </Label>
-              <Select 
-                defaultValue={navGroupId ?? ''} 
+              <Select
+                defaultValue={navGroupId ?? ''}
                 onValueChange={(value) => createForm.setValue('navGroupId', value)}
               >
                 <SelectTrigger className="col-span-3">
@@ -182,7 +174,7 @@ const CreateNavItemDialog = () => {
                 </p>
               )}
             </div>
-            
+
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="orderIndex" className="text-right">
                 {t('admin.navitem.fields.orderIndex')}
@@ -194,16 +186,16 @@ const CreateNavItemDialog = () => {
                 className="col-span-3"
               />
             </div>
-            
+
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="isCollapsible" className="text-right">
                 {t('admin.navitem.fields.isCollapsible')}
               </Label>
               <div className="col-span-3 flex items-center space-x-2">
-                <Checkbox 
-                  id="isCollapsible" 
-                  checked={createForm.watch('isCollapsible')} 
-                  onCheckedChange={(checked) => 
+                <Checkbox
+                  id="isCollapsible"
+                  checked={createForm.watch('isCollapsible')}
+                  onCheckedChange={(checked) =>
                     createForm.setValue('isCollapsible', checked as boolean)
                   }
                 />
@@ -213,13 +205,13 @@ const CreateNavItemDialog = () => {
               </div>
             </div>
           </div>
-          
+
           <DialogFooter>
             <Button type="button" variant="outline" onClick={handleClose}>
               {t('common.buttons.cancel', { defaultMessage: '取消' })}
             </Button>
             <Button type="submit" disabled={createNavitemMutation.isPending}>
-              {createNavitemMutation.isPending 
+              {createNavitemMutation.isPending
                 ? t('common.buttons.saving', { defaultMessage: '保存中...' })
                 : t('common.buttons.save', { defaultMessage: '保存' })
               }
@@ -235,7 +227,7 @@ const CreateNavItemDialog = () => {
 const EditNavItemDialog = () => {
   const { t } = useTranslation();
   // 直接使用sonner的toast
-  
+
   const {
     isEditDialogOpen,
     setEditDialogOpen,
@@ -245,10 +237,10 @@ const EditNavItemDialog = () => {
 
   // 获取导航组列表
   const { data: navgroups = [] } = useNavgroups();
-  
+
   // 更新导航项的mutation
   const updateNavitemMutation = useUpdateNavitem();
-  
+
   // 编辑表单
   const editForm = useForm<UpdateNavItemData>({
     resolver: zodResolver(updateNavItemSchema),
@@ -262,7 +254,7 @@ const EditNavItemDialog = () => {
       orderIndex: 0,
     },
   });
-  
+
   // 当选中的导航项变更时，重置表单
   useEffect(() => {
     if (selectedNavItem) {
@@ -287,24 +279,24 @@ const EditNavItemDialog = () => {
     setEditDialogOpen(false);
     setSelectedNavItem(null);
   };
-  
+
   // 处理表单提交
   const onSubmit = async (data: UpdateNavItemData) => {
     if (!selectedNavItem) return;
-    
+
     try {
       await updateNavitemMutation.mutateAsync({
         id: selectedNavItem.id,
         data,
       });
       toast.success(
-  t('admin.navitem.toast.updateSuccess.title'),
-  { description: t('admin.navitem.toast.updateSuccess.description') }
+        t('admin.navitem.toast.updateSuccess.title'),
+        { description: t('admin.navitem.toast.updateSuccess.description') }
       );
       handleClose();
     } catch (error) {
       toast.error(
-  t('admin.navitem.toast.updateError.title'),
+        t('admin.navitem.toast.updateError.title'),
         { description: String(error) }
       );
     }
@@ -336,7 +328,7 @@ const EditNavItemDialog = () => {
                 </p>
               )}
             </div>
-            
+
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="url" className="text-right">
                 {t('admin.navitem.fields.url')}
@@ -347,27 +339,20 @@ const EditNavItemDialog = () => {
                 className="col-span-3"
               />
             </div>
-            
+
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="icon" className="text-right">
                 {t('admin.navitem.fields.icon')}
               </Label>
-              <div className="col-span-3 flex items-center">
-                <Input
-                  id="icon"
-                  {...editForm.register('icon')}
-                  className="flex-1"
+              <div className="col-span-3">
+                <IconPicker
+                  value={editForm.watch('icon')}
+                  onValueChange={(value) => editForm.setValue('icon', value)}
+                  className="w-full"
                 />
-                <div className="ml-2">
-                  {(() => {
-                    const name = editForm.watch('icon')
-                    const IconComponent = iconResolver(name)
-                    return IconComponent ? <IconComponent className="h-5 w-5 text-muted-foreground" /> : null
-                  })()}
-                </div>
               </div>
             </div>
-            
+
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="badge" className="text-right">
                 {t('admin.navitem.fields.badge')}
@@ -378,13 +363,13 @@ const EditNavItemDialog = () => {
                 className="col-span-3"
               />
             </div>
-            
+
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="navGroupId" className="text-right">
                 {t('admin.navitem.fields.navGroupId')}
               </Label>
-              <Select 
-                defaultValue={selectedNavItem?.navGroupId ?? ''} 
+              <Select
+                defaultValue={selectedNavItem?.navGroupId ?? ''}
                 onValueChange={(value) => editForm.setValue('navGroupId', value)}
               >
                 <SelectTrigger className="col-span-3">
@@ -404,7 +389,7 @@ const EditNavItemDialog = () => {
                 </p>
               )}
             </div>
-            
+
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="orderIndex" className="text-right">
                 {t('admin.navitem.fields.orderIndex')}
@@ -416,16 +401,16 @@ const EditNavItemDialog = () => {
                 className="col-span-3"
               />
             </div>
-            
+
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="isCollapsible" className="text-right">
                 {t('admin.navitem.fields.isCollapsible')}
               </Label>
               <div className="col-span-3 flex items-center space-x-2">
-                <Checkbox 
-                  id="isCollapsible" 
-                  checked={editForm.watch('isCollapsible')} 
-                  onCheckedChange={(checked) => 
+                <Checkbox
+                  id="isCollapsible"
+                  checked={editForm.watch('isCollapsible')}
+                  onCheckedChange={(checked) =>
                     editForm.setValue('isCollapsible', checked as boolean)
                   }
                 />
@@ -435,13 +420,13 @@ const EditNavItemDialog = () => {
               </div>
             </div>
           </div>
-          
+
           <DialogFooter>
             <Button type="button" variant="outline" onClick={handleClose}>
               {t('common.buttons.cancel', { defaultMessage: '取消' })}
             </Button>
             <Button type="submit" disabled={updateNavitemMutation.isPending}>
-              {updateNavitemMutation.isPending 
+              {updateNavitemMutation.isPending
                 ? t('common.buttons.saving', { defaultMessage: '保存中...' })
                 : t('common.buttons.save', { defaultMessage: '保存' })
               }
@@ -457,45 +442,45 @@ const EditNavItemDialog = () => {
 const DeleteNavItemDialog = () => {
   const { t } = useTranslation();
   // 直接使用sonner的toast
-  
+
   const {
     isDeleteDialogOpen,
     setDeleteDialogOpen,
     selectedNavItem,
     setSelectedNavItem,
   } = useAdminNavItemContext();
-  
+
   // 删除导航项的mutation
   const deleteNavitemMutation = useDeleteNavitem();
-  
+
   // 处理关闭对话框
   const handleClose = () => {
     setDeleteDialogOpen(false);
     setSelectedNavItem(null);
   };
-  
+
   // 处理删除
   const handleDelete = async () => {
     if (!selectedNavItem) return;
-    
+
     try {
       await deleteNavitemMutation.mutateAsync({
         id: selectedNavItem.id,
         navGroupId: selectedNavItem.navGroupId,
       });
       toast.success(
-  t('admin.navitem.toast.deleteSuccess.title'),
-  { description: t('admin.navitem.toast.deleteSuccess.description') }
+        t('admin.navitem.toast.deleteSuccess.title'),
+        { description: t('admin.navitem.toast.deleteSuccess.description') }
       );
       handleClose();
     } catch (error) {
       toast.error(
-  t('admin.navitem.toast.deleteError.title'),
+        t('admin.navitem.toast.deleteError.title'),
         { description: String(error) }
       );
     }
   };
-  
+
   return (
     <AlertDialog open={isDeleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
       <AlertDialogContent>

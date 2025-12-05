@@ -120,14 +120,6 @@ export function useAdminNavItemColumns({ navGroupId: currentNavGroupIdProp }: Us
                 {row.getIsExpanded() ? <ChevronDown className='h-4 w-4' /> : <ChevronRight className='h-4 w-4' />}
               </Button>
             )}
-            {navItem.icon && (
-              <span className='mr-2'>
-                {(() => {
-                  const IconComponent = iconResolver(navItem.icon)
-                  return IconComponent ? <IconComponent className='h-4 w-4' /> : null
-                })()}
-              </span>
-            )}
             <span className='truncate' title={titleValue}>
               {titleValue}
             </span>
@@ -150,8 +142,17 @@ export function useAdminNavItemColumns({ navGroupId: currentNavGroupIdProp }: Us
       accessorKey: 'icon',
       header: () => t('admin.navitem.table.icon'),
       cell: ({ row }) => {
-        const iconValue = row.getValue<string | null>('icon')
-        return <div title={iconValue ?? ''}>{iconValue ?? '-'}</div>
+        const navItem = row.original as AdminNavItem
+        return <div title={navItem.icon ?? ''} className='flex items-center'>
+            {navItem.icon && (
+              <span className='mr-2'>
+                {(() => {
+                  const IconComponent = iconResolver(navItem.icon)
+                  return IconComponent ? <IconComponent className='h-4 w-4' /> : null
+                })()}
+              </span>
+            )}
+        </div>
       },
       meta: { className: 'w-24' },
     },

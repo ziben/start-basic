@@ -1,21 +1,16 @@
 import { createMiddleware } from "@tanstack/react-start";
-import { getRequest, setResponseStatus } from "@tanstack/react-start/server";
+import { getRequest } from "@tanstack/react-start/server";
 import { auth } from "~/lib/auth";
 
 // https://tanstack.com/start/latest/docs/framework/react/middleware
 // This is a sample middleware that you can use in your server functions.
 
 /**
- * Middleware to force authentication on a server function, and add the user to the context.
+ * Middleware to get user session and add to context.
+ * Does NOT block unauthenticated requests - let route guards handle that.
  */
 export const authMiddleware = createMiddleware().server(async ({ next }: any) => {
-  const { headers, url } = getRequest()!;
-  
-  // 排除登录相关的API
-  const pathname = new URL(url).pathname;
-  if (pathname.startsWith('/api/auth/')) {
-    return next({ context: { user: undefined } });
-  }
+  const { headers } = getRequest()!;
 
   const session = await auth.api.getSession({
     headers,
@@ -26,10 +21,6 @@ export const authMiddleware = createMiddleware().server(async ({ next }: any) =>
     },
   });
 
-  if (!session) {
-    setResponseStatus(401);
-    throw new Error("Unauthorized");
-  }
-
-  return next({ context: { user: session.user } });
+  // 不抛错，让路由层处理认证逻辑
+  return next({ context: { user: session?.user ?? null } });
 });

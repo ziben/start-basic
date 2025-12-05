@@ -15,9 +15,8 @@ import {
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { useAdminNavItemColumns } from './admin-navitem-columns'
 import { AdminNavItem } from '../data/schema'
-import { DataTablePagination } from './data-table-pagination'
-import { DataTableToolbar } from './data-table-toolbar'
 import { useTranslation } from '~/hooks/useTranslation'
+import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
 
 interface Props {
   readonly data: ReadonlyArray<AdminNavItem>
@@ -60,16 +59,16 @@ export default function AdminNavItemTable({ data, isLoading, error, navGroupId }
   const depthMap = useMemo(() => {
     const map = new Map<string, number>();
     const calculateDepthsRecursive = (itemId: string, currentDepth: number) => {
-        map.set(itemId, currentDepth);
-        data
-            .filter(i => i.parentId === itemId)
-            .forEach(child => {
-                calculateDepthsRecursive(child.id, currentDepth + 1);
-            });
+      map.set(itemId, currentDepth);
+      data
+        .filter(i => i.parentId === itemId)
+        .forEach(child => {
+          calculateDepthsRecursive(child.id, currentDepth + 1);
+        });
     };
     // Start recursion for root items (parentId is null)
     data.filter(i => i.parentId === null).forEach(rootItem => {
-        calculateDepthsRecursive(rootItem.id, 0);
+      calculateDepthsRecursive(rootItem.id, 0);
     });
     return map;
   }, [data]);
@@ -77,64 +76,64 @@ export default function AdminNavItemTable({ data, isLoading, error, navGroupId }
   // Process data for table display (filtering and tree structure)
   const { tableData, getSubRowsFunction, allVisibleItemsById } = useMemo(() => {
     const buildTreeRecursive = (currentParentId: string | null): AdminNavItem[] => {
-        let treeNodes: AdminNavItem[] = [];
-        data
-            .filter(item => item.parentId === currentParentId) // Get direct children
-            .sort((a, b) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0))
-            .forEach(childItem => {
-                const depth = depthMap.get(childItem.id);
-                // Add the child item itself
-                treeNodes.push({ ...childItem, depth: depth ?? 0 });
-                // Recursively add its descendants
-                treeNodes = treeNodes.concat(buildTreeRecursive(childItem.id));
-            });
-        return treeNodes;
+      let treeNodes: AdminNavItem[] = [];
+      data
+        .filter(item => item.parentId === currentParentId) // Get direct children
+        .sort((a, b) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0))
+        .forEach(childItem => {
+          const depth = depthMap.get(childItem.id);
+          // Add the child item itself
+          treeNodes.push({ ...childItem, depth: depth ?? 0 });
+          // Recursively add its descendants
+          treeNodes = treeNodes.concat(buildTreeRecursive(childItem.id));
+        });
+      return treeNodes;
     };
 
     const fullFlatTree = buildTreeRecursive(null); // Build full tree starting from root
 
     let currentVisibleFlatTree = fullFlatTree;
     if (titleFilterValue) {
-        const lowercasedFilter = titleFilterValue.toLowerCase();
-        const allItemsInFullTreeById = new Map(fullFlatTree.map(item => [item.id, item])); 
-        const visibleItemIds = new Set<string>();
+      const lowercasedFilter = titleFilterValue.toLowerCase();
+      const allItemsInFullTreeById = new Map(fullFlatTree.map(item => [item.id, item]));
+      const visibleItemIds = new Set<string>();
 
-        fullFlatTree.forEach(item => { 
-            if (item.title.toLowerCase().includes(lowercasedFilter)) {
-                visibleItemIds.add(item.id);
-                let currentAncestorId = item.parentId;
-                while (currentAncestorId) {
-                    visibleItemIds.add(currentAncestorId);
-                    const ancestor = allItemsInFullTreeById.get(currentAncestorId);
-                    currentAncestorId = ancestor ? ancestor.parentId : null;
-                }
-                const addDescendants = (parentId: string) => {
-                  fullFlatTree.forEach(childInTree => { 
-                        if (childInTree.parentId === parentId) {
-                            visibleItemIds.add(childInTree.id);
-                            addDescendants(childInTree.id);
-                        }
-                    });
-                };
-                addDescendants(item.id);
-            }
-        });
-        currentVisibleFlatTree = fullFlatTree.filter(item => visibleItemIds.has(item.id));
+      fullFlatTree.forEach(item => {
+        if (item.title.toLowerCase().includes(lowercasedFilter)) {
+          visibleItemIds.add(item.id);
+          let currentAncestorId = item.parentId;
+          while (currentAncestorId) {
+            visibleItemIds.add(currentAncestorId);
+            const ancestor = allItemsInFullTreeById.get(currentAncestorId);
+            currentAncestorId = ancestor ? ancestor.parentId : null;
+          }
+          const addDescendants = (parentId: string) => {
+            fullFlatTree.forEach(childInTree => {
+              if (childInTree.parentId === parentId) {
+                visibleItemIds.add(childInTree.id);
+                addDescendants(childInTree.id);
+              }
+            });
+          };
+          addDescendants(item.id);
+        }
+      });
+      currentVisibleFlatTree = fullFlatTree.filter(item => visibleItemIds.has(item.id));
     }
 
     // For react-table, data should be root nodes of the current view
     const rootNodesForTable = currentVisibleFlatTree.filter(item => {
-        if (!item.parentId) return true; // Global root
-        // Item is a root in the current view if its parent is not in currentVisibleFlatTree
-        return !currentVisibleFlatTree.find(parentCandidate => parentCandidate.id === item.parentId);
+      if (!item.parentId) return true; // Global root
+      // Item is a root in the current view if its parent is not in currentVisibleFlatTree
+      return !currentVisibleFlatTree.find(parentCandidate => parentCandidate.id === item.parentId);
     });
 
     const allVisibleItemsMap = new Map(currentVisibleFlatTree.map(item => [item.id, item]));
 
     const subRowsFunc = (row: AdminNavItem): AdminNavItem[] => {
-        return currentVisibleFlatTree.filter(item => item.parentId === row.id);
+      return currentVisibleFlatTree.filter(item => item.parentId === row.id);
     };
-    
+
     return { tableData: rootNodesForTable, getSubRowsFunction: subRowsFunc, allVisibleItemsById: allVisibleItemsMap };
 
   }, [data, titleFilterValue, depthMap]);
@@ -149,19 +148,19 @@ export default function AdminNavItemTable({ data, isLoading, error, navGroupId }
     const lowercasedFilter = titleFilterValue.toLowerCase();
 
     // Iterate over all visible items (roots and children) to find matches and their ancestors for expansion
-    allVisibleItemsById.forEach(item => { 
+    allVisibleItemsById.forEach(item => {
       if (item.title.toLowerCase().includes(lowercasedFilter)) {
         let currentAncestorId = item.parentId;
         while (currentAncestorId) {
           if (allVisibleItemsById.has(currentAncestorId)) { // Ensure ancestor is in the visible set
-             newExpanded[currentAncestorId] = true;
+            newExpanded[currentAncestorId] = true;
           }
           const ancestorDetails = allVisibleItemsById.get(currentAncestorId); // Get details from visible set
           currentAncestorId = ancestorDetails ? ancestorDetails.parentId : null;
         }
       }
     });
-    setExpanded(prevExpanded => { 
+    setExpanded(prevExpanded => {
       const baseExpanded = typeof prevExpanded === 'object' ? prevExpanded : {};
       return { ...baseExpanded, ...newExpanded };
     });
@@ -169,7 +168,7 @@ export default function AdminNavItemTable({ data, isLoading, error, navGroupId }
 
   // 创建table实例
   const table = useReactTable({
-    data: tableData, 
+    data: tableData,
     columns,
     state: {
       sorting,
@@ -180,7 +179,7 @@ export default function AdminNavItemTable({ data, isLoading, error, navGroupId }
     },
     enableRowSelection: true,
     enableExpanding: true,
-    getSubRows: getSubRowsFunction, 
+    getSubRows: getSubRowsFunction,
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -199,8 +198,18 @@ export default function AdminNavItemTable({ data, isLoading, error, navGroupId }
 
   return (
     <div className='space-y-4'>
-      <DataTableToolbar table={table} />
-      <div className='rounded-md border'>
+      <DataTableToolbar
+        table={table}
+        searchPlaceholder={t('admin.navgroup.table.searchPlaceholder')}
+        filters={[
+          {
+            columnId: 'title',
+            title: t('admin.navgroup.table.title'),
+            options: [],
+          },
+        ]}
+      />
+      <div className='overflow-hidden rounded-md border'>
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

@@ -1,8 +1,8 @@
 import { QueryClient } from '@tanstack/react-query';
 import { createRouter } from '@tanstack/react-router';
 import { setupRouterSsrQueryIntegration } from '@tanstack/react-router-ssr-query';
-import { GeneralError } from './features/errors/general-error';
-import { NotFoundError } from './features/errors/not-found-error';
+import { GeneralError } from './features/demo/errors/general-error';
+import { NotFoundError } from './features/demo/errors/not-found-error';
 import { routeTree } from './routeTree.gen';
 
 

@@ -1,0 +1,202 @@
+import * as React from 'react'
+import * as LucideIcons from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
+
+// 过滤出所有可用的图标组件
+const iconList = Object.keys(LucideIcons || {})
+  .filter(
+    (name) =>
+      // 只保留首字母大写的（组件命名规范）
+      /^[A-Z]/.test(name) &&
+      // 排除 Icon 后缀的别名（只保留原始名称）
+      !name.endsWith('Icon') &&
+      // 排除特殊的导出
+      name !== 'createLucideIcon' &&
+      name !== 'default'
+  )
+  .sort()
+
+export interface IconPickerProps {
+  value?: string
+  onValueChange?: (value: string) => void
+  disabled?: boolean
+  className?: string
+  placeholder?: string
+}
+
+// 图标项组件 - 使用 memo 避免重复渲染
+const IconItem = React.memo(
+  ({
+    iconName,
+    isSelected,
+    onSelect,
+  }: {
+    iconName: string
+    isSelected: boolean
+    onSelect: (name: string) => void
+  }) => {
+    const IconComponent = LucideIcons[
+      iconName as keyof typeof LucideIcons
+    ] as React.ComponentType<LucideIcons.LucideProps>
+
+    return (
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <button
+            type='button'
+            className='flex h-12 flex-col items-center justify-center gap-1 rounded-md p-2 transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
+            onClick={() => onSelect(iconName)}
+          >
+            {React.createElement(IconComponent, {
+              className: cn('size-5', isSelected && 'text-primary'),
+            })}
+            <span className='sr-only'>{iconName}</span>
+          </button>
+        </TooltipTrigger>
+        <TooltipContent side='bottom' className='text-xs'>
+          {iconName}
+        </TooltipContent>
+      </Tooltip>
+    )
+  }
+)
+IconItem.displayName = 'IconItem'
+
+export function IconPicker({
+  value,
+  onValueChange,
+  disabled = false,
+  className,
+  placeholder = '选择图标',
+}: IconPickerProps) {
+  const [open, setOpen] = React.useState(false)
+  const [search, setSearch] = React.useState('')
+  const [debouncedSearch, setDebouncedSearch] = React.useState('')
+
+  const selectedIcon = value
+    ? (LucideIcons[value as keyof typeof LucideIcons] as React.ComponentType<
+        LucideIcons.LucideProps
+      >)
+    : null
+
+  // 防抖搜索
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search)
+    }, 150)
+    return () => clearTimeout(timer)
+  }, [search])
+
+  // 优化：限制显示数量，搜索时显示更多
+  const filteredIcons = React.useMemo(() => {
+    const lowerSearch = debouncedSearch.toLowerCase()
+    const filtered = debouncedSearch
+      ? iconList.filter((name) => name.toLowerCase().includes(lowerSearch))
+      : iconList
+
+    // 如果没有搜索，只显示前 300 个（性能优化）
+    // 如果有搜索，显示所有匹配结果（但限制 500 个）
+    return debouncedSearch
+      ? filtered.slice(0, 200)
+      : filtered.slice(0, 100)
+  }, [debouncedSearch])
+
+  const handleSelect = React.useCallback(
+    (iconName: string) => {
+      onValueChange?.(iconName)
+      setOpen(false)
+      setSearch('')
+    },
+    [onValueChange]
+  )
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant='outline'
+          role='combobox'
+          aria-expanded={open}
+          disabled={disabled}
+          className={cn(
+            'h-10 w-full justify-start text-left font-normal',
+            !value && 'text-muted-foreground',
+            className
+          )}
+        >
+          {selectedIcon ? (
+            <div className='flex items-center gap-2'>
+              {React.createElement(selectedIcon, { className: 'size-4' })}
+              <span className='truncate'>{value}</span>
+            </div>
+          ) : (
+            <div className='flex items-center gap-2'>
+              <LucideIcons.Sparkles className='size-4' />
+              <span>{placeholder}</span>
+            </div>
+          )}
+          <LucideIcons.ChevronsUpDown className='ml-auto size-4 shrink-0 opacity-50' />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className='w-[320px] p-0' align='start'>
+        <div className='flex flex-col'>
+          <div className='border-b p-3'>
+            <Input
+              placeholder='搜索图标...'
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className='h-9'
+            />
+          </div>
+          <div className='max-h-[300px] overflow-y-auto p-2'>
+            {filteredIcons.length === 0 ? (
+              <p className='text-muted-foreground py-8 text-center text-sm'>
+                未找到图标
+              </p>
+            ) : (
+              <TooltipProvider delayDuration={300}>
+                <div className='grid grid-cols-6 gap-1'>
+                  {filteredIcons.map((iconName) => (
+                    <IconItem
+                      key={iconName}
+                      iconName={iconName}
+                      isSelected={value === iconName}
+                      onSelect={handleSelect}
+                    />
+                  ))}
+                </div>
+              </TooltipProvider>
+            )}
+            {filteredIcons.length > 0 && (
+              <>
+                {!debouncedSearch && filteredIcons.length === 100 && (
+                  <p className='text-muted-foreground mt-2 py-2 text-center text-xs'>
+                    显示前 100 个图标，使用搜索查找更多...
+                  </p>
+                )}
+                {debouncedSearch && filteredIcons.length === 200 && (
+                  <p className='text-muted-foreground mt-2 py-2 text-center text-xs'>
+                    已显示 200 个结果，请细化搜索...
+                  </p>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+      </PopoverContent>
+    </Popover>
+  )
+}

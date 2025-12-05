@@ -26,7 +26,7 @@ export function useSidebar(iconResolver?: IconResolver) {
     staleTime: 5 * 60 * 1000, // 5分钟缓存
     refetchOnWindowFocus: false,
   })
-  console.info('Sidebar hook data:', { data, localData, isLoading, error })
+  
   // 处理翻译和图标解析
   useEffect(() => {
     if (data && !localData) {

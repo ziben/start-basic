@@ -22,21 +22,11 @@ import { Route as authSignUpRouteImport } from './routes/(auth)/sign-up'
 import { Route as authSignIn2RouteImport } from './routes/(auth)/sign-in-2'
 import { Route as authSignInRouteImport } from './routes/(auth)/sign-in'
 import { Route as authForgotPasswordRouteImport } from './routes/(auth)/forgot-password'
-import { Route as AuthenticatedSettingsRouteRouteImport } from './routes/_authenticated/settings/route'
-import { Route as AuthenticatedUsersIndexRouteImport } from './routes/_authenticated/users/index'
-import { Route as AuthenticatedTasksIndexRouteImport } from './routes/_authenticated/tasks/index'
-import { Route as AuthenticatedSettingsIndexRouteImport } from './routes/_authenticated/settings/index'
 import { Route as AuthenticatedSessionsIndexRouteImport } from './routes/_authenticated/sessions/index'
 import { Route as AuthenticatedHelpCenterIndexRouteImport } from './routes/_authenticated/help-center/index'
-import { Route as AuthenticatedChatsIndexRouteImport } from './routes/_authenticated/chats/index'
-import { Route as AuthenticatedAppsIndexRouteImport } from './routes/_authenticated/apps/index'
 import { Route as ApiUsersIdRouteImport } from './routes/api/users.$id'
 import { Route as ApiI18nLngRouteImport } from './routes/api/i18n/$lng'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
-import { Route as AuthenticatedSettingsNotificationsRouteImport } from './routes/_authenticated/settings/notifications'
-import { Route as AuthenticatedSettingsDisplayRouteImport } from './routes/_authenticated/settings/display'
-import { Route as AuthenticatedSettingsAppearanceRouteImport } from './routes/_authenticated/settings/appearance'
-import { Route as AuthenticatedSettingsAccountRouteImport } from './routes/_authenticated/settings/account'
 import { Route as AuthenticatedErrorsErrorRouteImport } from './routes/_authenticated/errors/$error'
 import { Route as AuthenticatedAdminVerificationRouteImport } from './routes/_authenticated/admin/verification'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin/users'
@@ -51,10 +41,16 @@ import { Route as AuthenticatedAdminNavgroupRouteImport } from './routes/_authen
 import { Route as AuthenticatedAdminMemberRouteImport } from './routes/_authenticated/admin/member'
 import { Route as AuthenticatedAdminInvitationRouteImport } from './routes/_authenticated/admin/invitation'
 import { Route as AuthenticatedAdminAccountRouteImport } from './routes/_authenticated/admin/account'
+import { Route as AuthenticatedDemoSettingsRouteRouteImport } from './routes/_authenticated/demo/settings/route'
 import { Route as ApiAdminUserIndexRouteImport } from './routes/api/admin/user/index'
 import { Route as ApiAdminTranslationIndexRouteImport } from './routes/api/admin/translation/index'
 import { Route as ApiAdminNavitemIndexRouteImport } from './routes/api/admin/navitem/index'
 import { Route as ApiAdminNavgroupIndexRouteImport } from './routes/api/admin/navgroup/index'
+import { Route as AuthenticatedDemoUsersIndexRouteImport } from './routes/_authenticated/demo/users/index'
+import { Route as AuthenticatedDemoTasksIndexRouteImport } from './routes/_authenticated/demo/tasks/index'
+import { Route as AuthenticatedDemoSettingsIndexRouteImport } from './routes/_authenticated/demo/settings/index'
+import { Route as AuthenticatedDemoChatsIndexRouteImport } from './routes/_authenticated/demo/chats/index'
+import { Route as AuthenticatedDemoAppsIndexRouteImport } from './routes/_authenticated/demo/apps/index'
 import { Route as ApiAdminTranslationImportRouteImport } from './routes/api/admin/translation/import'
 import { Route as ApiAdminTranslationExportRouteImport } from './routes/api/admin/translation/export'
 import { Route as ApiAdminTranslationIdRouteImport } from './routes/api/admin/translation/$id'
@@ -64,6 +60,10 @@ import { Route as ApiAdminNavitemIdRouteImport } from './routes/api/admin/navite
 import { Route as ApiAdminNavgroupVisibilityRouteImport } from './routes/api/admin/navgroup/visibility'
 import { Route as ApiAdminNavgroupOrderRouteImport } from './routes/api/admin/navgroup/order'
 import { Route as ApiAdminNavgroupIdRouteImport } from './routes/api/admin/navgroup/$id'
+import { Route as AuthenticatedDemoSettingsNotificationsRouteImport } from './routes/_authenticated/demo/settings/notifications'
+import { Route as AuthenticatedDemoSettingsDisplayRouteImport } from './routes/_authenticated/demo/settings/display'
+import { Route as AuthenticatedDemoSettingsAppearanceRouteImport } from './routes/_authenticated/demo/settings/appearance'
+import { Route as AuthenticatedDemoSettingsAccountRouteImport } from './routes/_authenticated/demo/settings/account'
 
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
@@ -129,28 +129,6 @@ const authForgotPasswordRoute = authForgotPasswordRouteImport.update({
   path: '/forgot-password',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedSettingsRouteRoute =
-  AuthenticatedSettingsRouteRouteImport.update({
-    id: '/settings',
-    path: '/settings',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedUsersIndexRoute = AuthenticatedUsersIndexRouteImport.update({
-  id: '/users/',
-  path: '/users/',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedTasksIndexRoute = AuthenticatedTasksIndexRouteImport.update({
-  id: '/tasks/',
-  path: '/tasks/',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedSettingsIndexRoute =
-  AuthenticatedSettingsIndexRouteImport.update({
-    id: '/',
-    path: '/',
-    getParentRoute: () => AuthenticatedSettingsRouteRoute,
-  } as any)
 const AuthenticatedSessionsIndexRoute =
   AuthenticatedSessionsIndexRouteImport.update({
     id: '/sessions/',
@@ -163,16 +141,6 @@ const AuthenticatedHelpCenterIndexRoute =
     path: '/help-center/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedChatsIndexRoute = AuthenticatedChatsIndexRouteImport.update({
-  id: '/chats/',
-  path: '/chats/',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedAppsIndexRoute = AuthenticatedAppsIndexRouteImport.update({
-  id: '/apps/',
-  path: '/apps/',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 const ApiUsersIdRoute = ApiUsersIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -188,30 +156,6 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedSettingsNotificationsRoute =
-  AuthenticatedSettingsNotificationsRouteImport.update({
-    id: '/notifications',
-    path: '/notifications',
-    getParentRoute: () => AuthenticatedSettingsRouteRoute,
-  } as any)
-const AuthenticatedSettingsDisplayRoute =
-  AuthenticatedSettingsDisplayRouteImport.update({
-    id: '/display',
-    path: '/display',
-    getParentRoute: () => AuthenticatedSettingsRouteRoute,
-  } as any)
-const AuthenticatedSettingsAppearanceRoute =
-  AuthenticatedSettingsAppearanceRouteImport.update({
-    id: '/appearance',
-    path: '/appearance',
-    getParentRoute: () => AuthenticatedSettingsRouteRoute,
-  } as any)
-const AuthenticatedSettingsAccountRoute =
-  AuthenticatedSettingsAccountRouteImport.update({
-    id: '/account',
-    path: '/account',
-    getParentRoute: () => AuthenticatedSettingsRouteRoute,
-  } as any)
 const AuthenticatedErrorsErrorRoute =
   AuthenticatedErrorsErrorRouteImport.update({
     id: '/errors/$error',
@@ -294,6 +238,12 @@ const AuthenticatedAdminAccountRoute =
     path: '/admin/account',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedDemoSettingsRouteRoute =
+  AuthenticatedDemoSettingsRouteRouteImport.update({
+    id: '/demo/settings',
+    path: '/demo/settings',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const ApiAdminUserIndexRoute = ApiAdminUserIndexRouteImport.update({
   id: '/api/admin/user/',
   path: '/api/admin/user/',
@@ -315,6 +265,36 @@ const ApiAdminNavgroupIndexRoute = ApiAdminNavgroupIndexRouteImport.update({
   path: '/api/admin/navgroup/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedDemoUsersIndexRoute =
+  AuthenticatedDemoUsersIndexRouteImport.update({
+    id: '/demo/users/',
+    path: '/demo/users/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedDemoTasksIndexRoute =
+  AuthenticatedDemoTasksIndexRouteImport.update({
+    id: '/demo/tasks/',
+    path: '/demo/tasks/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedDemoSettingsIndexRoute =
+  AuthenticatedDemoSettingsIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedDemoSettingsRouteRoute,
+  } as any)
+const AuthenticatedDemoChatsIndexRoute =
+  AuthenticatedDemoChatsIndexRouteImport.update({
+    id: '/demo/chats/',
+    path: '/demo/chats/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedDemoAppsIndexRoute =
+  AuthenticatedDemoAppsIndexRouteImport.update({
+    id: '/demo/apps/',
+    path: '/demo/apps/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const ApiAdminTranslationImportRoute =
   ApiAdminTranslationImportRouteImport.update({
     id: '/api/admin/translation/import',
@@ -364,9 +344,32 @@ const ApiAdminNavgroupIdRoute = ApiAdminNavgroupIdRouteImport.update({
   path: '/api/admin/navgroup/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedDemoSettingsNotificationsRoute =
+  AuthenticatedDemoSettingsNotificationsRouteImport.update({
+    id: '/notifications',
+    path: '/notifications',
+    getParentRoute: () => AuthenticatedDemoSettingsRouteRoute,
+  } as any)
+const AuthenticatedDemoSettingsDisplayRoute =
+  AuthenticatedDemoSettingsDisplayRouteImport.update({
+    id: '/display',
+    path: '/display',
+    getParentRoute: () => AuthenticatedDemoSettingsRouteRoute,
+  } as any)
+const AuthenticatedDemoSettingsAppearanceRoute =
+  AuthenticatedDemoSettingsAppearanceRouteImport.update({
+    id: '/appearance',
+    path: '/appearance',
+    getParentRoute: () => AuthenticatedDemoSettingsRouteRoute,
+  } as any)
+const AuthenticatedDemoSettingsAccountRoute =
+  AuthenticatedDemoSettingsAccountRouteImport.update({
+    id: '/account',
+    path: '/account',
+    getParentRoute: () => AuthenticatedDemoSettingsRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
-  '/settings': typeof AuthenticatedSettingsRouteRouteWithChildren
   '/forgot-password': typeof authForgotPasswordRoute
   '/sign-in': typeof authSignInRoute
   '/sign-in-2': typeof authSignIn2Route
@@ -379,6 +382,7 @@ export interface FileRoutesByFullPath {
   '/api/sessions': typeof ApiSessionsRoute
   '/api/users': typeof ApiUsersRouteWithChildren
   '/': typeof AuthenticatedIndexRoute
+  '/demo/settings': typeof AuthenticatedDemoSettingsRouteRouteWithChildren
   '/admin/account': typeof AuthenticatedAdminAccountRoute
   '/admin/invitation': typeof AuthenticatedAdminInvitationRoute
   '/admin/member': typeof AuthenticatedAdminMemberRoute
@@ -393,20 +397,15 @@ export interface FileRoutesByFullPath {
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/admin/verification': typeof AuthenticatedAdminVerificationRoute
   '/errors/$error': typeof AuthenticatedErrorsErrorRoute
-  '/settings/account': typeof AuthenticatedSettingsAccountRoute
-  '/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
-  '/settings/display': typeof AuthenticatedSettingsDisplayRoute
-  '/settings/notifications': typeof AuthenticatedSettingsNotificationsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/i18n/$lng': typeof ApiI18nLngRoute
   '/api/users/$id': typeof ApiUsersIdRoute
-  '/apps': typeof AuthenticatedAppsIndexRoute
-  '/chats': typeof AuthenticatedChatsIndexRoute
   '/help-center': typeof AuthenticatedHelpCenterIndexRoute
   '/sessions': typeof AuthenticatedSessionsIndexRoute
-  '/settings/': typeof AuthenticatedSettingsIndexRoute
-  '/tasks': typeof AuthenticatedTasksIndexRoute
-  '/users': typeof AuthenticatedUsersIndexRoute
+  '/demo/settings/account': typeof AuthenticatedDemoSettingsAccountRoute
+  '/demo/settings/appearance': typeof AuthenticatedDemoSettingsAppearanceRoute
+  '/demo/settings/display': typeof AuthenticatedDemoSettingsDisplayRoute
+  '/demo/settings/notifications': typeof AuthenticatedDemoSettingsNotificationsRoute
   '/api/admin/navgroup/$id': typeof ApiAdminNavgroupIdRoute
   '/api/admin/navgroup/order': typeof ApiAdminNavgroupOrderRoute
   '/api/admin/navgroup/visibility': typeof ApiAdminNavgroupVisibilityRoute
@@ -416,6 +415,11 @@ export interface FileRoutesByFullPath {
   '/api/admin/translation/$id': typeof ApiAdminTranslationIdRoute
   '/api/admin/translation/export': typeof ApiAdminTranslationExportRoute
   '/api/admin/translation/import': typeof ApiAdminTranslationImportRoute
+  '/demo/apps': typeof AuthenticatedDemoAppsIndexRoute
+  '/demo/chats': typeof AuthenticatedDemoChatsIndexRoute
+  '/demo/settings/': typeof AuthenticatedDemoSettingsIndexRoute
+  '/demo/tasks': typeof AuthenticatedDemoTasksIndexRoute
+  '/demo/users': typeof AuthenticatedDemoUsersIndexRoute
   '/api/admin/navgroup': typeof ApiAdminNavgroupIndexRoute
   '/api/admin/navitem': typeof ApiAdminNavitemIndexRoute
   '/api/admin/translation': typeof ApiAdminTranslationIndexRoute
@@ -448,20 +452,15 @@ export interface FileRoutesByTo {
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/admin/verification': typeof AuthenticatedAdminVerificationRoute
   '/errors/$error': typeof AuthenticatedErrorsErrorRoute
-  '/settings/account': typeof AuthenticatedSettingsAccountRoute
-  '/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
-  '/settings/display': typeof AuthenticatedSettingsDisplayRoute
-  '/settings/notifications': typeof AuthenticatedSettingsNotificationsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/i18n/$lng': typeof ApiI18nLngRoute
   '/api/users/$id': typeof ApiUsersIdRoute
-  '/apps': typeof AuthenticatedAppsIndexRoute
-  '/chats': typeof AuthenticatedChatsIndexRoute
   '/help-center': typeof AuthenticatedHelpCenterIndexRoute
   '/sessions': typeof AuthenticatedSessionsIndexRoute
-  '/settings': typeof AuthenticatedSettingsIndexRoute
-  '/tasks': typeof AuthenticatedTasksIndexRoute
-  '/users': typeof AuthenticatedUsersIndexRoute
+  '/demo/settings/account': typeof AuthenticatedDemoSettingsAccountRoute
+  '/demo/settings/appearance': typeof AuthenticatedDemoSettingsAppearanceRoute
+  '/demo/settings/display': typeof AuthenticatedDemoSettingsDisplayRoute
+  '/demo/settings/notifications': typeof AuthenticatedDemoSettingsNotificationsRoute
   '/api/admin/navgroup/$id': typeof ApiAdminNavgroupIdRoute
   '/api/admin/navgroup/order': typeof ApiAdminNavgroupOrderRoute
   '/api/admin/navgroup/visibility': typeof ApiAdminNavgroupVisibilityRoute
@@ -471,6 +470,11 @@ export interface FileRoutesByTo {
   '/api/admin/translation/$id': typeof ApiAdminTranslationIdRoute
   '/api/admin/translation/export': typeof ApiAdminTranslationExportRoute
   '/api/admin/translation/import': typeof ApiAdminTranslationImportRoute
+  '/demo/apps': typeof AuthenticatedDemoAppsIndexRoute
+  '/demo/chats': typeof AuthenticatedDemoChatsIndexRoute
+  '/demo/settings': typeof AuthenticatedDemoSettingsIndexRoute
+  '/demo/tasks': typeof AuthenticatedDemoTasksIndexRoute
+  '/demo/users': typeof AuthenticatedDemoUsersIndexRoute
   '/api/admin/navgroup': typeof ApiAdminNavgroupIndexRoute
   '/api/admin/navitem': typeof ApiAdminNavitemIndexRoute
   '/api/admin/translation': typeof ApiAdminTranslationIndexRoute
@@ -479,7 +483,6 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
-  '/_authenticated/settings': typeof AuthenticatedSettingsRouteRouteWithChildren
   '/(auth)/forgot-password': typeof authForgotPasswordRoute
   '/(auth)/sign-in': typeof authSignInRoute
   '/(auth)/sign-in-2': typeof authSignIn2Route
@@ -492,6 +495,7 @@ export interface FileRoutesById {
   '/api/sessions': typeof ApiSessionsRoute
   '/api/users': typeof ApiUsersRouteWithChildren
   '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/_authenticated/demo/settings': typeof AuthenticatedDemoSettingsRouteRouteWithChildren
   '/_authenticated/admin/account': typeof AuthenticatedAdminAccountRoute
   '/_authenticated/admin/invitation': typeof AuthenticatedAdminInvitationRoute
   '/_authenticated/admin/member': typeof AuthenticatedAdminMemberRoute
@@ -506,20 +510,15 @@ export interface FileRoutesById {
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/admin/verification': typeof AuthenticatedAdminVerificationRoute
   '/_authenticated/errors/$error': typeof AuthenticatedErrorsErrorRoute
-  '/_authenticated/settings/account': typeof AuthenticatedSettingsAccountRoute
-  '/_authenticated/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
-  '/_authenticated/settings/display': typeof AuthenticatedSettingsDisplayRoute
-  '/_authenticated/settings/notifications': typeof AuthenticatedSettingsNotificationsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/i18n/$lng': typeof ApiI18nLngRoute
   '/api/users/$id': typeof ApiUsersIdRoute
-  '/_authenticated/apps/': typeof AuthenticatedAppsIndexRoute
-  '/_authenticated/chats/': typeof AuthenticatedChatsIndexRoute
   '/_authenticated/help-center/': typeof AuthenticatedHelpCenterIndexRoute
   '/_authenticated/sessions/': typeof AuthenticatedSessionsIndexRoute
-  '/_authenticated/settings/': typeof AuthenticatedSettingsIndexRoute
-  '/_authenticated/tasks/': typeof AuthenticatedTasksIndexRoute
-  '/_authenticated/users/': typeof AuthenticatedUsersIndexRoute
+  '/_authenticated/demo/settings/account': typeof AuthenticatedDemoSettingsAccountRoute
+  '/_authenticated/demo/settings/appearance': typeof AuthenticatedDemoSettingsAppearanceRoute
+  '/_authenticated/demo/settings/display': typeof AuthenticatedDemoSettingsDisplayRoute
+  '/_authenticated/demo/settings/notifications': typeof AuthenticatedDemoSettingsNotificationsRoute
   '/api/admin/navgroup/$id': typeof ApiAdminNavgroupIdRoute
   '/api/admin/navgroup/order': typeof ApiAdminNavgroupOrderRoute
   '/api/admin/navgroup/visibility': typeof ApiAdminNavgroupVisibilityRoute
@@ -529,6 +528,11 @@ export interface FileRoutesById {
   '/api/admin/translation/$id': typeof ApiAdminTranslationIdRoute
   '/api/admin/translation/export': typeof ApiAdminTranslationExportRoute
   '/api/admin/translation/import': typeof ApiAdminTranslationImportRoute
+  '/_authenticated/demo/apps/': typeof AuthenticatedDemoAppsIndexRoute
+  '/_authenticated/demo/chats/': typeof AuthenticatedDemoChatsIndexRoute
+  '/_authenticated/demo/settings/': typeof AuthenticatedDemoSettingsIndexRoute
+  '/_authenticated/demo/tasks/': typeof AuthenticatedDemoTasksIndexRoute
+  '/_authenticated/demo/users/': typeof AuthenticatedDemoUsersIndexRoute
   '/api/admin/navgroup/': typeof ApiAdminNavgroupIndexRoute
   '/api/admin/navitem/': typeof ApiAdminNavitemIndexRoute
   '/api/admin/translation/': typeof ApiAdminTranslationIndexRoute
@@ -537,7 +541,6 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/settings'
     | '/forgot-password'
     | '/sign-in'
     | '/sign-in-2'
@@ -550,6 +553,7 @@ export interface FileRouteTypes {
     | '/api/sessions'
     | '/api/users'
     | '/'
+    | '/demo/settings'
     | '/admin/account'
     | '/admin/invitation'
     | '/admin/member'
@@ -564,20 +568,15 @@ export interface FileRouteTypes {
     | '/admin/users'
     | '/admin/verification'
     | '/errors/$error'
-    | '/settings/account'
-    | '/settings/appearance'
-    | '/settings/display'
-    | '/settings/notifications'
     | '/api/auth/$'
     | '/api/i18n/$lng'
     | '/api/users/$id'
-    | '/apps'
-    | '/chats'
     | '/help-center'
     | '/sessions'
-    | '/settings/'
-    | '/tasks'
-    | '/users'
+    | '/demo/settings/account'
+    | '/demo/settings/appearance'
+    | '/demo/settings/display'
+    | '/demo/settings/notifications'
     | '/api/admin/navgroup/$id'
     | '/api/admin/navgroup/order'
     | '/api/admin/navgroup/visibility'
@@ -587,6 +586,11 @@ export interface FileRouteTypes {
     | '/api/admin/translation/$id'
     | '/api/admin/translation/export'
     | '/api/admin/translation/import'
+    | '/demo/apps'
+    | '/demo/chats'
+    | '/demo/settings/'
+    | '/demo/tasks'
+    | '/demo/users'
     | '/api/admin/navgroup'
     | '/api/admin/navitem'
     | '/api/admin/translation'
@@ -619,20 +623,15 @@ export interface FileRouteTypes {
     | '/admin/users'
     | '/admin/verification'
     | '/errors/$error'
-    | '/settings/account'
-    | '/settings/appearance'
-    | '/settings/display'
-    | '/settings/notifications'
     | '/api/auth/$'
     | '/api/i18n/$lng'
     | '/api/users/$id'
-    | '/apps'
-    | '/chats'
     | '/help-center'
     | '/sessions'
-    | '/settings'
-    | '/tasks'
-    | '/users'
+    | '/demo/settings/account'
+    | '/demo/settings/appearance'
+    | '/demo/settings/display'
+    | '/demo/settings/notifications'
     | '/api/admin/navgroup/$id'
     | '/api/admin/navgroup/order'
     | '/api/admin/navgroup/visibility'
@@ -642,6 +641,11 @@ export interface FileRouteTypes {
     | '/api/admin/translation/$id'
     | '/api/admin/translation/export'
     | '/api/admin/translation/import'
+    | '/demo/apps'
+    | '/demo/chats'
+    | '/demo/settings'
+    | '/demo/tasks'
+    | '/demo/users'
     | '/api/admin/navgroup'
     | '/api/admin/navitem'
     | '/api/admin/translation'
@@ -649,7 +653,6 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/_authenticated'
-    | '/_authenticated/settings'
     | '/(auth)/forgot-password'
     | '/(auth)/sign-in'
     | '/(auth)/sign-in-2'
@@ -662,6 +665,7 @@ export interface FileRouteTypes {
     | '/api/sessions'
     | '/api/users'
     | '/_authenticated/'
+    | '/_authenticated/demo/settings'
     | '/_authenticated/admin/account'
     | '/_authenticated/admin/invitation'
     | '/_authenticated/admin/member'
@@ -676,20 +680,15 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/users'
     | '/_authenticated/admin/verification'
     | '/_authenticated/errors/$error'
-    | '/_authenticated/settings/account'
-    | '/_authenticated/settings/appearance'
-    | '/_authenticated/settings/display'
-    | '/_authenticated/settings/notifications'
     | '/api/auth/$'
     | '/api/i18n/$lng'
     | '/api/users/$id'
-    | '/_authenticated/apps/'
-    | '/_authenticated/chats/'
     | '/_authenticated/help-center/'
     | '/_authenticated/sessions/'
-    | '/_authenticated/settings/'
-    | '/_authenticated/tasks/'
-    | '/_authenticated/users/'
+    | '/_authenticated/demo/settings/account'
+    | '/_authenticated/demo/settings/appearance'
+    | '/_authenticated/demo/settings/display'
+    | '/_authenticated/demo/settings/notifications'
     | '/api/admin/navgroup/$id'
     | '/api/admin/navgroup/order'
     | '/api/admin/navgroup/visibility'
@@ -699,6 +698,11 @@ export interface FileRouteTypes {
     | '/api/admin/translation/$id'
     | '/api/admin/translation/export'
     | '/api/admin/translation/import'
+    | '/_authenticated/demo/apps/'
+    | '/_authenticated/demo/chats/'
+    | '/_authenticated/demo/settings/'
+    | '/_authenticated/demo/tasks/'
+    | '/_authenticated/demo/users/'
     | '/api/admin/navgroup/'
     | '/api/admin/navitem/'
     | '/api/admin/translation/'
@@ -828,34 +832,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authForgotPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/settings': {
-      id: '/_authenticated/settings'
-      path: '/settings'
-      fullPath: '/settings'
-      preLoaderRoute: typeof AuthenticatedSettingsRouteRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/users/': {
-      id: '/_authenticated/users/'
-      path: '/users'
-      fullPath: '/users'
-      preLoaderRoute: typeof AuthenticatedUsersIndexRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/tasks/': {
-      id: '/_authenticated/tasks/'
-      path: '/tasks'
-      fullPath: '/tasks'
-      preLoaderRoute: typeof AuthenticatedTasksIndexRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/settings/': {
-      id: '/_authenticated/settings/'
-      path: '/'
-      fullPath: '/settings/'
-      preLoaderRoute: typeof AuthenticatedSettingsIndexRouteImport
-      parentRoute: typeof AuthenticatedSettingsRouteRoute
-    }
     '/_authenticated/sessions/': {
       id: '/_authenticated/sessions/'
       path: '/sessions'
@@ -868,20 +844,6 @@ declare module '@tanstack/react-router' {
       path: '/help-center'
       fullPath: '/help-center'
       preLoaderRoute: typeof AuthenticatedHelpCenterIndexRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/chats/': {
-      id: '/_authenticated/chats/'
-      path: '/chats'
-      fullPath: '/chats'
-      preLoaderRoute: typeof AuthenticatedChatsIndexRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/apps/': {
-      id: '/_authenticated/apps/'
-      path: '/apps'
-      fullPath: '/apps'
-      preLoaderRoute: typeof AuthenticatedAppsIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/api/users/$id': {
@@ -904,34 +866,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/auth/$'
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/settings/notifications': {
-      id: '/_authenticated/settings/notifications'
-      path: '/notifications'
-      fullPath: '/settings/notifications'
-      preLoaderRoute: typeof AuthenticatedSettingsNotificationsRouteImport
-      parentRoute: typeof AuthenticatedSettingsRouteRoute
-    }
-    '/_authenticated/settings/display': {
-      id: '/_authenticated/settings/display'
-      path: '/display'
-      fullPath: '/settings/display'
-      preLoaderRoute: typeof AuthenticatedSettingsDisplayRouteImport
-      parentRoute: typeof AuthenticatedSettingsRouteRoute
-    }
-    '/_authenticated/settings/appearance': {
-      id: '/_authenticated/settings/appearance'
-      path: '/appearance'
-      fullPath: '/settings/appearance'
-      preLoaderRoute: typeof AuthenticatedSettingsAppearanceRouteImport
-      parentRoute: typeof AuthenticatedSettingsRouteRoute
-    }
-    '/_authenticated/settings/account': {
-      id: '/_authenticated/settings/account'
-      path: '/account'
-      fullPath: '/settings/account'
-      preLoaderRoute: typeof AuthenticatedSettingsAccountRouteImport
-      parentRoute: typeof AuthenticatedSettingsRouteRoute
     }
     '/_authenticated/errors/$error': {
       id: '/_authenticated/errors/$error'
@@ -1031,6 +965,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminAccountRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/demo/settings': {
+      id: '/_authenticated/demo/settings'
+      path: '/demo/settings'
+      fullPath: '/demo/settings'
+      preLoaderRoute: typeof AuthenticatedDemoSettingsRouteRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/api/admin/user/': {
       id: '/api/admin/user/'
       path: '/api/admin/user'
@@ -1058,6 +999,41 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/admin/navgroup'
       preLoaderRoute: typeof ApiAdminNavgroupIndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/demo/users/': {
+      id: '/_authenticated/demo/users/'
+      path: '/demo/users'
+      fullPath: '/demo/users'
+      preLoaderRoute: typeof AuthenticatedDemoUsersIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/demo/tasks/': {
+      id: '/_authenticated/demo/tasks/'
+      path: '/demo/tasks'
+      fullPath: '/demo/tasks'
+      preLoaderRoute: typeof AuthenticatedDemoTasksIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/demo/settings/': {
+      id: '/_authenticated/demo/settings/'
+      path: '/'
+      fullPath: '/demo/settings/'
+      preLoaderRoute: typeof AuthenticatedDemoSettingsIndexRouteImport
+      parentRoute: typeof AuthenticatedDemoSettingsRouteRoute
+    }
+    '/_authenticated/demo/chats/': {
+      id: '/_authenticated/demo/chats/'
+      path: '/demo/chats'
+      fullPath: '/demo/chats'
+      preLoaderRoute: typeof AuthenticatedDemoChatsIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/demo/apps/': {
+      id: '/_authenticated/demo/apps/'
+      path: '/demo/apps'
+      fullPath: '/demo/apps'
+      preLoaderRoute: typeof AuthenticatedDemoAppsIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/api/admin/translation/import': {
       id: '/api/admin/translation/import'
@@ -1122,35 +1098,66 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminNavgroupIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/demo/settings/notifications': {
+      id: '/_authenticated/demo/settings/notifications'
+      path: '/notifications'
+      fullPath: '/demo/settings/notifications'
+      preLoaderRoute: typeof AuthenticatedDemoSettingsNotificationsRouteImport
+      parentRoute: typeof AuthenticatedDemoSettingsRouteRoute
+    }
+    '/_authenticated/demo/settings/display': {
+      id: '/_authenticated/demo/settings/display'
+      path: '/display'
+      fullPath: '/demo/settings/display'
+      preLoaderRoute: typeof AuthenticatedDemoSettingsDisplayRouteImport
+      parentRoute: typeof AuthenticatedDemoSettingsRouteRoute
+    }
+    '/_authenticated/demo/settings/appearance': {
+      id: '/_authenticated/demo/settings/appearance'
+      path: '/appearance'
+      fullPath: '/demo/settings/appearance'
+      preLoaderRoute: typeof AuthenticatedDemoSettingsAppearanceRouteImport
+      parentRoute: typeof AuthenticatedDemoSettingsRouteRoute
+    }
+    '/_authenticated/demo/settings/account': {
+      id: '/_authenticated/demo/settings/account'
+      path: '/account'
+      fullPath: '/demo/settings/account'
+      preLoaderRoute: typeof AuthenticatedDemoSettingsAccountRouteImport
+      parentRoute: typeof AuthenticatedDemoSettingsRouteRoute
+    }
   }
 }
 
-interface AuthenticatedSettingsRouteRouteChildren {
-  AuthenticatedSettingsAccountRoute: typeof AuthenticatedSettingsAccountRoute
-  AuthenticatedSettingsAppearanceRoute: typeof AuthenticatedSettingsAppearanceRoute
-  AuthenticatedSettingsDisplayRoute: typeof AuthenticatedSettingsDisplayRoute
-  AuthenticatedSettingsNotificationsRoute: typeof AuthenticatedSettingsNotificationsRoute
-  AuthenticatedSettingsIndexRoute: typeof AuthenticatedSettingsIndexRoute
+interface AuthenticatedDemoSettingsRouteRouteChildren {
+  AuthenticatedDemoSettingsAccountRoute: typeof AuthenticatedDemoSettingsAccountRoute
+  AuthenticatedDemoSettingsAppearanceRoute: typeof AuthenticatedDemoSettingsAppearanceRoute
+  AuthenticatedDemoSettingsDisplayRoute: typeof AuthenticatedDemoSettingsDisplayRoute
+  AuthenticatedDemoSettingsNotificationsRoute: typeof AuthenticatedDemoSettingsNotificationsRoute
+  AuthenticatedDemoSettingsIndexRoute: typeof AuthenticatedDemoSettingsIndexRoute
 }
 
-const AuthenticatedSettingsRouteRouteChildren: AuthenticatedSettingsRouteRouteChildren =
+const AuthenticatedDemoSettingsRouteRouteChildren: AuthenticatedDemoSettingsRouteRouteChildren =
   {
-    AuthenticatedSettingsAccountRoute: AuthenticatedSettingsAccountRoute,
-    AuthenticatedSettingsAppearanceRoute: AuthenticatedSettingsAppearanceRoute,
-    AuthenticatedSettingsDisplayRoute: AuthenticatedSettingsDisplayRoute,
-    AuthenticatedSettingsNotificationsRoute:
-      AuthenticatedSettingsNotificationsRoute,
-    AuthenticatedSettingsIndexRoute: AuthenticatedSettingsIndexRoute,
+    AuthenticatedDemoSettingsAccountRoute:
+      AuthenticatedDemoSettingsAccountRoute,
+    AuthenticatedDemoSettingsAppearanceRoute:
+      AuthenticatedDemoSettingsAppearanceRoute,
+    AuthenticatedDemoSettingsDisplayRoute:
+      AuthenticatedDemoSettingsDisplayRoute,
+    AuthenticatedDemoSettingsNotificationsRoute:
+      AuthenticatedDemoSettingsNotificationsRoute,
+    AuthenticatedDemoSettingsIndexRoute: AuthenticatedDemoSettingsIndexRoute,
   }
 
-const AuthenticatedSettingsRouteRouteWithChildren =
-  AuthenticatedSettingsRouteRoute._addFileChildren(
-    AuthenticatedSettingsRouteRouteChildren,
+const AuthenticatedDemoSettingsRouteRouteWithChildren =
+  AuthenticatedDemoSettingsRouteRoute._addFileChildren(
+    AuthenticatedDemoSettingsRouteRouteChildren,
   )
 
 interface AuthenticatedRouteRouteChildren {
-  AuthenticatedSettingsRouteRoute: typeof AuthenticatedSettingsRouteRouteWithChildren
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+  AuthenticatedDemoSettingsRouteRoute: typeof AuthenticatedDemoSettingsRouteRouteWithChildren
   AuthenticatedAdminAccountRoute: typeof AuthenticatedAdminAccountRoute
   AuthenticatedAdminInvitationRoute: typeof AuthenticatedAdminInvitationRoute
   AuthenticatedAdminMemberRoute: typeof AuthenticatedAdminMemberRoute
@@ -1165,17 +1172,18 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
   AuthenticatedAdminVerificationRoute: typeof AuthenticatedAdminVerificationRoute
   AuthenticatedErrorsErrorRoute: typeof AuthenticatedErrorsErrorRoute
-  AuthenticatedAppsIndexRoute: typeof AuthenticatedAppsIndexRoute
-  AuthenticatedChatsIndexRoute: typeof AuthenticatedChatsIndexRoute
   AuthenticatedHelpCenterIndexRoute: typeof AuthenticatedHelpCenterIndexRoute
   AuthenticatedSessionsIndexRoute: typeof AuthenticatedSessionsIndexRoute
-  AuthenticatedTasksIndexRoute: typeof AuthenticatedTasksIndexRoute
-  AuthenticatedUsersIndexRoute: typeof AuthenticatedUsersIndexRoute
+  AuthenticatedDemoAppsIndexRoute: typeof AuthenticatedDemoAppsIndexRoute
+  AuthenticatedDemoChatsIndexRoute: typeof AuthenticatedDemoChatsIndexRoute
+  AuthenticatedDemoTasksIndexRoute: typeof AuthenticatedDemoTasksIndexRoute
+  AuthenticatedDemoUsersIndexRoute: typeof AuthenticatedDemoUsersIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedSettingsRouteRoute: AuthenticatedSettingsRouteRouteWithChildren,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+  AuthenticatedDemoSettingsRouteRoute:
+    AuthenticatedDemoSettingsRouteRouteWithChildren,
   AuthenticatedAdminAccountRoute: AuthenticatedAdminAccountRoute,
   AuthenticatedAdminInvitationRoute: AuthenticatedAdminInvitationRoute,
   AuthenticatedAdminMemberRoute: AuthenticatedAdminMemberRoute,
@@ -1191,12 +1199,12 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
   AuthenticatedAdminVerificationRoute: AuthenticatedAdminVerificationRoute,
   AuthenticatedErrorsErrorRoute: AuthenticatedErrorsErrorRoute,
-  AuthenticatedAppsIndexRoute: AuthenticatedAppsIndexRoute,
-  AuthenticatedChatsIndexRoute: AuthenticatedChatsIndexRoute,
   AuthenticatedHelpCenterIndexRoute: AuthenticatedHelpCenterIndexRoute,
   AuthenticatedSessionsIndexRoute: AuthenticatedSessionsIndexRoute,
-  AuthenticatedTasksIndexRoute: AuthenticatedTasksIndexRoute,
-  AuthenticatedUsersIndexRoute: AuthenticatedUsersIndexRoute,
+  AuthenticatedDemoAppsIndexRoute: AuthenticatedDemoAppsIndexRoute,
+  AuthenticatedDemoChatsIndexRoute: AuthenticatedDemoChatsIndexRoute,
+  AuthenticatedDemoTasksIndexRoute: AuthenticatedDemoTasksIndexRoute,
+  AuthenticatedDemoUsersIndexRoute: AuthenticatedDemoUsersIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
