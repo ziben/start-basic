@@ -19,7 +19,7 @@ import appCss from '~/styles/index.css?url'
 import { seo } from '~/utils/seo'
 
 const getUser = createServerFn({ method: "GET" }).handler(async () => {
-  const headers = getRequestHeaders()!;
+  const headers = getRequestHeaders();
   const session = await auth.api.getSession({ headers });
 
   return session?.user || null;
