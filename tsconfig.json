@@ -1,5 +1,6 @@
 {
   "include": ["**/*.ts", "**/*.tsx"],
+  "exclude": ["src/utils/init-admin.ts"],
   "compilerOptions": {
     "strict": true,
     "esModuleInterop": true,

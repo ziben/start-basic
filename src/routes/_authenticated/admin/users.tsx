@@ -6,9 +6,11 @@ const userSearchSchema = z.object({
   page: z.number().optional().catch(1),
   pageSize: z.number().optional().catch(10),
   filter: z.string().optional().catch(''),
+  sortBy: z.string().optional().catch(undefined),
+  sortDir: z.enum(['asc', 'desc']).optional().catch(undefined),
 })
 
 export const Route = createFileRoute('/_authenticated/admin/users')({
   validateSearch: userSearchSchema,
   component: AdminUsers,
-}) 
+})

@@ -1,6 +1,7 @@
 import { DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu'
 import { MixerHorizontalIcon } from '@radix-ui/react-icons'
 import { type Table } from '@tanstack/react-table'
+import { memo } from 'react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -14,7 +15,7 @@ type DataTableViewOptionsProps<TData> = {
   table: Table<TData>
 }
 
-export function DataTableViewOptions<TData>({
+function DataTableViewOptionsInner<TData>({
   table,
 }: DataTableViewOptionsProps<TData>) {
   return (
@@ -54,3 +55,7 @@ export function DataTableViewOptions<TData>({
     </DropdownMenu>
   )
 }
+
+export const DataTableViewOptions = memo(
+  DataTableViewOptionsInner
+) as typeof DataTableViewOptionsInner

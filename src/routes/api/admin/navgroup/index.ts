@@ -3,12 +3,18 @@ import { z } from 'zod'
 import { withAdminAuth } from '~/middleware'
 import prisma from '~/lib/db'
 
+// Prisma 事务客户端类型
+type TransactionClient = Omit<
+  typeof prisma,
+  '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'
+>
+
 // 创建导航组API路由
 export const Route = createFileRoute('/api/admin/navgroup/')({
   server: {
     handlers: {
       // 获取导航组
-      GET: withAdminAuth(async ({ request }: any) => {
+      GET: withAdminAuth(async ({ request: _request }: any) => {
         // 获取所有导航组
         const groups = await getAllNavGroups()
         return Response.json(groups)
@@ -23,7 +29,8 @@ export const Route = createFileRoute('/api/admin/navgroup/')({
             description: z.string().optional(),
             icon: z.string().optional(),
             orderIndex: z.number().optional(),
-            isVisible: z.boolean().optional()
+            isVisible: z.boolean().optional(),
+            roles: z.array(z.string()).optional(),
           })
 
           const data = createSchema.parse(body)
@@ -102,7 +109,7 @@ export async function createNavGroup(data: {
     }
 
     // 创建导航组及其角色关联，返回包含关联的完整对象
-    const navGroup = await prisma.$transaction(async (tx) => {
+    const navGroup = await prisma.$transaction(async (tx: TransactionClient) => {
       // 创建导航组
       const group = await tx.navGroup.create({
         data: {
@@ -160,7 +167,7 @@ export async function updateNavGroup(
   }
 ) {
   try {
-    return await prisma.$transaction(async (tx) => {
+    return await prisma.$transaction(async (tx: TransactionClient) => {
       // 更新导航组基本信息
       const updateData: any = {}
       if (data.title !== undefined) updateData.title = data.title
@@ -222,7 +229,7 @@ export async function deleteNavGroup(id: string) {
     }
 
     // 使用事务删除导航组及关联数据
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx: TransactionClient) => {
       // 删除角色关联
       await tx.roleNavGroup.deleteMany({
         where: { navGroupId: id },

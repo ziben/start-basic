@@ -11,7 +11,7 @@ import { UsersProvider } from './components/users-provider'
 import { UsersTable } from './components/users-table'
 import { users } from './data/users'
 
-const route = getRouteApi('/_authenticated/users/')
+const route = getRouteApi('/_authenticated/demo/users/')
 
 export function Users() {
   const search = route.useSearch()
@@ -36,7 +36,7 @@ export function Users() {
           </div>
           <UsersPrimaryButtons />
         </div>
-        <UsersTable data={users} search={search} navigate={navigate} />
+        <UsersTable data={users} search={search} navigate={navigate as any} />
       </Main>
 
       <UsersDialogs />

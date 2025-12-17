@@ -7,6 +7,7 @@ import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 import { createServerFn } from "@tanstack/react-start"
 import { getRequestHeaders } from "@tanstack/react-start/server"
 import * as React from 'react'
+import Devtools from '~/components/devtools'
 import { NavigationProgress } from '~/components/navigation-progress'
 import { Toaster } from '~/components/ui/sonner'
 import { AuthProvider } from '~/context/auth-context'
@@ -14,11 +15,11 @@ import { DirectionProvider } from '~/context/direction-provider'
 import { FontProvider } from '~/context/font-provider'
 import { LocaleProvider } from '~/context/locale-context'
 import { ThemeProvider } from '~/context/theme-provider'
-import { auth } from '~/lib/auth'
 import appCss from '~/styles/index.css?url'
 import { seo } from '~/utils/seo'
 
 const getUser = createServerFn({ method: "GET" }).handler(async () => {
+  const { auth } = await import('~/lib/auth');
   const headers = getRequestHeaders();
   const session = await auth.api.getSession({ headers });
 
@@ -90,12 +91,7 @@ function RootComponent() {
                   <NavigationProgress />
                   <Outlet />
                   <Toaster duration={5000} />
-                  {import.meta.env.MODE === 'development' && (
-                    <>
-                      <ReactQueryDevtools buttonPosition='bottom-left' />
-                      <TanStackRouterDevtools position='bottom-right' />
-                    </>
-                  )}
+                  <Devtools />
                 </RootDocument>
               </AuthProvider>
             </LocaleProvider>

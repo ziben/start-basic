@@ -1,8 +1,10 @@
 import { betterAuth } from 'better-auth'
 import { prismaAdapter } from 'better-auth/adapters/prisma'
 import { admin, username, organization } from 'better-auth/plugins'
-import { reactStartCookies } from 'better-auth/react-start'
+import { defaultRoles } from 'better-auth/plugins/admin/access'
 import prisma from './db'
+
+const ADMIN_ROLES = ['admin', 'superadmin'] as const
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
@@ -16,8 +18,11 @@ export const auth = betterAuth({
     username(),
     organization(),
     admin({
-      adminRoles: ['admin', 'user'],
+      adminRoles: [...ADMIN_ROLES],
+      roles: {
+        ...defaultRoles,
+        superadmin: defaultRoles.admin,
+      },
     }),
-    reactStartCookies(),
   ],
 })

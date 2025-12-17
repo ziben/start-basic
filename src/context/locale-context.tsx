@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState, ReactNode } from 'react'
 import { IntlProvider } from 'react-intl'
 import { DEFAULT_LOCALE, LocaleType, LOCALES, messages } from '~/i18n'
 import i18n from '~/i18n/i18n'
@@ -8,7 +8,7 @@ interface LocaleContextType {
   setLocale: (locale: LocaleType) => void
 }
 
-const LocaleContext = createContext<LocaleContextType | undefined>(undefined)
+const LocaleContext = createContext<LocaleContextType | null>(null)
 
 // 检测是否在浏览器环境中
 const isBrowser = typeof window !== 'undefined'
@@ -49,7 +49,7 @@ export const LocaleProvider = ({ children }: { children: ReactNode }) => {
   // 从本地存储中获取语言设置，如果没有则使用默认语言
   const [locale, _setLocale] = useState<LocaleType>(getSavedLocale)
 
-  const setLocale = (locale: LocaleType) => {
+  const setLocale = useCallback((locale: LocaleType) => {
     if (isBrowser) {
       try {
         localStorage.setItem('locale', locale)
@@ -65,7 +65,7 @@ export const LocaleProvider = ({ children }: { children: ReactNode }) => {
     } catch (e) {
       // ignore if i18n not initialized
     }
-  }
+  }, [])
 
   // 初始化时设置 HTML lang 属性
   // i18next 初始化和 languageChanged 事件会设置 HTML lang；保留空的 effect to keep SSR-safety
@@ -75,10 +75,12 @@ export const LocaleProvider = ({ children }: { children: ReactNode }) => {
   }, [locale])
 
   // 扁平化消息对象
-  const flatMessages = flattenMessages(messages[locale])
+  const flatMessages = useMemo(() => flattenMessages(messages[locale]), [locale])
+
+  const value = useMemo(() => ({ locale, setLocale }), [locale, setLocale])
 
   return (
-    <LocaleContext.Provider value={{ locale, setLocale }}>
+    <LocaleContext.Provider value={value}>
       <IntlProvider 
         locale={locale} 
         messages={flatMessages} 

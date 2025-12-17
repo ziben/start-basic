@@ -1,4 +1,4 @@
-import z from 'zod'
+import { z } from 'zod'
 import { createFileRoute } from '@tanstack/react-router'
 import { Tasks } from '@/features/demo/tasks'
 import { priorities, statuses } from '@/features/demo/tasks/data/data'
@@ -15,6 +15,8 @@ const taskSearchSchema = z.object({
     .optional()
     .catch([]),
   filter: z.string().optional().catch(''),
+  sortBy: z.string().optional().catch(undefined),
+  sortDir: z.enum(['asc', 'desc']).optional().catch(undefined),
 })
 
 export const Route = createFileRoute('/_authenticated/demo/tasks/')({

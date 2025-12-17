@@ -1,5 +1,6 @@
 import { Cross2Icon } from '@radix-ui/react-icons'
 import { type Table } from '@tanstack/react-table'
+import { memo } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { DataTableFacetedFilter } from './faceted-filter'
@@ -20,7 +21,7 @@ type DataTableToolbarProps<TData> = {
   }[]
 }
 
-export function DataTableToolbar<TData>({
+function DataTableToolbarInner<TData>({
   table,
   searchPlaceholder = 'Filter...',
   searchKey,
@@ -83,3 +84,5 @@ export function DataTableToolbar<TData>({
     </div>
   )
 }
+
+export const DataTableToolbar = memo(DataTableToolbarInner) as typeof DataTableToolbarInner

@@ -19,7 +19,7 @@ import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
 import { apps } from './data/apps'
 
-const route = getRouteApi('/demo/apps/')
+const route = getRouteApi('/_authenticated/demo/apps/')
 
 type AppType = 'all' | 'connected' | 'notConnected'
 
@@ -41,19 +41,18 @@ export function Apps() {
   const [appType, setAppType] = useState(type)
   const [searchTerm, setSearchTerm] = useState(filter)
 
-  const filteredApps = apps
-    .sort((a, b) =>
-      sort === 'asc'
-        ? a.name.localeCompare(b.name)
-        : b.name.localeCompare(a.name)
-    )
-    .filter((app) =>
-      appType === 'connected'
-        ? app.connected
-        : appType === 'notConnected'
-          ? !app.connected
-          : true
-    )
+  const sortedApps = [...apps].sort((a, b) =>
+    sort === 'asc'
+      ? a.name.localeCompare(b.name)
+      : b.name.localeCompare(a.name)
+  )
+
+  const filteredApps = sortedApps
+    .filter((app) => {
+      if (appType === 'connected') return app.connected
+      if (appType === 'notConnected') return !app.connected
+      return true
+    })
     .filter((app) => app.name.toLowerCase().includes(searchTerm.toLowerCase()))
 
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {

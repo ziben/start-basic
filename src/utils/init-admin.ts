@@ -24,7 +24,7 @@ async function createAdminUser() {
         name: '系统管理员',
         // hashedPassword: hashedPassword, // deferred: confirm schema field name
         emailVerified: true,
-        role: 'ADMIN', // assume role field exists
+        role: 'admin',
         // provide minimal required fields for Prisma create input short-term
         id: undefined as unknown as string,
         createdAt: new Date(),

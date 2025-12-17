@@ -59,3 +59,4 @@ export type CreateNavgroupData = z.infer<typeof createNavgroupSchema>
 export type UpdateNavgroupData = z.infer<typeof updateNavgroupSchema>
 export type NavItemSimple = z.infer<typeof navItemSimpleSchema>
 export type RoleNavGroup = z.infer<typeof roleNavGroupSchema>
+export type UserRoleNavGroup = z.infer<typeof userRoleNavGroupSchema>

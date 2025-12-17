@@ -1,35 +1,44 @@
-import { createContext, useContext, ReactNode, useState, useEffect } from 'react';
+import { useRouteContext } from '@tanstack/react-router'
+import { createContext, useContext, ReactNode, useEffect, useMemo, useState } from 'react'
 
-type AuthStatus = 'unauthenticated' | 'authenticated' | 'loading';
+type AuthStatus = 'unauthenticated' | 'authenticated' | 'loading'
 
 interface AuthContextType {
-  status: AuthStatus;
-  setStatus: (status: AuthStatus) => void;
-  isAuthenticated: boolean;
+  status: AuthStatus
+  setStatus: (status: AuthStatus) => void
+  isAuthenticated: boolean
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [status, setStatus] = useState<AuthStatus>('loading');
+  const { user } = useRouteContext({ from: '__root__' })
+  const [status, setStatus] = useState<AuthStatus>(() => (user ? 'authenticated' : 'unauthenticated'))
 
   useEffect(() => {
-    // 这里可以添加逻辑来检查用户是否已登录，例如通过 API 调用或本地存储
-    // 暂时设置为 'unauthenticated'，实际应用中应根据认证状态更新
-    setStatus('unauthenticated');
-  }, []);
+    setStatus(user ? 'authenticated' : 'unauthenticated')
+  }, [user])
+
+  const value = useMemo(
+    () => ({
+      status,
+      setStatus,
+      isAuthenticated: status === 'authenticated',
+    }),
+    [status, setStatus]
+  )
 
   return (
-    <AuthContext.Provider value={{ status, setStatus, isAuthenticated: status === 'authenticated' }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
-  );
-};
+  )
+}
 
 export const useAuthContext = () => {
-  const context = useContext(AuthContext);
+  const context = useContext(AuthContext)
   if (context === undefined) {
-    throw new Error('useAuthContext must be used within an AuthProvider');
+    throw new Error('useAuthContext must be used within an AuthProvider')
   }
-  return context;
-};
+  return context
+}

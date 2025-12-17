@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as StudioRouteImport } from './routes/studio'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as ApiUsersRouteImport } from './routes/api/users'
@@ -42,6 +43,7 @@ import { Route as AuthenticatedAdminMemberRouteImport } from './routes/_authenti
 import { Route as AuthenticatedAdminInvitationRouteImport } from './routes/_authenticated/admin/invitation'
 import { Route as AuthenticatedAdminAccountRouteImport } from './routes/_authenticated/admin/account'
 import { Route as AuthenticatedDemoSettingsRouteRouteImport } from './routes/_authenticated/demo/settings/route'
+import { Route as ApiDemoTasksIndexRouteImport } from './routes/api/demo/tasks/index'
 import { Route as ApiAdminUserIndexRouteImport } from './routes/api/admin/user/index'
 import { Route as ApiAdminTranslationIndexRouteImport } from './routes/api/admin/translation/index'
 import { Route as ApiAdminNavitemIndexRouteImport } from './routes/api/admin/navitem/index'
@@ -51,6 +53,8 @@ import { Route as AuthenticatedDemoTasksIndexRouteImport } from './routes/_authe
 import { Route as AuthenticatedDemoSettingsIndexRouteImport } from './routes/_authenticated/demo/settings/index'
 import { Route as AuthenticatedDemoChatsIndexRouteImport } from './routes/_authenticated/demo/chats/index'
 import { Route as AuthenticatedDemoAppsIndexRouteImport } from './routes/_authenticated/demo/apps/index'
+import { Route as ApiAdminUserBulkDeleteRouteImport } from './routes/api/admin/user/bulk-delete'
+import { Route as ApiAdminUserBulkBanRouteImport } from './routes/api/admin/user/bulk-ban'
 import { Route as ApiAdminTranslationImportRouteImport } from './routes/api/admin/translation/import'
 import { Route as ApiAdminTranslationExportRouteImport } from './routes/api/admin/translation/export'
 import { Route as ApiAdminTranslationIdRouteImport } from './routes/api/admin/translation/$id'
@@ -65,6 +69,11 @@ import { Route as AuthenticatedDemoSettingsDisplayRouteImport } from './routes/_
 import { Route as AuthenticatedDemoSettingsAppearanceRouteImport } from './routes/_authenticated/demo/settings/appearance'
 import { Route as AuthenticatedDemoSettingsAccountRouteImport } from './routes/_authenticated/demo/settings/account'
 
+const StudioRoute = StudioRouteImport.update({
+  id: '/studio',
+  path: '/studio',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
@@ -244,6 +253,11 @@ const AuthenticatedDemoSettingsRouteRoute =
     path: '/demo/settings',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ApiDemoTasksIndexRoute = ApiDemoTasksIndexRouteImport.update({
+  id: '/api/demo/tasks/',
+  path: '/api/demo/tasks/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAdminUserIndexRoute = ApiAdminUserIndexRouteImport.update({
   id: '/api/admin/user/',
   path: '/api/admin/user/',
@@ -295,6 +309,16 @@ const AuthenticatedDemoAppsIndexRoute =
     path: '/demo/apps/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ApiAdminUserBulkDeleteRoute = ApiAdminUserBulkDeleteRouteImport.update({
+  id: '/api/admin/user/bulk-delete',
+  path: '/api/admin/user/bulk-delete',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminUserBulkBanRoute = ApiAdminUserBulkBanRouteImport.update({
+  id: '/api/admin/user/bulk-ban',
+  path: '/api/admin/user/bulk-ban',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAdminTranslationImportRoute =
   ApiAdminTranslationImportRouteImport.update({
     id: '/api/admin/translation/import',
@@ -370,6 +394,7 @@ const AuthenticatedDemoSettingsAccountRoute =
   } as any)
 
 export interface FileRoutesByFullPath {
+  '/studio': typeof StudioRoute
   '/forgot-password': typeof authForgotPasswordRoute
   '/sign-in': typeof authSignInRoute
   '/sign-in-2': typeof authSignIn2Route
@@ -415,6 +440,8 @@ export interface FileRoutesByFullPath {
   '/api/admin/translation/$id': typeof ApiAdminTranslationIdRoute
   '/api/admin/translation/export': typeof ApiAdminTranslationExportRoute
   '/api/admin/translation/import': typeof ApiAdminTranslationImportRoute
+  '/api/admin/user/bulk-ban': typeof ApiAdminUserBulkBanRoute
+  '/api/admin/user/bulk-delete': typeof ApiAdminUserBulkDeleteRoute
   '/demo/apps': typeof AuthenticatedDemoAppsIndexRoute
   '/demo/chats': typeof AuthenticatedDemoChatsIndexRoute
   '/demo/settings/': typeof AuthenticatedDemoSettingsIndexRoute
@@ -424,8 +451,10 @@ export interface FileRoutesByFullPath {
   '/api/admin/navitem': typeof ApiAdminNavitemIndexRoute
   '/api/admin/translation': typeof ApiAdminTranslationIndexRoute
   '/api/admin/user': typeof ApiAdminUserIndexRoute
+  '/api/demo/tasks': typeof ApiDemoTasksIndexRoute
 }
 export interface FileRoutesByTo {
+  '/studio': typeof StudioRoute
   '/forgot-password': typeof authForgotPasswordRoute
   '/sign-in': typeof authSignInRoute
   '/sign-in-2': typeof authSignIn2Route
@@ -470,6 +499,8 @@ export interface FileRoutesByTo {
   '/api/admin/translation/$id': typeof ApiAdminTranslationIdRoute
   '/api/admin/translation/export': typeof ApiAdminTranslationExportRoute
   '/api/admin/translation/import': typeof ApiAdminTranslationImportRoute
+  '/api/admin/user/bulk-ban': typeof ApiAdminUserBulkBanRoute
+  '/api/admin/user/bulk-delete': typeof ApiAdminUserBulkDeleteRoute
   '/demo/apps': typeof AuthenticatedDemoAppsIndexRoute
   '/demo/chats': typeof AuthenticatedDemoChatsIndexRoute
   '/demo/settings': typeof AuthenticatedDemoSettingsIndexRoute
@@ -479,10 +510,12 @@ export interface FileRoutesByTo {
   '/api/admin/navitem': typeof ApiAdminNavitemIndexRoute
   '/api/admin/translation': typeof ApiAdminTranslationIndexRoute
   '/api/admin/user': typeof ApiAdminUserIndexRoute
+  '/api/demo/tasks': typeof ApiDemoTasksIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/studio': typeof StudioRoute
   '/(auth)/forgot-password': typeof authForgotPasswordRoute
   '/(auth)/sign-in': typeof authSignInRoute
   '/(auth)/sign-in-2': typeof authSignIn2Route
@@ -528,6 +561,8 @@ export interface FileRoutesById {
   '/api/admin/translation/$id': typeof ApiAdminTranslationIdRoute
   '/api/admin/translation/export': typeof ApiAdminTranslationExportRoute
   '/api/admin/translation/import': typeof ApiAdminTranslationImportRoute
+  '/api/admin/user/bulk-ban': typeof ApiAdminUserBulkBanRoute
+  '/api/admin/user/bulk-delete': typeof ApiAdminUserBulkDeleteRoute
   '/_authenticated/demo/apps/': typeof AuthenticatedDemoAppsIndexRoute
   '/_authenticated/demo/chats/': typeof AuthenticatedDemoChatsIndexRoute
   '/_authenticated/demo/settings/': typeof AuthenticatedDemoSettingsIndexRoute
@@ -537,10 +572,12 @@ export interface FileRoutesById {
   '/api/admin/navitem/': typeof ApiAdminNavitemIndexRoute
   '/api/admin/translation/': typeof ApiAdminTranslationIndexRoute
   '/api/admin/user/': typeof ApiAdminUserIndexRoute
+  '/api/demo/tasks/': typeof ApiDemoTasksIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | '/studio'
     | '/forgot-password'
     | '/sign-in'
     | '/sign-in-2'
@@ -586,6 +623,8 @@ export interface FileRouteTypes {
     | '/api/admin/translation/$id'
     | '/api/admin/translation/export'
     | '/api/admin/translation/import'
+    | '/api/admin/user/bulk-ban'
+    | '/api/admin/user/bulk-delete'
     | '/demo/apps'
     | '/demo/chats'
     | '/demo/settings/'
@@ -595,8 +634,10 @@ export interface FileRouteTypes {
     | '/api/admin/navitem'
     | '/api/admin/translation'
     | '/api/admin/user'
+    | '/api/demo/tasks'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/studio'
     | '/forgot-password'
     | '/sign-in'
     | '/sign-in-2'
@@ -641,6 +682,8 @@ export interface FileRouteTypes {
     | '/api/admin/translation/$id'
     | '/api/admin/translation/export'
     | '/api/admin/translation/import'
+    | '/api/admin/user/bulk-ban'
+    | '/api/admin/user/bulk-delete'
     | '/demo/apps'
     | '/demo/chats'
     | '/demo/settings'
@@ -650,9 +693,11 @@ export interface FileRouteTypes {
     | '/api/admin/navitem'
     | '/api/admin/translation'
     | '/api/admin/user'
+    | '/api/demo/tasks'
   id:
     | '__root__'
     | '/_authenticated'
+    | '/studio'
     | '/(auth)/forgot-password'
     | '/(auth)/sign-in'
     | '/(auth)/sign-in-2'
@@ -698,6 +743,8 @@ export interface FileRouteTypes {
     | '/api/admin/translation/$id'
     | '/api/admin/translation/export'
     | '/api/admin/translation/import'
+    | '/api/admin/user/bulk-ban'
+    | '/api/admin/user/bulk-delete'
     | '/_authenticated/demo/apps/'
     | '/_authenticated/demo/chats/'
     | '/_authenticated/demo/settings/'
@@ -707,10 +754,12 @@ export interface FileRouteTypes {
     | '/api/admin/navitem/'
     | '/api/admin/translation/'
     | '/api/admin/user/'
+    | '/api/demo/tasks/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  StudioRoute: typeof StudioRoute
   authForgotPasswordRoute: typeof authForgotPasswordRoute
   authSignInRoute: typeof authSignInRoute
   authSignIn2Route: typeof authSignIn2Route
@@ -733,14 +782,24 @@ export interface RootRouteChildren {
   ApiAdminTranslationIdRoute: typeof ApiAdminTranslationIdRoute
   ApiAdminTranslationExportRoute: typeof ApiAdminTranslationExportRoute
   ApiAdminTranslationImportRoute: typeof ApiAdminTranslationImportRoute
+  ApiAdminUserBulkBanRoute: typeof ApiAdminUserBulkBanRoute
+  ApiAdminUserBulkDeleteRoute: typeof ApiAdminUserBulkDeleteRoute
   ApiAdminNavgroupIndexRoute: typeof ApiAdminNavgroupIndexRoute
   ApiAdminNavitemIndexRoute: typeof ApiAdminNavitemIndexRoute
   ApiAdminTranslationIndexRoute: typeof ApiAdminTranslationIndexRoute
   ApiAdminUserIndexRoute: typeof ApiAdminUserIndexRoute
+  ApiDemoTasksIndexRoute: typeof ApiDemoTasksIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/studio': {
+      id: '/studio'
+      path: '/studio'
+      fullPath: '/studio'
+      preLoaderRoute: typeof StudioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated': {
       id: '/_authenticated'
       path: ''
@@ -972,6 +1031,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDemoSettingsRouteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/demo/tasks/': {
+      id: '/api/demo/tasks/'
+      path: '/api/demo/tasks'
+      fullPath: '/api/demo/tasks'
+      preLoaderRoute: typeof ApiDemoTasksIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/admin/user/': {
       id: '/api/admin/user/'
       path: '/api/admin/user'
@@ -1034,6 +1100,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/demo/apps'
       preLoaderRoute: typeof AuthenticatedDemoAppsIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/api/admin/user/bulk-delete': {
+      id: '/api/admin/user/bulk-delete'
+      path: '/api/admin/user/bulk-delete'
+      fullPath: '/api/admin/user/bulk-delete'
+      preLoaderRoute: typeof ApiAdminUserBulkDeleteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/user/bulk-ban': {
+      id: '/api/admin/user/bulk-ban'
+      path: '/api/admin/user/bulk-ban'
+      fullPath: '/api/admin/user/bulk-ban'
+      preLoaderRoute: typeof ApiAdminUserBulkBanRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/admin/translation/import': {
       id: '/api/admin/translation/import'
@@ -1224,6 +1304,7 @@ const ApiUsersRouteWithChildren = ApiUsersRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  StudioRoute: StudioRoute,
   authForgotPasswordRoute: authForgotPasswordRoute,
   authSignInRoute: authSignInRoute,
   authSignIn2Route: authSignIn2Route,
@@ -1246,10 +1327,13 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminTranslationIdRoute: ApiAdminTranslationIdRoute,
   ApiAdminTranslationExportRoute: ApiAdminTranslationExportRoute,
   ApiAdminTranslationImportRoute: ApiAdminTranslationImportRoute,
+  ApiAdminUserBulkBanRoute: ApiAdminUserBulkBanRoute,
+  ApiAdminUserBulkDeleteRoute: ApiAdminUserBulkDeleteRoute,
   ApiAdminNavgroupIndexRoute: ApiAdminNavgroupIndexRoute,
   ApiAdminNavitemIndexRoute: ApiAdminNavitemIndexRoute,
   ApiAdminTranslationIndexRoute: ApiAdminTranslationIndexRoute,
   ApiAdminUserIndexRoute: ApiAdminUserIndexRoute,
+  ApiDemoTasksIndexRoute: ApiDemoTasksIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

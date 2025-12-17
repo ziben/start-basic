@@ -15,26 +15,7 @@ import {
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
-
-interface SessionInfo {
-  id: string
-  userId: string
-  username: string
-  email: string
-  loginTime: string
-  expiresAt: string
-  ipAddress: string
-  userAgent: string
-  isActive: boolean
-}
-
-const fetchSessions = async (): Promise<SessionInfo[]> => {
-  const response = await fetch('/api/sessions')
-  if (!response.ok) {
-    throw new Error('获取会话信息失败')
-  }
-  return response.json()
-}
+import { apiClient } from '~/lib/api-client'
 
 const Sessions: React.FC = () => {
   const {
@@ -45,7 +26,7 @@ const Sessions: React.FC = () => {
     isRefetching,
   } = useQuery({
     queryKey: ['sessions'],
-    queryFn: fetchSessions,
+    queryFn: async () => await apiClient.sessions.list(),
     refetchInterval: 30000, // 30秒自动刷新
   })
 

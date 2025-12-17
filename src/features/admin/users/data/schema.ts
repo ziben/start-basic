@@ -30,5 +30,14 @@ export const adminUsersSchema = z.object({
 
 export const adminUsersListSchema = z.array(adminUsersSchema)
 
+export const adminUsersPageSchema = z.object({
+  items: adminUsersListSchema,
+  total: z.number().int().nonnegative(),
+  page: z.number().int().positive(),
+  pageSize: z.number().int().positive(),
+  pageCount: z.number().int().nonnegative(),
+})
+
 export type AdminUsers = z.infer<typeof adminUsersSchema>
 export type AdminUsersList = z.infer<typeof adminUsersListSchema>
+export type AdminUsersPage = z.infer<typeof adminUsersPageSchema>

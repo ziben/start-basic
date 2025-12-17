@@ -39,9 +39,81 @@ export const Route = createFileRoute('/api/admin/navitem/')({
           return new Response(String(error), { status: 400 })
         }
       }),
+    },
+  },
+})
+
+function buildNavItemUpdateData(
+  currentItem: { isCollapsible: boolean; parentId: string | null },
+  data: {
+    title?: string
+    url?: string
+    icon?: string
+    badge?: string
+    isCollapsible?: boolean
+    navGroupId?: string
+    parentId?: string
+    orderIndex?: number
+  }
+) {
+  const updateData: any = {}
+  if (data.title !== undefined) updateData.title = data.title
+  if (data.badge !== undefined) updateData.badge = data.badge
+  if (data.icon !== undefined) updateData.icon = data.icon
+  if (data.orderIndex !== undefined) updateData.orderIndex = data.orderIndex
+  if (data.navGroupId !== undefined) updateData.navGroupId = data.navGroupId
+
+  if (data.isCollapsible !== undefined) {
+    updateData.isCollapsible = data.isCollapsible
+    if (data.isCollapsible === true && currentItem.isCollapsible === false) {
+      updateData.url = null
     }
   }
-})
+
+  const isCollapsibleAfter =
+    updateData.isCollapsible !== undefined
+      ? Boolean(updateData.isCollapsible)
+      : currentItem.isCollapsible
+
+  if (data.url !== undefined && isCollapsibleAfter === false) {
+    updateData.url = data.url
+  }
+
+  return updateData
+}
+
+async function validateAndUpdateParentNavItem(params: {
+  id: string
+  currentParentId: string | null
+  nextParentId: string | undefined
+}) {
+  const { id, currentParentId, nextParentId } = params
+
+  if (nextParentId === undefined || nextParentId === currentParentId) {
+    return
+  }
+
+  if (!nextParentId) {
+    return
+  }
+
+  const parentItem = await prisma.navItem.findUnique({
+    where: { id: nextParentId },
+  })
+
+  if (!parentItem) {
+    throw new Error('父级导航项不存在')
+  }
+
+  if (id === nextParentId) {
+    throw new Error('不能将导航项作为自己的父级')
+  }
+
+  await prisma.navItem.update({
+    where: { id: nextParentId },
+    data: { isCollapsible: true },
+  })
+}
 
 /**
  * 获取所有导航项
@@ -152,7 +224,7 @@ export async function createNavItem(data: {
         icon: data.icon,
         badge: data.badge,
         isCollapsible: !!data.isCollapsible,
-        orderIndex,
+        orderIndex: orderIndex ?? 0,
         navGroupId: data.navGroupId,
         parentId: data.parentId,
       },
@@ -192,51 +264,13 @@ export async function updateNavItem(
       throw new Error('导航项不存在')
     }
 
-    // 构建更新数据
-    const updateData: any = {}
-    if (data.title !== undefined) updateData.title = data.title
-    if (data.badge !== undefined) updateData.badge = data.badge
-    if (data.icon !== undefined) updateData.icon = data.icon
-    if (data.orderIndex !== undefined) updateData.orderIndex = data.orderIndex
-    if (data.navGroupId !== undefined) updateData.navGroupId = data.navGroupId
-
-    // 处理可折叠项与URL的关系
-    if (data.isCollapsible !== undefined) {
-      updateData.isCollapsible = data.isCollapsible
-      // 如果变为可折叠项，清除URL
-      if (data.isCollapsible && !currentItem.isCollapsible) {
-        updateData.url = null
-      }
-    }
-
-    // 如果设置了URL，确保不是可折叠项
-    if (data.url !== undefined && (!updateData.isCollapsible || !currentItem.isCollapsible)) {
-      updateData.url = data.url
-    }
-
-    // 验证父级导航项
+    const updateData = buildNavItemUpdateData(currentItem, data)
+    await validateAndUpdateParentNavItem({
+      id,
+      currentParentId: currentItem.parentId,
+      nextParentId: data.parentId,
+    })
     if (data.parentId !== undefined && data.parentId !== currentItem.parentId) {
-      if (data.parentId) {
-        const parentItem = await prisma.navItem.findUnique({
-          where: { id: data.parentId },
-        })
-
-        if (!parentItem) {
-          throw new Error('父级导航项不存在')
-        }
-
-        // 检查是否会形成循环引用
-        if (id === data.parentId) {
-          throw new Error('不能将导航项作为自己的父级')
-        }
-
-        // 设置父项为可折叠
-        await prisma.navItem.update({
-          where: { id: data.parentId },
-          data: { isCollapsible: true },
-        })
-      }
-
       updateData.parentId = data.parentId
     }
 
@@ -319,7 +353,7 @@ export async function toggleNavItemVisibility(id: string, isVisible: boolean) {
 
     // 更新导航项的可见性
     // 注意：当前模型没有导航项的可见性字段，我们这里使用备注信息更新
-    const result = await prisma.navItem.update({
+    await prisma.navItem.update({
       where: { id },
       data: {
         badge: isVisible ? null : '隐藏',

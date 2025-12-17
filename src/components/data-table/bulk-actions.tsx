@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { memo, useState, useEffect, useRef } from 'react';
 import { type Table } from '@tanstack/react-table';
 import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -6,7 +6,6 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-
 
 type DataTableBulkActionsProps<TData> = {
   table: Table<TData>
@@ -24,7 +23,7 @@ type DataTableBulkActionsProps<TData> = {
  * @param {React.ReactNode} props.children The action buttons to be rendered inside the toolbar.
  * @returns {React.ReactNode | null} The rendered component or null if no rows are selected.
  */
-export function DataTableBulkActions<TData>({
+function DataTableBulkActionsInner<TData>({
   table,
   entityName,
   children,
@@ -208,3 +207,7 @@ export function DataTableBulkActions<TData>({
     </>
   )
 }
+
+export const DataTableBulkActions = memo(
+  DataTableBulkActionsInner
+) as typeof DataTableBulkActionsInner

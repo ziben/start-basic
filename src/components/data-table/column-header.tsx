@@ -5,6 +5,7 @@ import {
   EyeNoneIcon,
 } from '@radix-ui/react-icons'
 import { type Column } from '@tanstack/react-table'
+import { memo } from 'react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import {
@@ -21,7 +22,7 @@ type DataTableColumnHeaderProps<TData, TValue> =
     title: string
   }
 
-export function DataTableColumnHeader<TData, TValue>({
+function DataTableColumnHeaderInner<TData, TValue>({
   column,
   title,
   className,
@@ -72,3 +73,7 @@ export function DataTableColumnHeader<TData, TValue>({
     </div>
   )
 }
+
+export const DataTableColumnHeader = memo(
+  DataTableColumnHeaderInner
+) as typeof DataTableColumnHeaderInner

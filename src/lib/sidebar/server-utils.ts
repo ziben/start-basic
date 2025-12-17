@@ -37,7 +37,7 @@ export async function getSidebarData(userId?: string, role?: string): Promise<Si
     })
 
     // 如果有角色或用户ID限制，过滤可见的导航组
-    const filteredNavGroups = navGroups.filter((group) => {
+    const filteredNavGroups = navGroups.filter((group: any) => {
       if (role && group.roleNavGroups.length === 0 && userId && group.userRoleNavGroups.length === 0) {
         return false
       }
@@ -155,10 +155,11 @@ export async function initSidebarData() {
   try {
     // 事务中处理所有创建操作
     await prisma.$transaction(async (tx) => {
+      const client = tx as any
       // 为每个导航组创建数据
       for (let i = 0; i < defaultData.navGroups.length; i++) {
         const group = defaultData.navGroups[i]
-        const createdGroup = await tx.navGroup.create({
+        const createdGroup = await client.navGroup.create({
           data: {
             title: group.title,
             orderIndex: i,
@@ -172,7 +173,7 @@ export async function initSidebarData() {
         // 为每个分组下的项目创建数据
         for (let j = 0; j < group.items.length; j++) {
           const item = group.items[j]
-          await createNavItem(tx, item, j, createdGroup.id)
+          await createNavItem(client, item, j, createdGroup.id)
         }
       }
     })

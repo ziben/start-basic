@@ -5,6 +5,12 @@ import { GeneralError } from './features/demo/errors/general-error';
 import { NotFoundError } from './features/demo/errors/not-found-error';
 import { routeTree } from './routeTree.gen';
 
+// 缓存时间常量
+const CACHE_TIME = {
+  SHORT: 1000 * 30, // 30 seconds - 用户数据等频繁变化的数据
+  MEDIUM: 1000 * 60 * 5, // 5 minutes - 一般数据
+  LONG: 1000 * 60 * 30, // 30 minutes - 静态配置数据
+} as const
 
 export function getRouter() {
   // 创建 QueryClient，用于管理数据获取和缓存
@@ -12,9 +18,29 @@ export function getRouter() {
     defaultOptions: {
       queries: {
         refetchOnWindowFocus: false,
-        staleTime: 1000 * 300, // 5 minutes for dashboard data
+        staleTime: CACHE_TIME.MEDIUM,
+        gcTime: CACHE_TIME.LONG, // 垃圾回收时间
+        retry: 1, // 失败重试次数
+      },
+      mutations: {
+        retry: 0, // mutation 不重试
       },
     },
+  })
+
+  // 为不同类型的数据设置不同的缓存策略
+  queryClient.setQueryDefaults(['admin', 'navgroups'], {
+    staleTime: CACHE_TIME.LONG, // 导航组数据变化较少
+  })
+  queryClient.setQueryDefaults(['admin', 'translations'], {
+    staleTime: CACHE_TIME.LONG, // 翻译数据变化较少
+  })
+  queryClient.setQueryDefaults(['admin-users'], {
+    staleTime: CACHE_TIME.SHORT, // 用户数据变化较频繁
+  })
+  queryClient.setQueryDefaults(['auth-session'], {
+    staleTime: CACHE_TIME.MEDIUM,
+    gcTime: CACHE_TIME.LONG,
   })
 
   const router = createRouter({

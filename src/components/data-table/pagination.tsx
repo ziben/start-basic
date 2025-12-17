@@ -1,5 +1,6 @@
 import { ChevronLeftIcon, ChevronRightIcon, DoubleArrowLeftIcon, DoubleArrowRightIcon } from '@radix-ui/react-icons'
 import { type Table } from '@tanstack/react-table'
+import { memo } from 'react'
 import { cn, getPageNumbers } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -9,7 +10,7 @@ type DataTablePaginationProps<TData> = {
   className?: string
 }
 
-export function DataTablePagination<TData>({ table, className }: DataTablePaginationProps<TData>) {
+function DataTablePaginationInner<TData>({ table, className }: DataTablePaginationProps<TData>) {
   const currentPage = table.getState().pagination.pageIndex + 1
   const totalPages = table.getPageCount()
   const pageNumbers = getPageNumbers(currentPage, totalPages)
@@ -114,3 +115,7 @@ export function DataTablePagination<TData>({ table, className }: DataTablePagina
     </div>
   )
 }
+
+export const DataTablePagination = memo(
+  DataTablePaginationInner
+) as typeof DataTablePaginationInner

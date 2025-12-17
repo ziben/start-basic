@@ -2,13 +2,15 @@
 
 import { useState } from 'react'
 import { type Table } from '@tanstack/react-table'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { AlertTriangle } from 'lucide-react'
 import { toast } from 'sonner'
-import { sleep } from '@/lib/utils'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { ConfirmDialog } from '@/components/confirm-dialog'
+import { type AdminUsers } from '../data/schema'
+import { apiClient } from '~/lib/api-client'
 
 type AdminUserMultiDeleteDialogProps<TData> = {
   open: boolean
@@ -22,10 +24,51 @@ export function AdminUsersMultiDeleteDialog<TData>({
   open,
   onOpenChange,
   table,
-}: AdminUserMultiDeleteDialogProps<TData>) {
+}: Readonly<AdminUserMultiDeleteDialogProps<TData>>) {
   const [value, setValue] = useState('')
+  const queryClient = useQueryClient()
 
   const selectedRows = table.getFilteredSelectedRowModel().rows
+
+  const bulkDeleteMutation = useMutation({
+    mutationFn: async (input: { ids: string[] }) => {
+      return await apiClient.users.bulkDelete(input)
+    },
+    onMutate: async (input) => {
+      await queryClient.cancelQueries({ queryKey: ['admin-users'] })
+      const previous = queryClient.getQueriesData({ queryKey: ['admin-users'] })
+
+      queryClient.setQueriesData({ queryKey: ['admin-users'] }, (old: any) => {
+        if (!old || !Array.isArray(old.items)) return old
+        const nextItems = old.items.filter((u: AdminUsers) => !input.ids.includes(u.id))
+        const deleted = old.items.length - nextItems.length
+
+        const total = typeof old.total === 'number' ? Math.max(0, old.total - deleted) : old.total
+        const pageSize = typeof old.pageSize === 'number' ? old.pageSize : undefined
+        const pageCount =
+          typeof total === 'number' && typeof pageSize === 'number' && pageSize > 0
+            ? Math.ceil(total / pageSize)
+            : old.pageCount
+
+        return {
+          ...old,
+          items: nextItems,
+          total,
+          pageCount,
+        }
+      })
+
+      return { previous }
+    },
+    onError: (_err, _input, ctx) => {
+      for (const [key, data] of ctx?.previous ?? []) {
+        queryClient.setQueryData(key, data)
+      }
+    },
+    onSettled: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['admin-users'] })
+    },
+  })
 
   const handleDelete = () => {
     if (value.trim() !== CONFIRM_WORD) {
@@ -33,17 +76,24 @@ export function AdminUsersMultiDeleteDialog<TData>({
       return
     }
 
+    const selectedUsers = selectedRows.map((row) => row.original as AdminUsers)
+    const ids = selectedUsers.map((u) => u.id)
+    if (ids.length === 0) return
+
     onOpenChange(false)
 
-    toast.promise(sleep(2000), {
+    const promise = bulkDeleteMutation.mutateAsync({ ids }).then(() => {
+      table.resetRowSelection()
+    })
+
+    toast.promise(promise, {
       loading: 'Deleting users...',
       success: () => {
-        table.resetRowSelection()
         return `Deleted ${selectedRows.length} ${
           selectedRows.length > 1 ? 'users' : 'user'
         }`
       },
-      error: 'Error',
+      error: String,
     })
   }
 

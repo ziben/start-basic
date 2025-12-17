@@ -30,7 +30,7 @@ type DataTableFacetedFilterProps<TData, TValue> = {
   }[]
 }
 
-export function DataTableFacetedFilter<TData, TValue>({
+function DataTableFacetedFilterInner<TData, TValue>({
   column,
   title,
   options,
@@ -144,3 +144,7 @@ export function DataTableFacetedFilter<TData, TValue>({
     </Popover>
   )
 }
+
+export const DataTableFacetedFilter = React.memo(
+  DataTableFacetedFilterInner
+) as typeof DataTableFacetedFilterInner
