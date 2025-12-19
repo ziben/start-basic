@@ -193,10 +193,6 @@ export default function AdminNavItemTable({ data, isLoading, error, navGroupId }
     getExpandedRowModel: getExpandedRowModel(),
   })
 
-  // 处理加载、错误和空数据状态
-  if (isLoading) return <div className="py-8 text-center">加载中...</div>
-  if (error) return <div className="py-8 text-center text-red-500">加载出错: {error.message}</div>
-
   const rows = table.getRowModel().rows
   const tableContainerRef = useRef<HTMLDivElement>(null)
   const rowVirtualizer = useVirtualizer({
@@ -205,6 +201,10 @@ export default function AdminNavItemTable({ data, isLoading, error, navGroupId }
     estimateSize: () => 44,
     overscan: 10,
   })
+
+  // 处理加载、错误和空数据状态
+  if (isLoading) return <div className="py-8 text-center">加载中...</div>
+  if (error) return <div className="py-8 text-center text-red-500">加载出错: {error.message}</div>
 
   const virtualRows = rowVirtualizer.getVirtualItems()
   const paddingTop = virtualRows.length > 0 ? virtualRows[0]!.start : 0

@@ -21,7 +21,7 @@ import { useTranslation } from '~/hooks/useTranslation'
 import { DataTableBulkActions } from './data-table-bulk-actions'
 import { useTranslationColumns } from './translations-columns'
 
-const route = getRouteApi('/_authenticated/admin/translation')
+const route = getRouteApi('/admin/translation')
 
 type DataTableProps = {
   data: Translation[]

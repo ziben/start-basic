@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import AdminNavItem from '~/features/admin/navitem'
 
-export const Route = createFileRoute('/_authenticated/admin/navitem')({
+export const Route = createFileRoute('/admin/navitem')({
   component: AdminNavItem,
   validateSearch: (search: Record<string, unknown>) => {
     return {

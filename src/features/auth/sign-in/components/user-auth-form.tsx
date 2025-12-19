@@ -74,11 +74,11 @@ export function UserAuthForm({
        * @default true
        */
       rememberMe: data.rememberMe,
-      callbackURL: '/'
+      callbackURL: '/dashboard'
     }, {
       onSuccess: async () => {
         await queryClient.invalidateQueries({ queryKey: ["user"] });
-        navigate({ to: '/' });
+        navigate({ to: '/dashboard' });
       },
       onError: (ctx) => {
         setIsLoading(false);

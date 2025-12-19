@@ -1,0 +1,157 @@
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarRail,
+} from '@/components/ui/sidebar'
+import { NavGroup as NavGroupComponent } from '@/components/layout/nav-group'
+import { NavUser } from '@/components/layout/nav-user'
+import { useTranslation } from '~/hooks/useTranslation'
+import type { NavGroup as NavGroupType } from './types'
+import { useLayout } from '~/context/layout-provider'
+import { AdminTitle } from './admin-title'
+import { useRouteContext } from '@tanstack/react-router'
+import {
+  LayoutDashboard,
+  Users,
+  Navigation,
+  Languages,
+  Building2,
+  Shield,
+  Key,
+  UserCheck,
+  Menu,
+  FolderTree,
+} from 'lucide-react'
+
+// 管理后台专用侧边栏数据
+function createAdminSidebarData(t: (key: string) => string) {
+  return {
+    navGroups: [
+      {
+        title: '概览',
+        items: [
+          {
+            title: '仪表盘',
+            url: '/admin',
+            icon: LayoutDashboard,
+          },
+        ],
+      },
+      {
+        title: '用户管理',
+        items: [
+          {
+            title: '用户列表',
+            url: '/admin/users',
+            icon: Users,
+          },
+          {
+            title: '账户管理',
+            url: '/admin/account',
+            icon: UserCheck,
+          },
+          {
+            title: '会话管理',
+            url: '/admin/session',
+            icon: Key,
+          },
+          {
+            title: '验证管理',
+            url: '/admin/verification',
+            icon: Shield,
+          },
+        ],
+      },
+      {
+        title: '导航管理',
+        items: [
+          {
+            title: '导航分组',
+            url: '/admin/navgroup',
+            icon: FolderTree,
+          },
+          {
+            title: '导航项',
+            url: '/admin/navitem',
+            icon: Menu,
+          },
+          {
+            title: '角色导航分组',
+            url: '/admin/rolenavgroup',
+            icon: Navigation,
+          },
+          {
+            title: '用户角色导航',
+            url: '/admin/userrolenavgroup',
+            icon: Navigation,
+          },
+        ],
+      },
+      {
+        title: '组织管理',
+        items: [
+          {
+            title: '组织',
+            url: '/admin/organization',
+            icon: Building2,
+          },
+          {
+            title: '成员',
+            url: '/admin/member',
+            icon: Users,
+          },
+          {
+            title: '邀请',
+            url: '/admin/invitation',
+            icon: UserCheck,
+          },
+        ],
+      },
+      {
+        title: '系统设置',
+        items: [
+          {
+            title: '翻译管理',
+            url: '/admin/translation',
+            icon: Languages,
+          },
+        ],
+      },
+    ] as NavGroupType[],
+  }
+}
+
+export function AdminSidebar() {
+  const { t } = useTranslation()
+  const { collapsible, variant } = useLayout()
+  const { user } = useRouteContext({ from: '__root__' })
+  
+  // 使用管理后台专用数据
+  const sidebarData = createAdminSidebarData(t)
+
+  // 用户信息
+  const userData = {
+    name: user?.name || 'Admin',
+    email: user?.email || '',
+    avatar: user?.image || '/avatars/admin.jpg',
+  }
+
+  return (
+    <Sidebar collapsible={collapsible} variant={variant}>
+      <SidebarHeader>
+        <AdminTitle />
+      </SidebarHeader>
+      <SidebarContent>
+        {sidebarData.navGroups.map((props: NavGroupType) => (
+          <NavGroupComponent key={props.title} {...props} />
+        ))}
+      </SidebarContent>
+      <SidebarFooter>
+        <NavUser user={userData} />
+      </SidebarFooter>
+      <SidebarRail />
+    </Sidebar>
+  )
+}

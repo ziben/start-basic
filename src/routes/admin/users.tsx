@@ -10,7 +10,7 @@ const userSearchSchema = z.object({
   sortDir: z.enum(['asc', 'desc']).optional().catch(undefined),
 })
 
-export const Route = createFileRoute('/_authenticated/admin/users')({
+export const Route = createFileRoute('/admin/users')({
   validateSearch: userSearchSchema,
   component: AdminUsers,
 })

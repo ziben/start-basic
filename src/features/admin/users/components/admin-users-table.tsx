@@ -26,7 +26,7 @@ import { DataTableBulkActions } from './data-table-bulk-actions'
 import { useAdminUsersColumns } from './admin-users-columns'
 import { apiClient } from '~/lib/api-client'
 
-const route = getRouteApi('/_authenticated/admin/users')
+const route = getRouteApi('/admin/users')
 
 export function AdminUsersTable() {
   // Local UI-only states

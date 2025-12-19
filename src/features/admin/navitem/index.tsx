@@ -13,7 +13,7 @@ import AdminNavItemProvider from './context/admin-navitem-context'
 import { useNavitems } from '~/hooks/useNavitemApi'
 import { useNavgroup } from '~/hooks/useNavgroupApi'
 import { Toaster } from '~/components/ui/sonner'
-import { Route as NavItemRoute } from '~/routes/_authenticated/admin/navitem'
+import { Route as NavItemRoute } from '~/routes/admin/navitem'
 import { Link } from '@tanstack/react-router'
 
 export default function AdminNavItemPage() {

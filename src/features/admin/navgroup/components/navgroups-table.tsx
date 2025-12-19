@@ -21,7 +21,7 @@ import { type AdminNavgroup } from '../data/schema'
 import { DataTableBulkActions } from './data-table-bulk-actions'
 import { useNavGroupColumns } from './navgroups-columns'
 
-const route = getRouteApi('/_authenticated/admin/navgroup')
+const route = getRouteApi('/admin/navgroup')
 
 type DataTableProps = {
   data: AdminNavgroup[]

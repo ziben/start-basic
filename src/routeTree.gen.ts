@@ -10,10 +10,27 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as StudioRouteImport } from './routes/studio'
+import { Route as AdminRouteRouteImport } from './routes/admin/route'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
-import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
+import { Route as publicRouteRouteImport } from './routes/(public)/route'
+import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as publicIndexRouteImport } from './routes/(public)/index'
 import { Route as ApiUsersRouteImport } from './routes/api/users'
 import { Route as ApiSessionsRouteImport } from './routes/api/sessions'
+import { Route as AdminVerificationRouteImport } from './routes/admin/verification'
+import { Route as AdminUsersRouteImport } from './routes/admin/users'
+import { Route as AdminUserrolenavgroupRouteImport } from './routes/admin/userrolenavgroup'
+import { Route as AdminTranslationRouteImport } from './routes/admin/translation'
+import { Route as AdminSessionRouteImport } from './routes/admin/session'
+import { Route as AdminRolenavgroupRouteImport } from './routes/admin/rolenavgroup'
+import { Route as AdminOrganizationRouteImport } from './routes/admin/organization'
+import { Route as AdminNavitemRouteImport } from './routes/admin/navitem'
+import { Route as AdminNavgroupRouteImport } from './routes/admin/navgroup'
+import { Route as AdminMemberRouteImport } from './routes/admin/member'
+import { Route as AdminInvitationRouteImport } from './routes/admin/invitation'
+import { Route as AdminAccountRouteImport } from './routes/admin/account'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as publicAboutRouteImport } from './routes/(public)/about'
 import { Route as errors503RouteImport } from './routes/(errors)/503'
 import { Route as errors500RouteImport } from './routes/(errors)/500'
 import { Route as errors404RouteImport } from './routes/(errors)/404'
@@ -29,19 +46,6 @@ import { Route as ApiUsersIdRouteImport } from './routes/api/users.$id'
 import { Route as ApiI18nLngRouteImport } from './routes/api/i18n/$lng'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as AuthenticatedErrorsErrorRouteImport } from './routes/_authenticated/errors/$error'
-import { Route as AuthenticatedAdminVerificationRouteImport } from './routes/_authenticated/admin/verification'
-import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin/users'
-import { Route as AuthenticatedAdminUserrolenavgroupRouteImport } from './routes/_authenticated/admin/userrolenavgroup'
-import { Route as AuthenticatedAdminUserRouteImport } from './routes/_authenticated/admin/user'
-import { Route as AuthenticatedAdminTranslationRouteImport } from './routes/_authenticated/admin/translation'
-import { Route as AuthenticatedAdminSessionRouteImport } from './routes/_authenticated/admin/session'
-import { Route as AuthenticatedAdminRolenavgroupRouteImport } from './routes/_authenticated/admin/rolenavgroup'
-import { Route as AuthenticatedAdminOrganizationRouteImport } from './routes/_authenticated/admin/organization'
-import { Route as AuthenticatedAdminNavitemRouteImport } from './routes/_authenticated/admin/navitem'
-import { Route as AuthenticatedAdminNavgroupRouteImport } from './routes/_authenticated/admin/navgroup'
-import { Route as AuthenticatedAdminMemberRouteImport } from './routes/_authenticated/admin/member'
-import { Route as AuthenticatedAdminInvitationRouteImport } from './routes/_authenticated/admin/invitation'
-import { Route as AuthenticatedAdminAccountRouteImport } from './routes/_authenticated/admin/account'
 import { Route as AuthenticatedDemoSettingsRouteRouteImport } from './routes/_authenticated/demo/settings/route'
 import { Route as ApiDemoTasksIndexRouteImport } from './routes/api/demo/tasks/index'
 import { Route as ApiAdminUserIndexRouteImport } from './routes/api/admin/user/index'
@@ -74,14 +78,28 @@ const StudioRoute = StudioRouteImport.update({
   path: '/studio',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRouteRoute = AdminRouteRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
+const publicRouteRoute = publicRouteRouteImport.update({
+  id: '/(public)',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => AuthenticatedRouteRoute,
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const publicIndexRoute = publicIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => publicRouteRoute,
 } as any)
 const ApiUsersRoute = ApiUsersRouteImport.update({
   id: '/api/users',
@@ -92,6 +110,76 @@ const ApiSessionsRoute = ApiSessionsRouteImport.update({
   id: '/api/sessions',
   path: '/api/sessions',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AdminVerificationRoute = AdminVerificationRouteImport.update({
+  id: '/verification',
+  path: '/verification',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminUsersRoute = AdminUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminUserrolenavgroupRoute = AdminUserrolenavgroupRouteImport.update({
+  id: '/userrolenavgroup',
+  path: '/userrolenavgroup',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminTranslationRoute = AdminTranslationRouteImport.update({
+  id: '/translation',
+  path: '/translation',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminSessionRoute = AdminSessionRouteImport.update({
+  id: '/session',
+  path: '/session',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminRolenavgroupRoute = AdminRolenavgroupRouteImport.update({
+  id: '/rolenavgroup',
+  path: '/rolenavgroup',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminOrganizationRoute = AdminOrganizationRouteImport.update({
+  id: '/organization',
+  path: '/organization',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminNavitemRoute = AdminNavitemRouteImport.update({
+  id: '/navitem',
+  path: '/navitem',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminNavgroupRoute = AdminNavgroupRouteImport.update({
+  id: '/navgroup',
+  path: '/navgroup',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminMemberRoute = AdminMemberRouteImport.update({
+  id: '/member',
+  path: '/member',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminInvitationRoute = AdminInvitationRouteImport.update({
+  id: '/invitation',
+  path: '/invitation',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminAccountRoute = AdminAccountRouteImport.update({
+  id: '/account',
+  path: '/account',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const publicAboutRoute = publicAboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => publicRouteRoute,
 } as any)
 const errors503Route = errors503RouteImport.update({
   id: '/(errors)/503',
@@ -169,82 +257,6 @@ const AuthenticatedErrorsErrorRoute =
   AuthenticatedErrorsErrorRouteImport.update({
     id: '/errors/$error',
     path: '/errors/$error',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedAdminVerificationRoute =
-  AuthenticatedAdminVerificationRouteImport.update({
-    id: '/admin/verification',
-    path: '/admin/verification',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedAdminUsersRoute = AuthenticatedAdminUsersRouteImport.update({
-  id: '/admin/users',
-  path: '/admin/users',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedAdminUserrolenavgroupRoute =
-  AuthenticatedAdminUserrolenavgroupRouteImport.update({
-    id: '/admin/userrolenavgroup',
-    path: '/admin/userrolenavgroup',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedAdminUserRoute = AuthenticatedAdminUserRouteImport.update({
-  id: '/admin/user',
-  path: '/admin/user',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedAdminTranslationRoute =
-  AuthenticatedAdminTranslationRouteImport.update({
-    id: '/admin/translation',
-    path: '/admin/translation',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedAdminSessionRoute =
-  AuthenticatedAdminSessionRouteImport.update({
-    id: '/admin/session',
-    path: '/admin/session',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedAdminRolenavgroupRoute =
-  AuthenticatedAdminRolenavgroupRouteImport.update({
-    id: '/admin/rolenavgroup',
-    path: '/admin/rolenavgroup',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedAdminOrganizationRoute =
-  AuthenticatedAdminOrganizationRouteImport.update({
-    id: '/admin/organization',
-    path: '/admin/organization',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedAdminNavitemRoute =
-  AuthenticatedAdminNavitemRouteImport.update({
-    id: '/admin/navitem',
-    path: '/admin/navitem',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedAdminNavgroupRoute =
-  AuthenticatedAdminNavgroupRouteImport.update({
-    id: '/admin/navgroup',
-    path: '/admin/navgroup',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedAdminMemberRoute =
-  AuthenticatedAdminMemberRouteImport.update({
-    id: '/admin/member',
-    path: '/admin/member',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedAdminInvitationRoute =
-  AuthenticatedAdminInvitationRouteImport.update({
-    id: '/admin/invitation',
-    path: '/admin/invitation',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedAdminAccountRoute =
-  AuthenticatedAdminAccountRouteImport.update({
-    id: '/admin/account',
-    path: '/admin/account',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedDemoSettingsRouteRoute =
@@ -394,6 +406,7 @@ const AuthenticatedDemoSettingsAccountRoute =
   } as any)
 
 export interface FileRoutesByFullPath {
+  '/admin': typeof AdminRouteRouteWithChildren
   '/studio': typeof StudioRoute
   '/forgot-password': typeof authForgotPasswordRoute
   '/sign-in': typeof authSignInRoute
@@ -404,23 +417,25 @@ export interface FileRoutesByFullPath {
   '/404': typeof errors404Route
   '/500': typeof errors500Route
   '/503': typeof errors503Route
+  '/about': typeof publicAboutRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/admin/account': typeof AdminAccountRoute
+  '/admin/invitation': typeof AdminInvitationRoute
+  '/admin/member': typeof AdminMemberRoute
+  '/admin/navgroup': typeof AdminNavgroupRoute
+  '/admin/navitem': typeof AdminNavitemRoute
+  '/admin/organization': typeof AdminOrganizationRoute
+  '/admin/rolenavgroup': typeof AdminRolenavgroupRoute
+  '/admin/session': typeof AdminSessionRoute
+  '/admin/translation': typeof AdminTranslationRoute
+  '/admin/userrolenavgroup': typeof AdminUserrolenavgroupRoute
+  '/admin/users': typeof AdminUsersRoute
+  '/admin/verification': typeof AdminVerificationRoute
   '/api/sessions': typeof ApiSessionsRoute
   '/api/users': typeof ApiUsersRouteWithChildren
-  '/': typeof AuthenticatedIndexRoute
+  '/': typeof publicIndexRoute
+  '/admin/': typeof AdminIndexRoute
   '/demo/settings': typeof AuthenticatedDemoSettingsRouteRouteWithChildren
-  '/admin/account': typeof AuthenticatedAdminAccountRoute
-  '/admin/invitation': typeof AuthenticatedAdminInvitationRoute
-  '/admin/member': typeof AuthenticatedAdminMemberRoute
-  '/admin/navgroup': typeof AuthenticatedAdminNavgroupRoute
-  '/admin/navitem': typeof AuthenticatedAdminNavitemRoute
-  '/admin/organization': typeof AuthenticatedAdminOrganizationRoute
-  '/admin/rolenavgroup': typeof AuthenticatedAdminRolenavgroupRoute
-  '/admin/session': typeof AuthenticatedAdminSessionRoute
-  '/admin/translation': typeof AuthenticatedAdminTranslationRoute
-  '/admin/user': typeof AuthenticatedAdminUserRoute
-  '/admin/userrolenavgroup': typeof AuthenticatedAdminUserrolenavgroupRoute
-  '/admin/users': typeof AuthenticatedAdminUsersRoute
-  '/admin/verification': typeof AuthenticatedAdminVerificationRoute
   '/errors/$error': typeof AuthenticatedErrorsErrorRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/i18n/$lng': typeof ApiI18nLngRoute
@@ -464,22 +479,24 @@ export interface FileRoutesByTo {
   '/404': typeof errors404Route
   '/500': typeof errors500Route
   '/503': typeof errors503Route
+  '/about': typeof publicAboutRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/admin/account': typeof AdminAccountRoute
+  '/admin/invitation': typeof AdminInvitationRoute
+  '/admin/member': typeof AdminMemberRoute
+  '/admin/navgroup': typeof AdminNavgroupRoute
+  '/admin/navitem': typeof AdminNavitemRoute
+  '/admin/organization': typeof AdminOrganizationRoute
+  '/admin/rolenavgroup': typeof AdminRolenavgroupRoute
+  '/admin/session': typeof AdminSessionRoute
+  '/admin/translation': typeof AdminTranslationRoute
+  '/admin/userrolenavgroup': typeof AdminUserrolenavgroupRoute
+  '/admin/users': typeof AdminUsersRoute
+  '/admin/verification': typeof AdminVerificationRoute
   '/api/sessions': typeof ApiSessionsRoute
   '/api/users': typeof ApiUsersRouteWithChildren
-  '/': typeof AuthenticatedIndexRoute
-  '/admin/account': typeof AuthenticatedAdminAccountRoute
-  '/admin/invitation': typeof AuthenticatedAdminInvitationRoute
-  '/admin/member': typeof AuthenticatedAdminMemberRoute
-  '/admin/navgroup': typeof AuthenticatedAdminNavgroupRoute
-  '/admin/navitem': typeof AuthenticatedAdminNavitemRoute
-  '/admin/organization': typeof AuthenticatedAdminOrganizationRoute
-  '/admin/rolenavgroup': typeof AuthenticatedAdminRolenavgroupRoute
-  '/admin/session': typeof AuthenticatedAdminSessionRoute
-  '/admin/translation': typeof AuthenticatedAdminTranslationRoute
-  '/admin/user': typeof AuthenticatedAdminUserRoute
-  '/admin/userrolenavgroup': typeof AuthenticatedAdminUserrolenavgroupRoute
-  '/admin/users': typeof AuthenticatedAdminUsersRoute
-  '/admin/verification': typeof AuthenticatedAdminVerificationRoute
+  '/': typeof publicIndexRoute
+  '/admin': typeof AdminIndexRoute
   '/errors/$error': typeof AuthenticatedErrorsErrorRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/i18n/$lng': typeof ApiI18nLngRoute
@@ -514,7 +531,9 @@ export interface FileRoutesByTo {
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/(public)': typeof publicRouteRouteWithChildren
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/admin': typeof AdminRouteRouteWithChildren
   '/studio': typeof StudioRoute
   '/(auth)/forgot-password': typeof authForgotPasswordRoute
   '/(auth)/sign-in': typeof authSignInRoute
@@ -525,23 +544,25 @@ export interface FileRoutesById {
   '/(errors)/404': typeof errors404Route
   '/(errors)/500': typeof errors500Route
   '/(errors)/503': typeof errors503Route
+  '/(public)/about': typeof publicAboutRoute
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/admin/account': typeof AdminAccountRoute
+  '/admin/invitation': typeof AdminInvitationRoute
+  '/admin/member': typeof AdminMemberRoute
+  '/admin/navgroup': typeof AdminNavgroupRoute
+  '/admin/navitem': typeof AdminNavitemRoute
+  '/admin/organization': typeof AdminOrganizationRoute
+  '/admin/rolenavgroup': typeof AdminRolenavgroupRoute
+  '/admin/session': typeof AdminSessionRoute
+  '/admin/translation': typeof AdminTranslationRoute
+  '/admin/userrolenavgroup': typeof AdminUserrolenavgroupRoute
+  '/admin/users': typeof AdminUsersRoute
+  '/admin/verification': typeof AdminVerificationRoute
   '/api/sessions': typeof ApiSessionsRoute
   '/api/users': typeof ApiUsersRouteWithChildren
-  '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/(public)/': typeof publicIndexRoute
+  '/admin/': typeof AdminIndexRoute
   '/_authenticated/demo/settings': typeof AuthenticatedDemoSettingsRouteRouteWithChildren
-  '/_authenticated/admin/account': typeof AuthenticatedAdminAccountRoute
-  '/_authenticated/admin/invitation': typeof AuthenticatedAdminInvitationRoute
-  '/_authenticated/admin/member': typeof AuthenticatedAdminMemberRoute
-  '/_authenticated/admin/navgroup': typeof AuthenticatedAdminNavgroupRoute
-  '/_authenticated/admin/navitem': typeof AuthenticatedAdminNavitemRoute
-  '/_authenticated/admin/organization': typeof AuthenticatedAdminOrganizationRoute
-  '/_authenticated/admin/rolenavgroup': typeof AuthenticatedAdminRolenavgroupRoute
-  '/_authenticated/admin/session': typeof AuthenticatedAdminSessionRoute
-  '/_authenticated/admin/translation': typeof AuthenticatedAdminTranslationRoute
-  '/_authenticated/admin/user': typeof AuthenticatedAdminUserRoute
-  '/_authenticated/admin/userrolenavgroup': typeof AuthenticatedAdminUserrolenavgroupRoute
-  '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
-  '/_authenticated/admin/verification': typeof AuthenticatedAdminVerificationRoute
   '/_authenticated/errors/$error': typeof AuthenticatedErrorsErrorRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/i18n/$lng': typeof ApiI18nLngRoute
@@ -577,6 +598,7 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | '/admin'
     | '/studio'
     | '/forgot-password'
     | '/sign-in'
@@ -587,10 +609,8 @@ export interface FileRouteTypes {
     | '/404'
     | '/500'
     | '/503'
-    | '/api/sessions'
-    | '/api/users'
-    | '/'
-    | '/demo/settings'
+    | '/about'
+    | '/dashboard'
     | '/admin/account'
     | '/admin/invitation'
     | '/admin/member'
@@ -600,10 +620,14 @@ export interface FileRouteTypes {
     | '/admin/rolenavgroup'
     | '/admin/session'
     | '/admin/translation'
-    | '/admin/user'
     | '/admin/userrolenavgroup'
     | '/admin/users'
     | '/admin/verification'
+    | '/api/sessions'
+    | '/api/users'
+    | '/'
+    | '/admin/'
+    | '/demo/settings'
     | '/errors/$error'
     | '/api/auth/$'
     | '/api/i18n/$lng'
@@ -647,9 +671,8 @@ export interface FileRouteTypes {
     | '/404'
     | '/500'
     | '/503'
-    | '/api/sessions'
-    | '/api/users'
-    | '/'
+    | '/about'
+    | '/dashboard'
     | '/admin/account'
     | '/admin/invitation'
     | '/admin/member'
@@ -659,10 +682,13 @@ export interface FileRouteTypes {
     | '/admin/rolenavgroup'
     | '/admin/session'
     | '/admin/translation'
-    | '/admin/user'
     | '/admin/userrolenavgroup'
     | '/admin/users'
     | '/admin/verification'
+    | '/api/sessions'
+    | '/api/users'
+    | '/'
+    | '/admin'
     | '/errors/$error'
     | '/api/auth/$'
     | '/api/i18n/$lng'
@@ -696,7 +722,9 @@ export interface FileRouteTypes {
     | '/api/demo/tasks'
   id:
     | '__root__'
+    | '/(public)'
     | '/_authenticated'
+    | '/admin'
     | '/studio'
     | '/(auth)/forgot-password'
     | '/(auth)/sign-in'
@@ -707,23 +735,25 @@ export interface FileRouteTypes {
     | '/(errors)/404'
     | '/(errors)/500'
     | '/(errors)/503'
+    | '/(public)/about'
+    | '/_authenticated/dashboard'
+    | '/admin/account'
+    | '/admin/invitation'
+    | '/admin/member'
+    | '/admin/navgroup'
+    | '/admin/navitem'
+    | '/admin/organization'
+    | '/admin/rolenavgroup'
+    | '/admin/session'
+    | '/admin/translation'
+    | '/admin/userrolenavgroup'
+    | '/admin/users'
+    | '/admin/verification'
     | '/api/sessions'
     | '/api/users'
-    | '/_authenticated/'
+    | '/(public)/'
+    | '/admin/'
     | '/_authenticated/demo/settings'
-    | '/_authenticated/admin/account'
-    | '/_authenticated/admin/invitation'
-    | '/_authenticated/admin/member'
-    | '/_authenticated/admin/navgroup'
-    | '/_authenticated/admin/navitem'
-    | '/_authenticated/admin/organization'
-    | '/_authenticated/admin/rolenavgroup'
-    | '/_authenticated/admin/session'
-    | '/_authenticated/admin/translation'
-    | '/_authenticated/admin/user'
-    | '/_authenticated/admin/userrolenavgroup'
-    | '/_authenticated/admin/users'
-    | '/_authenticated/admin/verification'
     | '/_authenticated/errors/$error'
     | '/api/auth/$'
     | '/api/i18n/$lng'
@@ -758,7 +788,9 @@ export interface FileRouteTypes {
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  publicRouteRoute: typeof publicRouteRouteWithChildren
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AdminRouteRoute: typeof AdminRouteRouteWithChildren
   StudioRoute: typeof StudioRoute
   authForgotPasswordRoute: typeof authForgotPasswordRoute
   authSignInRoute: typeof authSignInRoute
@@ -800,6 +832,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudioRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated': {
       id: '/_authenticated'
       path: ''
@@ -807,12 +846,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/': {
-      id: '/_authenticated/'
+    '/(public)': {
+      id: '/(public)'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof publicRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/(public)/': {
+      id: '/(public)/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof AuthenticatedIndexRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      preLoaderRoute: typeof publicIndexRouteImport
+      parentRoute: typeof publicRouteRoute
     }
     '/api/users': {
       id: '/api/users'
@@ -827,6 +880,104 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/sessions'
       preLoaderRoute: typeof ApiSessionsRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/admin/verification': {
+      id: '/admin/verification'
+      path: '/verification'
+      fullPath: '/admin/verification'
+      preLoaderRoute: typeof AdminVerificationRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/users': {
+      id: '/admin/users'
+      path: '/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminUsersRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/userrolenavgroup': {
+      id: '/admin/userrolenavgroup'
+      path: '/userrolenavgroup'
+      fullPath: '/admin/userrolenavgroup'
+      preLoaderRoute: typeof AdminUserrolenavgroupRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/translation': {
+      id: '/admin/translation'
+      path: '/translation'
+      fullPath: '/admin/translation'
+      preLoaderRoute: typeof AdminTranslationRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/session': {
+      id: '/admin/session'
+      path: '/session'
+      fullPath: '/admin/session'
+      preLoaderRoute: typeof AdminSessionRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/rolenavgroup': {
+      id: '/admin/rolenavgroup'
+      path: '/rolenavgroup'
+      fullPath: '/admin/rolenavgroup'
+      preLoaderRoute: typeof AdminRolenavgroupRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/organization': {
+      id: '/admin/organization'
+      path: '/organization'
+      fullPath: '/admin/organization'
+      preLoaderRoute: typeof AdminOrganizationRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/navitem': {
+      id: '/admin/navitem'
+      path: '/navitem'
+      fullPath: '/admin/navitem'
+      preLoaderRoute: typeof AdminNavitemRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/navgroup': {
+      id: '/admin/navgroup'
+      path: '/navgroup'
+      fullPath: '/admin/navgroup'
+      preLoaderRoute: typeof AdminNavgroupRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/member': {
+      id: '/admin/member'
+      path: '/member'
+      fullPath: '/admin/member'
+      preLoaderRoute: typeof AdminMemberRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/invitation': {
+      id: '/admin/invitation'
+      path: '/invitation'
+      fullPath: '/admin/invitation'
+      preLoaderRoute: typeof AdminInvitationRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/account': {
+      id: '/admin/account'
+      path: '/account'
+      fullPath: '/admin/account'
+      preLoaderRoute: typeof AdminAccountRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/(public)/about': {
+      id: '/(public)/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof publicAboutRouteImport
+      parentRoute: typeof publicRouteRoute
     }
     '/(errors)/503': {
       id: '/(errors)/503'
@@ -931,97 +1082,6 @@ declare module '@tanstack/react-router' {
       path: '/errors/$error'
       fullPath: '/errors/$error'
       preLoaderRoute: typeof AuthenticatedErrorsErrorRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/admin/verification': {
-      id: '/_authenticated/admin/verification'
-      path: '/admin/verification'
-      fullPath: '/admin/verification'
-      preLoaderRoute: typeof AuthenticatedAdminVerificationRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/admin/users': {
-      id: '/_authenticated/admin/users'
-      path: '/admin/users'
-      fullPath: '/admin/users'
-      preLoaderRoute: typeof AuthenticatedAdminUsersRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/admin/userrolenavgroup': {
-      id: '/_authenticated/admin/userrolenavgroup'
-      path: '/admin/userrolenavgroup'
-      fullPath: '/admin/userrolenavgroup'
-      preLoaderRoute: typeof AuthenticatedAdminUserrolenavgroupRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/admin/user': {
-      id: '/_authenticated/admin/user'
-      path: '/admin/user'
-      fullPath: '/admin/user'
-      preLoaderRoute: typeof AuthenticatedAdminUserRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/admin/translation': {
-      id: '/_authenticated/admin/translation'
-      path: '/admin/translation'
-      fullPath: '/admin/translation'
-      preLoaderRoute: typeof AuthenticatedAdminTranslationRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/admin/session': {
-      id: '/_authenticated/admin/session'
-      path: '/admin/session'
-      fullPath: '/admin/session'
-      preLoaderRoute: typeof AuthenticatedAdminSessionRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/admin/rolenavgroup': {
-      id: '/_authenticated/admin/rolenavgroup'
-      path: '/admin/rolenavgroup'
-      fullPath: '/admin/rolenavgroup'
-      preLoaderRoute: typeof AuthenticatedAdminRolenavgroupRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/admin/organization': {
-      id: '/_authenticated/admin/organization'
-      path: '/admin/organization'
-      fullPath: '/admin/organization'
-      preLoaderRoute: typeof AuthenticatedAdminOrganizationRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/admin/navitem': {
-      id: '/_authenticated/admin/navitem'
-      path: '/admin/navitem'
-      fullPath: '/admin/navitem'
-      preLoaderRoute: typeof AuthenticatedAdminNavitemRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/admin/navgroup': {
-      id: '/_authenticated/admin/navgroup'
-      path: '/admin/navgroup'
-      fullPath: '/admin/navgroup'
-      preLoaderRoute: typeof AuthenticatedAdminNavgroupRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/admin/member': {
-      id: '/_authenticated/admin/member'
-      path: '/admin/member'
-      fullPath: '/admin/member'
-      preLoaderRoute: typeof AuthenticatedAdminMemberRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/admin/invitation': {
-      id: '/_authenticated/admin/invitation'
-      path: '/admin/invitation'
-      fullPath: '/admin/invitation'
-      preLoaderRoute: typeof AuthenticatedAdminInvitationRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/admin/account': {
-      id: '/_authenticated/admin/account'
-      path: '/admin/account'
-      fullPath: '/admin/account'
-      preLoaderRoute: typeof AuthenticatedAdminAccountRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/demo/settings': {
@@ -1209,6 +1269,20 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface publicRouteRouteChildren {
+  publicAboutRoute: typeof publicAboutRoute
+  publicIndexRoute: typeof publicIndexRoute
+}
+
+const publicRouteRouteChildren: publicRouteRouteChildren = {
+  publicAboutRoute: publicAboutRoute,
+  publicIndexRoute: publicIndexRoute,
+}
+
+const publicRouteRouteWithChildren = publicRouteRoute._addFileChildren(
+  publicRouteRouteChildren,
+)
+
 interface AuthenticatedDemoSettingsRouteRouteChildren {
   AuthenticatedDemoSettingsAccountRoute: typeof AuthenticatedDemoSettingsAccountRoute
   AuthenticatedDemoSettingsAppearanceRoute: typeof AuthenticatedDemoSettingsAppearanceRoute
@@ -1236,21 +1310,8 @@ const AuthenticatedDemoSettingsRouteRouteWithChildren =
   )
 
 interface AuthenticatedRouteRouteChildren {
-  AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedDemoSettingsRouteRoute: typeof AuthenticatedDemoSettingsRouteRouteWithChildren
-  AuthenticatedAdminAccountRoute: typeof AuthenticatedAdminAccountRoute
-  AuthenticatedAdminInvitationRoute: typeof AuthenticatedAdminInvitationRoute
-  AuthenticatedAdminMemberRoute: typeof AuthenticatedAdminMemberRoute
-  AuthenticatedAdminNavgroupRoute: typeof AuthenticatedAdminNavgroupRoute
-  AuthenticatedAdminNavitemRoute: typeof AuthenticatedAdminNavitemRoute
-  AuthenticatedAdminOrganizationRoute: typeof AuthenticatedAdminOrganizationRoute
-  AuthenticatedAdminRolenavgroupRoute: typeof AuthenticatedAdminRolenavgroupRoute
-  AuthenticatedAdminSessionRoute: typeof AuthenticatedAdminSessionRoute
-  AuthenticatedAdminTranslationRoute: typeof AuthenticatedAdminTranslationRoute
-  AuthenticatedAdminUserRoute: typeof AuthenticatedAdminUserRoute
-  AuthenticatedAdminUserrolenavgroupRoute: typeof AuthenticatedAdminUserrolenavgroupRoute
-  AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
-  AuthenticatedAdminVerificationRoute: typeof AuthenticatedAdminVerificationRoute
   AuthenticatedErrorsErrorRoute: typeof AuthenticatedErrorsErrorRoute
   AuthenticatedHelpCenterIndexRoute: typeof AuthenticatedHelpCenterIndexRoute
   AuthenticatedSessionsIndexRoute: typeof AuthenticatedSessionsIndexRoute
@@ -1261,23 +1322,9 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedDemoSettingsRouteRoute:
     AuthenticatedDemoSettingsRouteRouteWithChildren,
-  AuthenticatedAdminAccountRoute: AuthenticatedAdminAccountRoute,
-  AuthenticatedAdminInvitationRoute: AuthenticatedAdminInvitationRoute,
-  AuthenticatedAdminMemberRoute: AuthenticatedAdminMemberRoute,
-  AuthenticatedAdminNavgroupRoute: AuthenticatedAdminNavgroupRoute,
-  AuthenticatedAdminNavitemRoute: AuthenticatedAdminNavitemRoute,
-  AuthenticatedAdminOrganizationRoute: AuthenticatedAdminOrganizationRoute,
-  AuthenticatedAdminRolenavgroupRoute: AuthenticatedAdminRolenavgroupRoute,
-  AuthenticatedAdminSessionRoute: AuthenticatedAdminSessionRoute,
-  AuthenticatedAdminTranslationRoute: AuthenticatedAdminTranslationRoute,
-  AuthenticatedAdminUserRoute: AuthenticatedAdminUserRoute,
-  AuthenticatedAdminUserrolenavgroupRoute:
-    AuthenticatedAdminUserrolenavgroupRoute,
-  AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
-  AuthenticatedAdminVerificationRoute: AuthenticatedAdminVerificationRoute,
   AuthenticatedErrorsErrorRoute: AuthenticatedErrorsErrorRoute,
   AuthenticatedHelpCenterIndexRoute: AuthenticatedHelpCenterIndexRoute,
   AuthenticatedSessionsIndexRoute: AuthenticatedSessionsIndexRoute,
@@ -1289,6 +1336,42 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
+interface AdminRouteRouteChildren {
+  AdminAccountRoute: typeof AdminAccountRoute
+  AdminInvitationRoute: typeof AdminInvitationRoute
+  AdminMemberRoute: typeof AdminMemberRoute
+  AdminNavgroupRoute: typeof AdminNavgroupRoute
+  AdminNavitemRoute: typeof AdminNavitemRoute
+  AdminOrganizationRoute: typeof AdminOrganizationRoute
+  AdminRolenavgroupRoute: typeof AdminRolenavgroupRoute
+  AdminSessionRoute: typeof AdminSessionRoute
+  AdminTranslationRoute: typeof AdminTranslationRoute
+  AdminUserrolenavgroupRoute: typeof AdminUserrolenavgroupRoute
+  AdminUsersRoute: typeof AdminUsersRoute
+  AdminVerificationRoute: typeof AdminVerificationRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+}
+
+const AdminRouteRouteChildren: AdminRouteRouteChildren = {
+  AdminAccountRoute: AdminAccountRoute,
+  AdminInvitationRoute: AdminInvitationRoute,
+  AdminMemberRoute: AdminMemberRoute,
+  AdminNavgroupRoute: AdminNavgroupRoute,
+  AdminNavitemRoute: AdminNavitemRoute,
+  AdminOrganizationRoute: AdminOrganizationRoute,
+  AdminRolenavgroupRoute: AdminRolenavgroupRoute,
+  AdminSessionRoute: AdminSessionRoute,
+  AdminTranslationRoute: AdminTranslationRoute,
+  AdminUserrolenavgroupRoute: AdminUserrolenavgroupRoute,
+  AdminUsersRoute: AdminUsersRoute,
+  AdminVerificationRoute: AdminVerificationRoute,
+  AdminIndexRoute: AdminIndexRoute,
+}
+
+const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
+  AdminRouteRouteChildren,
+)
 
 interface ApiUsersRouteChildren {
   ApiUsersIdRoute: typeof ApiUsersIdRoute
@@ -1303,7 +1386,9 @@ const ApiUsersRouteWithChildren = ApiUsersRoute._addFileChildren(
 )
 
 const rootRouteChildren: RootRouteChildren = {
+  publicRouteRoute: publicRouteRouteWithChildren,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AdminRouteRoute: AdminRouteRouteWithChildren,
   StudioRoute: StudioRoute,
   authForgotPasswordRoute: authForgotPasswordRoute,
   authSignInRoute: authSignInRoute,
