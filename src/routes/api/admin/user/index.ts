@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { adminUsersPageSchema } from '~/features/admin/users/data/schema'
+import { adminUsersSchema } from '~/features/admin/users/data/schema'
 import { z } from 'zod'
 import prisma from '~/lib/db'
 import { withAdminAuth } from '~/middleware'
@@ -11,6 +12,15 @@ const querySchema = z.object({
   filter: z.string().optional().default(''),
   sortBy: z.string().optional(),
   sortDir: z.enum(['asc', 'desc']).optional(),
+})
+
+const createBodySchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(8),
+  name: z.string().min(1),
+  role: z.enum(['admin', 'user']).optional().default('user'),
+  username: z.string().min(1).optional(),
+  banned: z.boolean().optional().default(false),
 })
 
 export const Route = createFileRoute('/api/admin/user/')({
@@ -99,6 +109,73 @@ export const Route = createFileRoute('/api/admin/user/')({
           })
         )
       }),
+
+      POST: withAdminAuth(async ({ request }) => {
+        try {
+          const body = await request.json()
+          const input = createBodySchema.parse(body)
+
+          const origin = new URL(request.url).origin
+
+          // 通过 better-auth admin 插件创建用户（复用当前请求 cookie/session）
+          const res = await fetch(`${origin}/api/auth/admin/create-user`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              cookie: request.headers.get('cookie') ?? '',
+            },
+            body: JSON.stringify({
+              email: input.email,
+              password: input.password,
+              name: input.name,
+              role: input.role,
+              emailVerified: true,
+              data: input.username ? { username: input.username } : undefined,
+            }),
+          })
+
+          if (!res.ok) {
+            const text = await res.text().catch(() => '')
+            return new Response(text || 'Create user failed', { status: res.status })
+          }
+
+          const json = (await res.json().catch(() => null)) as any
+          const newUserId = json?.newUser?.id ?? json?.user?.id ?? json?.id
+
+          if (typeof newUserId !== 'string' || !newUserId) {
+            return new Response('Create user failed: missing user id', { status: 500 })
+          }
+
+          const updated = await prisma.user.update({
+            where: { id: newUserId },
+            data: {
+              role: input.role,
+              banned: input.banned,
+              username: input.username ?? undefined,
+            },
+          })
+
+          return Response.json(
+            adminUsersSchema.parse({
+              id: updated.id,
+              name: updated.name,
+              email: updated.email,
+              emailVerified: updated.emailVerified,
+              image: updated.image ?? null,
+              createdAt: updated.createdAt,
+              updatedAt: updated.updatedAt,
+              role: updated.role ?? 'user',
+              banned: updated.banned ?? null,
+              banReason: updated.banReason ?? null,
+              banExpires: updated.banExpires ?? null,
+              username: updated.username ?? null,
+              displayUsername: updated.displayUsername ?? null,
+            })
+          )
+        } catch (error) {
+          return new Response(String(error), { status: 400 })
+        }
+      }),
     },
-  }
+  },
 })

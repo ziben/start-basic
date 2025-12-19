@@ -11,6 +11,7 @@ import type {
   UpdateNavItemData,
 } from '~/features/admin/navitem/data/schema'
 import {
+  adminUsersSchema,
   adminUsersPageSchema,
   type AdminUsersPage,
 } from '~/features/admin/users/data/schema'
@@ -231,6 +232,39 @@ export const apiClient = {
         signal: params.signal,
       })
     },
+    create: (data: {
+      email: string
+      password: string
+      name: string
+      role?: 'admin' | 'user'
+      username?: string
+      banned?: boolean
+    }) =>
+      fetchJsonWithSchema(adminUsersSchema, '/api/admin/user/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      }),
+    update: (
+      id: string,
+      data: Partial<{
+        name: string
+        username: string | null
+        role: string | null
+        banned: boolean | null
+        banReason: string | null
+        banExpires: string | null
+      }>
+    ) =>
+      fetchJsonWithSchema(
+        adminUsersSchema,
+        `/api/admin/user/${encodeURIComponent(id)}`,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        }
+      ),
     bulkBan: (input: {
       ids: string[]
       banned: boolean

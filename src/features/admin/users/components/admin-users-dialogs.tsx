@@ -56,13 +56,13 @@ export function AdminUsersDialogs() {
       <AdminUsersMutateDrawer
         key='task-create'
         open={open === 'create'}
-        onOpenChange={() => setOpen('create')}
+        onOpenChange={(nextOpen) => setOpen(nextOpen ? 'create' : null)}
       />
 
       <AdminUserImportDialog
         key='tasks-import'
         open={open === 'import'}
-        onOpenChange={() => setOpen('import')}
+        onOpenChange={(nextOpen) => setOpen(nextOpen ? 'import' : null)}
       />
 
       {currentRow && (
@@ -70,11 +70,13 @@ export function AdminUsersDialogs() {
           <AdminUsersMutateDrawer
             key={`task-update-${currentRow.id}`}
             open={open === 'update'}
-            onOpenChange={() => {
-              setOpen('update')
-              setTimeout(() => {
-                setCurrentRow(null)
-              }, 500)
+            onOpenChange={(nextOpen) => {
+              setOpen(nextOpen ? 'update' : null)
+              if (!nextOpen) {
+                setTimeout(() => {
+                  setCurrentRow(null)
+                }, 500)
+              }
             }}
             currentRow={currentRow}
           />
@@ -83,11 +85,13 @@ export function AdminUsersDialogs() {
             key='task-delete'
             destructive
             open={open === 'delete'}
-            onOpenChange={() => {
-              setOpen('delete')
-              setTimeout(() => {
-                setCurrentRow(null)
-              }, 500)
+            onOpenChange={(nextOpen) => {
+              setOpen(nextOpen ? 'delete' : null)
+              if (!nextOpen) {
+                setTimeout(() => {
+                  setCurrentRow(null)
+                }, 500)
+              }
             }}
             handleConfirm={() => {
               const id = currentRow.id

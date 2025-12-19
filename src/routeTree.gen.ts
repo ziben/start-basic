@@ -59,6 +59,7 @@ import { Route as AuthenticatedDemoChatsIndexRouteImport } from './routes/_authe
 import { Route as AuthenticatedDemoAppsIndexRouteImport } from './routes/_authenticated/demo/apps/index'
 import { Route as ApiAdminUserBulkDeleteRouteImport } from './routes/api/admin/user/bulk-delete'
 import { Route as ApiAdminUserBulkBanRouteImport } from './routes/api/admin/user/bulk-ban'
+import { Route as ApiAdminUserIdRouteImport } from './routes/api/admin/user/$id'
 import { Route as ApiAdminTranslationImportRouteImport } from './routes/api/admin/translation/import'
 import { Route as ApiAdminTranslationExportRouteImport } from './routes/api/admin/translation/export'
 import { Route as ApiAdminTranslationIdRouteImport } from './routes/api/admin/translation/$id'
@@ -331,6 +332,11 @@ const ApiAdminUserBulkBanRoute = ApiAdminUserBulkBanRouteImport.update({
   path: '/api/admin/user/bulk-ban',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAdminUserIdRoute = ApiAdminUserIdRouteImport.update({
+  id: '/api/admin/user/$id',
+  path: '/api/admin/user/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAdminTranslationImportRoute =
   ApiAdminTranslationImportRouteImport.update({
     id: '/api/admin/translation/import',
@@ -455,6 +461,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/translation/$id': typeof ApiAdminTranslationIdRoute
   '/api/admin/translation/export': typeof ApiAdminTranslationExportRoute
   '/api/admin/translation/import': typeof ApiAdminTranslationImportRoute
+  '/api/admin/user/$id': typeof ApiAdminUserIdRoute
   '/api/admin/user/bulk-ban': typeof ApiAdminUserBulkBanRoute
   '/api/admin/user/bulk-delete': typeof ApiAdminUserBulkDeleteRoute
   '/demo/apps': typeof AuthenticatedDemoAppsIndexRoute
@@ -516,6 +523,7 @@ export interface FileRoutesByTo {
   '/api/admin/translation/$id': typeof ApiAdminTranslationIdRoute
   '/api/admin/translation/export': typeof ApiAdminTranslationExportRoute
   '/api/admin/translation/import': typeof ApiAdminTranslationImportRoute
+  '/api/admin/user/$id': typeof ApiAdminUserIdRoute
   '/api/admin/user/bulk-ban': typeof ApiAdminUserBulkBanRoute
   '/api/admin/user/bulk-delete': typeof ApiAdminUserBulkDeleteRoute
   '/demo/apps': typeof AuthenticatedDemoAppsIndexRoute
@@ -582,6 +590,7 @@ export interface FileRoutesById {
   '/api/admin/translation/$id': typeof ApiAdminTranslationIdRoute
   '/api/admin/translation/export': typeof ApiAdminTranslationExportRoute
   '/api/admin/translation/import': typeof ApiAdminTranslationImportRoute
+  '/api/admin/user/$id': typeof ApiAdminUserIdRoute
   '/api/admin/user/bulk-ban': typeof ApiAdminUserBulkBanRoute
   '/api/admin/user/bulk-delete': typeof ApiAdminUserBulkDeleteRoute
   '/_authenticated/demo/apps/': typeof AuthenticatedDemoAppsIndexRoute
@@ -647,6 +656,7 @@ export interface FileRouteTypes {
     | '/api/admin/translation/$id'
     | '/api/admin/translation/export'
     | '/api/admin/translation/import'
+    | '/api/admin/user/$id'
     | '/api/admin/user/bulk-ban'
     | '/api/admin/user/bulk-delete'
     | '/demo/apps'
@@ -708,6 +718,7 @@ export interface FileRouteTypes {
     | '/api/admin/translation/$id'
     | '/api/admin/translation/export'
     | '/api/admin/translation/import'
+    | '/api/admin/user/$id'
     | '/api/admin/user/bulk-ban'
     | '/api/admin/user/bulk-delete'
     | '/demo/apps'
@@ -773,6 +784,7 @@ export interface FileRouteTypes {
     | '/api/admin/translation/$id'
     | '/api/admin/translation/export'
     | '/api/admin/translation/import'
+    | '/api/admin/user/$id'
     | '/api/admin/user/bulk-ban'
     | '/api/admin/user/bulk-delete'
     | '/_authenticated/demo/apps/'
@@ -814,6 +826,7 @@ export interface RootRouteChildren {
   ApiAdminTranslationIdRoute: typeof ApiAdminTranslationIdRoute
   ApiAdminTranslationExportRoute: typeof ApiAdminTranslationExportRoute
   ApiAdminTranslationImportRoute: typeof ApiAdminTranslationImportRoute
+  ApiAdminUserIdRoute: typeof ApiAdminUserIdRoute
   ApiAdminUserBulkBanRoute: typeof ApiAdminUserBulkBanRoute
   ApiAdminUserBulkDeleteRoute: typeof ApiAdminUserBulkDeleteRoute
   ApiAdminNavgroupIndexRoute: typeof ApiAdminNavgroupIndexRoute
@@ -1175,6 +1188,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminUserBulkBanRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/admin/user/$id': {
+      id: '/api/admin/user/$id'
+      path: '/api/admin/user/$id'
+      fullPath: '/api/admin/user/$id'
+      preLoaderRoute: typeof ApiAdminUserIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/admin/translation/import': {
       id: '/api/admin/translation/import'
       path: '/api/admin/translation/import'
@@ -1412,6 +1432,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminTranslationIdRoute: ApiAdminTranslationIdRoute,
   ApiAdminTranslationExportRoute: ApiAdminTranslationExportRoute,
   ApiAdminTranslationImportRoute: ApiAdminTranslationImportRoute,
+  ApiAdminUserIdRoute: ApiAdminUserIdRoute,
   ApiAdminUserBulkBanRoute: ApiAdminUserBulkBanRoute,
   ApiAdminUserBulkDeleteRoute: ApiAdminUserBulkDeleteRoute,
   ApiAdminNavgroupIndexRoute: ApiAdminNavgroupIndexRoute,

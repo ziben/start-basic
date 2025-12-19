@@ -27,9 +27,9 @@ export default function AdminUsers() {
       <Main>
         <div className='mb-2 flex flex-wrap items-center justify-between space-y-2 gap-x-4'>
           <div>
-            <h2 className='text-2xl font-bold tracking-tight'>{t('admin.navgroup.title')}</h2>
+            <h2 className='text-2xl font-bold tracking-tight'>{t('admin.user.title')}</h2>
             <p className='text-muted-foreground'>
-              {t('admin.navgroup.desc')}
+              {t('admin.user.desc')}
             </p>
           </div>
           <AdminUsersPrimaryButtons />

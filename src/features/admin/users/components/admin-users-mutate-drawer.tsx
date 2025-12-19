@@ -1,7 +1,8 @@
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { showSubmittedData } from '@/lib/show-submitted-data'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -24,6 +25,7 @@ import {
 } from '@/components/ui/sheet'
 import { SelectDropdown } from '@/components/select-dropdown'
 import { type AdminUsers } from '../data/schema'
+import { apiClient } from '~/lib/api-client'
 
 type AdminUsersMutateDrawerProps = {
   open: boolean
@@ -33,13 +35,13 @@ type AdminUsersMutateDrawerProps = {
 
 const formSchema = z.object({
   name: z.string().min(1, 'Name is required.'),
-  email: z.string().min(1, 'Email is required.'),
-  role: z.string().min(1, 'Please select a role.'),
+  email: z.string().email().min(1, 'Email is required.'),
+  password: z.string().optional().catch(''),
+  username: z.string().optional().catch(''),
+  role: z.enum(['admin', 'user']).catch('user'),
   banned: z.boolean().optional().catch(false),
-  image: z.string().optional().catch(''),
   banReason: z.string().optional().catch(''),
   banExpires: z.string().optional().catch(''),
-  username: z.string().optional().catch(''),
 })
 type AdminUserForm = z.infer<typeof formSchema>
 
@@ -53,12 +55,12 @@ export function AdminUsersMutateDrawer({
   const toFormValues = (row?: AdminUsers): AdminUserForm => ({
     name: row?.name ?? '',
     email: row?.email ?? '',
-    role: row?.role ?? '',
-    banned: row?.banned ?? false,
-    image: row?.image ?? '',
-    banReason: row?.banReason ?? '',
-    banExpires: row?.banExpires ? String(row.banExpires) : '',
+    password: '',
     username: row?.username ?? '',
+    role: row?.role === 'admin' ? 'admin' : 'user',
+    banned: row?.banned ?? false,
+    banReason: row?.banReason ?? '',
+    banExpires: row?.banExpires ? new Date(String(row.banExpires)).toISOString() : '',
   })
 
   const form = useForm<AdminUserForm>({
@@ -66,11 +68,61 @@ export function AdminUsersMutateDrawer({
     defaultValues: toFormValues(currentRow),
   })
 
+  const queryClient = useQueryClient()
+  const createMutation = useMutation({
+    mutationFn: async (data: AdminUserForm) => {
+      if (!data.password) {
+        throw new Error('Password is required')
+      }
+
+      return await apiClient.users.create({
+        email: data.email,
+        password: data.password,
+        name: data.name,
+        role: data.role,
+        username: data.username ? data.username : undefined,
+        banned: data.banned,
+      })
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['admin-users'] })
+      onOpenChange(false)
+      form.reset()
+    },
+  })
+
+  const updateMutation = useMutation({
+    mutationFn: async (data: AdminUserForm) => {
+      if (!currentRow) {
+        throw new Error('Missing current user')
+      }
+
+      return await apiClient.users.update(currentRow.id, {
+        name: data.name,
+        username: data.username ? data.username : null,
+        role: data.role,
+        banned: data.banned,
+        banReason: data.banned ? (data.banReason ? data.banReason : null) : null,
+        banExpires: data.banned ? (data.banExpires ? data.banExpires : null) : null,
+      })
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['admin-users'] })
+      onOpenChange(false)
+      form.reset()
+    },
+  })
+
   const onSubmit = (data: AdminUserForm) => {
-    // do something with the form data
-    onOpenChange(false)
-    form.reset()
-    showSubmittedData(data)
+    const promise = isUpdate
+      ? updateMutation.mutateAsync(data)
+      : createMutation.mutateAsync(data)
+
+    toast.promise(promise, {
+      loading: isUpdate ? 'Saving user...' : 'Creating user...',
+      success: isUpdate ? 'Saved' : 'Created',
+      error: String,
+    })
   }
 
   return (
@@ -78,7 +130,7 @@ export function AdminUsersMutateDrawer({
       open={open}
       onOpenChange={(v) => {
         onOpenChange(v)
-        form.reset()
+        form.reset(toFormValues(currentRow))
       }}
     >
       <SheetContent className='flex flex-col'>
@@ -102,30 +154,72 @@ export function AdminUsersMutateDrawer({
               name='name'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Title</FormLabel>
+                  <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Input {...field} placeholder='Enter a title' />
+                    <Input {...field} placeholder='Enter name' />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+
+            <FormField
+              control={form.control}
+              name='email'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input {...field} disabled={isUpdate} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {!isUpdate ? (
+              <FormField
+                control={form.control}
+                name='password'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input {...field} type='password' placeholder='Set initial password' />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            ) : null}
+
+            <FormField
+              control={form.control}
+              name='username'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Username</FormLabel>
+                  <FormControl>
+                    <Input {...field} placeholder='username' />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <FormField
               control={form.control}
               name='role'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Status</FormLabel>
+                  <FormLabel>Role</FormLabel>
                   <SelectDropdown
                     defaultValue={field.value}
                     onValueChange={field.onChange}
-                    placeholder='Select dropdown'
+                    placeholder='Select role'
                     items={[
-                      { label: 'In Progress', value: 'in progress' },
-                      { label: 'Backlog', value: 'backlog' },
-                      { label: 'Todo', value: 'todo' },
-                      { label: 'Canceled', value: 'canceled' },
-                      { label: 'Done', value: 'done' },
+                      { label: 'Admin', value: 'admin' },
+                      { label: 'User', value: 'user' },
                     ]}
                   />
                   <FormMessage />
@@ -137,7 +231,7 @@ export function AdminUsersMutateDrawer({
               name='banned'
               render={({ field }) => (
                 <FormItem className='relative'>
-                  <FormLabel>Label</FormLabel>
+                  <FormLabel>Banned</FormLabel>
                   <FormControl>
                     {/* RadioGroup / Radix expects string values for defaultValue; map boolean to strings */}
                     <RadioGroup
@@ -149,13 +243,13 @@ export function AdminUsersMutateDrawer({
                         <FormControl>
                           <RadioGroupItem value='true' />
                         </FormControl>
-                        <FormLabel className='font-normal'>True</FormLabel>
+                        <FormLabel className='font-normal'>Yes</FormLabel>
                       </FormItem>
                       <FormItem className='flex items-center'>
                         <FormControl>
                           <RadioGroupItem value='false' />
                         </FormControl>
-                        <FormLabel className='font-normal'>False</FormLabel>
+                        <FormLabel className='font-normal'>No</FormLabel>
                       </FormItem>
                     </RadioGroup>
                   </FormControl>
@@ -163,37 +257,29 @@ export function AdminUsersMutateDrawer({
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name='banReason'
               render={({ field }) => (
-                <FormItem className='relative'>
-                  <FormLabel>Priority</FormLabel>
+                <FormItem>
+                  <FormLabel>Ban Reason</FormLabel>
                   <FormControl>
-                    <RadioGroup
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                      className='flex flex-col space-y-1'
-                    >
-                      <FormItem className='flex items-center'>
-                        <FormControl>
-                          <RadioGroupItem value='high' />
-                        </FormControl>
-                        <FormLabel className='font-normal'>High</FormLabel>
-                      </FormItem>
-                      <FormItem className='flex items-center'>
-                        <FormControl>
-                          <RadioGroupItem value='medium' />
-                        </FormControl>
-                        <FormLabel className='font-normal'>Medium</FormLabel>
-                      </FormItem>
-                      <FormItem className='flex items-center'>
-                        <FormControl>
-                          <RadioGroupItem value='low' />
-                        </FormControl>
-                        <FormLabel className='font-normal'>Low</FormLabel>
-                      </FormItem>
-                    </RadioGroup>
+                    <Input {...field} placeholder='reason (optional)' />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name='banExpires'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Ban Expires (ISO datetime)</FormLabel>
+                  <FormControl>
+                    <Input {...field} placeholder='2025-01-01T00:00:00.000Z (optional)' />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -205,7 +291,11 @@ export function AdminUsersMutateDrawer({
           <SheetClose asChild>
             <Button variant='outline'>Close</Button>
           </SheetClose>
-          <Button form='tasks-form' type='submit'>
+          <Button
+            form='tasks-form'
+            type='submit'
+            disabled={updateMutation.isPending || createMutation.isPending}
+          >
             Save changes
           </Button>
         </SheetFooter>
