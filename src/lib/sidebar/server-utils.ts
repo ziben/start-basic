@@ -3,10 +3,15 @@ import { createSidebarData } from '~/components/layout/data/sidebar-data'
 import type { SidebarData, NavGroup as NavGroupType, NavItem } from '~/components/layout/types'
 
 // 从数据库获取侧边栏数据并转换为前端需要的格式
-export async function getSidebarData(userId?: string, role?: string): Promise<SidebarData> {
+export async function getSidebarData(
+  userId?: string,
+  role?: string,
+  scope: 'APP' | 'ADMIN' = 'APP'
+): Promise<SidebarData> {
   try {
     // 获取导航组
     const navGroups = await prisma.navGroup.findMany({
+      where: { scope },
       orderBy: { orderIndex: 'asc' },
       include: {
         navItems: {

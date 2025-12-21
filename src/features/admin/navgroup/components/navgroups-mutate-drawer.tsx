@@ -57,6 +57,7 @@ export function NavGroupsMutateDrawer({
     defaultValues: currentRow
       ? {
           title: currentRow.title,
+          scope: currentRow.scope ?? 'APP',
           orderIndex: currentRow.orderIndex,
           roles: currentRow.roleNavGroups
             ? currentRow.roleNavGroups.map((r) => r.role)
@@ -64,6 +65,7 @@ export function NavGroupsMutateDrawer({
         }
       : {
           title: '',
+          scope: 'APP',
           orderIndex: undefined,
           roles: undefined,
         },
@@ -72,6 +74,7 @@ export function NavGroupsMutateDrawer({
   const onSubmit = (data: NavGroupForm) => {
     const payload = {
       title: data.title,
+      scope: data.scope,
       orderIndex: data.orderIndex,
       roles: data.roles,
     }
@@ -131,6 +134,37 @@ export function NavGroupsMutateDrawer({
                     <FormLabel>{t('admin.navgroup.fields.title') || 'Title'}</FormLabel>
                   <FormControl>
                     <Input {...field} placeholder='Enter a title' />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name='scope'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Scope</FormLabel>
+                  <FormControl>
+                    <RadioGroup
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      className='flex gap-4'
+                    >
+                      <div className='flex items-center space-x-2'>
+                        <RadioGroupItem value='APP' id='scope-app' />
+                        <label htmlFor='scope-app' className='text-sm'>
+                          APP
+                        </label>
+                      </div>
+                      <div className='flex items-center space-x-2'>
+                        <RadioGroupItem value='ADMIN' id='scope-admin' />
+                        <label htmlFor='scope-admin' className='text-sm'>
+                          ADMIN
+                        </label>
+                      </div>
+                    </RadioGroup>
                   </FormControl>
                   <FormMessage />
                 </FormItem>

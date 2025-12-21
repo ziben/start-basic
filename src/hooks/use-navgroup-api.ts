@@ -10,13 +10,14 @@ import {
   type SuccessIdResponse,
   type UpdateNavgroupVisibilityData,
 } from '~/lib/api-client'
+import { SIDEBAR_QUERY_KEY } from '~/lib/sidebar'
 
 // 获取所有导航组
-export function useNavgroups() {
+export function useNavgroups(scope?: 'APP' | 'ADMIN') {
   return useQuery<AdminNavgroup[]>({
-    queryKey: ['admin', 'navgroups'],
+    queryKey: ['admin', 'navgroups', scope ?? 'ALL'],
     queryFn: async () => {
-      return await apiClient.navgroups.list()
+      return await apiClient.navgroups.list(scope)
     },
   })
 }
@@ -43,6 +44,7 @@ export function useCreateNavgroup() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'navgroups'] })
+      queryClient.invalidateQueries({ queryKey: SIDEBAR_QUERY_KEY })
     },
   })
 }
@@ -58,6 +60,7 @@ export function useUpdateNavgroup() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'navgroups'] })
       queryClient.invalidateQueries({ queryKey: ['admin', 'navgroup', variables.id] })
+      queryClient.invalidateQueries({ queryKey: SIDEBAR_QUERY_KEY })
     },
   })
 }
@@ -72,6 +75,7 @@ export function useDeleteNavgroup() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'navgroups'] })
+      queryClient.invalidateQueries({ queryKey: SIDEBAR_QUERY_KEY })
     },
   })
 }
@@ -86,6 +90,7 @@ export function useUpdateNavgroupOrder() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'navgroups'] })
+      queryClient.invalidateQueries({ queryKey: SIDEBAR_QUERY_KEY })
     },
   })
 }
@@ -100,6 +105,7 @@ export function useUpdateNavgroupVisibility() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'navgroups'] })
+      queryClient.invalidateQueries({ queryKey: SIDEBAR_QUERY_KEY })
     },
   })
 }

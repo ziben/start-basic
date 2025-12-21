@@ -7,12 +7,13 @@ import type {
   CreateNavItemData,
   UpdateNavItemData as SchemaUpdateNavItemData,
 } from '~/features/admin/navitem/data/schema'
+import { SIDEBAR_QUERY_KEY } from '~/lib/sidebar'
 
-export function useNavitems(navGroupId?: string) {
+export function useNavitems(navGroupId?: string, scope?: 'APP' | 'ADMIN') {
   return useQuery<AdminNavItemList>({
-    queryKey: ['admin', 'navitems', navGroupId],
+    queryKey: ['admin', 'navitems', navGroupId, scope ?? 'ALL'],
     queryFn: async () => {
-      return await apiClient.navitems.list(navGroupId)
+      return await apiClient.navitems.list(navGroupId, scope)
     },
   })
 }
@@ -36,6 +37,7 @@ export function useCreateNavitem() {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'navitems', variables.navGroupId] })
+      queryClient.invalidateQueries({ queryKey: SIDEBAR_QUERY_KEY })
     },
   })
 }
@@ -55,6 +57,7 @@ export function useUpdateNavitem() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'navitems'] })
       queryClient.invalidateQueries({ queryKey: ['admin', 'navitem', variables.id] })
+      queryClient.invalidateQueries({ queryKey: SIDEBAR_QUERY_KEY })
     },
   })
 }
@@ -73,6 +76,7 @@ export function useDeleteNavitem() {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'navitems', variables.navGroupId] })
+      queryClient.invalidateQueries({ queryKey: SIDEBAR_QUERY_KEY })
     },
   })
 }
@@ -86,6 +90,7 @@ export function useUpdateNavitemOrder() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'navitems'] })
+      queryClient.invalidateQueries({ queryKey: SIDEBAR_QUERY_KEY })
     },
   })
 }
@@ -104,6 +109,7 @@ export function useToggleNavItemVisibility() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'navitems'] })
+      queryClient.invalidateQueries({ queryKey: SIDEBAR_QUERY_KEY })
     },
   })
 }

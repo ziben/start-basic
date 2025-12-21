@@ -5,14 +5,16 @@ import { GeneralError } from './features/demo/errors/general-error';
 import { NotFoundError } from './features/demo/errors/not-found-error';
 import { routeTree } from './routeTree.gen';
 
-// 缓存时间常量
-const CACHE_TIME = {
-  SHORT: 1000 * 30, // 30 seconds - 用户数据等频繁变化的数据
-  MEDIUM: 1000 * 60 * 5, // 5 minutes - 一般数据
-  LONG: 1000 * 60 * 30, // 30 minutes - 静态配置数据
-} as const
+function getCacheTime() {
+  return {
+    SHORT: 1000 * 30, // 30 seconds - 用户数据等频繁变化的数据
+    MEDIUM: 1000 * 60 * 5, // 5 minutes - 一般数据
+    LONG: 1000 * 60 * 30, // 30 minutes - 静态配置数据
+  } as const
+}
 
 export function getRouter() {
+  const CACHE_TIME = getCacheTime()
   // 创建 QueryClient，用于管理数据获取和缓存
   const queryClient = new QueryClient({
     defaultOptions: {

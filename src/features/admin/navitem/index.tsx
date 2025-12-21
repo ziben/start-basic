@@ -25,7 +25,7 @@ export default function AdminNavItemPage() {
   
   // 使用API hooks获取数据 - 无论是否有navGroupId都加载所有导航项
   // 这里移除了enabled条件，确保页面加载时始终加载数据
-  const { data: navItemList = [], isLoading, error } = useNavitems(navGroupId)
+  const { data: navItemList = [], isLoading, error } = useNavitems(navGroupId, 'ADMIN')
 
   return (
     <AdminNavItemProvider initialNavGroupId={navGroupId}>

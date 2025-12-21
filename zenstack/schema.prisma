@@ -8,6 +8,11 @@ generator client {
   // output   = "../src/generated/prisma"
 }
 
+enum SidebarScope {
+  APP
+  ADMIN
+}
+
 model User {
   id            String    @id
   name          String
@@ -41,6 +46,7 @@ model User {
 model NavGroup {
   id          String   @id @default(cuid())
   title       String   // 分组标题
+  scope       SidebarScope @default(APP) // 导航作用域：APP(用户侧)/ADMIN(管理侧)
   orderIndex  Int      // 排序索引
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

@@ -33,6 +33,7 @@ export const Route = createFileRoute('/api/admin/navgroup/$id')({
           const body = await request.json()
           const updateSchema = z.object({
             title: z.string().optional(),
+            scope: z.enum(['APP', 'ADMIN']).optional(),
             description: z.string().optional(),
             icon: z.string().optional(),
             orderIndex: z.number().optional(),

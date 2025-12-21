@@ -14,9 +14,13 @@ export const Route = createFileRoute('/api/admin/navgroup/')({
   server: {
     handlers: {
       // 获取导航组
-      GET: withAdminAuth(async ({ request: _request }: any) => {
-        // 获取所有导航组
-        const groups = await getAllNavGroups()
+      GET: withAdminAuth(async ({ request }: any) => {
+        const url = new URL(request.url)
+        const scope = url.searchParams.get('scope')
+
+        const groups = await getAllNavGroups(
+          scope === 'ADMIN' || scope === 'APP' ? (scope as 'ADMIN' | 'APP') : undefined
+        )
         return Response.json(groups)
       }),
 
@@ -26,6 +30,7 @@ export const Route = createFileRoute('/api/admin/navgroup/')({
           const body = await request.json()
           const createSchema = z.object({
             title: z.string(),
+            scope: z.enum(['APP', 'ADMIN']).optional(),
             description: z.string().optional(),
             icon: z.string().optional(),
             orderIndex: z.number().optional(),
@@ -48,9 +53,10 @@ export const Route = createFileRoute('/api/admin/navgroup/')({
 /**
  * 获取所有导航组
  */
-export async function getAllNavGroups() {
+export async function getAllNavGroups(scope?: 'APP' | 'ADMIN') {
   try {
     const navGroups = await prisma.navGroup.findMany({
+      where: scope ? { scope } : undefined,
       orderBy: { orderIndex: 'asc' },
       include: {
         navItems: {
@@ -95,6 +101,7 @@ export async function getNavGroupById(id: string) {
  */
 export async function createNavGroup(data: {
   title: string
+  scope?: 'APP' | 'ADMIN'
   orderIndex?: number
   roles?: string[]
 }) {
@@ -114,6 +121,7 @@ export async function createNavGroup(data: {
       const group = await tx.navGroup.create({
         data: {
           title: data.title,
+          scope: data.scope ?? 'APP',
           orderIndex,
         },
       })
@@ -162,6 +170,7 @@ export async function updateNavGroup(
   id: string,
   data: {
     title?: string
+    scope?: 'APP' | 'ADMIN'
     orderIndex?: number
     roles?: string[]
   }
@@ -171,6 +180,7 @@ export async function updateNavGroup(
       // 更新导航组基本信息
       const updateData: any = {}
       if (data.title !== undefined) updateData.title = data.title
+      if (data.scope !== undefined) updateData.scope = data.scope
       if (data.orderIndex !== undefined) updateData.orderIndex = data.orderIndex
 
       await tx.navGroup.update({

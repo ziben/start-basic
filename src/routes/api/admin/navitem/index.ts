@@ -11,9 +11,12 @@ export const Route = createFileRoute('/api/admin/navitem/')({
       GET: withAdminAuth(async ({ request }: any) => {
         const url = new URL(request.url)
         const navGroupId = url.searchParams.get('navGroupId')
+        const scope = url.searchParams.get('scope')
+
+        const parsedScope = scope === 'ADMIN' || scope === 'APP' ? (scope as 'ADMIN' | 'APP') : undefined
 
         // 获取所有导航项
-        const items = await getAllNavItems(navGroupId ?? undefined)
+        const items = await getAllNavItems(navGroupId ?? undefined, parsedScope)
         return Response.json(items)
       }),
 
@@ -118,9 +121,15 @@ async function validateAndUpdateParentNavItem(params: {
 /**
  * 获取所有导航项
  */
-export async function getAllNavItems(navGroupId?: string) {
+export async function getAllNavItems(navGroupId?: string, scope?: 'APP' | 'ADMIN') {
   try {
-    const whereClause = navGroupId ? { navGroupId } : {}
+    const whereClause: any = {}
+    if (navGroupId) {
+      whereClause.navGroupId = navGroupId
+    }
+    if (scope) {
+      whereClause.navGroup = { scope }
+    }
 
     const navItems = await prisma.navItem.findMany({
       where: whereClause,

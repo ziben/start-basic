@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { createSidebarData } from '~/components/layout/data/sidebar-data'
 import type { SidebarData, NavItem } from '~/components/layout/types'
@@ -15,31 +15,27 @@ export const SIDEBAR_QUERY_KEY = ['sidebar']
  * @param iconResolver 可选的图标解析器，将字符串转换为组件
  * @returns 处理后的侧边栏数据和加载状态
  */
-export function useSidebar(iconResolver?: IconResolver) {
+export function useSidebar(iconResolver?: IconResolver, scope: 'APP' | 'ADMIN' = 'APP') {
   const { t } = useTranslation()
-  const [localData, setLocalData] = useState<SidebarData | null>(null)
 
   // 从API获取侧边栏数据
   const { data, isLoading, error } = useQuery({
-    queryKey: SIDEBAR_QUERY_KEY,
-    queryFn: () => getSidebarDataFn(),
-    staleTime: 5 * 60 * 1000, // 5分钟缓存
-    refetchOnWindowFocus: false,
+    queryKey: [...SIDEBAR_QUERY_KEY, scope],
+    queryFn: ({ signal }) => getSidebarDataFn({ data: scope, signal }),
+    staleTime: 10 * 1000, // 10秒内视为新鲜数据
+    refetchOnWindowFocus: true,
+    refetchInterval: 30 * 1000, // 30秒轮询，保证别的管理员改了 DB 也能刷新
   })
-  
-  // 处理翻译和图标解析
-  useEffect(() => {
-    if (data && !localData) {
-      // 处理翻译和图标，使用传入的解析器或默认解析器
-      const processedData = processSidebarData(data as SidebarData, t, iconResolver ?? defaultIconResolver)
-      setLocalData(processedData)
-    }
-  }, [data, localData, t, iconResolver])
+
+  const processedData = useMemo(() => {
+    if (!data) return null
+    return processSidebarData(data as SidebarData, t, iconResolver ?? defaultIconResolver)
+  }, [data, t, iconResolver])
 
   // console.info('Sidebar hook data:', { data, localData, isLoading, error })
 
   // 如果出错或加载中且没有本地数据，使用默认数据
-  if ((error || isLoading) && !localData) {
+  if ((error || isLoading) && !processedData) {
     // 创建默认的侧边栏数据
     const defaultData = createSidebarData(t)
     return {
@@ -50,7 +46,7 @@ export function useSidebar(iconResolver?: IconResolver) {
   }
 
   return {
-    data: localData || data || createSidebarData(t),
+    data: processedData || data || createSidebarData(t),
     isLoading,
     error,
   }

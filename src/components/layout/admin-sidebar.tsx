@@ -12,6 +12,8 @@ import type { NavGroup as NavGroupType } from './types'
 import { useLayout } from '~/context/layout-provider'
 import { AdminTitle } from './admin-title'
 import { useRouteContext } from '@tanstack/react-router'
+import { useSidebar as useDynamicSidebar } from '~/lib/sidebar'
+import { iconResolver } from '~/utils/icon-resolver'
 import {
   LayoutDashboard,
   Users,
@@ -127,9 +129,11 @@ export function AdminSidebar() {
   const { t } = useTranslation()
   const { collapsible, variant } = useLayout()
   const { user } = useRouteContext({ from: '__root__' })
-  
-  // 使用管理后台专用数据
-  const sidebarData = createAdminSidebarData(t)
+
+  const { data: sidebarData, isLoading } = useDynamicSidebar(iconResolver, 'ADMIN')
+
+  // 加载中时显示骨架屏（用原静态数据兜底）
+  const fallbackData = createAdminSidebarData(t)
 
   // 用户信息
   const userData = {
@@ -144,9 +148,11 @@ export function AdminSidebar() {
         <AdminTitle />
       </SidebarHeader>
       <SidebarContent>
-        {sidebarData.navGroups.map((props: NavGroupType) => (
+        {(isLoading || sidebarData.navGroups.length === 0 ? fallbackData.navGroups : sidebarData.navGroups).map(
+          (props: NavGroupType) => (
           <NavGroupComponent key={props.title} {...props} />
-        ))}
+          )
+        )}
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={userData} />

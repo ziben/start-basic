@@ -111,7 +111,10 @@ export async function fetchText(
 
 export const apiClient = {
   navgroups: {
-    list: () => fetchJson<AdminNavgroup[]>('/api/admin/navgroup/'),
+    list: (scope?: 'APP' | 'ADMIN') => {
+      const url = scope ? `/api/admin/navgroup/?scope=${encodeURIComponent(scope)}` : '/api/admin/navgroup/'
+      return fetchJson<AdminNavgroup[]>(url)
+    },
     get: (id: string) => fetchJson<AdminNavgroup>(`/api/admin/navgroup/${encodeURIComponent(id)}`),
     create: (data: CreateNavgroupData) =>
       fetchJson<AdminNavgroup>('/api/admin/navgroup/', {
@@ -141,10 +144,12 @@ export const apiClient = {
       }),
   },
   navitems: {
-    list: (navGroupId?: string) => {
-      const url = navGroupId
-        ? `/api/admin/navitem?navGroupId=${encodeURIComponent(navGroupId)}`
-        : '/api/admin/navitem'
+    list: (navGroupId?: string, scope?: 'APP' | 'ADMIN') => {
+      const params = new URLSearchParams()
+      if (navGroupId) params.set('navGroupId', navGroupId)
+      if (scope) params.set('scope', scope)
+      const query = params.toString()
+      const url = query ? `/api/admin/navitem?${query}` : '/api/admin/navitem'
       return fetchJson<AdminNavItemList>(url)
     },
     get: (id: string) => fetchJson<AdminNavItem>(`/api/admin/navitem/${encodeURIComponent(id)}`),

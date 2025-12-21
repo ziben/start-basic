@@ -30,6 +30,7 @@ export const userRoleNavGroupSchema = z.object({
 export const adminNavgroupSchema = z.object({
   id: z.string(),
   title: z.string().min(1, { message: '标题不能为空' }),
+  scope: z.enum(['APP', 'ADMIN']).default('APP'),
   orderIndex: z.number().int(),
   createdAt: z.string().or(z.date()),
   updatedAt: z.string().or(z.date()),
@@ -42,6 +43,7 @@ export const adminNavgroupListSchema = z.array(adminNavgroupSchema)
 
 export const createNavgroupSchema = z.object({
   title: z.string().min(1, { message: '标题不能为空' }),
+  scope: z.enum(['APP', 'ADMIN']).default('APP'),
   orderIndex: z.number().int().optional(),
   // roles represents initial RoleNavGroup entries to create alongside NavGroup
   roles: z.array(z.string()).optional(),
@@ -49,6 +51,7 @@ export const createNavgroupSchema = z.object({
 
 export const updateNavgroupSchema = z.object({
   title: z.string().min(1, { message: '标题不能为空' }).optional(),
+  scope: z.enum(['APP', 'ADMIN']).optional(),
   orderIndex: z.number().int().optional(),
   roles: z.array(z.string()).optional(),
 })

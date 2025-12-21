@@ -44,7 +44,7 @@ const CreateNavItemDialog = () => {
   } = useAdminNavItemContext();
 
   // 获取导航组列表
-  const { data: navgroups = [] } = useNavgroups();
+  const { data: navgroups = [] } = useNavgroups('ADMIN');
 
   // 创建导航项的mutation
   const createNavitemMutation = useCreateNavitem();
