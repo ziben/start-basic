@@ -13,7 +13,7 @@ export function DataTablePagination<TData>({ table }: DataTablePaginationProps<T
 
   return (
     <div className='flex items-center justify-between px-2'>
-      <div className='text-muted-foreground flex-1 text-sm'>
+      <div className='flex-1 text-sm text-muted-foreground'>
         {table.getFilteredSelectedRowModel().rows.length} / {table.getFilteredRowModel().rows.length}{' '}
         {t('admin.common.rowsSelected')}
       </div>

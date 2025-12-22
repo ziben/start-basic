@@ -41,7 +41,7 @@ const IconItem = React.memo(
         <TooltipTrigger asChild>
           <button
             type='button'
-            className='hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring flex h-12 flex-col items-center justify-center gap-1 rounded-md p-2 transition-colors focus-visible:ring-2 focus-visible:outline-none'
+            className='flex h-12 flex-col items-center justify-center gap-1 rounded-md p-2 transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none'
             onClick={() => onSelect(iconName)}
           >
             {React.createElement(IconComponent, {
@@ -157,7 +157,7 @@ export const IconPicker = React.memo(function IconPicker({
           </div>
           <div ref={scrollRef} className='max-h-[300px] overflow-y-auto p-2'>
             {filteredIcons.length === 0 ? (
-              <p className='text-muted-foreground py-8 text-center text-sm'>未找到图标</p>
+              <p className='py-8 text-center text-sm text-muted-foreground'>未找到图标</p>
             ) : (
               <TooltipProvider delayDuration={300}>
                 <div style={{ paddingTop, paddingBottom }}>
@@ -189,12 +189,12 @@ export const IconPicker = React.memo(function IconPicker({
           {filteredIcons.length > 0 && (
             <>
               {!debouncedSearch && filteredIcons.length === 300 && (
-                <p className='text-muted-foreground px-2 pb-2 text-center text-xs'>
+                <p className='px-2 pb-2 text-center text-xs text-muted-foreground'>
                   显示前 300 个图标，使用搜索查找更多...
                 </p>
               )}
               {debouncedSearch && filteredIcons.length === 500 && (
-                <p className='text-muted-foreground px-2 pb-2 text-center text-xs'>已显示 500 个结果，请细化搜索...</p>
+                <p className='px-2 pb-2 text-center text-xs text-muted-foreground'>已显示 500 个结果，请细化搜索...</p>
               )}
             </>
           )}

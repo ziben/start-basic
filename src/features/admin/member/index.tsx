@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { format } from 'date-fns'
-import { zhCN } from 'date-fns/locale'
+import { getRouteApi } from '@tanstack/react-router'
 import {
   type ColumnDef,
   type SortingState,
@@ -12,24 +12,24 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-import { getRouteApi } from '@tanstack/react-router'
+import { zhCN } from 'date-fns/locale'
 import { Building2, Edit, Trash2, Users, UserPlus } from 'lucide-react'
 import { toast } from 'sonner'
-import { useTranslation } from '~/hooks/useTranslation'
 import {
   useAdminMembers,
   useDeleteAdminMember,
   useBulkDeleteAdminMembers,
   type AdminMemberInfo,
 } from '~/hooks/use-admin-member-api'
+import { useTranslation } from '~/hooks/useTranslation'
+import { type NavigateFn, useTableUrlState } from '@/hooks/use-table-url-state'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import { DataTableColumnHeader, DataTablePagination, DataTableToolbar } from '@/components/data-table'
 import { ConfirmDialog } from '@/components/confirm-dialog'
+import { DataTableColumnHeader, DataTablePagination, DataTableToolbar } from '@/components/data-table'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
-import { type NavigateFn, useTableUrlState } from '@/hooks/use-table-url-state'
 
 const route = getRouteApi('/admin/member')
 
@@ -72,7 +72,6 @@ export default function AdminMember() {
     setConfirmOpen(true)
   }, [])
 
-
   const columns = useMemo(() => {
     const cols: ColumnDef<AdminMemberInfo>[] = [
       {
@@ -112,7 +111,10 @@ export default function AdminMember() {
       {
         accessorKey: 'username',
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title={t('admin.member.columns.username', { defaultMessage: '用户名' })} />
+          <DataTableColumnHeader
+            column={column}
+            title={t('admin.member.columns.username', { defaultMessage: '用户名' })}
+          />
         ),
         cell: ({ row }) => (
           <div className='flex items-center gap-2'>
@@ -129,14 +131,17 @@ export default function AdminMember() {
       {
         accessorKey: 'organizationName',
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title={t('admin.member.columns.organization', { defaultMessage: '组织' })} />
+          <DataTableColumnHeader
+            column={column}
+            title={t('admin.member.columns.organization', { defaultMessage: '组织' })}
+          />
         ),
         cell: ({ row }) => (
           <div className='flex items-center gap-2'>
             <Building2 className='h-4 w-4' />
             <div>
               <div className='font-medium'>{row.original.organizationName}</div>
-              <div className='text-sm text-muted-foreground font-mono'>{row.original.organizationSlug}</div>
+              <div className='font-mono text-sm text-muted-foreground'>{row.original.organizationSlug}</div>
             </div>
           </div>
         ),
@@ -151,7 +156,7 @@ export default function AdminMember() {
           let color = 'default'
           if (role === 'admin' || role === 'owner') color = 'destructive'
           else if (role === 'manager') color = 'secondary'
-          
+
           return (
             <Badge variant={color as any} className='capitalize'>
               {t(`admin.member.roles.${role}`, { defaultMessage: role })}
@@ -221,7 +226,11 @@ export default function AdminMember() {
   const sortBy = firstSort?.id
   const sortDir = firstSort?.id ? (firstSort.desc ? 'desc' : 'asc') : undefined
 
-  const { data: pageData, isLoading, error } = useAdminMembers({
+  const {
+    data: pageData,
+    isLoading,
+    error,
+  } = useAdminMembers({
     page: tableUrl.pagination.pageIndex + 1,
     pageSize: tableUrl.pagination.pageSize,
     filter: tableUrl.globalFilter ? tableUrl.globalFilter : undefined,
@@ -338,8 +347,13 @@ export default function AdminMember() {
                         <tr className='border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted'>
                           {table.getHeaderGroups().map((headerGroup) =>
                             headerGroup.headers.map((header) => (
-                              <th key={header.id} className='h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0'>
-                                {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                              <th
+                                key={header.id}
+                                className='h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0'
+                              >
+                                {header.isPlaceholder
+                                  ? null
+                                  : flexRender(header.column.columnDef.header, header.getContext())}
                               </th>
                             ))
                           )}
@@ -354,7 +368,10 @@ export default function AdminMember() {
                           </tr>
                         ) : table.getRowModel().rows?.length ? (
                           table.getRowModel().rows.map((row) => (
-                            <tr key={row.id} className='border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted'>
+                            <tr
+                              key={row.id}
+                              className='border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted'
+                            >
                               {row.getVisibleCells().map((cell) => (
                                 <td key={cell.id} className='p-4 align-middle [&:has([role=checkbox])]:pr-0'>
                                   {flexRender(cell.column.columnDef.cell, cell.getContext())}

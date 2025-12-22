@@ -451,7 +451,14 @@ export const apiClient = {
       }),
   },
   adminOrganizations: {
-    list: (params?: { page?: number; pageSize?: number; filter?: string; sortBy?: string; sortDir?: string; signal?: AbortSignal }) => {
+    list: (params?: {
+      page?: number
+      pageSize?: number
+      filter?: string
+      sortBy?: string
+      sortDir?: string
+      signal?: AbortSignal
+    }) => {
       const search = new URLSearchParams()
       if (params?.page) search.set('page', String(params.page))
       if (params?.pageSize) search.set('pageSize', String(params.pageSize))
@@ -459,10 +466,11 @@ export const apiClient = {
       if (params?.sortBy) search.set('sortBy', params.sortBy)
       if (params?.sortDir) search.set('sortDir', params.sortDir)
       const suffix = search.toString() ? `?${search.toString()}` : ''
-      return fetchJsonWithSchema(adminOrganizationsPageSchema, `/api/admin/organization/${suffix}`, { signal: params?.signal })
+      return fetchJsonWithSchema(adminOrganizationsPageSchema, `/api/admin/organization/${suffix}`, {
+        signal: params?.signal,
+      })
     },
-    get: (id: string) =>
-      fetchJson<AdminOrganizationInfo>(`/api/admin/organization/${encodeURIComponent(id)}`),
+    get: (id: string) => fetchJson<AdminOrganizationInfo>(`/api/admin/organization/${encodeURIComponent(id)}`),
     create: (data: { name: string; slug?: string; logo?: string; metadata?: string }) =>
       fetchJson<AdminOrganizationInfo>('/api/admin/organization/', {
         method: 'POST',
@@ -487,7 +495,15 @@ export const apiClient = {
       }),
   },
   adminMembers: {
-    list: (params?: { page?: number; pageSize?: number; filter?: string; organizationId?: string; sortBy?: string; sortDir?: string; signal?: AbortSignal }) => {
+    list: (params?: {
+      page?: number
+      pageSize?: number
+      filter?: string
+      organizationId?: string
+      sortBy?: string
+      sortDir?: string
+      signal?: AbortSignal
+    }) => {
       const search = new URLSearchParams()
       if (params?.page) search.set('page', String(params.page))
       if (params?.pageSize) search.set('pageSize', String(params.pageSize))
@@ -498,8 +514,7 @@ export const apiClient = {
       const suffix = search.toString() ? `?${search.toString()}` : ''
       return fetchJsonWithSchema(adminMembersPageSchema, `/api/admin/member/${suffix}`, { signal: params?.signal })
     },
-    get: (id: string) =>
-      fetchJson<AdminMemberInfo>(`/api/admin/member/${encodeURIComponent(id)}`),
+    get: (id: string) => fetchJson<AdminMemberInfo>(`/api/admin/member/${encodeURIComponent(id)}`),
     create: (data: { organizationId: string; userId: string; role: string }) =>
       fetchJson<AdminMemberInfo>('/api/admin/member/', {
         method: 'POST',
@@ -524,7 +539,16 @@ export const apiClient = {
       }),
   },
   adminInvitations: {
-    list: (params?: { page?: number; pageSize?: number; filter?: string; organizationId?: string; status?: string; sortBy?: string; sortDir?: string; signal?: AbortSignal }) => {
+    list: (params?: {
+      page?: number
+      pageSize?: number
+      filter?: string
+      organizationId?: string
+      status?: string
+      sortBy?: string
+      sortDir?: string
+      signal?: AbortSignal
+    }) => {
       const search = new URLSearchParams()
       if (params?.page) search.set('page', String(params.page))
       if (params?.pageSize) search.set('pageSize', String(params.pageSize))
@@ -534,10 +558,11 @@ export const apiClient = {
       if (params?.sortBy) search.set('sortBy', params.sortBy)
       if (params?.sortDir) search.set('sortDir', params.sortDir)
       const suffix = search.toString() ? `?${search.toString()}` : ''
-      return fetchJsonWithSchema(adminInvitationsPageSchema, `/api/admin/invitation/${suffix}`, { signal: params?.signal })
+      return fetchJsonWithSchema(adminInvitationsPageSchema, `/api/admin/invitation/${suffix}`, {
+        signal: params?.signal,
+      })
     },
-    get: (id: string) =>
-      fetchJson<AdminInvitationInfo>(`/api/admin/invitation/${encodeURIComponent(id)}`),
+    get: (id: string) => fetchJson<AdminInvitationInfo>(`/api/admin/invitation/${encodeURIComponent(id)}`),
     create: (data: { organizationId: string; email: string; role: string; expiresAt?: string }) =>
       fetchJson<AdminInvitationInfo>('/api/admin/invitation/', {
         method: 'POST',

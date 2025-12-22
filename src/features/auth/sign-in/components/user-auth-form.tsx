@@ -110,7 +110,7 @@ export function UserAuthForm({ className, redirectTo, ...props }: UserAuthFormPr
               <FormMessage />
               <Link
                 to='/forgot-password'
-                className='text-muted-foreground absolute -top-0.5 right-0 text-sm font-medium hover:opacity-75'
+                className='absolute -top-0.5 right-0 text-sm font-medium text-muted-foreground hover:opacity-75'
               >
                 忘记密码？
               </Link>

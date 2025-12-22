@@ -95,7 +95,7 @@ const CreateNavItemDialog = () => {
               </Label>
               <Input id='title' {...createForm.register('title')} className='col-span-3' />
               {createForm.formState.errors.title && (
-                <p className='text-destructive col-span-3 col-start-2 text-sm'>
+                <p className='col-span-3 col-start-2 text-sm text-destructive'>
                   {createForm.formState.errors.title.message}
                 </p>
               )}
@@ -147,7 +147,7 @@ const CreateNavItemDialog = () => {
                 </SelectContent>
               </Select>
               {createForm.formState.errors.navGroupId && (
-                <p className='text-destructive col-span-3 col-start-2 text-sm'>
+                <p className='col-span-3 col-start-2 text-sm text-destructive'>
                   {createForm.formState.errors.navGroupId.message}
                 </p>
               )}
@@ -281,7 +281,7 @@ const EditNavItemDialog = () => {
               </Label>
               <Input id='title' {...editForm.register('title')} className='col-span-3' />
               {editForm.formState.errors.title && (
-                <p className='text-destructive col-span-3 col-start-2 text-sm'>
+                <p className='col-span-3 col-start-2 text-sm text-destructive'>
                   {editForm.formState.errors.title.message}
                 </p>
               )}
@@ -334,7 +334,7 @@ const EditNavItemDialog = () => {
                 </SelectContent>
               </Select>
               {editForm.formState.errors.navGroupId && (
-                <p className='text-destructive col-span-3 col-start-2 text-sm'>
+                <p className='col-span-3 col-start-2 text-sm text-destructive'>
                   {editForm.formState.errors.navGroupId.message}
                 </p>
               )}
@@ -433,7 +433,7 @@ const DeleteNavItemDialog = () => {
           <AlertDialogAction
             onClick={handleDelete}
             disabled={deleteNavitemMutation.isPending}
-            className='bg-destructive text-destructive-foreground hover:bg-destructive/90'
+            className='text-destructive-foreground bg-destructive hover:bg-destructive/90'
           >
             {deleteNavitemMutation.isPending
               ? t('common.buttons.deleting', { defaultMessage: '删除中...' })

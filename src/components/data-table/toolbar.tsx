@@ -79,10 +79,10 @@ function DataTableToolbarInner<TData>({
           </Button>
         )}
       </div>
-      <DataTableViewOptions 
-        table={table} 
-        columnVisibility={columnVisibility ?? {}} 
-        onColumnVisibilityChange={onColumnVisibilityChange ?? (() => {})} 
+      <DataTableViewOptions
+        table={table}
+        columnVisibility={columnVisibility ?? {}}
+        onColumnVisibilityChange={onColumnVisibilityChange ?? (() => {})}
       />
     </div>
   )

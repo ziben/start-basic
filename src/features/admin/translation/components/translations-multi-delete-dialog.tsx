@@ -53,7 +53,7 @@ export function TranslationsMultiDeleteDialog<TData>({
       disabled={value.trim() !== CONFIRM_WORD}
       title={
         <span className='text-destructive'>
-          <AlertTriangle className='stroke-destructive me-1 inline-block' size={18} /> Delete {selectedRows.length}{' '}
+          <AlertTriangle className='me-1 inline-block stroke-destructive' size={18} /> Delete {selectedRows.length}{' '}
           {selectedRows.length > 1 ? 'translations' : 'translation'}
         </span>
       }

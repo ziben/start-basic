@@ -45,8 +45,7 @@ export function useAdminMember(id: string) {
 export function useCreateAdminMember() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (data: { organizationId: string; userId: string; role: string }) =>
-      apiClient.adminMembers.create(data),
+    mutationFn: (data: { organizationId: string; userId: string; role: string }) => apiClient.adminMembers.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-members'] })
     },
@@ -56,8 +55,7 @@ export function useCreateAdminMember() {
 export function useUpdateAdminMember() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: { role?: string } }) =>
-      apiClient.adminMembers.update(id, data),
+    mutationFn: ({ id, data }: { id: string; data: { role?: string } }) => apiClient.adminMembers.update(id, data),
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: ['admin-members'] })
       queryClient.invalidateQueries({ queryKey: ['admin-member', id] })

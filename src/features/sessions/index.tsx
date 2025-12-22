@@ -112,7 +112,7 @@ const Sessions: React.FC = () => {
                       <TableCell>
                         <div>
                           <div className='font-medium'>{session.username}</div>
-                          <div className='text-muted-foreground text-sm'>{session.email}</div>
+                          <div className='text-sm text-muted-foreground'>{session.email}</div>
                         </div>
                       </TableCell>
                       <TableCell>

@@ -42,7 +42,7 @@ export function IconPickerDemo() {
     <div className='mx-auto max-w-2xl space-y-8 p-6'>
       <div>
         <h2 className='text-2xl font-bold'>图标选择器示例</h2>
-        <p className='text-muted-foreground mt-2'>在表单中使用图标选择器组件</p>
+        <p className='mt-2 text-muted-foreground'>在表单中使用图标选择器组件</p>
       </div>
 
       <Form {...form}>
@@ -78,17 +78,17 @@ export function IconPickerDemo() {
           />
 
           {selectedIcon && SelectedIconComponent && (
-            <div className='bg-muted rounded-lg p-4'>
-              <p className='text-muted-foreground mb-3 text-sm font-medium'>预览效果</p>
+            <div className='rounded-lg bg-muted p-4'>
+              <p className='mb-3 text-sm font-medium text-muted-foreground'>预览效果</p>
               <div className='flex items-center gap-4'>
-                <div className='bg-background flex size-16 items-center justify-center rounded-lg border'>
+                <div className='flex size-16 items-center justify-center rounded-lg border bg-background'>
                   {React.createElement(SelectedIconComponent, {
                     className: 'size-8',
                   })}
                 </div>
                 <div>
                   <p className='font-medium'>{form.getValues('name') || '未命名'}</p>
-                  <p className='text-muted-foreground text-sm'>{selectedIcon}</p>
+                  <p className='text-sm text-muted-foreground'>{selectedIcon}</p>
                 </div>
               </div>
             </div>
@@ -106,7 +106,7 @@ export function IconPickerDemo() {
       {/* 简单用法示例 */}
       <div className='space-y-4 border-t pt-8'>
         <h3 className='text-lg font-semibold'>简单用法</h3>
-        <p className='text-muted-foreground text-sm'>不使用表单库的基本示例</p>
+        <p className='text-sm text-muted-foreground'>不使用表单库的基本示例</p>
         <SimpleExample />
       </div>
     </div>
@@ -125,7 +125,7 @@ function SimpleExample() {
       <IconPicker value={selectedIcon} onValueChange={setSelectedIcon} placeholder='选择一个图标' />
 
       {selectedIcon && IconComponent && (
-        <div className='bg-muted flex items-center gap-3 rounded-lg p-4'>
+        <div className='flex items-center gap-3 rounded-lg bg-muted p-4'>
           {React.createElement(IconComponent, { className: 'size-6' })}
           <span className='text-sm'>已选择: {selectedIcon}</span>
           <Button size='sm' variant='ghost' onClick={() => setSelectedIcon('')} className='ml-auto'>

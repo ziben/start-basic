@@ -1,5 +1,5 @@
-import { createFileRoute } from '@tanstack/react-router'
 import { z } from 'zod'
+import { createFileRoute } from '@tanstack/react-router'
 import prisma from '~/lib/db'
 import { withAdminAuth } from '~/middleware'
 
@@ -56,7 +56,6 @@ export const Route = createFileRoute('/api/admin/organization/$id')({
             return new Response('Organization not found', { status: 404 })
           }
 
-          let slug = input.slug
           if (input.slug !== undefined && input.slug !== organization.slug) {
             const existing = await prisma.organization.findFirst({
               where: { slug: input.slug },

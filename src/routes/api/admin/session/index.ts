@@ -16,7 +16,10 @@ export const Route = createFileRoute('/api/admin/session/')({
         const sortDirRaw = (url.searchParams.get('sortDir') ?? '').trim()
 
         const legacyActive = url.searchParams.get('active')
-        const rawStatus = url.searchParams.getAll('status').flatMap((s) => s.split(',')).map((s) => s.trim())
+        const rawStatus = url.searchParams
+          .getAll('status')
+          .flatMap((s) => s.split(','))
+          .map((s) => s.trim())
         const status = rawStatus.filter(Boolean) as Array<'active' | 'expired' | string>
 
         const now = new Date()

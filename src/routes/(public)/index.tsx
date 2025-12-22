@@ -31,32 +31,32 @@ function HomePage() {
         {/* Hero Section */}
         <section className='py-14 md:py-20'>
           <div className='mx-auto flex max-w-4xl flex-col items-center text-center'>
-            <div className='bg-background/40 text-muted-foreground inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs backdrop-blur'>
+            <div className='inline-flex items-center gap-2 rounded-full border bg-background/40 px-3 py-1 text-xs text-muted-foreground backdrop-blur'>
               <span className='h-1.5 w-1.5 rounded-full bg-cyan-400' />
               TanStack Start + Better Auth + Prisma
             </div>
 
             <h1 className='mt-6 text-4xl font-semibold tracking-tight text-balance sm:text-5xl md:text-6xl'>
-              <span className='from-foreground to-foreground/70 bg-gradient-to-b bg-clip-text text-transparent'>
+              <span className='bg-gradient-to-b from-foreground to-foreground/70 bg-clip-text text-transparent'>
                 简洁、科技、可扩展
               </span>
             </h1>
 
-            <p className='text-muted-foreground mt-4 max-w-[46rem] text-base text-pretty md:text-lg'>
+            <p className='mt-4 max-w-[46rem] text-base text-pretty text-muted-foreground md:text-lg'>
               用更少的样板与噪音，做更稳定的后台：类型安全路由、可组合 UI、可审计的权限与数据流。
             </p>
 
             <div className='mt-8 flex flex-col gap-3 sm:flex-row'>
               <Link
                 to='/sign-up'
-                className='bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-11 items-center justify-center rounded-md px-6 text-sm font-medium shadow-sm transition-colors'
+                className='inline-flex h-11 items-center justify-center rounded-md bg-primary px-6 text-sm font-medium text-primary-foreground shadow-sm transition-colors hover:bg-primary/90'
               >
                 立即开始
                 <ArrowRight className='ml-2 h-4 w-4' />
               </Link>
               <Link
                 to='/sign-in'
-                className='border-input bg-background/60 hover:bg-accent hover:text-accent-foreground inline-flex h-11 items-center justify-center rounded-md border px-6 text-sm font-medium shadow-sm backdrop-blur transition-colors'
+                className='inline-flex h-11 items-center justify-center rounded-md border border-input bg-background/60 px-6 text-sm font-medium shadow-sm backdrop-blur transition-colors hover:bg-accent hover:text-accent-foreground'
               >
                 登录控制台
               </Link>
@@ -66,60 +66,60 @@ function HomePage() {
 
         {/* Features Section */}
         <section className='py-10 md:py-14'>
-          <div className='bg-background/40 mx-auto max-w-4xl rounded-2xl border p-6 backdrop-blur md:p-8'>
+          <div className='mx-auto max-w-4xl rounded-2xl border bg-background/40 p-6 backdrop-blur md:p-8'>
             <div className='flex flex-col gap-6 md:flex-row md:items-start md:justify-between'>
               <div>
                 <div className='flex items-center gap-2 text-sm font-medium'>
-                  <Activity className='text-primary h-4 w-4' />
+                  <Activity className='h-4 w-4 text-primary' />
                   System Status
                 </div>
-                <div className='text-muted-foreground mt-1 text-sm'>
+                <div className='mt-1 text-sm text-muted-foreground'>
                   轻量指标面板（静态展示），用来传达“系统稳定、可观测”。
                 </div>
               </div>
 
               <div className='grid w-full gap-3 md:max-w-[520px] md:grid-cols-3'>
-                <div className='bg-background/60 rounded-xl border p-4 backdrop-blur'>
+                <div className='rounded-xl border bg-background/60 p-4 backdrop-blur'>
                   <div className='flex items-center justify-between'>
-                    <div className='text-muted-foreground text-xs'>Latency</div>
-                    <Timer className='text-muted-foreground h-4 w-4' />
+                    <div className='text-xs text-muted-foreground'>Latency</div>
+                    <Timer className='h-4 w-4 text-muted-foreground' />
                   </div>
                   <div className='mt-2 text-2xl font-semibold tracking-tight'>42ms</div>
-                  <div className='text-muted-foreground mt-1 text-xs'>p95 · edge</div>
+                  <div className='mt-1 text-xs text-muted-foreground'>p95 · edge</div>
                 </div>
 
-                <div className='bg-background/60 rounded-xl border p-4 backdrop-blur'>
+                <div className='rounded-xl border bg-background/60 p-4 backdrop-blur'>
                   <div className='flex items-center justify-between'>
-                    <div className='text-muted-foreground text-xs'>Uptime</div>
+                    <div className='text-xs text-muted-foreground'>Uptime</div>
                     <span className='h-2 w-2 rounded-full bg-emerald-400' />
                   </div>
                   <div className='mt-2 text-2xl font-semibold tracking-tight'>99.99%</div>
-                  <div className='text-muted-foreground mt-1 text-xs'>30 days</div>
+                  <div className='mt-1 text-xs text-muted-foreground'>30 days</div>
                 </div>
 
-                <div className='bg-background/60 rounded-xl border p-4 backdrop-blur'>
+                <div className='rounded-xl border bg-background/60 p-4 backdrop-blur'>
                   <div className='flex items-center justify-between'>
-                    <div className='text-muted-foreground text-xs'>Regions</div>
-                    <Globe className='text-muted-foreground h-4 w-4' />
+                    <div className='text-xs text-muted-foreground'>Regions</div>
+                    <Globe className='h-4 w-4 text-muted-foreground' />
                   </div>
                   <div className='mt-2 text-2xl font-semibold tracking-tight'>3</div>
-                  <div className='text-muted-foreground mt-1 text-xs'>Global</div>
+                  <div className='mt-1 text-xs text-muted-foreground'>Global</div>
                 </div>
               </div>
             </div>
 
             <div className='mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
-              <div className='text-muted-foreground text-xs'>Built on TanStack Start · Better Auth · Prisma</div>
+              <div className='text-xs text-muted-foreground'>Built on TanStack Start · Better Auth · Prisma</div>
               <div className='flex gap-3'>
                 <Link
                   to='/sign-up'
-                  className='bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-10 items-center justify-center rounded-md px-5 text-sm font-medium shadow-sm transition-colors'
+                  className='inline-flex h-10 items-center justify-center rounded-md bg-primary px-5 text-sm font-medium text-primary-foreground shadow-sm transition-colors hover:bg-primary/90'
                 >
                   创建账号
                 </Link>
                 <Link
                   to='/sign-in'
-                  className='border-input bg-background/60 hover:bg-accent hover:text-accent-foreground inline-flex h-10 items-center justify-center rounded-md border px-5 text-sm font-medium shadow-sm backdrop-blur transition-colors'
+                  className='inline-flex h-10 items-center justify-center rounded-md border border-input bg-background/60 px-5 text-sm font-medium shadow-sm backdrop-blur transition-colors hover:bg-accent hover:text-accent-foreground'
                 >
                   进入控制台
                 </Link>

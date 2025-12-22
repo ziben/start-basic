@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { format } from 'date-fns'
-import { zhCN } from 'date-fns/locale'
+import { getRouteApi } from '@tanstack/react-router'
 import {
   type ColumnDef,
   type SortingState,
@@ -12,23 +12,16 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-import { getRouteApi } from '@tanstack/react-router'
+import { zhCN } from 'date-fns/locale'
 import { RefreshCw, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
-import { useTranslation } from '~/hooks/useTranslation'
 import {
   useAdminSessions,
   useBulkDeleteAdminSessions,
   useDeleteAdminSession,
   type AdminSessionInfo,
 } from '~/hooks/use-admin-session-api'
-import { ConfirmDialog } from '@/components/confirm-dialog'
-import { DataTableColumnHeader, DataTablePagination, DataTableToolbar } from '@/components/data-table'
-import { Header } from '@/components/layout/header'
-import { Main } from '@/components/layout/main'
-import { ProfileDropdown } from '@/components/profile-dropdown'
-import { Search } from '@/components/search'
-import { ThemeSwitch } from '@/components/theme-switch'
+import { useTranslation } from '~/hooks/useTranslation'
 import { type NavigateFn, useTableUrlState } from '@/hooks/use-table-url-state'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -43,6 +36,13 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { ConfirmDialog } from '@/components/confirm-dialog'
+import { DataTableColumnHeader, DataTablePagination, DataTableToolbar } from '@/components/data-table'
+import { Header } from '@/components/layout/header'
+import { Main } from '@/components/layout/main'
+import { ProfileDropdown } from '@/components/profile-dropdown'
+import { Search } from '@/components/search'
+import { ThemeSwitch } from '@/components/theme-switch'
 
 const route = getRouteApi('/admin/session')
 
@@ -158,7 +158,7 @@ export default function AdminSession() {
           return (
             <div>
               <div className='font-medium'>{s.username || '-'}</div>
-              <div className='text-muted-foreground text-sm'>{s.email || '-'}</div>
+              <div className='text-sm text-muted-foreground'>{s.email || '-'}</div>
             </div>
           )
         },
@@ -280,7 +280,13 @@ export default function AdminSession() {
   const sortBy = firstSort?.id
   const sortDir = firstSort?.id ? (firstSort.desc ? 'desc' : 'asc') : undefined
 
-  const { data: pageData, isLoading, error, refetch, isRefetching } = useAdminSessions({
+  const {
+    data: pageData,
+    isLoading,
+    error,
+    refetch,
+    isRefetching,
+  } = useAdminSessions({
     page: tableUrl.pagination.pageIndex + 1,
     pageSize: tableUrl.pagination.pageSize,
     filter: tableUrl.globalFilter ? tableUrl.globalFilter : undefined,
@@ -374,7 +380,9 @@ export default function AdminSession() {
       <Main fixed>
         <div className='mb-2 flex flex-wrap items-center justify-between space-y-2 gap-x-4'>
           <div>
-            <h2 className='text-2xl font-bold tracking-tight'>{t('admin.session.title', { defaultMessage: '会话管理' })}</h2>
+            <h2 className='text-2xl font-bold tracking-tight'>
+              {t('admin.session.title', { defaultMessage: '会话管理' })}
+            </h2>
             <p className='text-muted-foreground'>{t('admin.session.desc', { defaultMessage: '查看与撤销活跃会话' })}</p>
           </div>
 
@@ -430,7 +438,9 @@ export default function AdminSession() {
                           <TableRow key={headerGroup.id}>
                             {headerGroup.headers.map((header) => (
                               <TableHead key={header.id} colSpan={header.colSpan}>
-                                {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                                {header.isPlaceholder
+                                  ? null
+                                  : flexRender(header.column.columnDef.header, header.getContext())}
                               </TableHead>
                             ))}
                           </TableRow>
@@ -507,7 +517,9 @@ export default function AdminSession() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{t('admin.session.view.title', { defaultMessage: '会话详情' })}</DialogTitle>
-            <DialogDescription>{t('admin.session.view.desc', { defaultMessage: '查看该会话的详细信息' })}</DialogDescription>
+            <DialogDescription>
+              {t('admin.session.view.desc', { defaultMessage: '查看该会话的详细信息' })}
+            </DialogDescription>
           </DialogHeader>
 
           {viewSession ? (

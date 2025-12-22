@@ -17,7 +17,11 @@ type DataTableViewOptionsProps<TData> = {
   onColumnVisibilityChange: (visibility: Record<string, boolean>) => void
 }
 
-function DataTableViewOptionsInner<TData>({ table, columnVisibility, onColumnVisibilityChange }: DataTableViewOptionsProps<TData>) {
+function DataTableViewOptionsInner<TData>({
+  table,
+  columnVisibility,
+  onColumnVisibilityChange,
+}: DataTableViewOptionsProps<TData>) {
   const hasAccessorKey = (def: any): def is { accessorKey: string } => typeof def.accessorKey === 'string'
   const useCustomVisibility = columnVisibility !== undefined && onColumnVisibilityChange !== undefined
 
@@ -36,8 +40,7 @@ function DataTableViewOptionsInner<TData>({ table, columnVisibility, onColumnVis
           .getAllColumns()
           .filter(
             (column) =>
-              (typeof column.accessorFn !== 'undefined' || hasAccessorKey(column.columnDef)) &&
-              column.getCanHide()
+              (typeof column.accessorFn !== 'undefined' || hasAccessorKey(column.columnDef)) && column.getCanHide()
           )
           .map((column) => {
             const title = (column.columnDef.meta as any)?.title as string | undefined

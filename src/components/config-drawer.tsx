@@ -88,7 +88,7 @@ function SectionTitle({
   className?: string
 }) {
   return (
-    <div className={cn('text-muted-foreground mb-2 flex items-center gap-2 text-sm font-semibold', className)}>
+    <div className={cn('mb-2 flex items-center gap-2 text-sm font-semibold text-muted-foreground', className)}>
       {title}
       {showReset && onReset && (
         <Button size='icon' variant='secondary' className='size-4 rounded-full' onClick={onReset}>
@@ -119,8 +119,8 @@ function RadioGroupItem({
     >
       <div
         className={cn(
-          'ring-border relative rounded-[6px] ring-[1px]',
-          'group-data-[state=checked]:ring-primary group-data-[state=checked]:shadow-2xl',
+          'relative rounded-[6px] ring-[1px] ring-border',
+          'group-data-[state=checked]:shadow-2xl group-data-[state=checked]:ring-primary',
           'group-focus-visible:ring-2'
         )}
         role='img'
@@ -129,7 +129,7 @@ function RadioGroupItem({
       >
         <CircleCheck
           className={cn(
-            'fill-primary size-6 stroke-white',
+            'size-6 fill-primary stroke-white',
             'group-data-[state=unchecked]:hidden',
             'absolute top-0 right-0 translate-x-1/2 -translate-y-1/2'
           )}
@@ -138,7 +138,7 @@ function RadioGroupItem({
         <item.icon
           className={cn(
             !isTheme &&
-              'stroke-primary fill-primary group-data-[state=unchecked]:stroke-muted-foreground group-data-[state=unchecked]:fill-muted-foreground'
+              'fill-primary stroke-primary group-data-[state=unchecked]:fill-muted-foreground group-data-[state=unchecked]:stroke-muted-foreground'
           )}
           aria-hidden='true'
         />

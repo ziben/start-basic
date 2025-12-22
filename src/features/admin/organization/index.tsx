@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { format } from 'date-fns'
-import { zhCN } from 'date-fns/locale'
+import { getRouteApi } from '@tanstack/react-router'
 import {
   type ColumnDef,
   type SortingState,
@@ -12,23 +12,23 @@ import {
   getFacetedUniqueValues,
   useReactTable,
 } from '@tanstack/react-table'
-import { getRouteApi } from '@tanstack/react-router'
+import { zhCN } from 'date-fns/locale'
 import { Building2, Edit, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
-import { useTranslation } from '~/hooks/useTranslation'
 import {
   useAdminOrganizations,
   useDeleteAdminOrganization,
   useBulkDeleteAdminOrganizations,
   type AdminOrganizationInfo,
 } from '~/hooks/use-admin-organization-api'
+import { useTranslation } from '~/hooks/useTranslation'
+import { type NavigateFn, useTableUrlState } from '@/hooks/use-table-url-state'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import { DataTableColumnHeader, DataTablePagination, DataTableToolbar } from '@/components/data-table'
 import { ConfirmDialog } from '@/components/confirm-dialog'
+import { DataTableColumnHeader, DataTablePagination, DataTableToolbar } from '@/components/data-table'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
-import { type NavigateFn, useTableUrlState } from '@/hooks/use-table-url-state'
 
 const route = getRouteApi('/admin/organization')
 
@@ -71,7 +71,6 @@ export default function AdminOrganization() {
     setConfirmOpen(true)
   }, [])
 
-
   const columns = useMemo(() => {
     const cols: ColumnDef<AdminOrganizationInfo>[] = [
       {
@@ -111,14 +110,17 @@ export default function AdminOrganization() {
       {
         accessorKey: 'name',
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title={t('admin.organization.columns.name', { defaultMessage: '组织名称' })} />
+          <DataTableColumnHeader
+            column={column}
+            title={t('admin.organization.columns.name', { defaultMessage: '组织名称' })}
+          />
         ),
         cell: ({ row }) => (
           <div className='flex items-center gap-2'>
             <Building2 className='h-4 w-4' />
             <div>
               <div className='font-medium'>{row.original.name}</div>
-              <div className='text-sm text-muted-foreground font-mono'>{row.original.slug}</div>
+              <div className='font-mono text-sm text-muted-foreground'>{row.original.slug}</div>
             </div>
           </div>
         ),
@@ -126,7 +128,10 @@ export default function AdminOrganization() {
       {
         accessorKey: 'memberCount',
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title={t('admin.organization.columns.memberCount', { defaultMessage: '成员数' })} />
+          <DataTableColumnHeader
+            column={column}
+            title={t('admin.organization.columns.memberCount', { defaultMessage: '成员数' })}
+          />
         ),
         cell: ({ row }) => <span className='text-sm'>{row.original.memberCount}</span>,
       },
@@ -202,7 +207,11 @@ export default function AdminOrganization() {
   const sortBy = firstSort?.id
   const sortDir = firstSort?.id ? (firstSort.desc ? 'desc' : 'asc') : undefined
 
-  const { data: pageData, isLoading, error } = useAdminOrganizations({
+  const {
+    data: pageData,
+    isLoading,
+    error,
+  } = useAdminOrganizations({
     page: tableUrl.pagination.pageIndex + 1,
     pageSize: tableUrl.pagination.pageSize,
     filter: tableUrl.globalFilter ? tableUrl.globalFilter : undefined,
@@ -307,7 +316,9 @@ export default function AdminOrganization() {
               <>
                 <DataTableToolbar
                   table={table}
-                  searchPlaceholder={t('admin.organization.searchPlaceholder', { defaultMessage: '搜索组织名称/标识...' })}
+                  searchPlaceholder={t('admin.organization.searchPlaceholder', {
+                    defaultMessage: '搜索组织名称/标识...',
+                  })}
                   columnVisibility={columnVisibility}
                   onColumnVisibilityChange={setColumnVisibility}
                 />
@@ -319,8 +330,13 @@ export default function AdminOrganization() {
                         <tr className='border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted'>
                           {table.getHeaderGroups().map((headerGroup) =>
                             headerGroup.headers.map((header) => (
-                              <th key={header.id} className='h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0'>
-                                {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                              <th
+                                key={header.id}
+                                className='h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0'
+                              >
+                                {header.isPlaceholder
+                                  ? null
+                                  : flexRender(header.column.columnDef.header, header.getContext())}
                               </th>
                             ))
                           )}
@@ -335,7 +351,10 @@ export default function AdminOrganization() {
                           </tr>
                         ) : table.getRowModel().rows?.length ? (
                           table.getRowModel().rows.map((row) => (
-                            <tr key={row.id} className='border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted'>
+                            <tr
+                              key={row.id}
+                              className='border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted'
+                            >
                               {row.getVisibleCells().map((cell) => (
                                 <td key={cell.id} className='p-4 align-middle [&:has([role=checkbox])]:pr-0'>
                                   {flexRender(cell.column.columnDef.cell, cell.getContext())}

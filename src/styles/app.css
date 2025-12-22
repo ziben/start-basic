@@ -118,7 +118,7 @@
     @apply overflow-x-hidden;
   }
   body {
-    @apply bg-background text-foreground min-h-svh w-full;
+    @apply min-h-svh w-full bg-background text-foreground;
   }
 
   button:not(:disabled),

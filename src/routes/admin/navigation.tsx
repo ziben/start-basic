@@ -11,11 +11,7 @@ export const Route = createFileRoute('/admin/navigation')({
 
     const page = typeof pageRaw === 'string' ? Number(pageRaw) : typeof pageRaw === 'number' ? pageRaw : undefined
     const pageSize =
-      typeof pageSizeRaw === 'string'
-        ? Number(pageSizeRaw)
-        : typeof pageSizeRaw === 'number'
-          ? pageSizeRaw
-          : undefined
+      typeof pageSizeRaw === 'string' ? Number(pageSizeRaw) : typeof pageSizeRaw === 'number' ? pageSizeRaw : undefined
 
     return {
       tab: tab === 'groups' || tab === 'items' ? (tab as 'groups' | 'items') : 'groups',

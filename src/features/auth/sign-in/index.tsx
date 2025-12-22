@@ -21,13 +21,13 @@ export function SignIn() {
           <UserAuthForm redirectTo={redirect} />
         </CardContent>
         <CardFooter>
-          <p className='text-muted-foreground px-8 text-center text-sm'>
+          <p className='px-8 text-center text-sm text-muted-foreground'>
             点击登录，即表示您同意我们的{' '}
-            <a href='/terms' className='hover:text-primary underline underline-offset-4'>
+            <a href='/terms' className='underline underline-offset-4 hover:text-primary'>
               服务条款
             </a>{' '}
             和{' '}
-            <a href='/privacy' className='hover:text-primary underline underline-offset-4'>
+            <a href='/privacy' className='underline underline-offset-4 hover:text-primary'>
               隐私政策
             </a>
             。

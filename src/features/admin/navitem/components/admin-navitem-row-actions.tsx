@@ -66,7 +66,7 @@ export function DataTableRowActions<TData>({ row }: DataTableRowActionsProps<TDa
         {/* 删除按钮 */}
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button variant='ghost' size='icon' className='text-destructive h-8 w-8' onClick={handleDelete}>
+            <Button variant='ghost' size='icon' className='h-8 w-8 text-destructive' onClick={handleDelete}>
               <Trash className='h-4 w-4' />
               <span className='sr-only'>{t('admin.navitem.actions.delete')}</span>
             </Button>

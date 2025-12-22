@@ -39,13 +39,13 @@ export default function AdminNavItemPage() {
       <Main>
         {/* 导航路径 */}
         {navGroupId && (
-          <div className='text-muted-foreground mb-4 flex items-center text-sm'>
+          <div className='mb-4 flex items-center text-sm text-muted-foreground'>
             <Link to='/admin/navgroup' className='hover:text-primary'>
               <Home className='mr-1 inline h-4 w-4' />
               {t('admin.navitem.breadcrumb.navgroups')}
             </Link>
             <ChevronRight className='mx-2 h-4 w-4' />
-            <span className='text-foreground font-medium'>
+            <span className='font-medium text-foreground'>
               {navGroup?.title ?? t('admin.navitem.breadcrumb.loading')}
             </span>
           </div>

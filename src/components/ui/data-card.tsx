@@ -16,7 +16,7 @@ export function DataCard({ title, value, description, icon }: DataCardProps) {
       </CardHeader>
       <CardContent>
         <div className='text-2xl font-bold'>{value}</div>
-        <p className='text-muted-foreground text-xs'>{description}</p>
+        <p className='text-xs text-muted-foreground'>{description}</p>
       </CardContent>
     </Card>
   )

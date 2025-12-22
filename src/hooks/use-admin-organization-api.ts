@@ -54,8 +54,13 @@ export function useCreateAdminOrganization() {
 export function useUpdateAdminOrganization() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: { name?: string; slug?: string; logo?: string; metadata?: string } }) =>
-      apiClient.adminOrganizations.update(id, data),
+    mutationFn: ({
+      id,
+      data,
+    }: {
+      id: string
+      data: { name?: string; slug?: string; logo?: string; metadata?: string }
+    }) => apiClient.adminOrganizations.update(id, data),
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: ['admin-organizations'] })
       queryClient.invalidateQueries({ queryKey: ['admin-organization', id] })

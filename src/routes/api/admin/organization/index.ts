@@ -79,7 +79,12 @@ export const Route = createFileRoute('/api/admin/organization/')({
           })
           const input = schema.parse(body)
 
-          const slug = input.slug ?? input.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+          const slug =
+            input.slug ??
+            input.name
+              .toLowerCase()
+              .replace(/[^a-z0-9]+/g, '-')
+              .replace(/(^-|-$)/g, '')
 
           const existing = await prisma.organization.findFirst({
             where: { slug },

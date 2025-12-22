@@ -51,7 +51,7 @@ export function CommandMenu() {
                       }}
                     >
                       <div className='flex size-4 items-center justify-center'>
-                        <ArrowRight className='text-muted-foreground/80 size-2' />
+                        <ArrowRight className='size-2 text-muted-foreground/80' />
                       </div>
                       {navItem.title}
                     </CommandItem>
@@ -66,7 +66,7 @@ export function CommandMenu() {
                     }}
                   >
                     <div className='flex size-4 items-center justify-center'>
-                      <ArrowRight className='text-muted-foreground/80 size-2' />
+                      <ArrowRight className='size-2 text-muted-foreground/80' />
                     </div>
                     {navItem.title} <ChevronRight /> {subItem.title}
                   </CommandItem>

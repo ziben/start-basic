@@ -133,7 +133,7 @@ export function Apps() {
           {filteredApps.map((app) => (
             <li key={app.name} className='rounded-lg border p-4 hover:shadow-md'>
               <div className='mb-8 flex items-center justify-between'>
-                <div className={`bg-muted flex size-10 items-center justify-center rounded-lg p-2`}>{app.logo}</div>
+                <div className={`flex size-10 items-center justify-center rounded-lg bg-muted p-2`}>{app.logo}</div>
                 <Button
                   variant='outline'
                   size='sm'

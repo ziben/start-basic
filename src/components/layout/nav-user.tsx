@@ -94,10 +94,7 @@ export function NavUser({ user }: NavUserProps) {
                 </DropdownMenuItem>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
-              <DropdownMenuItem
-                variant='destructive'
-                onClick={() => setOpen(true)}
-              >
+              <DropdownMenuItem variant='destructive' onClick={() => setOpen(true)}>
                 <LogOut />
                 退出
               </DropdownMenuItem>

@@ -13,21 +13,21 @@ function AdminDashboard() {
       </div>
 
       <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-4'>
-        <div className='bg-card rounded-lg border p-6'>
+        <div className='rounded-lg border bg-card p-6'>
           <div className='text-2xl font-bold'>0</div>
-          <p className='text-muted-foreground text-xs'>总用户数</p>
+          <p className='text-xs text-muted-foreground'>总用户数</p>
         </div>
-        <div className='bg-card rounded-lg border p-6'>
+        <div className='rounded-lg border bg-card p-6'>
           <div className='text-2xl font-bold'>0</div>
-          <p className='text-muted-foreground text-xs'>活跃会话</p>
+          <p className='text-xs text-muted-foreground'>活跃会话</p>
         </div>
-        <div className='bg-card rounded-lg border p-6'>
+        <div className='rounded-lg border bg-card p-6'>
           <div className='text-2xl font-bold'>0</div>
-          <p className='text-muted-foreground text-xs'>组织数量</p>
+          <p className='text-xs text-muted-foreground'>组织数量</p>
         </div>
-        <div className='bg-card rounded-lg border p-6'>
+        <div className='rounded-lg border bg-card p-6'>
           <div className='text-2xl font-bold'>0</div>
-          <p className='text-muted-foreground text-xs'>导航项</p>
+          <p className='text-xs text-muted-foreground'>导航项</p>
         </div>
       </div>
     </div>

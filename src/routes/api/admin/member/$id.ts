@@ -49,7 +49,7 @@ export const Route = createFileRoute('/api/admin/member/$id')({
       PUT: withAdminAuth(async ({ params, request }: any) => {
         try {
           const { id } = params as { id: string }
-          
+
           let body
           try {
             body = await request.json()
@@ -65,7 +65,9 @@ export const Route = createFileRoute('/api/admin/member/$id')({
           try {
             input = schema.parse(body)
           } catch (e) {
-            return new Response(`Validation error: ${e instanceof Error ? e.message : 'Unknown error'}`, { status: 400 })
+            return new Response(`Validation error: ${e instanceof Error ? e.message : 'Unknown error'}`, {
+              status: 400,
+            })
           }
 
           const member = await prisma.member.findUnique({

@@ -88,7 +88,7 @@ export function DataTableBulkActions<TData>({ table }: DataTableBulkActionsProps
                 defaultValue={status.value}
                 onClick={() => handleBulkStatusChange(status.value)}
               >
-                {status.icon && <status.icon className='text-muted-foreground size-4' />}
+                {status.icon && <status.icon className='size-4 text-muted-foreground' />}
                 {status.label}
               </DropdownMenuItem>
             ))}
@@ -122,7 +122,7 @@ export function DataTableBulkActions<TData>({ table }: DataTableBulkActionsProps
                 defaultValue={priority.value}
                 onClick={() => handleBulkPriorityChange(priority.value)}
               >
-                {priority.icon && <priority.icon className='text-muted-foreground size-4' />}
+                {priority.icon && <priority.icon className='size-4 text-muted-foreground' />}
                 {priority.label}
               </DropdownMenuItem>
             ))}
