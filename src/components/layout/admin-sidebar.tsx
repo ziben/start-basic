@@ -9,10 +9,8 @@ import {
   Key,
   UserCheck,
   Menu,
-  FolderTree,
 } from 'lucide-react'
 import { useLayout } from '~/context/layout-provider'
-import { useTranslation } from '~/hooks/useTranslation'
 import { useSidebar as useDynamicSidebar } from '~/lib/sidebar'
 import { iconResolver } from '~/utils/icon-resolver'
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from '@/components/ui/sidebar'
@@ -22,7 +20,7 @@ import { AdminTitle } from './admin-title'
 import type { NavGroup as NavGroupType } from './types'
 
 // 管理后台专用侧边栏数据
-function createAdminSidebarData(t: (key: string) => string) {
+function createAdminSidebarData() {
   return {
     navGroups: [
       {
@@ -64,13 +62,8 @@ function createAdminSidebarData(t: (key: string) => string) {
         title: '导航管理',
         items: [
           {
-            title: '导航分组',
-            url: '/admin/navgroup',
-            icon: FolderTree,
-          },
-          {
-            title: '导航项',
-            url: '/admin/navitem',
+            title: '导航管理',
+            url: '/admin/navigation',
             icon: Menu,
           },
           {
@@ -120,14 +113,13 @@ function createAdminSidebarData(t: (key: string) => string) {
 }
 
 export function AdminSidebar() {
-  const { t } = useTranslation()
   const { collapsible, variant } = useLayout()
   const { user } = useRouteContext({ from: '__root__' })
 
   const { data: sidebarData, isLoading } = useDynamicSidebar(iconResolver, 'ADMIN')
 
   // 加载中时显示骨架屏（用原静态数据兜底）
-  const fallbackData = createAdminSidebarData(t)
+  const fallbackData = createAdminSidebarData()
 
   // 用户信息
   const userData = {

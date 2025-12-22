@@ -230,12 +230,12 @@ export const createSidebarData = (t: (key: string) => string): SidebarData => ({
         },
         {
           title: t('sidebar.NavGroup'),
-          url: '/admin/navgroup',
+          url: '/admin/navigation',
           icon: List,
         },
         {
           title: t('sidebar.NavItem'),
-          url: '/admin/navitem',
+          url: '/admin/navigation',
           icon: Menu,
         },
         {

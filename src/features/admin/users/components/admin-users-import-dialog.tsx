@@ -15,9 +15,14 @@ import {
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 
+type FileListLike = { length: number; [index: number]: { type?: string } | undefined }
+
 const formSchema = z.object({
   file: z
-    .instanceof(FileList)
+    .any()
+    .refine((files): files is FileListLike => {
+      return !!files && typeof (files as any).length === 'number'
+    }, 'Please upload a file')
     .refine((files) => files.length > 0, {
       message: 'Please upload a file',
     })

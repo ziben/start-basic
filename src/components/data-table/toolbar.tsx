@@ -19,6 +19,8 @@ type DataTableToolbarProps<TData> = {
       icon?: React.ComponentType<{ className?: string }>
     }[]
   }[]
+  columnVisibility?: Record<string, boolean>
+  onColumnVisibilityChange?: (visibility: Record<string, boolean>) => void
 }
 
 function DataTableToolbarInner<TData>({
@@ -26,6 +28,8 @@ function DataTableToolbarInner<TData>({
   searchPlaceholder = 'Filter...',
   searchKey,
   filters = [],
+  columnVisibility,
+  onColumnVisibilityChange,
 }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0 || table.getState().globalFilter
 
@@ -75,7 +79,11 @@ function DataTableToolbarInner<TData>({
           </Button>
         )}
       </div>
-      <DataTableViewOptions table={table} />
+      <DataTableViewOptions 
+        table={table} 
+        columnVisibility={columnVisibility ?? {}} 
+        onColumnVisibilityChange={onColumnVisibilityChange ?? (() => {})} 
+      />
     </div>
   )
 }

@@ -13,9 +13,13 @@ import {
 
 type DataTableViewOptionsProps<TData> = {
   table: Table<TData>
+  columnVisibility: Record<string, boolean>
+  onColumnVisibilityChange: (visibility: Record<string, boolean>) => void
 }
 
-function DataTableViewOptionsInner<TData>({ table }: DataTableViewOptionsProps<TData>) {
+function DataTableViewOptionsInner<TData>({ table, columnVisibility, onColumnVisibilityChange }: DataTableViewOptionsProps<TData>) {
+  const hasAccessorKey = (def: any): def is { accessorKey: string } => typeof def.accessorKey === 'string'
+
   return (
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
@@ -29,16 +33,24 @@ function DataTableViewOptionsInner<TData>({ table }: DataTableViewOptionsProps<T
         <DropdownMenuSeparator />
         {table
           .getAllColumns()
-          .filter((column) => typeof column.accessorFn !== 'undefined' && column.getCanHide())
+          .filter(
+            (column) =>
+              (typeof column.accessorFn !== 'undefined' || hasAccessorKey(column.columnDef)) &&
+              column.getCanHide()
+          )
           .map((column) => {
+            const title = (column.columnDef.meta as any)?.title as string | undefined
+            const isVisible = columnVisibility[column.id] ?? true
             return (
               <DropdownMenuCheckboxItem
                 key={column.id}
                 className='capitalize'
-                checked={column.getIsVisible()}
-                onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                checked={isVisible}
+                onCheckedChange={(checked) =>
+                  onColumnVisibilityChange({ ...columnVisibility, [column.id]: Boolean(checked) })
+                }
               >
-                {column.id}
+                {title ?? column.id}
               </DropdownMenuCheckboxItem>
             )
           })}

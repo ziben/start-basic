@@ -25,9 +25,11 @@ const route = getRouteApi('/admin/navgroup')
 
 type DataTableProps = {
   data: AdminNavgroup[]
+  search?: any
+  navigate?: any
 }
 
-export function NavGroupsTable({ data }: DataTableProps) {
+function NavGroupsTableInner({ data, search, navigate }: DataTableProps) {
   const { t } = useTranslation()
   const columns = useNavGroupColumns()
   // Local UI-only states
@@ -50,8 +52,8 @@ export function NavGroupsTable({ data }: DataTableProps) {
     onPaginationChange,
     ensurePageInRange,
   } = useTableUrlState({
-    search: route.useSearch(),
-    navigate: route.useNavigate(),
+    search,
+    navigate,
     pagination: { defaultPage: 1, defaultPageSize: 10 },
     globalFilter: { enabled: true, key: 'filter' },
     columnFilters: [
@@ -184,4 +186,11 @@ export function NavGroupsTable({ data }: DataTableProps) {
       <DataTableBulkActions table={table} />
     </div>
   )
+}
+
+export function NavGroupsTable({ data, search, navigate }: DataTableProps) {
+  const resolvedSearch = search ?? route.useSearch()
+  const resolvedNavigate = navigate ?? route.useNavigate()
+
+  return <NavGroupsTableInner data={data} search={resolvedSearch} navigate={resolvedNavigate} />
 }

@@ -76,6 +76,7 @@ export function useDeleteNavitem() {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'navitems', variables.navGroupId] })
+      queryClient.invalidateQueries({ queryKey: ['admin', 'navitems'] })
       queryClient.invalidateQueries({ queryKey: SIDEBAR_QUERY_KEY })
     },
   })
