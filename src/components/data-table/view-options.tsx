@@ -19,6 +19,7 @@ type DataTableViewOptionsProps<TData> = {
 
 function DataTableViewOptionsInner<TData>({ table, columnVisibility, onColumnVisibilityChange }: DataTableViewOptionsProps<TData>) {
   const hasAccessorKey = (def: any): def is { accessorKey: string } => typeof def.accessorKey === 'string'
+  const useCustomVisibility = columnVisibility !== undefined && onColumnVisibilityChange !== undefined
 
   return (
     <DropdownMenu modal={false}>
@@ -40,14 +41,16 @@ function DataTableViewOptionsInner<TData>({ table, columnVisibility, onColumnVis
           )
           .map((column) => {
             const title = (column.columnDef.meta as any)?.title as string | undefined
-            const isVisible = columnVisibility[column.id] ?? true
+            const isVisible = useCustomVisibility ? (columnVisibility[column.id] ?? true) : column.getIsVisible()
             return (
               <DropdownMenuCheckboxItem
                 key={column.id}
                 className='capitalize'
                 checked={isVisible}
                 onCheckedChange={(checked) =>
-                  onColumnVisibilityChange({ ...columnVisibility, [column.id]: Boolean(checked) })
+                  useCustomVisibility
+                    ? onColumnVisibilityChange({ ...columnVisibility, [column.id]: Boolean(checked) })
+                    : column.toggleVisibility(!!checked)
                 }
               >
                 {title ?? column.id}

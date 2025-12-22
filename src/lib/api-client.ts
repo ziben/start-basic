@@ -13,6 +13,104 @@ import type {
 } from '~/features/admin/navitem/data/schema'
 import { adminUsersSchema, adminUsersPageSchema, type AdminUsersPage } from '~/features/admin/users/data/schema'
 import { tasksPageSchema, type TasksPage } from '~/features/demo/tasks/data/schema'
+import type { AdminSessionInfo } from '~/hooks/use-admin-session-api'
+
+export type AdminOrganizationInfo = {
+  id: string
+  name: string
+  slug: string
+  logo: string
+  createdAt: string
+  metadata: string
+  memberCount: number
+  invitationCount: number
+}
+
+export type AdminMemberInfo = {
+  id: string
+  userId: string
+  username: string
+  email: string
+  organizationId: string
+  organizationName: string
+  organizationSlug: string
+  role: string
+  createdAt: string
+}
+
+export type AdminInvitationInfo = {
+  id: string
+  email: string
+  organizationId: string
+  organizationName: string
+  organizationSlug: string
+  role: string
+  status: string
+  createdAt: string
+  expiresAt: string | null
+}
+
+const makePageSchema = <T>(itemSchema: z.ZodType<T>) =>
+  z.object({
+    items: z.array(itemSchema),
+    total: z.number(),
+    pageCount: z.number(),
+  })
+
+const adminSessionInfoSchema = z.object({
+  id: z.string(),
+  userId: z.string(),
+  username: z.string(),
+  email: z.string(),
+  loginTime: z.string(),
+  expiresAt: z.string(),
+  ipAddress: z.string(),
+  userAgent: z.string(),
+  isActive: z.boolean(),
+}) satisfies z.ZodType<AdminSessionInfo>
+
+const adminSessionsPageSchema = makePageSchema(adminSessionInfoSchema)
+
+const adminOrganizationInfoSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  slug: z.string(),
+  logo: z.string(),
+  createdAt: z.string(),
+  metadata: z.string(),
+  memberCount: z.number(),
+  invitationCount: z.number(),
+}) satisfies z.ZodType<AdminOrganizationInfo>
+
+const adminOrganizationsPageSchema = makePageSchema(adminOrganizationInfoSchema)
+
+const adminMemberInfoSchema = z.object({
+  id: z.string(),
+  userId: z.string(),
+  username: z.string(),
+  email: z.string(),
+  organizationId: z.string(),
+  organizationName: z.string(),
+  organizationSlug: z.string(),
+  role: z.string(),
+  createdAt: z.string(),
+}) satisfies z.ZodType<AdminMemberInfo>
+
+const adminMembersPageSchema = makePageSchema(adminMemberInfoSchema)
+
+const adminInvitationInfoSchema = z.object({
+  id: z.string(),
+  email: z.string(),
+  organizationId: z.string(),
+  organizationName: z.string(),
+  organizationSlug: z.string(),
+  role: z.string(),
+  status: z.string(),
+  createdAt: z.string(),
+  expiresAt: z.string().nullable(),
+}) satisfies z.ZodType<AdminInvitationInfo>
+
+const adminInvitationsPageSchema = makePageSchema(adminInvitationInfoSchema)
 
 export type Translation = {
   id: string
@@ -325,24 +423,6 @@ export const apiClient = {
       active?: boolean
       signal?: AbortSignal
     }) => {
-      const sessionInfoSchema = z.object({
-        id: z.string(),
-        userId: z.string(),
-        username: z.string(),
-        email: z.string(),
-        loginTime: z.string(),
-        expiresAt: z.string(),
-        ipAddress: z.string(),
-        userAgent: z.string(),
-        isActive: z.boolean(),
-      })
-
-      const pageSchema = z.object({
-        items: z.array(sessionInfoSchema),
-        total: z.number(),
-        pageCount: z.number(),
-      })
-
       const query = new URLSearchParams()
       if (typeof params?.page === 'number') query.set('page', String(params.page))
       if (typeof params?.pageSize === 'number') query.set('pageSize', String(params.pageSize))
@@ -357,7 +437,7 @@ export const apiClient = {
       if (typeof params?.active === 'boolean') query.set('active', String(params.active))
 
       const suffix = query.toString() ? `?${query.toString()}` : ''
-      return fetchJsonWithSchema(pageSchema, `/api/admin/session/${suffix}`, { signal: params?.signal })
+      return fetchJsonWithSchema(adminSessionsPageSchema, `/api/admin/session/${suffix}`, { signal: params?.signal })
     },
     remove: (id: string) =>
       fetchJson<{ success: true; id: string }>(`/api/admin/session/${encodeURIComponent(id)}`, {
@@ -365,6 +445,117 @@ export const apiClient = {
       }),
     bulkDelete: (data: { ids: string[] }) =>
       fetchJson<{ count: number }>('/api/admin/session/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      }),
+  },
+  adminOrganizations: {
+    list: (params?: { page?: number; pageSize?: number; filter?: string; sortBy?: string; sortDir?: string; signal?: AbortSignal }) => {
+      const search = new URLSearchParams()
+      if (params?.page) search.set('page', String(params.page))
+      if (params?.pageSize) search.set('pageSize', String(params.pageSize))
+      if (params?.filter) search.set('filter', params.filter)
+      if (params?.sortBy) search.set('sortBy', params.sortBy)
+      if (params?.sortDir) search.set('sortDir', params.sortDir)
+      const suffix = search.toString() ? `?${search.toString()}` : ''
+      return fetchJsonWithSchema(adminOrganizationsPageSchema, `/api/admin/organization/${suffix}`, { signal: params?.signal })
+    },
+    get: (id: string) =>
+      fetchJson<AdminOrganizationInfo>(`/api/admin/organization/${encodeURIComponent(id)}`),
+    create: (data: { name: string; slug?: string; logo?: string; metadata?: string }) =>
+      fetchJson<AdminOrganizationInfo>('/api/admin/organization/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      }),
+    update: (id: string, data: { name?: string; slug?: string; logo?: string; metadata?: string }) =>
+      fetchJson<AdminOrganizationInfo>(`/api/admin/organization/${encodeURIComponent(id)}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      }),
+    remove: (id: string) =>
+      fetchJson<{ success: true; id: string }>(`/api/admin/organization/${encodeURIComponent(id)}`, {
+        method: 'DELETE',
+      }),
+    bulkDelete: (data: { ids: string[] }) =>
+      fetchJson<{ count: number }>('/api/admin/organization/batch', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      }),
+  },
+  adminMembers: {
+    list: (params?: { page?: number; pageSize?: number; filter?: string; organizationId?: string; sortBy?: string; sortDir?: string; signal?: AbortSignal }) => {
+      const search = new URLSearchParams()
+      if (params?.page) search.set('page', String(params.page))
+      if (params?.pageSize) search.set('pageSize', String(params.pageSize))
+      if (params?.filter) search.set('filter', params.filter)
+      if (params?.organizationId) search.set('organizationId', params.organizationId)
+      if (params?.sortBy) search.set('sortBy', params.sortBy)
+      if (params?.sortDir) search.set('sortDir', params.sortDir)
+      const suffix = search.toString() ? `?${search.toString()}` : ''
+      return fetchJsonWithSchema(adminMembersPageSchema, `/api/admin/member/${suffix}`, { signal: params?.signal })
+    },
+    get: (id: string) =>
+      fetchJson<AdminMemberInfo>(`/api/admin/member/${encodeURIComponent(id)}`),
+    create: (data: { organizationId: string; userId: string; role: string }) =>
+      fetchJson<AdminMemberInfo>('/api/admin/member/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      }),
+    update: (id: string, data: { role?: string }) =>
+      fetchJson<AdminMemberInfo>(`/api/admin/member/${encodeURIComponent(id)}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      }),
+    remove: (id: string) =>
+      fetchJson<{ success: true; id: string }>(`/api/admin/member/${encodeURIComponent(id)}`, {
+        method: 'DELETE',
+      }),
+    bulkDelete: (data: { ids: string[] }) =>
+      fetchJson<{ count: number }>('/api/admin/member/batch', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      }),
+  },
+  adminInvitations: {
+    list: (params?: { page?: number; pageSize?: number; filter?: string; organizationId?: string; status?: string; sortBy?: string; sortDir?: string; signal?: AbortSignal }) => {
+      const search = new URLSearchParams()
+      if (params?.page) search.set('page', String(params.page))
+      if (params?.pageSize) search.set('pageSize', String(params.pageSize))
+      if (params?.filter) search.set('filter', params.filter)
+      if (params?.organizationId) search.set('organizationId', params.organizationId)
+      if (params?.status) search.set('status', params.status)
+      if (params?.sortBy) search.set('sortBy', params.sortBy)
+      if (params?.sortDir) search.set('sortDir', params.sortDir)
+      const suffix = search.toString() ? `?${search.toString()}` : ''
+      return fetchJsonWithSchema(adminInvitationsPageSchema, `/api/admin/invitation/${suffix}`, { signal: params?.signal })
+    },
+    get: (id: string) =>
+      fetchJson<AdminInvitationInfo>(`/api/admin/invitation/${encodeURIComponent(id)}`),
+    create: (data: { organizationId: string; email: string; role: string; expiresAt?: string }) =>
+      fetchJson<AdminInvitationInfo>('/api/admin/invitation/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      }),
+    update: (id: string, data: { email?: string; role?: string; status?: string; expiresAt?: string }) =>
+      fetchJson<AdminInvitationInfo>(`/api/admin/invitation/${encodeURIComponent(id)}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      }),
+    remove: (id: string) =>
+      fetchJson<{ success: true; id: string }>(`/api/admin/invitation/${encodeURIComponent(id)}`, {
+        method: 'DELETE',
+      }),
+    bulkDelete: (data: { ids: string[] }) =>
+      fetchJson<{ count: number }>('/api/admin/invitation/batch', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
