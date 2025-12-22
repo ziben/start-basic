@@ -34,6 +34,7 @@ export function TasksMultiDeleteDialog<TData>({ open, onOpenChange, table }: Tas
     toast.promise(sleep(2000), {
       loading: 'Deleting tasks...',
       success: () => {
+        setValue('')
         table.resetRowSelection()
         return `Deleted ${selectedRows.length} ${selectedRows.length > 1 ? 'tasks' : 'task'}`
       },

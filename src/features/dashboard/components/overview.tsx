@@ -57,6 +57,7 @@ export function Overview() {
       <BarChart data={data}>
         <XAxis dataKey='name' stroke='#888888' fontSize={12} tickLine={false} axisLine={false} />
         <YAxis
+          direction='ltr'
           stroke='#888888'
           fontSize={12}
           tickLine={false}

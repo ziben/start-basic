@@ -38,7 +38,10 @@ export const tasksColumns: ColumnDef<Task>[] = [
   {
     accessorKey: 'title',
     header: ({ column }) => <DataTableColumnHeader column={column} title='Title' />,
-    meta: { className: 'ps-1', tdClassName: 'ps-4' },
+    meta: {
+      className: 'ps-1 max-w-0 w-2/3',
+      tdClassName: 'ps-4',
+    },
     cell: ({ row }) => {
       const label = labels.find((label) => label.value === row.original.label)
 

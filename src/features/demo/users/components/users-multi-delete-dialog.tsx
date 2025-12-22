@@ -34,6 +34,7 @@ export function UsersMultiDeleteDialog<TData>({ open, onOpenChange, table }: Use
     toast.promise(sleep(2000), {
       loading: 'Deleting users...',
       success: () => {
+        setValue('')
         table.resetRowSelection()
         return `Deleted ${selectedRows.length} ${selectedRows.length > 1 ? 'users' : 'user'}`
       },
