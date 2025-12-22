@@ -45,9 +45,7 @@ export function FontProvider({ children }: { children: React.ReactNode }) {
 
   const value = useMemo(() => ({ font, setFont, resetFont }), [font, resetFont, setFont])
 
-  return (
-    <FontContext value={value}>{children}</FontContext>
-  )
+  return <FontContext value={value}>{children}</FontContext>
 }
 
 // eslint-disable-next-line react-refresh/only-export-components

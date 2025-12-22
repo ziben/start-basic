@@ -25,9 +25,7 @@ const preLogMiddleware = createMiddleware({ type: 'function' })
   .server(async (ctx: MiddlewareCtx) => {
     const serverTime = new Date()
     const clientTime = ctx.context?.clientTime
-    const durationToServer = clientTime
-      ? serverTime.getTime() - clientTime.getTime()
-      : undefined
+    const durationToServer = clientTime ? serverTime.getTime() - clientTime.getTime() : undefined
 
     return ctx.next({
       context: {

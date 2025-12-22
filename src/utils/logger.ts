@@ -53,17 +53,14 @@ function shouldLog(level: LogLevel): boolean {
  * 格式化日志输出
  */
 function formatLog(entry: LogEntry): string {
-  const parts = [
-    `[${entry.timestamp}]`,
-    `[${entry.level.toUpperCase()}]`,
-  ]
-  
+  const parts = [`[${entry.timestamp}]`, `[${entry.level.toUpperCase()}]`]
+
   if (entry.context) {
     parts.push(`[${entry.context}]`)
   }
-  
+
   parts.push(entry.message)
-  
+
   return parts.join(' ')
 }
 
@@ -72,10 +69,10 @@ function formatLog(entry: LogEntry): string {
  */
 function logToConsole(entry: LogEntry) {
   if (typeof console === 'undefined') return
-  
+
   const formatted = formatLog(entry)
   const color = LOG_COLORS[entry.level]
-  
+
   let consoleMethod = console.log
   if (entry.level === 'error') {
     consoleMethod = console.error
@@ -89,7 +86,7 @@ function logToConsole(entry: LogEntry) {
   } else {
     consoleMethod(formatted)
   }
-  
+
   if (entry.data !== undefined) {
     consoleMethod(entry.data)
   }
@@ -98,12 +95,7 @@ function logToConsole(entry: LogEntry) {
 /**
  * 创建日志条目
  */
-function createLogEntry(
-  level: LogLevel,
-  message: string,
-  data?: unknown,
-  context?: string
-): LogEntry {
+function createLogEntry(level: LogLevel, message: string, data?: unknown, context?: string): LogEntry {
   return {
     level,
     message,

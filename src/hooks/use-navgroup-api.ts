@@ -5,11 +5,7 @@ import type {
   UpdateNavgroupData,
   UserRoleNavGroup,
 } from '~/features/admin/navgroup/data/schema'
-import {
-  apiClient,
-  type SuccessIdResponse,
-  type UpdateNavgroupVisibilityData,
-} from '~/lib/api-client'
+import { apiClient, type SuccessIdResponse, type UpdateNavgroupVisibilityData } from '~/lib/api-client'
 import { SIDEBAR_QUERY_KEY } from '~/lib/sidebar'
 
 // 获取所有导航组

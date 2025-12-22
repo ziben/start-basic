@@ -7,14 +7,7 @@ import { ArrowRight, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { sleep, cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 
 const formSchema = z.object({
@@ -23,10 +16,7 @@ const formSchema = z.object({
   }),
 })
 
-export function ForgotPasswordForm({
-  className,
-  ...props
-}: React.HTMLAttributes<HTMLFormElement>) {
+export function ForgotPasswordForm({ className, ...props }: React.HTMLAttributes<HTMLFormElement>) {
   const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState(false)
 
@@ -43,10 +33,10 @@ export function ForgotPasswordForm({
     toast.promise(sleep(2000), {
       loading: 'Sending email...',
       success: () => {
-  setIsLoading(false)
-  form.reset()
-  // short-term: relax navigate type to avoid strict route union mismatch
-  navigate({ to: '/otp' } as any)
+        setIsLoading(false)
+        form.reset()
+        // short-term: relax navigate type to avoid strict route union mismatch
+        navigate({ to: '/otp' } as any)
         return `Email sent to ${data.email}`
       },
       error: 'Error',
@@ -55,11 +45,7 @@ export function ForgotPasswordForm({
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className={cn('grid gap-2', className)}
-        {...props}
-      >
+      <form onSubmit={form.handleSubmit(onSubmit)} className={cn('grid gap-2', className)} {...props}>
         <FormField
           control={form.control}
           name='email'

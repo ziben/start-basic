@@ -3,13 +3,7 @@ import { getRouteApi } from '@tanstack/react-router'
 import { SlidersHorizontal, ArrowUpAZ, ArrowDownAZ } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { ConfigDrawer } from '@/components/config-drawer'
 import { Header } from '@/components/layout/header'
@@ -30,11 +24,7 @@ const appText = new Map<AppType, string>([
 ])
 
 export function Apps() {
-  const {
-    filter = '',
-    type = 'all',
-    sort: initSort = 'asc',
-  } = route.useSearch()
+  const { filter = '', type = 'all', sort: initSort = 'asc' } = route.useSearch()
   const navigate = route.useNavigate()
 
   const [sort, setSort] = useState(initSort)
@@ -42,9 +32,7 @@ export function Apps() {
   const [searchTerm, setSearchTerm] = useState(filter)
 
   const sortedApps = [...apps].sort((a, b) =>
-    sort === 'asc'
-      ? a.name.localeCompare(b.name)
-      : b.name.localeCompare(a.name)
+    sort === 'asc' ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name)
   )
 
   const filteredApps = sortedApps
@@ -95,12 +83,8 @@ export function Apps() {
       {/* ===== Content ===== */}
       <Main fixed>
         <div>
-          <h1 className='text-2xl font-bold tracking-tight'>
-            App Integrations
-          </h1>
-          <p className='text-muted-foreground'>
-            Here&apos;s a list of your apps for the integration!
-          </p>
+          <h1 className='text-2xl font-bold tracking-tight'>App Integrations</h1>
+          <p className='text-muted-foreground'>Here&apos;s a list of your apps for the integration!</p>
         </div>
         <div className='my-4 flex items-end justify-between sm:my-0 sm:items-center'>
           <div className='flex flex-col gap-4 sm:my-4 sm:flex-row'>
@@ -147,16 +131,9 @@ export function Apps() {
         <Separator className='shadow-sm' />
         <ul className='faded-bottom no-scrollbar grid gap-4 overflow-auto pt-4 pb-16 md:grid-cols-2 lg:grid-cols-3'>
           {filteredApps.map((app) => (
-            <li
-              key={app.name}
-              className='rounded-lg border p-4 hover:shadow-md'
-            >
+            <li key={app.name} className='rounded-lg border p-4 hover:shadow-md'>
               <div className='mb-8 flex items-center justify-between'>
-                <div
-                  className={`bg-muted flex size-10 items-center justify-center rounded-lg p-2`}
-                >
-                  {app.logo}
-                </div>
+                <div className={`bg-muted flex size-10 items-center justify-center rounded-lg p-2`}>{app.logo}</div>
                 <Button
                   variant='outline'
                   size='sm'

@@ -4,8 +4,8 @@ export default function AdminSession() {
   const { t } = useTranslation()
   return (
     <div>
-  <h1>{t('admin.session.title')}</h1>
-  <p>{t('admin.session.desc')}</p>
+      <h1>{t('admin.session.title')}</h1>
+      <p>{t('admin.session.desc')}</p>
     </div>
   )
-} 
+}

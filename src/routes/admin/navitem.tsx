@@ -5,7 +5,7 @@ export const Route = createFileRoute('/admin/navitem')({
   component: AdminNavItem,
   validateSearch: (search: Record<string, unknown>) => {
     return {
-      navGroupId: search.navGroupId as string | undefined
+      navGroupId: search.navGroupId as string | undefined,
     }
   },
 })

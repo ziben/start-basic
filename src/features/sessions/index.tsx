@@ -1,21 +1,14 @@
 import React from 'react'
-import { useQuery } from '@tanstack/react-query'
 import { format } from 'date-fns'
+import { useQuery } from '@tanstack/react-query'
 import { zhCN } from 'date-fns/locale'
 import { RefreshCw, User, Clock, Globe, Shield } from 'lucide-react'
+import { apiClient } from '~/lib/api-client'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
-import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
-import { apiClient } from '~/lib/api-client'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 
 const Sessions: React.FC = () => {
   const {
@@ -47,15 +40,15 @@ const Sessions: React.FC = () => {
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Shield className="h-5 w-5" />
+          <CardTitle className='flex items-center gap-2'>
+            <Shield className='h-5 w-5' />
             会话管理
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-center py-8">
-            <p className="text-red-500 mb-4">加载会话信息失败</p>
-            <Button onClick={() => refetch()} variant="outline">
+          <div className='py-8 text-center'>
+            <p className='mb-4 text-red-500'>加载会话信息失败</p>
+            <Button onClick={() => refetch()} variant='outline'>
               重试
             </Button>
           </div>
@@ -65,30 +58,25 @@ const Sessions: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className='space-y-6'>
+      <div className='flex items-center justify-between'>
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">会话管理</h1>
-          <p className="text-muted-foreground">查看和管理系统用户会话</p>
+          <h1 className='text-3xl font-bold tracking-tight'>会话管理</h1>
+          <p className='text-muted-foreground'>查看和管理系统用户会话</p>
         </div>
-        <Button
-          onClick={() => refetch()}
-          disabled={isRefetching}
-          variant="outline"
-          size="sm"
-        >
-          <RefreshCw className={`h-4 w-4 mr-2 ${isRefetching ? 'animate-spin' : ''}`} />
+        <Button onClick={() => refetch()} disabled={isRefetching} variant='outline' size='sm'>
+          <RefreshCw className={`mr-2 h-4 w-4 ${isRefetching ? 'animate-spin' : ''}`} />
           刷新
         </Button>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <User className="h-5 w-5" />
+          <CardTitle className='flex items-center gap-2'>
+            <User className='h-5 w-5' />
             活跃会话
             {sessions && (
-              <Badge variant="secondary" className="ml-2">
+              <Badge variant='secondary' className='ml-2'>
                 {sessions.length} 个会话
               </Badge>
             )}
@@ -96,17 +84,17 @@ const Sessions: React.FC = () => {
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <div className="space-y-3">
+            <div className='space-y-3'>
               {[...Array(3)].map((_, i) => (
-                <Skeleton key={i} className="h-12 w-full" />
+                <Skeleton key={i} className='h-12 w-full' />
               ))}
             </div>
           ) : sessions?.length === 0 ? (
-            <div className="text-center py-8">
-              <p className="text-muted-foreground">暂无活跃会话</p>
+            <div className='py-8 text-center'>
+              <p className='text-muted-foreground'>暂无活跃会话</p>
             </div>
           ) : (
-            <div className="rounded-md border">
+            <div className='rounded-md border'>
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -123,10 +111,8 @@ const Sessions: React.FC = () => {
                     <TableRow key={session.id}>
                       <TableCell>
                         <div>
-                          <div className="font-medium">{session.username}</div>
-                          <div className="text-sm text-muted-foreground">
-                            {session.email}
-                          </div>
+                          <div className='font-medium'>{session.username}</div>
+                          <div className='text-muted-foreground text-sm'>{session.email}</div>
                         </div>
                       </TableCell>
                       <TableCell>
@@ -135,26 +121,24 @@ const Sessions: React.FC = () => {
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        <div className="flex items-center gap-1 text-sm">
-                          <Clock className="h-3 w-3" />
+                        <div className='flex items-center gap-1 text-sm'>
+                          <Clock className='h-3 w-3' />
                           {formatDate(session.loginTime)}
                         </div>
                       </TableCell>
                       <TableCell>
-                        <div className="flex items-center gap-1 text-sm">
-                          <Clock className="h-3 w-3" />
+                        <div className='flex items-center gap-1 text-sm'>
+                          <Clock className='h-3 w-3' />
                           {formatDate(session.expiresAt)}
                         </div>
                       </TableCell>
                       <TableCell>
-                        <div className="flex items-center gap-1 text-sm">
-                          <Globe className="h-3 w-3" />
+                        <div className='flex items-center gap-1 text-sm'>
+                          <Globe className='h-3 w-3' />
                           {session.ipAddress}
                         </div>
                       </TableCell>
-                      <TableCell className="text-sm">
-                        {formatUserAgent(session.userAgent)}
-                      </TableCell>
+                      <TableCell className='text-sm'>{formatUserAgent(session.userAgent)}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

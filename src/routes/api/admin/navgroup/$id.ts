@@ -1,11 +1,7 @@
-import { createFileRoute } from '@tanstack/react-router'
 import { z } from 'zod'
-import {
-  getNavGroupById,
-  updateNavGroup,
-  deleteNavGroup
-} from './index'
+import { createFileRoute } from '@tanstack/react-router'
 import { withAdminAuth } from '../../../../middleware'
+import { getNavGroupById, updateNavGroup, deleteNavGroup } from './index'
 
 // 创建单个导航组API路由
 export const Route = createFileRoute('/api/admin/navgroup/$id')({
@@ -37,7 +33,7 @@ export const Route = createFileRoute('/api/admin/navgroup/$id')({
             description: z.string().optional(),
             icon: z.string().optional(),
             orderIndex: z.number().optional(),
-            isVisible: z.boolean().optional()
+            isVisible: z.boolean().optional(),
           })
 
           const data = updateSchema.parse(body)
@@ -61,7 +57,7 @@ export const Route = createFileRoute('/api/admin/navgroup/$id')({
         } catch (error) {
           return new Response(String(error), { status: 400 })
         }
-      })
-    }
-  }
+      }),
+    },
+  },
 })

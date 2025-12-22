@@ -1,6 +1,6 @@
+import { z } from 'zod'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { ApiError, fetchJson, fetchJsonWithSchema, fetchText } from './api-client'
-import { z } from 'zod'
 
 // Mock fetch
 const mockFetch = vi.fn()
@@ -99,7 +99,9 @@ describe('api-client', () => {
         status: 503,
         statusText: 'Service Unavailable',
         headers: new Headers(),
-        text: async () => { throw new Error('Cannot read') },
+        text: async () => {
+          throw new Error('Cannot read')
+        },
       })
 
       await expect(fetchJson('/api/test')).rejects.toThrow(ApiError)

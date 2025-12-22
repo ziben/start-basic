@@ -1,8 +1,9 @@
 import { DotsHorizontalIcon } from '@radix-ui/react-icons'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { type Row } from '@tanstack/react-table'
 import { Trash2 } from 'lucide-react'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
+import { apiClient } from '~/lib/api-client'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -19,15 +20,12 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { adminUsersSchema } from '../data/schema'
 import { useAdminUsers } from './admin-users-provider'
-import { apiClient } from '~/lib/api-client'
 
 type DataTableRowActionsProps<TData> = {
   row: Row<TData>
 }
 
-export function DataTableRowActions<TData>({
-  row,
-}: DataTableRowActionsProps<TData>) {
+export function DataTableRowActions<TData>({ row }: DataTableRowActionsProps<TData>) {
   const task = adminUsersSchema.parse(row.original)
 
   const { setOpen, setCurrentRow } = useAdminUsers()
@@ -55,8 +53,8 @@ export function DataTableRowActions<TData>({
               ? {
                   ...u,
                   banned: input.banned,
-                  banReason: input.banned ? u.banReason ?? null : null,
-                  banExpires: input.banned ? u.banExpires ?? null : null,
+                  banReason: input.banned ? (u.banReason ?? null) : null,
+                  banExpires: input.banned ? (u.banExpires ?? null) : null,
                 }
               : u
           ),
@@ -87,10 +85,7 @@ export function DataTableRowActions<TData>({
   return (
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
-        <Button
-          variant='ghost'
-          className='data-[state=open]:bg-muted flex h-8 w-8 p-0'
-        >
+        <Button variant='ghost' className='data-[state=open]:bg-muted flex h-8 w-8 p-0'>
           <DotsHorizontalIcon className='h-4 w-4' />
           <span className='sr-only'>Open menu</span>
         </Button>
@@ -104,9 +99,7 @@ export function DataTableRowActions<TData>({
         >
           Edit
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => runBanToggle(!Boolean(task.banned))}>
-          {task.banned ? 'Unban' : 'Ban'}
-        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => runBanToggle(!task.banned)}>{task.banned ? 'Unban' : 'Ban'}</DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onClick={() => {

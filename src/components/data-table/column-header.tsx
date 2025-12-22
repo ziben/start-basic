@@ -1,11 +1,6 @@
-import {
-  ArrowDownIcon,
-  ArrowUpIcon,
-  CaretSortIcon,
-  EyeNoneIcon,
-} from '@radix-ui/react-icons'
-import { type Column } from '@tanstack/react-table'
 import { memo } from 'react'
+import { ArrowDownIcon, ArrowUpIcon, CaretSortIcon, EyeNoneIcon } from '@radix-ui/react-icons'
+import { type Column } from '@tanstack/react-table'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import {
@@ -16,11 +11,10 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 
-type DataTableColumnHeaderProps<TData, TValue> =
-  React.HTMLAttributes<HTMLDivElement> & {
-    column: Column<TData, TValue>
-    title: string
-  }
+type DataTableColumnHeaderProps<TData, TValue> = React.HTMLAttributes<HTMLDivElement> & {
+  column: Column<TData, TValue>
+  title: string
+}
 
 function DataTableColumnHeaderInner<TData, TValue>({
   column,
@@ -35,11 +29,7 @@ function DataTableColumnHeaderInner<TData, TValue>({
     <div className={cn('flex items-center space-x-2', className)}>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button
-            variant='ghost'
-            size='sm'
-            className='data-[state=open]:bg-accent h-8'
-          >
+          <Button variant='ghost' size='sm' className='data-[state=open]:bg-accent h-8'>
             <span>{title}</span>
             {column.getIsSorted() === 'desc' ? (
               <ArrowDownIcon className='ms-2 h-4 w-4' />
@@ -74,6 +64,4 @@ function DataTableColumnHeaderInner<TData, TValue>({
   )
 }
 
-export const DataTableColumnHeader = memo(
-  DataTableColumnHeaderInner
-) as typeof DataTableColumnHeaderInner
+export const DataTableColumnHeader = memo(DataTableColumnHeaderInner) as typeof DataTableColumnHeaderInner

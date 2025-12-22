@@ -1,15 +1,16 @@
+import { ConfigDrawer } from '~/components/config-drawer'
+import { useNavgroups } from '~/hooks/useNavgroupApi'
+import { useTranslation } from '~/hooks/useTranslation'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
-import { ConfigDrawer } from '~/components/config-drawer'
-import { useNavgroups } from '~/hooks/useNavgroupApi'
-import { useTranslation } from '~/hooks/useTranslation'
 import { NavGroupsDialogs } from './components/navgroups-dialogs'
 import { NavGroupsPrimaryButtons } from './components/navgroups-primary-buttons'
 import { NavGroupsProvider } from './components/navgroups-provider'
 import { NavGroupsTable } from './components/navgroups-table'
+
 export function AdminNavGroups() {
   const { t } = useTranslation()
   // 使用hooks获取数据
@@ -30,9 +31,7 @@ export function AdminNavGroups() {
         <div className='mb-2 flex flex-wrap items-center justify-between space-y-2 gap-x-4'>
           <div>
             <h2 className='text-2xl font-bold tracking-tight'>{t('admin.navgroup.title')}</h2>
-            <p className='text-muted-foreground'>
-              {t('admin.navgroup.desc')}
-            </p>
+            <p className='text-muted-foreground'>{t('admin.navgroup.desc')}</p>
           </div>
           <NavGroupsPrimaryButtons />
         </div>

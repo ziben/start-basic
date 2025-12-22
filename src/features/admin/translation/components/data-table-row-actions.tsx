@@ -1,3 +1,8 @@
+import { DotsHorizontalIcon } from '@radix-ui/react-icons'
+import { type Row } from '@tanstack/react-table'
+import { Trash2 } from 'lucide-react'
+import { Translation } from '~/generated/prisma/client'
+import { useTranslation } from '~/hooks/useTranslation'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -7,11 +12,6 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Translation } from '~/generated/prisma/client'
-import { DotsHorizontalIcon } from '@radix-ui/react-icons'
-import { type Row } from '@tanstack/react-table'
-import { Trash2 } from 'lucide-react'
-import { useTranslation } from '~/hooks/useTranslation'
 import { useTranslations } from './translations-provider'
 
 type DataTableRowActionsProps<TData> = {

@@ -1,7 +1,7 @@
-import { createFileRoute } from '@tanstack/react-router'
 import { z } from 'zod'
-import { updateNavGroupOrder } from './index'
+import { createFileRoute } from '@tanstack/react-router'
 import { withAdminAuth } from '../../../../middleware'
+import { updateNavGroupOrder } from './index'
 
 // 导航组顺序API路由
 export const Route = createFileRoute('/api/admin/navgroup/order')({
@@ -12,7 +12,7 @@ export const Route = createFileRoute('/api/admin/navgroup/order')({
         try {
           const body = await request.json()
           const orderSchema = z.object({
-            groupIds: z.array(z.string())
+            groupIds: z.array(z.string()),
           })
 
           const data = orderSchema.parse(body)
@@ -21,8 +21,7 @@ export const Route = createFileRoute('/api/admin/navgroup/order')({
         } catch (error) {
           return new Response(String(error), { status: 400 })
         }
-      })
-    }
-  }
+      }),
+    },
+  },
 })
-

@@ -1,9 +1,9 @@
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { showSubmittedData } from '@/lib/show-submitted-data'
-import { useTranslation } from '~/hooks/useTranslation'
 import { toast } from 'sonner'
+import { useTranslation } from '~/hooks/useTranslation'
+import { showSubmittedData } from '@/lib/show-submitted-data'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -14,25 +14,21 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 
 const formSchema = z.object({
   file: z
     .any()
-    .refine((files) => {
-      if (typeof window === 'undefined') return true // Skip validation on server
-      return files && files.length > 0
-    }, {
-      message: 'Please upload a file',
-    })
+    .refine(
+      (files) => {
+        if (typeof window === 'undefined') return true // Skip validation on server
+        return files && files.length > 0
+      },
+      {
+        message: 'Please upload a file',
+      }
+    )
     .refine((files) => {
       if (typeof window === 'undefined') return true // Skip validation on server
       return files?.length > 0 && files[0] && ['text/csv'].includes(files[0].type)
@@ -44,10 +40,7 @@ type NavGroupsImportDialogProps = {
   readonly onOpenChange: (open: boolean) => void
 }
 
-export function NavGroupsImportDialog({
-  open,
-  onOpenChange,
-}: NavGroupsImportDialogProps) {
+export function NavGroupsImportDialog({ open, onOpenChange }: NavGroupsImportDialogProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: { file: undefined },

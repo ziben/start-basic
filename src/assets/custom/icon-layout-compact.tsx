@@ -2,41 +2,12 @@ import { type SVGProps } from 'react'
 
 export function IconLayoutCompact(props: SVGProps<SVGSVGElement>) {
   return (
-    <svg
-      data-name='icon-layout-compact'
-      xmlns='http://www.w3.org/2000/svg'
-      viewBox='0 0 79.86 51.14'
-      {...props}
-    >
-      <rect
-        x={5.84}
-        y={5.2}
-        width={4}
-        height={40}
-        rx={2}
-        ry={2}
-        strokeLinecap='round'
-        strokeMiterlimit={10}
-      />
+    <svg data-name='icon-layout-compact' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 79.86 51.14' {...props}>
+      <rect x={5.84} y={5.2} width={4} height={40} rx={2} ry={2} strokeLinecap='round' strokeMiterlimit={10} />
       <g stroke='#fff' strokeLinecap='round' strokeMiterlimit={10}>
-        <path
-          fill='none'
-          opacity={0.66}
-          strokeWidth='2px'
-          d='M7.26 11.56L8.37 11.56'
-        />
-        <path
-          fill='none'
-          opacity={0.51}
-          strokeWidth='2px'
-          d='M7.26 14.49L8.37 14.49'
-        />
-        <path
-          fill='none'
-          opacity={0.52}
-          strokeWidth='2px'
-          d='M7.26 17.39L8.37 17.39'
-        />
+        <path fill='none' opacity={0.66} strokeWidth='2px' d='M7.26 11.56L8.37 11.56' />
+        <path fill='none' opacity={0.51} strokeWidth='2px' d='M7.26 14.49L8.37 14.49' />
+        <path fill='none' opacity={0.52} strokeWidth='2px' d='M7.26 17.39L8.37 17.39' />
         <circle cx={7.81} cy={7.25} r={1.16} fill='#fff' opacity={0.8} />
       </g>
       <path
@@ -81,42 +52,10 @@ export function IconLayoutCompact(props: SVGProps<SVGSVGElement>) {
         strokeMiterlimit={10}
       />
       <g strokeLinecap='round' strokeMiterlimit={10}>
-        <rect
-          x={59.05}
-          y={38.15}
-          width={2.01}
-          height={3.42}
-          rx={0.33}
-          ry={0.33}
-          opacity={0.32}
-        />
-        <rect
-          x={54.78}
-          y={34.99}
-          width={2.01}
-          height={6.58}
-          rx={0.33}
-          ry={0.33}
-          opacity={0.44}
-        />
-        <rect
-          x={63.17}
-          y={32.86}
-          width={2.01}
-          height={8.7}
-          rx={0.33}
-          ry={0.33}
-          opacity={0.53}
-        />
-        <rect
-          x={67.54}
-          y={29.17}
-          width={2.01}
-          height={12.4}
-          rx={0.33}
-          ry={0.33}
-          opacity={0.66}
-        />
+        <rect x={59.05} y={38.15} width={2.01} height={3.42} rx={0.33} ry={0.33} opacity={0.32} />
+        <rect x={54.78} y={34.99} width={2.01} height={6.58} rx={0.33} ry={0.33} opacity={0.44} />
+        <rect x={63.17} y={32.86} width={2.01} height={8.7} rx={0.33} ry={0.33} opacity={0.53} />
+        <rect x={67.54} y={29.17} width={2.01} height={12.4} rx={0.33} ry={0.33} opacity={0.66} />
       </g>
       <g opacity={0.5}>
         <circle cx={62.16} cy={18.63} r={7.5} />

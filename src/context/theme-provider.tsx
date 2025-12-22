@@ -38,16 +38,12 @@ export function ThemeProvider({
   storageKey = THEME_COOKIE_NAME,
   ...props
 }: ThemeProviderProps) {
-  const [theme, _setTheme] = useState<Theme>(
-    () => (getCookie(storageKey) as Theme) || defaultTheme
-  )
+  const [theme, _setTheme] = useState<Theme>(() => (getCookie(storageKey) as Theme) || defaultTheme)
 
   // Optimized: Memoize the resolved theme calculation to prevent unnecessary re-computations
   const resolvedTheme = useMemo((): ResolvedTheme => {
     if (theme === 'system') {
-      return window.matchMedia('(prefers-color-scheme: dark)').matches
-        ? 'dark'
-        : 'light'
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
     }
     return theme as ResolvedTheme
   }, [theme])
@@ -75,10 +71,13 @@ export function ThemeProvider({
     return () => mediaQuery.removeEventListener('change', handleChange)
   }, [theme, resolvedTheme])
 
-  const setTheme = useCallback((theme: Theme) => {
-    setCookie(storageKey, theme, THEME_COOKIE_MAX_AGE)
-    _setTheme(theme)
-  }, [storageKey])
+  const setTheme = useCallback(
+    (theme: Theme) => {
+      setCookie(storageKey, theme, THEME_COOKIE_MAX_AGE)
+      _setTheme(theme)
+    },
+    [storageKey]
+  )
 
   const resetTheme = useCallback(() => {
     removeCookie(storageKey)

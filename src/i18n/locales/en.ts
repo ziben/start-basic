@@ -190,7 +190,7 @@ export default {
   'admin.user.dialog.ban.reason': 'Ban Reason',
   'admin.user.dialog.ban.expires': 'Ban Expiration Date',
   'admin.user.context.error': 'useAdminUser must be used within AdminUserProvider',
-  
+
   // NavItem Table Columns
   'admin.navitem.table.id': 'ID',
   'admin.navitem.table.title': 'Title',
@@ -199,7 +199,7 @@ export default {
   'admin.navitem.table.badge': 'Badge',
   'admin.navitem.table.orderIndex': 'Order',
   'admin.navitem.table.createdAt': 'Created At',
-  
+
   // NavGroup toasts (added for i18next plural/interpolation)
   'admin.navgroup.toast.updatingStatus.loading': 'Updating status...',
   'admin.navgroup.toast.updatingStatus.success': 'Status updated to "{{status}}" for {{count}} navgroup',
@@ -261,7 +261,6 @@ export default {
   // Table aria/labels
   'admin.table.selectAll': 'Select all',
   'admin.table.selectRow': 'Select row',
-
 
   // Added missing admin.* keys found in code usage (auto-merged)
   'admin.account.title': 'Account',
@@ -452,5 +451,4 @@ export default {
 
   'admin.verification.title': 'Verification',
   'admin.verification.desc': 'Manage verification records.',
-
-};
+}

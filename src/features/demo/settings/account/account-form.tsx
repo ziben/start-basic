@@ -5,29 +5,10 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { showSubmittedData } from '@/lib/show-submitted-data'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from '@/components/ui/command'
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command'
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { DatePicker } from '@/components/date-picker'
 
 const languages = [
@@ -81,10 +62,7 @@ export function AccountForm() {
               <FormControl>
                 <Input placeholder='Your name' {...field} />
               </FormControl>
-              <FormDescription>
-                This is the name that will be displayed on your profile and in
-                emails.
-              </FormDescription>
+              <FormDescription>This is the name that will be displayed on your profile and in emails.</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -96,9 +74,7 @@ export function AccountForm() {
             <FormItem className='flex flex-col'>
               <FormLabel>Date of birth</FormLabel>
               <DatePicker selected={field.value} onSelect={field.onChange} />
-              <FormDescription>
-                Your date of birth is used to calculate your age.
-              </FormDescription>
+              <FormDescription>Your date of birth is used to calculate your age.</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -115,15 +91,10 @@ export function AccountForm() {
                     <Button
                       variant='outline'
                       role='combobox'
-                      className={cn(
-                        'w-[200px] justify-between',
-                        !field.value && 'text-muted-foreground'
-                      )}
+                      className={cn('w-[200px] justify-between', !field.value && 'text-muted-foreground')}
                     >
                       {field.value
-                        ? languages.find(
-                            (language) => language.value === field.value
-                          )?.label
+                        ? languages.find((language) => language.value === field.value)?.label
                         : 'Select language'}
                       <CaretSortIcon className='ms-2 h-4 w-4 shrink-0 opacity-50' />
                     </Button>
@@ -144,12 +115,7 @@ export function AccountForm() {
                             }}
                           >
                             <CheckIcon
-                              className={cn(
-                                'size-4',
-                                language.value === field.value
-                                  ? 'opacity-100'
-                                  : 'opacity-0'
-                              )}
+                              className={cn('size-4', language.value === field.value ? 'opacity-100' : 'opacity-0')}
                             />
                             {language.label}
                           </CommandItem>
@@ -159,9 +125,7 @@ export function AccountForm() {
                   </Command>
                 </PopoverContent>
               </Popover>
-              <FormDescription>
-                This is the language that will be used in the dashboard.
-              </FormDescription>
+              <FormDescription>This is the language that will be used in the dashboard.</FormDescription>
               <FormMessage />
             </FormItem>
           )}

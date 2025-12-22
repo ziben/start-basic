@@ -12,14 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 
 const formSchema = z.object({
@@ -28,10 +21,7 @@ const formSchema = z.object({
     .refine((files) => files.length > 0, {
       message: 'Please upload a file',
     })
-    .refine(
-      (files) => ['text/csv'].includes(files?.[0]?.type),
-      'Please upload csv format.'
-    ),
+    .refine((files) => ['text/csv'].includes(files?.[0]?.type), 'Please upload csv format.'),
 })
 
 type TaskImportDialogProps = {
@@ -39,10 +29,7 @@ type TaskImportDialogProps = {
   onOpenChange: (open: boolean) => void
 }
 
-export function TasksImportDialog({
-  open,
-  onOpenChange,
-}: TaskImportDialogProps) {
+export function TasksImportDialog({ open, onOpenChange }: TaskImportDialogProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: { file: undefined },
@@ -75,9 +62,7 @@ export function TasksImportDialog({
       <DialogContent className='gap-2 sm:max-w-sm'>
         <DialogHeader className='text-start'>
           <DialogTitle>Import Tasks</DialogTitle>
-          <DialogDescription>
-            Import tasks quickly from a CSV file.
-          </DialogDescription>
+          <DialogDescription>Import tasks quickly from a CSV file.</DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form id='task-import-form' onSubmit={form.handleSubmit(onSubmit)}>

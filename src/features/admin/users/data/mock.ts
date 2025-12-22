@@ -6,8 +6,8 @@ export const adminUsers: AdminUsers[] = Array.from({ length: 20 }, () => {
   const lastName = faker.person.lastName()
   return {
     id: faker.string.uuid(),
-  name: `${firstName} ${lastName}`,
-  username: faker.internet.username({ firstName, lastName }).toLowerCase(),
+    name: `${firstName} ${lastName}`,
+    username: faker.internet.username({ firstName, lastName }).toLowerCase(),
     email: faker.internet.email({ firstName }).toLowerCase(),
     emailVerified: faker.datatype.boolean?.() ?? true,
     image: null,

@@ -1,10 +1,7 @@
 import { type SVGProps } from 'react'
 import { cn } from '@/lib/utils'
 
-export function IconThemeSystem({
-  className,
-  ...props
-}: SVGProps<SVGSVGElement>) {
+export function IconThemeSystem({ className, ...props }: SVGProps<SVGSVGElement>) {
   return (
     <svg
       data-name='icon-theme-system'
@@ -52,52 +49,13 @@ export function IconThemeSystem({
         stroke='none'
         opacity={0.67}
       />
-      <rect
-        x={33.36}
-        y={19.73}
-        width={2.75}
-        height={3.42}
-        rx={0.33}
-        ry={0.33}
-        opacity={0.31}
-        stroke='none'
-      />
-      <rect
-        x={29.64}
-        y={16.57}
-        width={2.75}
-        height={6.58}
-        rx={0.33}
-        ry={0.33}
-        opacity={0.4}
-        stroke='none'
-      />
-      <rect
-        x={37.16}
-        y={14.44}
-        width={2.75}
-        height={8.7}
-        rx={0.33}
-        ry={0.33}
-        opacity={0.26}
-        stroke='none'
-      />
-      <rect
-        x={41.19}
-        y={10.75}
-        width={2.75}
-        height={12.4}
-        rx={0.33}
-        ry={0.33}
-        opacity={0.37}
-        stroke='none'
-      />
+      <rect x={33.36} y={19.73} width={2.75} height={3.42} rx={0.33} ry={0.33} opacity={0.31} stroke='none' />
+      <rect x={29.64} y={16.57} width={2.75} height={6.58} rx={0.33} ry={0.33} opacity={0.4} stroke='none' />
+      <rect x={37.16} y={14.44} width={2.75} height={8.7} rx={0.33} ry={0.33} opacity={0.26} stroke='none' />
+      <rect x={41.19} y={10.75} width={2.75} height={12.4} rx={0.33} ry={0.33} opacity={0.37} stroke='none' />
       <g>
         <circle cx={62.74} cy={16.32} r={8} opacity={0.25} />
-        <path
-          d='M62.74 16.32l4.1-6.87c1.19.71 2.18 1.72 2.86 2.92s1.04 2.57 1.04 3.95h-8z'
-          opacity={0.45}
-        />
+        <path d='M62.74 16.32l4.1-6.87c1.19.71 2.18 1.72 2.86 2.92s1.04 2.57 1.04 3.95h-8z' opacity={0.45} />
       </g>
       <rect
         x={29.64}

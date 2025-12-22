@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { serializeError } from '@prisma/studio-core/data/bff'
 import { createClient } from '@libsql/client'
+import { serializeError } from '@prisma/studio-core/data/bff'
 
 const db = createClient({
   url: process.env.DATABASE_URL ?? 'file:./prisma/dev.db',

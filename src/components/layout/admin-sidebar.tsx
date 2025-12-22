@@ -1,19 +1,4 @@
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarRail,
-} from '@/components/ui/sidebar'
-import { NavGroup as NavGroupComponent } from '@/components/layout/nav-group'
-import { NavUser } from '@/components/layout/nav-user'
-import { useTranslation } from '~/hooks/useTranslation'
-import type { NavGroup as NavGroupType } from './types'
-import { useLayout } from '~/context/layout-provider'
-import { AdminTitle } from './admin-title'
 import { useRouteContext } from '@tanstack/react-router'
-import { useSidebar as useDynamicSidebar } from '~/lib/sidebar'
-import { iconResolver } from '~/utils/icon-resolver'
 import {
   LayoutDashboard,
   Users,
@@ -26,6 +11,15 @@ import {
   Menu,
   FolderTree,
 } from 'lucide-react'
+import { useLayout } from '~/context/layout-provider'
+import { useTranslation } from '~/hooks/useTranslation'
+import { useSidebar as useDynamicSidebar } from '~/lib/sidebar'
+import { iconResolver } from '~/utils/icon-resolver'
+import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from '@/components/ui/sidebar'
+import { NavGroup as NavGroupComponent } from '@/components/layout/nav-group'
+import { NavUser } from '@/components/layout/nav-user'
+import { AdminTitle } from './admin-title'
+import type { NavGroup as NavGroupType } from './types'
 
 // 管理后台专用侧边栏数据
 function createAdminSidebarData(t: (key: string) => string) {
@@ -150,7 +144,7 @@ export function AdminSidebar() {
       <SidebarContent>
         {(isLoading || sidebarData.navGroups.length === 0 ? fallbackData.navGroups : sidebarData.navGroups).map(
           (props: NavGroupType) => (
-          <NavGroupComponent key={props.title} {...props} />
+            <NavGroupComponent key={props.title} {...props} />
           )
         )}
       </SidebarContent>

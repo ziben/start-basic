@@ -22,11 +22,7 @@ export function AdminUsersProvider({ children }: { children: React.ReactNode }) 
     [open, setOpen, currentRow, setCurrentRow]
   )
 
-  return (
-    <AdminUsersContext value={value}>
-      {children}
-    </AdminUsersContext>
-  )
+  return <AdminUsersContext value={value}>{children}</AdminUsersContext>
 }
 
 // eslint-disable-next-line react-refresh/only-export-components

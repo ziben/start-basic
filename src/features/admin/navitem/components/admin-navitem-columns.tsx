@@ -143,7 +143,8 @@ export function useAdminNavItemColumns({ navGroupId: currentNavGroupIdProp }: Us
       header: () => t('admin.navitem.table.icon'),
       cell: ({ row }) => {
         const navItem = row.original as AdminNavItem
-        return <div title={navItem.icon ?? ''} className='flex items-center'>
+        return (
+          <div title={navItem.icon ?? ''} className='flex items-center'>
             {navItem.icon && (
               <span className='mr-2'>
                 {(() => {
@@ -152,7 +153,8 @@ export function useAdminNavItemColumns({ navGroupId: currentNavGroupIdProp }: Us
                 })()}
               </span>
             )}
-        </div>
+          </div>
+        )
       },
       meta: { className: 'w-24' },
     },

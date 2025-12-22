@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
 import { getRouteApi } from '@tanstack/react-router'
-import { useVirtualizer } from '@tanstack/react-virtual'
 import {
   type SortingState,
   type VisibilityState,
@@ -13,6 +12,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
+import { useVirtualizer } from '@tanstack/react-virtual'
 import { useTranslation } from '~/hooks/useTranslation'
 import { useTableUrlState } from '@/hooks/use-table-url-state'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
@@ -110,9 +110,7 @@ export function NavGroupsTable({ data }: DataTableProps) {
   const virtualRows = rowVirtualizer.getVirtualItems()
   const paddingTop = virtualRows.length > 0 ? virtualRows[0]!.start : 0
   const paddingBottom =
-    virtualRows.length > 0
-      ? rowVirtualizer.getTotalSize() - virtualRows[virtualRows.length - 1]!.end
-      : 0
+    virtualRows.length > 0 ? rowVirtualizer.getTotalSize() - virtualRows[virtualRows.length - 1]!.end : 0
 
   return (
     <div className='space-y-4 max-sm:has-[div[role="toolbar"]]:mb-16'>
@@ -148,11 +146,7 @@ export function NavGroupsTable({ data }: DataTableProps) {
                 <>
                   {paddingTop > 0 ? (
                     <TableRow aria-hidden='true' className='border-0 hover:bg-transparent'>
-                      <TableCell
-                        colSpan={columns.length}
-                        className='p-0'
-                        style={{ height: `${paddingTop}px` }}
-                      />
+                      <TableCell colSpan={columns.length} className='p-0' style={{ height: `${paddingTop}px` }} />
                     </TableRow>
                   ) : null}
 
@@ -171,11 +165,7 @@ export function NavGroupsTable({ data }: DataTableProps) {
 
                   {paddingBottom > 0 ? (
                     <TableRow aria-hidden='true' className='border-0 hover:bg-transparent'>
-                      <TableCell
-                        colSpan={columns.length}
-                        className='p-0'
-                        style={{ height: `${paddingBottom}px` }}
-                      />
+                      <TableCell colSpan={columns.length} className='p-0' style={{ height: `${paddingBottom}px` }} />
                     </TableRow>
                   ) : null}
                 </>

@@ -8,15 +8,7 @@ import { cn } from '@/lib/utils'
 import { useFont } from '@/context/font-provider'
 import { useTheme } from '@/context/theme-provider'
 import { Button, buttonVariants } from '@/components/ui/button'
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 
 const appearanceFormSchema = z.object({
@@ -89,9 +81,7 @@ export function AppearanceForm() {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Theme</FormLabel>
-              <FormDescription>
-                Select the theme for the dashboard.
-              </FormDescription>
+              <FormDescription>Select the theme for the dashboard.</FormDescription>
               <FormMessage />
               <RadioGroup
                 onValueChange={field.onChange}
@@ -119,9 +109,7 @@ export function AppearanceForm() {
                         </div>
                       </div>
                     </div>
-                    <span className='block w-full p-2 text-center font-normal'>
-                      Light
-                    </span>
+                    <span className='block w-full p-2 text-center font-normal'>Light</span>
                   </FormLabel>
                 </FormItem>
                 <FormItem>
@@ -145,9 +133,7 @@ export function AppearanceForm() {
                         </div>
                       </div>
                     </div>
-                    <span className='block w-full p-2 text-center font-normal'>
-                      Dark
-                    </span>
+                    <span className='block w-full p-2 text-center font-normal'>Dark</span>
                   </FormLabel>
                 </FormItem>
               </RadioGroup>

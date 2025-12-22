@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
-import { getRouteApi } from '@tanstack/react-router'
 import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query'
+import { getRouteApi } from '@tanstack/react-router'
 import {
   type SortingState,
   type VisibilityState,
@@ -10,6 +10,7 @@ import {
   getFacetedUniqueValues,
   useReactTable,
 } from '@tanstack/react-table'
+import { apiClient } from '~/lib/api-client'
 import { cn } from '@/lib/utils'
 import { type NavigateFn, useTableUrlState } from '@/hooks/use-table-url-state'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
@@ -18,7 +19,6 @@ import { priorities, statuses } from '../data/data'
 import { type Task } from '../data/schema'
 import { DataTableBulkActions } from './data-table-bulk-actions'
 import { tasksColumns as columns } from './tasks-columns'
-import { apiClient } from '~/lib/api-client'
 
 const route = getRouteApi('/_authenticated/demo/tasks/')
 
@@ -65,14 +65,7 @@ export function TasksTable() {
   })
 
   const tasksQueryKey = useMemo(() => {
-    return [
-      'demo-tasks',
-      pagination.pageIndex,
-      pagination.pageSize,
-      globalFilter ?? '',
-      columnFilters,
-      sorting,
-    ]
+    return ['demo-tasks', pagination.pageIndex, pagination.pageSize, globalFilter ?? '', columnFilters, sorting]
   }, [pagination.pageIndex, pagination.pageSize, globalFilter, columnFilters, sorting])
 
   const { data: pageData } = useQuery({
@@ -87,12 +80,8 @@ export function TasksTable() {
         page: pagination.pageIndex + 1,
         pageSize: pagination.pageSize,
         filter: globalFilter ? globalFilter : undefined,
-        status: Array.isArray(statusFilter?.value)
-          ? statusFilter!.value.map((v) => String(v))
-          : undefined,
-        priority: Array.isArray(priorityFilter?.value)
-          ? priorityFilter!.value.map((v) => String(v))
-          : undefined,
+        status: Array.isArray(statusFilter?.value) ? statusFilter!.value.map((v) => String(v)) : undefined,
+        priority: Array.isArray(priorityFilter?.value) ? priorityFilter!.value.map((v) => String(v)) : undefined,
         sortBy: firstSort?.id,
         sortDir: firstSort?.id ? (firstSort.desc ? 'desc' : 'asc') : undefined,
         signal,
@@ -105,14 +94,7 @@ export function TasksTable() {
     const nextPageIndex = pagination.pageIndex + 1
     if (nextPageIndex >= pageData.pageCount) return
 
-    const nextQueryKey = [
-      'demo-tasks',
-      nextPageIndex,
-      pagination.pageSize,
-      globalFilter ?? '',
-      columnFilters,
-      sorting,
-    ]
+    const nextQueryKey = ['demo-tasks', nextPageIndex, pagination.pageSize, globalFilter ?? '', columnFilters, sorting]
 
     void queryClient.prefetchQuery({
       queryKey: nextQueryKey,
@@ -125,31 +107,15 @@ export function TasksTable() {
           page: nextPageIndex + 1,
           pageSize: pagination.pageSize,
           filter: globalFilter ? globalFilter : undefined,
-          status: Array.isArray(statusFilter?.value)
-            ? statusFilter!.value.map((v) => String(v))
-            : undefined,
-          priority: Array.isArray(priorityFilter?.value)
-            ? priorityFilter!.value.map((v) => String(v))
-            : undefined,
+          status: Array.isArray(statusFilter?.value) ? statusFilter!.value.map((v) => String(v)) : undefined,
+          priority: Array.isArray(priorityFilter?.value) ? priorityFilter!.value.map((v) => String(v)) : undefined,
           sortBy: firstSort?.id,
-          sortDir: firstSort?.id
-            ? firstSort.desc
-              ? 'desc'
-              : 'asc'
-            : undefined,
+          sortDir: firstSort?.id ? (firstSort.desc ? 'desc' : 'asc') : undefined,
           signal,
         })
       },
     })
-  }, [
-    pageData,
-    pagination.pageIndex,
-    pagination.pageSize,
-    globalFilter,
-    columnFilters,
-    sorting,
-    queryClient,
-  ])
+  }, [pageData, pagination.pageIndex, pagination.pageSize, globalFilter, columnFilters, sorting, queryClient])
 
   const data: Task[] = pageData?.items ?? []
   const serverPageCount = pageData?.pageCount ?? 0

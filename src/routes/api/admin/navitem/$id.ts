@@ -1,11 +1,7 @@
-import { createFileRoute } from '@tanstack/react-router'
 import { z } from 'zod'
-import {
-  getNavItemById,
-  updateNavItem,
-  deleteNavItem
-} from './index'
+import { createFileRoute } from '@tanstack/react-router'
 import { withAdminAuth } from '../../../../middleware'
+import { getNavItemById, updateNavItem, deleteNavItem } from './index'
 
 // 创建单个导航项API路由
 export const Route = createFileRoute('/api/admin/navitem/$id')({
@@ -17,11 +13,11 @@ export const Route = createFileRoute('/api/admin/navitem/$id')({
         if (!id) {
           return new Response('ID不能为空', { status: 400 })
         }
-    
+
         const item = await getNavItemById(id)
         return Response.json(item)
       }),
-  
+
       // 更新导航项
       PUT: withAdminAuth(async ({ request, params }: any) => {
         try {
@@ -29,7 +25,7 @@ export const Route = createFileRoute('/api/admin/navitem/$id')({
           if (!id) {
             return new Response('ID不能为空', { status: 400 })
           }
-      
+
           const body = await request.json()
           const updateSchema = z.object({
             title: z.string().optional(),
@@ -39,9 +35,9 @@ export const Route = createFileRoute('/api/admin/navitem/$id')({
             isCollapsible: z.boolean().optional(),
             navGroupId: z.string().optional(),
             parentId: z.string().optional(),
-            orderIndex: z.number().optional()
+            orderIndex: z.number().optional(),
           })
-      
+
           const data = updateSchema.parse(body)
           const result = await updateNavItem(id, data)
           return Response.json(result)
@@ -49,7 +45,7 @@ export const Route = createFileRoute('/api/admin/navitem/$id')({
           return new Response(String(error), { status: 400 })
         }
       }),
-  
+
       // 删除导航项
       DELETE: withAdminAuth(async ({ params }: any) => {
         try {
@@ -57,13 +53,13 @@ export const Route = createFileRoute('/api/admin/navitem/$id')({
           if (!id) {
             return new Response('ID不能为空', { status: 400 })
           }
-      
+
           const result = await deleteNavItem(id)
           return Response.json(result)
         } catch (error) {
           return new Response(String(error), { status: 400 })
         }
-      })
-    }
-  }
+      }),
+    },
+  },
 })

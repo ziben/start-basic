@@ -1,7 +1,7 @@
-import { createFileRoute } from '@tanstack/react-router'
 import { z } from 'zod'
-import { withAdminAuth } from '~/middleware'
+import { createFileRoute } from '@tanstack/react-router'
 import prisma from '~/lib/db'
+import { withAdminAuth } from '~/middleware'
 
 // 创建导航项API路由
 export const Route = createFileRoute('/api/admin/navitem/')({
@@ -74,9 +74,7 @@ function buildNavItemUpdateData(
   }
 
   const isCollapsibleAfter =
-    updateData.isCollapsible !== undefined
-      ? Boolean(updateData.isCollapsible)
-      : currentItem.isCollapsible
+    updateData.isCollapsible !== undefined ? Boolean(updateData.isCollapsible) : currentItem.isCollapsible
 
   if (data.url !== undefined && isCollapsibleAfter === false) {
     updateData.url = data.url

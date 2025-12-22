@@ -19,7 +19,6 @@ export const Route = createFileRoute('/api/users')({
 
         return Response.json(list.map((u) => ({ id: u.id, name: u.name, email: u.email })))
       },
-    }
-  }
+    },
+  },
 })
-  

@@ -1,5 +1,5 @@
+import { createContext, useContext, ReactNode, useMemo, useState } from 'react'
 import { useRouteContext } from '@tanstack/react-router'
-import { createContext, useContext, ReactNode, useEffect, useMemo, useState } from 'react'
 
 type AuthStatus = 'unauthenticated' | 'authenticated' | 'loading'
 
@@ -13,26 +13,19 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const { user } = useRouteContext({ from: '__root__' })
-  const [status, setStatus] = useState<AuthStatus>(() => (user ? 'authenticated' : 'unauthenticated'))
-
-  useEffect(() => {
-    setStatus(user ? 'authenticated' : 'unauthenticated')
-  }, [user])
+  const [manualStatus, setManualStatus] = useState<AuthStatus | null>(null)
+  const status: AuthStatus = manualStatus ?? (user ? 'authenticated' : 'unauthenticated')
 
   const value = useMemo(
     () => ({
       status,
-      setStatus,
+      setStatus: (next: AuthStatus) => setManualStatus(next),
       isAuthenticated: status === 'authenticated',
     }),
-    [status, setStatus]
+    [status]
   )
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  )
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
 
 export const useAuthContext = () => {

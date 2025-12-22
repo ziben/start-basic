@@ -1,4 +1,6 @@
+import { toast } from 'sonner'
 import { describe, expect, it, vi } from 'vitest'
+import { handleServerError } from './handle-server-error'
 
 vi.mock('sonner', () => {
   return {
@@ -7,9 +9,6 @@ vi.mock('sonner', () => {
     },
   }
 })
-
-import { toast } from 'sonner'
-import { handleServerError } from './handle-server-error'
 
 describe('handleServerError', () => {
   it('does not throw', () => {

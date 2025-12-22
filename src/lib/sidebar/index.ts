@@ -1,11 +1,11 @@
 import { useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import { Menu } from 'lucide-react'
 import { createSidebarData } from '~/components/layout/data/sidebar-data'
 import type { SidebarData, NavItem } from '~/components/layout/types'
 import { useTranslation } from '~/hooks/useTranslation'
-import { getSidebarDataFn } from './api'
 import { iconResolver as defaultIconResolver, type IconResolver } from '~/utils/icon-resolver'
-import { Menu } from 'lucide-react'
+import { getSidebarDataFn } from './api'
 
 // 用于获取侧边栏数据的React Query键
 export const SIDEBAR_QUERY_KEY = ['sidebar']

@@ -1,7 +1,7 @@
-import { createFileRoute } from '@tanstack/react-router'
 import { z } from 'zod'
-import { tasks } from '~/features/demo/tasks/data/tasks'
+import { createFileRoute } from '@tanstack/react-router'
 import { tasksPageSchema } from '~/features/demo/tasks/data/schema'
+import { tasks } from '~/features/demo/tasks/data/tasks'
 
 const querySchema = z.object({
   page: z.coerce.number().int().positive().optional().default(1),
@@ -52,17 +52,11 @@ export const Route = createFileRoute('/api/demo/tasks/' as never)({
             if (parsed.status.length > 0 && !parsed.status.includes(t.status)) {
               return false
             }
-            if (
-              parsed.priority.length > 0 &&
-              !parsed.priority.includes(t.priority)
-            ) {
+            if (parsed.priority.length > 0 && !parsed.priority.includes(t.priority)) {
               return false
             }
             if (!filterValue) return true
-            return (
-              t.id.toLowerCase().includes(filterValue) ||
-              t.title.toLowerCase().includes(filterValue)
-            )
+            return t.id.toLowerCase().includes(filterValue) || t.title.toLowerCase().includes(filterValue)
           })
           .sort((a, b) => {
             if (!parsed.sortBy) return 0

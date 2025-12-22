@@ -1,3 +1,4 @@
+import { z } from 'zod'
 import type {
   AdminNavgroup,
   CreateNavgroupData,
@@ -10,13 +11,8 @@ import type {
   CreateNavItemData,
   UpdateNavItemData,
 } from '~/features/admin/navitem/data/schema'
-import {
-  adminUsersSchema,
-  adminUsersPageSchema,
-  type AdminUsersPage,
-} from '~/features/admin/users/data/schema'
+import { adminUsersSchema, adminUsersPageSchema, type AdminUsersPage } from '~/features/admin/users/data/schema'
 import { tasksPageSchema, type TasksPage } from '~/features/demo/tasks/data/schema'
-import { z } from 'zod'
 
 export type Translation = {
   id: string
@@ -77,10 +73,7 @@ async function readErrorBody(res: Response): Promise<string | null> {
   }
 }
 
-export async function fetchJson<T>(
-  input: string,
-  init?: RequestInit
-): Promise<T> {
+export async function fetchJson<T>(input: string, init?: RequestInit): Promise<T> {
   const res = await fetch(input, init)
   if (res.ok) {
     return (await res.json()) as T
@@ -99,10 +92,7 @@ export async function fetchJsonWithSchema<T>(
   return schema.parse(raw)
 }
 
-export async function fetchText(
-  input: string,
-  init?: RequestInit
-): Promise<string> {
+export async function fetchText(input: string, init?: RequestInit): Promise<string> {
   const res = await fetch(input, init)
   if (res.ok) return await res.text()
   const body = (await readErrorBody(res)) ?? res.statusText
@@ -182,9 +172,7 @@ export const apiClient = {
   },
   translations: {
     list: (locale?: string) => {
-      const url = locale
-        ? `/api/admin/translation/?locale=${encodeURIComponent(locale)}`
-        : '/api/admin/translation/'
+      const url = locale ? `/api/admin/translation/?locale=${encodeURIComponent(locale)}` : '/api/admin/translation/'
       return fetchJson<Translation[]>(url)
     },
     create: (data: Omit<Translation, 'id' | 'createdAt'>) =>
@@ -261,21 +249,12 @@ export const apiClient = {
         banExpires: string | null
       }>
     ) =>
-      fetchJsonWithSchema(
-        adminUsersSchema,
-        `/api/admin/user/${encodeURIComponent(id)}`,
-        {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data),
-        }
-      ),
-    bulkBan: (input: {
-      ids: string[]
-      banned: boolean
-      banReason?: string | null
-      banExpires?: string | null
-    }) =>
+      fetchJsonWithSchema(adminUsersSchema, `/api/admin/user/${encodeURIComponent(id)}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      }),
+    bulkBan: (input: { ids: string[]; banned: boolean; banReason?: string | null; banExpires?: string | null }) =>
       fetchJson<{ count: number }>('/api/admin/user/bulk-ban', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

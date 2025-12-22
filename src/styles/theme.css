@@ -66,7 +66,7 @@
   --font-hwmct: 'Huiwen-mincho', 'sans-serif';
   --font-maple-mono-cn: 'Maple Mono CN', 'sans-serif';
   --font-plex-sans-sc: 'IBM Plex Sans SC', 'sans-serif';
-  
+
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);

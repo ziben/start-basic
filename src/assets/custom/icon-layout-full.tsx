@@ -2,12 +2,7 @@ import { type SVGProps } from 'react'
 
 export function IconLayoutFull(props: SVGProps<SVGSVGElement>) {
   return (
-    <svg
-      data-name='icon-layout-full'
-      xmlns='http://www.w3.org/2000/svg'
-      viewBox='0 0 79.86 51.14'
-      {...props}
-    >
+    <svg data-name='icon-layout-full' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 79.86 51.14' {...props}>
       <path
         fill='none'
         opacity={0.75}
@@ -50,42 +45,10 @@ export function IconLayoutFull(props: SVGProps<SVGSVGElement>) {
         strokeMiterlimit={10}
       />
       <g strokeLinecap='round' strokeMiterlimit={10}>
-        <rect
-          x={59.05}
-          y={38.15}
-          width={2.01}
-          height={3.42}
-          rx={0.33}
-          ry={0.33}
-          opacity={0.32}
-        />
-        <rect
-          x={54.78}
-          y={34.99}
-          width={2.01}
-          height={6.58}
-          rx={0.33}
-          ry={0.33}
-          opacity={0.44}
-        />
-        <rect
-          x={63.17}
-          y={32.86}
-          width={2.01}
-          height={8.7}
-          rx={0.33}
-          ry={0.33}
-          opacity={0.53}
-        />
-        <rect
-          x={67.54}
-          y={29.17}
-          width={2.01}
-          height={12.4}
-          rx={0.33}
-          ry={0.33}
-          opacity={0.66}
-        />
+        <rect x={59.05} y={38.15} width={2.01} height={3.42} rx={0.33} ry={0.33} opacity={0.32} />
+        <rect x={54.78} y={34.99} width={2.01} height={6.58} rx={0.33} ry={0.33} opacity={0.44} />
+        <rect x={63.17} y={32.86} width={2.01} height={8.7} rx={0.33} ry={0.33} opacity={0.53} />
+        <rect x={67.54} y={29.17} width={2.01} height={12.4} rx={0.33} ry={0.33} opacity={0.66} />
       </g>
       <g opacity={0.5}>
         <circle cx={62.16} cy={18.63} r={7.5} />

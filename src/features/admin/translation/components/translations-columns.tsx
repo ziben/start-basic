@@ -1,7 +1,7 @@
-import { Checkbox } from '@/components/ui/checkbox'
-import { Translation } from '~/generated/prisma/client'
 import { type ColumnDef } from '@tanstack/react-table'
+import { Translation } from '~/generated/prisma/client'
 import { useTranslation } from '~/hooks/useTranslation'
+import { Checkbox } from '@/components/ui/checkbox'
 import { DataTableRowActions } from './data-table-row-actions'
 
 const formatDate = (date: string | Date | null | undefined) => {

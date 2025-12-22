@@ -1,7 +1,7 @@
-import { createFileRoute } from '@tanstack/react-router'
 import { z } from 'zod'
-import { updateUserNavGroupVisibility } from './index'
+import { createFileRoute } from '@tanstack/react-router'
 import { withAdminAuth } from '../../../../middleware'
+import { updateUserNavGroupVisibility } from './index'
 
 // 导航组可见性API路由
 export const Route = createFileRoute('/api/admin/navgroup/visibility')({
@@ -14,20 +14,16 @@ export const Route = createFileRoute('/api/admin/navgroup/visibility')({
           const visibilitySchema = z.object({
             userId: z.string(),
             navGroupId: z.string(),
-            isVisible: z.boolean()
+            isVisible: z.boolean(),
           })
 
           const data = visibilitySchema.parse(body)
-          const result = await updateUserNavGroupVisibility(
-            data.userId,
-            data.navGroupId,
-            data.isVisible
-          )
+          const result = await updateUserNavGroupVisibility(data.userId, data.navGroupId, data.isVisible)
           return Response.json(result)
         } catch (error) {
           return new Response(String(error), { status: 400 })
         }
-      })
-    }
-  }
+      }),
+    },
+  },
 })

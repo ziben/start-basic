@@ -1,15 +1,15 @@
-import { ConfigDrawer } from '~/components/config-drawer';
-import { useTranslation } from '~/hooks/useTranslation';
-import { useTranslations } from '~/hooks/useTranslationApi';
-import { Header } from '@/components/layout/header';
-import { Main } from '@/components/layout/main';
-import { ProfileDropdown } from '@/components/profile-dropdown';
-import { Search } from '@/components/search';
-import { ThemeSwitch } from '@/components/theme-switch';
-import { TranslationsDialogs } from './components/translations-dialogs';
-import { TranslationsPrimaryButtons } from './components/translations-primary-buttons';
-import { TranslationsProvider } from './components/translations-provider';
-import { TranslationsTable } from './components/translations-table';
+import { ConfigDrawer } from '~/components/config-drawer'
+import { useTranslation } from '~/hooks/useTranslation'
+import { useTranslations } from '~/hooks/useTranslationApi'
+import { Header } from '@/components/layout/header'
+import { Main } from '@/components/layout/main'
+import { ProfileDropdown } from '@/components/profile-dropdown'
+import { Search } from '@/components/search'
+import { ThemeSwitch } from '@/components/theme-switch'
+import { TranslationsDialogs } from './components/translations-dialogs'
+import { TranslationsPrimaryButtons } from './components/translations-primary-buttons'
+import { TranslationsProvider } from './components/translations-provider'
+import { TranslationsTable } from './components/translations-table'
 
 export function AdminTranslations() {
   const { t } = useTranslation()

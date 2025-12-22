@@ -1,5 +1,5 @@
-import { createFileRoute } from '@tanstack/react-router'
 import { z } from 'zod'
+import { createFileRoute } from '@tanstack/react-router'
 import { withAdminAuth } from '../../../../middleware'
 import { toggleNavItemVisibility } from './index'
 
@@ -13,19 +13,16 @@ export const Route = createFileRoute('/api/admin/navitem/visibility')({
           const body = await request.json()
           const visibilitySchema = z.object({
             id: z.string(),
-            isVisible: z.boolean()
+            isVisible: z.boolean(),
           })
-      
+
           const data = visibilitySchema.parse(body)
-          const result = await toggleNavItemVisibility(
-            data.id,
-            data.isVisible
-          )
+          const result = await toggleNavItemVisibility(data.id, data.isVisible)
           return Response.json(result)
         } catch (error) {
           return new Response(String(error), { status: 400 })
         }
-      })
-    }
-  }
+      }),
+    },
+  },
 })

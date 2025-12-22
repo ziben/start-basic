@@ -1,11 +1,11 @@
-import { memo, useState, useEffect, useRef } from 'react';
-import { type Table } from '@tanstack/react-table';
-import { X } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { memo, useState, useEffect, useRef } from 'react'
+import { type Table } from '@tanstack/react-table'
+import { X } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Separator } from '@/components/ui/separator'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
 type DataTableBulkActionsProps<TData> = {
   table: Table<TData>
@@ -57,9 +57,7 @@ function DataTableBulkActionsInner<TData>({
     const buttons = toolbarRef.current?.querySelectorAll('button')
     if (!buttons) return
 
-    const currentIndex = Array.from(buttons).findIndex(
-      (button) => button === document.activeElement
-    )
+    const currentIndex = Array.from(buttons).findIndex((button) => button === document.activeElement)
 
     switch (event.key) {
       case 'ArrowRight': {
@@ -70,8 +68,7 @@ function DataTableBulkActionsInner<TData>({
       }
       case 'ArrowLeft': {
         event.preventDefault()
-        const prevIndex =
-          currentIndex === 0 ? buttons.length - 1 : currentIndex - 1
+        const prevIndex = currentIndex === 0 ? buttons.length - 1 : currentIndex - 1
         buttons[prevIndex]?.focus()
         break
       }
@@ -92,8 +89,7 @@ function DataTableBulkActionsInner<TData>({
         // Check if the event target or currently focused element is a dropdown trigger
         const isFromDropdownTrigger =
           target?.getAttribute('data-slot') === 'dropdown-menu-trigger' ||
-          activeElement?.getAttribute('data-slot') ===
-            'dropdown-menu-trigger' ||
+          activeElement?.getAttribute('data-slot') === 'dropdown-menu-trigger' ||
           target?.closest('[data-slot="dropdown-menu-trigger"]') ||
           activeElement?.closest('[data-slot="dropdown-menu-trigger"]')
 
@@ -122,12 +118,7 @@ function DataTableBulkActionsInner<TData>({
   return (
     <>
       {/* Live region for screen reader announcements */}
-      <div
-        aria-live='polite'
-        aria-atomic='true'
-        className='sr-only'
-        role='status'
-      >
+      <div aria-live='polite' aria-atomic='true' className='sr-only' role='status'>
         {announcement}
       </div>
 
@@ -171,21 +162,10 @@ function DataTableBulkActionsInner<TData>({
             </TooltipContent>
           </Tooltip>
 
-          <Separator
-            className='h-5'
-            orientation='vertical'
-            aria-hidden='true'
-          />
+          <Separator className='h-5' orientation='vertical' aria-hidden='true' />
 
-          <div
-            className='flex items-center gap-x-1 text-sm'
-            id='bulk-actions-description'
-          >
-            <Badge
-              variant='default'
-              className='min-w-8 rounded-lg'
-              aria-label={`${selectedCount} selected`}
-            >
+          <div className='flex items-center gap-x-1 text-sm' id='bulk-actions-description'>
+            <Badge variant='default' className='min-w-8 rounded-lg' aria-label={`${selectedCount} selected`}>
               {selectedCount}
             </Badge>{' '}
             <span className='hidden sm:inline'>
@@ -195,11 +175,7 @@ function DataTableBulkActionsInner<TData>({
             selected
           </div>
 
-          <Separator
-            className='h-5'
-            orientation='vertical'
-            aria-hidden='true'
-          />
+          <Separator className='h-5' orientation='vertical' aria-hidden='true' />
 
           {children}
         </div>
@@ -208,6 +184,4 @@ function DataTableBulkActionsInner<TData>({
   )
 }
 
-export const DataTableBulkActions = memo(
-  DataTableBulkActionsInner
-) as typeof DataTableBulkActionsInner
+export const DataTableBulkActions = memo(DataTableBulkActionsInner) as typeof DataTableBulkActionsInner

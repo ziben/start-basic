@@ -2,7 +2,6 @@
 import en from '../src/i18n/locales/en.ts'
 import zh from '../src/i18n/locales/zh.ts'
 
-
 function flatten(obj: any, prefix = ''): Record<string, string> {
   const res: Record<string, string> = {}
   for (const key of Object.keys(obj)) {
@@ -27,7 +26,9 @@ async function seed() {
 
     // Upsert en
     for (const [key, value] of Object.entries(enFlat)) {
-      const existing = await prisma.translation.findUnique({ where: { locale_key: { locale: 'en', key } as any } }).catch(() => null)
+      const existing = await prisma.translation
+        .findUnique({ where: { locale_key: { locale: 'en', key } as any } })
+        .catch(() => null)
       if (existing) {
         await prisma.translation.update({ where: { id: existing.id }, data: { value } })
         updated++
@@ -39,7 +40,9 @@ async function seed() {
 
     // Upsert zh
     for (const [key, value] of Object.entries(zhFlat)) {
-      const existing = await prisma.translation.findUnique({ where: { locale_key: { locale: 'zh', key } as any } }).catch(() => null)
+      const existing = await prisma.translation
+        .findUnique({ where: { locale_key: { locale: 'zh', key } as any } })
+        .catch(() => null)
       if (existing) {
         await prisma.translation.update({ where: { id: existing.id }, data: { value } })
         updated++
@@ -58,4 +61,3 @@ async function seed() {
 }
 
 seed()
-

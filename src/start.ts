@@ -4,7 +4,7 @@ import { authMiddleware } from './utils/auth-guard'
 import { logMiddleware } from './utils/loggingMiddleware'
 
 export const startInstance = createStart(() => {
-    return {
-        requestMiddleware: [authMiddleware],
-    }
+  return {
+    requestMiddleware: [authMiddleware],
+  }
 })

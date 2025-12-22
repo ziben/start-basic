@@ -1,8 +1,7 @@
-import { Studio } from '@prisma/studio-core/ui'
-import { createSQLiteAdapter } from '@prisma/studio-core/data/sqlite-core'
-import { createStudioBFFClient } from '@prisma/studio-core/data/bff'
 import { useMemo } from 'react'
-
+import { createStudioBFFClient } from '@prisma/studio-core/data/bff'
+import { createSQLiteAdapter } from '@prisma/studio-core/data/sqlite-core'
+import { Studio } from '@prisma/studio-core/ui'
 import '@prisma/studio-core/ui/index.css'
 
 export function StudioPlugin() {

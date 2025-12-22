@@ -22,14 +22,14 @@ export function recordMetric(name: string, value: number) {
     value,
     timestamp: Date.now(),
   }
-  
+
   metrics.push(metric)
-  
+
   // 开发环境打印日志
   if (isDev) {
     console.log(`[Performance] ${name}: ${value.toFixed(2)}ms`)
   }
-  
+
   // 限制存储数量
   if (metrics.length > 100) {
     metrics.shift()
@@ -53,10 +53,7 @@ export function clearMetrics() {
 /**
  * 测量函数执行时间
  */
-export async function measureAsync<T>(
-  name: string,
-  fn: () => Promise<T>
-): Promise<T> {
+export async function measureAsync<T>(name: string, fn: () => Promise<T>): Promise<T> {
   const start = performance.now()
   try {
     return await fn()
@@ -88,7 +85,7 @@ export function getWebVitals() {
   }
 
   const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined
-  
+
   if (!navigation) return null
 
   return {

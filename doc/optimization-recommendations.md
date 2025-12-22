@@ -22,6 +22,7 @@
 ## 项目概述
 
 ### 技术栈
+
 - **框架**: TanStack Start (React 19 + SSR)
 - **路由**: TanStack Router
 - **状态管理**: TanStack Query + Context API
@@ -33,6 +34,7 @@
 - **虚拟化**: @tanstack/react-virtual
 
 ### 项目结构
+
 ```
 src/
 ├── assets/          # 静态资源
@@ -78,16 +80,16 @@ src/
 
 ### ✅ 上次审查后已修复的问题
 
-| # | 问题 | 状态 | 说明 |
-|---|------|------|------|
-| 1 | 修复 adminRoles 配置 | ✅ 已完成 | `lib/auth.ts` 现在只包含 `['admin', 'superadmin']` |
-| 2 | 修复 AuthContext 未集成问题 | ✅ 已完成 | 现在从 `__root__` 读取 user 并同步状态 |
-| 3 | 添加 Context value memoization | ✅ 已完成 | 所有 Context Provider 已使用 `useMemo` |
-| 4 | 创建统一 API 客户端 | ✅ 已完成 | `lib/api-client.ts` 提供完整的类型安全 API |
-| 5 | 添加表格虚拟化 | ✅ 已完成 | AdminUsersTable 使用 `@tanstack/react-virtual` |
-| 6 | URL 状态同步 | ✅ 已完成 | `use-table-url-state` hook 完整实现 |
-| 7 | 重复 handle-server-error | ✅ 已完成 | `lib/handle-server-error.ts` 现在重导出 utils |
-| 8 | Prisma 单例优化 | ✅ 已完成 | `lib/db.ts` 使用全局单例模式 |
+| #   | 问题                           | 状态      | 说明                                               |
+| --- | ------------------------------ | --------- | -------------------------------------------------- |
+| 1   | 修复 adminRoles 配置           | ✅ 已完成 | `lib/auth.ts` 现在只包含 `['admin', 'superadmin']` |
+| 2   | 修复 AuthContext 未集成问题    | ✅ 已完成 | 现在从 `__root__` 读取 user 并同步状态             |
+| 3   | 添加 Context value memoization | ✅ 已完成 | 所有 Context Provider 已使用 `useMemo`             |
+| 4   | 创建统一 API 客户端            | ✅ 已完成 | `lib/api-client.ts` 提供完整的类型安全 API         |
+| 5   | 添加表格虚拟化                 | ✅ 已完成 | AdminUsersTable 使用 `@tanstack/react-virtual`     |
+| 6   | URL 状态同步                   | ✅ 已完成 | `use-table-url-state` hook 完整实现                |
+| 7   | 重复 handle-server-error       | ✅ 已完成 | `lib/handle-server-error.ts` 现在重导出 utils      |
+| 8   | Prisma 单例优化                | ✅ 已完成 | `lib/db.ts` 使用全局单例模式                       |
 
 ---
 
@@ -99,12 +101,12 @@ src/
 
 **当前状态**: 排除生成文件后，主要 `any` 使用集中在以下文件：
 
-| 文件 | 问题数 | 原因 |
-|------|--------|------|
-| `routes/api/admin/navgroup/index.ts` | 13 | Prisma 事务类型 `tx as any` |
-| `hooks/useTranslation.ts` | 12 | i18next 动态类型 |
-| `lib/sidebar/server-utils.ts` | 11 | Prisma include 类型推断 |
-| `utils/handle-server-error.ts` | 3 | 错误对象类型检查 |
+| 文件                                 | 问题数 | 原因                        |
+| ------------------------------------ | ------ | --------------------------- |
+| `routes/api/admin/navgroup/index.ts` | 13     | Prisma 事务类型 `tx as any` |
+| `hooks/useTranslation.ts`            | 12     | i18next 动态类型            |
+| `lib/sidebar/server-utils.ts`        | 11     | Prisma include 类型推断     |
+| `utils/handle-server-error.ts`       | 3      | 错误对象类型检查            |
 
 **修复建议**:
 
@@ -143,12 +145,12 @@ type AuthenticatedHandler = (ctx: {
 
 ### ✅ 已完成
 
-| 优化项 | 状态 |
-|--------|------|
+| 优化项                    | 状态                            |
+| ------------------------- | ------------------------------- |
 | Context value memoization | ✅ 所有 Provider 已使用 useMemo |
-| 表格虚拟化 | ✅ AdminUsersTable 已实现 |
-| Query 预取 | ✅ 下一页数据预取已实现 |
-| columns useMemo | ✅ 表格 columns 已缓存 |
+| 表格虚拟化                | ✅ AdminUsersTable 已实现       |
+| Query 预取                | ✅ 下一页数据预取已实现         |
+| columns useMemo           | ✅ 表格 columns 已缓存          |
 
 ### 🟡 中优先级
 
@@ -157,6 +159,7 @@ type AuthenticatedHandler = (ctx: {
 **当前状态**: 仅 `IconPicker` 和 `FacetedFilter` 使用了 `React.memo`
 
 **建议添加 memo 的组件**:
+
 - `AdminUsersTable` - 大型列表组件
 - `DataTableBulkActions` - 批量操作按钮
 - `AdminNavitemTable` - 导航项表格
@@ -172,6 +175,7 @@ export const AdminUsersTable = React.memo(function AdminUsersTable() {
 #### 2. 图标选择器优化空间
 
 `icon-picker.tsx` 已有基础优化（300 初始图标 + 搜索防抖），可进一步：
+
 - 添加虚拟列表滚动
 - 图标按类别分组
 
@@ -179,10 +183,9 @@ export const AdminUsersTable = React.memo(function AdminUsersTable() {
 
 ```typescript
 // 当前 - router.tsx
-staleTime: 1000 * 300, // 5 minutes (全局)
-
-// 建议按数据类型细化:
-queryClient.setQueryDefaults(['nav-groups'], { staleTime: 30 * 60 * 1000 })
+staleTime: (1000 * 300, // 5 minutes (全局)
+  // 建议按数据类型细化:
+  queryClient.setQueryDefaults(['nav-groups'], { staleTime: 30 * 60 * 1000 }))
 queryClient.setQueryDefaults(['translations'], { staleTime: Infinity })
 ```
 
@@ -192,11 +195,11 @@ queryClient.setQueryDefaults(['translations'], { staleTime: Infinity })
 
 ### ✅ 已完成
 
-| 问题 | 状态 |
-|------|------|
-| 重复 handle-server-error | ✅ `lib/` 现在重导出 `utils/` |
-| AuthContext 未集成 | ✅ 已从 `__root__` 读取 user |
-| 缺少 API 客户端 | ✅ `lib/api-client.ts` 完整实现 |
+| 问题                     | 状态                            |
+| ------------------------ | ------------------------------- |
+| 重复 handle-server-error | ✅ `lib/` 现在重导出 `utils/`   |
+| AuthContext 未集成       | ✅ 已从 `__root__` 读取 user    |
+| 缺少 API 客户端          | ✅ `lib/api-client.ts` 完整实现 |
 
 ### � 高优先级
 
@@ -204,13 +207,13 @@ queryClient.setQueryDefaults(['translations'], { staleTime: Infinity })
 
 **当前状态**: hooks 目录下混用两种命名风格
 
-| 当前 (camelCase) | 应改为 (kebab-case) |
-|------------------|---------------------|
-| `useAuth.ts` | `use-auth.ts` (已有空文件) |
-| `useCustomQuery.ts` | `use-custom-query.ts` (已有空文件) |
-| `useNavgroupApi.ts` | `use-navgroup-api.ts` (已有空文件) |
-| `useNavitemApi.ts` | `use-navitem-api.ts` (已有空文件) |
-| `useTranslation.ts` | `use-translation.ts` (已有空文件) |
+| 当前 (camelCase)       | 应改为 (kebab-case)                   |
+| ---------------------- | ------------------------------------- |
+| `useAuth.ts`           | `use-auth.ts` (已有空文件)            |
+| `useCustomQuery.ts`    | `use-custom-query.ts` (已有空文件)    |
+| `useNavgroupApi.ts`    | `use-navgroup-api.ts` (已有空文件)    |
+| `useNavitemApi.ts`     | `use-navitem-api.ts` (已有空文件)     |
+| `useTranslation.ts`    | `use-translation.ts` (已有空文件)     |
 | `useTranslationApi.ts` | `use-translation-api.ts` (已有空文件) |
 
 **建议**: 将实际实现迁移到 kebab-case 文件，删除旧的 camelCase 文件
@@ -240,8 +243,8 @@ const queryClient = new QueryClient({
     mutations: {
       onError: (error) => {
         handleServerError(error)
-      }
-    }
+      },
+    },
   },
 })
 ```
@@ -252,10 +255,10 @@ const queryClient = new QueryClient({
 
 ### ✅ 已完成
 
-| 问题 | 状态 |
-|------|------|
-| adminRoles 配置 | ✅ 现在只包含 `['admin', 'superadmin']` |
-| 所有 admin API 权限校验 | ✅ 使用 `withAdminAuth` 中间件 |
+| 问题                    | 状态                                    |
+| ----------------------- | --------------------------------------- |
+| adminRoles 配置         | ✅ 现在只包含 `['admin', 'superadmin']` |
+| 所有 admin API 权限校验 | ✅ 使用 `withAdminAuth` 中间件          |
 
 ### 🟡 中优先级
 
@@ -286,8 +289,8 @@ type AuthenticatedHandler = (ctx: AuthContext) => Promise<Response> | Response
 return new Response(String(error), { status: 400 })
 
 // 建议 - 生产环境隐藏详细错误
-const message = process.env.NODE_ENV === 'production' 
-  ? '操作失败' 
+const message = process.env.NODE_ENV === 'production'
+  ? '操作失败'
   : String(error)
 return new Response(message, { status: 400 })
 ```
@@ -298,22 +301,24 @@ return new Response(message, { status: 400 })
 
 ### ✅ 已完成
 
-| 项目 | 状态 |
-|------|------|
-| ESLint 配置 | ✅ `eslint.config.mjs` 已存在 |
-| Husky Git Hooks | ✅ `.husky/` 目录已配置 |
-| Prettier 配置 | ✅ `.prettierrc` 已配置 |
+| 项目            | 状态                          |
+| --------------- | ----------------------------- |
+| ESLint 配置     | ✅ `eslint.config.mjs` 已存在 |
+| Husky Git Hooks | ✅ `.husky/` 目录已配置       |
+| Prettier 配置   | ✅ `.prettierrc` 已配置       |
 
 ### 🟡 中优先级
 
 #### 1. 单元测试覆盖
 
 **当前状态**: 存在测试文件但覆盖不完整
+
 - `use-table-url-state.test.ts` ✅
 - `useTranslation.test.ts` ✅
 - `lib/utils.test.ts` ✅
 
 **建议增加测试**:
+
 - `api-client.ts` - API 调用测试
 - `IconPicker` - 组件交互测试
 - `handleServerError` - 错误处理测试
@@ -339,35 +344,35 @@ pnpm test
 
 ### ✅ 已完成 (P0 + P1 + P2)
 
-| # | 问题 | 状态 | 完成日期 |
-|---|------|------|----------|
-| 1 | 修复 adminRoles 配置 | ✅ 完成 | 2024-12 |
-| 2 | 修复 AuthContext 集成 | ✅ 完成 | 2024-12 |
-| 3 | Context value memoization | ✅ 完成 | 2024-12 |
-| 4 | 创建统一 API 客户端 | ✅ 完成 | 2024-12 |
-| 5 | 表格虚拟化 | ✅ 完成 | 2024-12 |
-| 6 | URL 状态同步 | ✅ 完成 | 2024-12 |
-| 7 | 统一 Hook 文件命名 (kebab-case) | ✅ 完成 | 2024-12-16 |
-| 8 | 修复 Prisma 事务 `any` 类型 | ✅ 完成 | 2024-12-16 |
-| 9 | AdminUsersProvider useMemo | ✅ 完成 | 2024-12-16 |
-| 10 | DataTableBulkActions React.memo | ✅ 完成 | 2024-12-16 |
-| 11 | 修复 use-auth.ts lint 警告 | ✅ 完成 | 2024-12-16 |
-| 12 | 中间件类型安全增强 | ✅ 完成 | 2024-12-17 |
-| 13 | Query 缓存策略细化 | ✅ 完成 | 2024-12-17 |
-| 14 | 生产环境错误信息安全处理 | ✅ 完成 | 2024-12-17 |
-| 15 | api-client 单元测试 | ✅ 完成 | 2024-12-17 |
-| 16 | IconPicker 虚拟列表 (已有) | ✅ 确认 | 2024-12-17 |
-| 17 | 国际化完善 - 补充英文翻译键 | ✅ 完成 | 2024-12-17 |
-| 18 | 首屏加载性能优化工具 | ✅ 完成 | 2024-12-17 |
-| 19 | 监控和日志工具 | ✅ 完成 | 2024-12-17 |
+| #   | 问题                            | 状态    | 完成日期   |
+| --- | ------------------------------- | ------- | ---------- |
+| 1   | 修复 adminRoles 配置            | ✅ 完成 | 2024-12    |
+| 2   | 修复 AuthContext 集成           | ✅ 完成 | 2024-12    |
+| 3   | Context value memoization       | ✅ 完成 | 2024-12    |
+| 4   | 创建统一 API 客户端             | ✅ 完成 | 2024-12    |
+| 5   | 表格虚拟化                      | ✅ 完成 | 2024-12    |
+| 6   | URL 状态同步                    | ✅ 完成 | 2024-12    |
+| 7   | 统一 Hook 文件命名 (kebab-case) | ✅ 完成 | 2024-12-16 |
+| 8   | 修复 Prisma 事务 `any` 类型     | ✅ 完成 | 2024-12-16 |
+| 9   | AdminUsersProvider useMemo      | ✅ 完成 | 2024-12-16 |
+| 10  | DataTableBulkActions React.memo | ✅ 完成 | 2024-12-16 |
+| 11  | 修复 use-auth.ts lint 警告      | ✅ 完成 | 2024-12-16 |
+| 12  | 中间件类型安全增强              | ✅ 完成 | 2024-12-17 |
+| 13  | Query 缓存策略细化              | ✅ 完成 | 2024-12-17 |
+| 14  | 生产环境错误信息安全处理        | ✅ 完成 | 2024-12-17 |
+| 15  | api-client 单元测试             | ✅ 完成 | 2024-12-17 |
+| 16  | IconPicker 虚拟列表 (已有)      | ✅ 确认 | 2024-12-17 |
+| 17  | 国际化完善 - 补充英文翻译键     | ✅ 完成 | 2024-12-17 |
+| 18  | 首屏加载性能优化工具            | ✅ 完成 | 2024-12-17 |
+| 19  | 监控和日志工具                  | ✅ 完成 | 2024-12-17 |
 
 ### 长期改进 (P3) - 剩余
 
-| # | 问题 | 说明 |
-|---|------|------|
-| 1 | E2E 测试 | Playwright 已在 devDeps，可开始编写 |
-| 2 | ZenStack 集成 | `zenstack/` 目录已存在，可替代部分手写 API |
-| 3 | 代码分割优化 | React.lazy + Suspense for routes |
+| #   | 问题          | 说明                                       |
+| --- | ------------- | ------------------------------------------ |
+| 1   | E2E 测试      | Playwright 已在 devDeps，可开始编写        |
+| 2   | ZenStack 集成 | `zenstack/` 目录已存在，可替代部分手写 API |
+| 3   | 代码分割优化  | React.lazy + Suspense for routes           |
 
 ---
 
@@ -380,16 +385,16 @@ pnpm test
 export const Component = React.memo(function Component(props: Props) {
   // hooks
   const [state, setState] = useState()
-  
+
   // derived state
   const derived = useMemo(() => ..., [deps])
-  
+
   // callbacks
   const handleClick = useCallback(() => ..., [deps])
-  
+
   // effects
   useEffect(() => { ... }, [deps])
-  
+
   // render
   return <div>...</div>
 })
@@ -397,12 +402,12 @@ export const Component = React.memo(function Component(props: Props) {
 // 2. Context Provider (带 useMemo)
 export function MyProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState()
-  
+
   const value = useMemo(() => ({
     state,
     setState,
   }), [state])
-  
+
   return <MyContext value={value}>{children}</MyContext>
 }
 
@@ -461,5 +466,5 @@ GET: withAdminAuth(async ({ request, user }) => {
 
 ---
 
-*文档更新日期: 2024-12-17*  
-*Code Review by: AI Assistant*
+_文档更新日期: 2024-12-17_  
+_Code Review by: AI Assistant_

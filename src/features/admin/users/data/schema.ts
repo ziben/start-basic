@@ -1,15 +1,9 @@
 import { z } from 'zod'
 
-const userStatusSchema = z.union([
-  z.literal('banned'),
-  z.literal('active'),
-])
+const userStatusSchema = z.union([z.literal('banned'), z.literal('active')])
 export type AdminUserStatus = z.infer<typeof userStatusSchema>
 
-const userRoleSchema = z.union([
-  z.literal('admin'),
-  z.literal('user'),
-])
+const userRoleSchema = z.union([z.literal('admin'), z.literal('user')])
 
 export const adminUsersSchema = z.object({
   id: z.string(),
@@ -19,7 +13,7 @@ export const adminUsersSchema = z.object({
   image: z.string().nullable().optional(),
   createdAt: z.string().or(z.date()),
   updatedAt: z.string().or(z.date()),
-  
+
   role: z.string(),
   banned: z.boolean().nullable(),
   banReason: z.string().nullable().optional(),

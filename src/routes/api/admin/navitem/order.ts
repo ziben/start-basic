@@ -1,5 +1,5 @@
-import { createFileRoute } from '@tanstack/react-router'
 import { z } from 'zod'
+import { createFileRoute } from '@tanstack/react-router'
 import { withAdminAuth } from '../../../../middleware'
 import { updateNavItemOrder } from './index'
 
@@ -12,7 +12,7 @@ export const Route = createFileRoute('/api/admin/navitem/order')({
         try {
           const body = await request.json()
           const orderSchema = z.object({
-            itemIds: z.array(z.string())
+            itemIds: z.array(z.string()),
           })
 
           const data = orderSchema.parse(body)
@@ -21,7 +21,7 @@ export const Route = createFileRoute('/api/admin/navitem/order')({
         } catch (error) {
           return new Response(String(error), { status: 400 })
         }
-      })
-    }
-  }
+      }),
+    },
+  },
 })

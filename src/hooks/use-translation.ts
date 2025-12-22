@@ -1,7 +1,6 @@
-import { useIntl } from 'react-intl'
-import { useLocale } from '~/context/locale-context'
-import { DEFAULT_LOCALE, LocaleType, messages } from '~/i18n'
 import { useTranslation as useI18nextTranslation } from 'react-i18next'
+import { useOptionalLocale } from '~/context/locale-context'
+import { DEFAULT_LOCALE, LocaleType, messages } from '~/i18n'
 import i18n from '~/i18n/i18n'
 
 // 安全翻译函数，在IntlProvider上下文不可用时降级使用基本翻译查找
@@ -36,38 +35,13 @@ const safeFallbackTranslate = (
 }
 
 export const useTranslation = () => {
-  let i18nT: ((key: string, vars?: Record<string, unknown>) => string) | null = null
-  let i18nLocale: LocaleType = DEFAULT_LOCALE
-  try {
-    const { t, i18n: i18nInstance } = useI18nextTranslation()
-    i18nT = (key: string, vars?: Record<string, unknown>) => {
-      const res = t(key, vars as Record<string, string>)
-      return typeof res === 'string' ? res : String(res)
-    }
-    i18nLocale = (i18nInstance.language || DEFAULT_LOCALE) as LocaleType
-  } catch {
-    // not in react-i18next context
-  }
+  const { t: rawT, i18n: i18nInstance } = useI18nextTranslation()
+  const localeContext = useOptionalLocale()
 
-  let intl: ReturnType<typeof useIntl> | null = null
-  let locale = i18nLocale
-  let setLocale: ((locale: LocaleType) => void) | null = null
+  const locale = (localeContext?.locale || i18nInstance.language || DEFAULT_LOCALE) as LocaleType
+  const setLocale = localeContext?.setLocale ?? null
 
-  try {
-    intl = useIntl()
-  } catch {
-    // 当不在IntlProvider上下文中时，intl将为null
-  }
-
-  try {
-    const localeContext = useLocale()
-    locale = localeContext.locale
-    setLocale = localeContext.setLocale
-  } catch {
-    // 当不在LocaleProvider上下文中时，使用默认值
-  }
-
-  type TOptions = Record<string, unknown> | { defaultMessage?: string } & Record<string, unknown>
+  type TOptions = Record<string, unknown> | ({ defaultMessage?: string } & Record<string, unknown>)
 
   const t = (id: string, values?: TOptions): string => {
     let defaultMessage: string | undefined = undefined
@@ -82,20 +56,10 @@ export const useTranslation = () => {
       }
     }
 
-    if (i18nT) {
-      const res = i18nT(id, actualValues)
-      if (res && res !== id) return res
-      if (defaultMessage) return defaultMessage
-      return res
-    }
-
-    if (intl) {
-      try {
-        return intl.formatMessage({ id, defaultMessage: defaultMessage }, actualValues)
-      } catch {
-        // fallthrough to fallback
-      }
-    }
+    const res = rawT(id, actualValues as Record<string, string>)
+    if (typeof res === 'string' && res && res !== id) return res
+    if (defaultMessage) return defaultMessage
+    if (typeof res === 'string' && res) return res
 
     const fallback = safeFallbackTranslate(id, locale, actualValues)
     if ((fallback === id || !fallback) && defaultMessage) return defaultMessage
@@ -115,6 +79,5 @@ export const useTranslation = () => {
     t,
     locale,
     setLocale: setLocaleWrapper,
-    intl,
   }
 }

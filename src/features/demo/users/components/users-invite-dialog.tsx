@@ -13,14 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { SelectDropdown } from '@/components/select-dropdown'
@@ -28,8 +21,7 @@ import { roles } from '../data/data'
 
 const formSchema = z.object({
   email: z.email({
-    error: (iss) =>
-      iss.input === '' ? 'Please enter an email to invite.' : undefined,
+    error: (iss) => (iss.input === '' ? 'Please enter an email to invite.' : undefined),
   }),
   role: z.string().min(1, 'Role is required.'),
   desc: z.string().optional(),
@@ -42,10 +34,7 @@ type UserInviteDialogProps = {
   onOpenChange: (open: boolean) => void
 }
 
-export function UsersInviteDialog({
-  open,
-  onOpenChange,
-}: UserInviteDialogProps) {
+export function UsersInviteDialog({ open, onOpenChange }: UserInviteDialogProps) {
   const form = useForm<UserInviteForm>({
     resolver: zodResolver(formSchema),
     defaultValues: { email: '', role: '', desc: '' },
@@ -71,16 +60,12 @@ export function UsersInviteDialog({
             <MailPlus /> Invite User
           </DialogTitle>
           <DialogDescription>
-            Invite new user to join your team by sending them an email
-            invitation. Assign a role to define their access level.
+            Invite new user to join your team by sending them an email invitation. Assign a role to define their access
+            level.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form
-            id='user-invite-form'
-            onSubmit={form.handleSubmit(onSubmit)}
-            className='space-y-4'
-          >
+          <form id='user-invite-form' onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
             <FormField
               control={form.control}
               name='email'
@@ -88,11 +73,7 @@ export function UsersInviteDialog({
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input
-                      type='email'
-                      placeholder='eg: john.doe@gmail.com'
-                      {...field}
-                    />
+                    <Input type='email' placeholder='eg: john.doe@gmail.com' {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

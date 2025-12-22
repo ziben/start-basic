@@ -1,20 +1,11 @@
 import * as React from 'react'
-import * as LucideIcons from 'lucide-react'
 import { useVirtualizer } from '@tanstack/react-virtual'
+import * as LucideIcons from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
 // 过滤出所有可用的图标组件
 const iconList = Object.keys(LucideIcons || {})
@@ -40,15 +31,7 @@ export interface IconPickerProps {
 
 // 图标项组件 - 使用 memo 避免重复渲染
 const IconItem = React.memo(
-  ({
-    iconName,
-    isSelected,
-    onSelect,
-  }: {
-    iconName: string
-    isSelected: boolean
-    onSelect: (name: string) => void
-  }) => {
+  ({ iconName, isSelected, onSelect }: { iconName: string; isSelected: boolean; onSelect: (name: string) => void }) => {
     const IconComponent = LucideIcons[
       iconName as keyof typeof LucideIcons
     ] as React.ComponentType<LucideIcons.LucideProps>
@@ -58,7 +41,7 @@ const IconItem = React.memo(
         <TooltipTrigger asChild>
           <button
             type='button'
-            className='flex h-12 flex-col items-center justify-center gap-1 rounded-md p-2 transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
+            className='hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring flex h-12 flex-col items-center justify-center gap-1 rounded-md p-2 transition-colors focus-visible:ring-2 focus-visible:outline-none'
             onClick={() => onSelect(iconName)}
           >
             {React.createElement(IconComponent, {
@@ -88,9 +71,7 @@ export const IconPicker = React.memo(function IconPicker({
   const [debouncedSearch, setDebouncedSearch] = React.useState('')
 
   const selectedIcon = value
-    ? (LucideIcons[value as keyof typeof LucideIcons] as React.ComponentType<
-        LucideIcons.LucideProps
-      >)
+    ? (LucideIcons[value as keyof typeof LucideIcons] as React.ComponentType<LucideIcons.LucideProps>)
     : null
 
   // 防抖搜索
@@ -104,15 +85,11 @@ export const IconPicker = React.memo(function IconPicker({
   // 优化：限制显示数量，搜索时显示更多
   const filteredIcons = React.useMemo(() => {
     const lowerSearch = debouncedSearch.toLowerCase()
-    const filtered = debouncedSearch
-      ? iconList.filter((name) => name.toLowerCase().includes(lowerSearch))
-      : iconList
+    const filtered = debouncedSearch ? iconList.filter((name) => name.toLowerCase().includes(lowerSearch)) : iconList
 
     // 如果没有搜索，只显示前 300 个（性能优化）
     // 如果有搜索，显示所有匹配结果（但限制 500 个）
-    return debouncedSearch
-      ? filtered.slice(0, 500)
-      : filtered.slice(0, 300)
+    return debouncedSearch ? filtered.slice(0, 500) : filtered.slice(0, 300)
   }, [debouncedSearch])
 
   const scrollRef = React.useRef<HTMLDivElement>(null)
@@ -129,9 +106,7 @@ export const IconPicker = React.memo(function IconPicker({
   const virtualRows = rowVirtualizer.getVirtualItems()
   const paddingTop = virtualRows.length > 0 ? virtualRows[0]!.start : 0
   const paddingBottom =
-    virtualRows.length > 0
-      ? rowVirtualizer.getTotalSize() - virtualRows[virtualRows.length - 1]!.end
-      : 0
+    virtualRows.length > 0 ? rowVirtualizer.getTotalSize() - virtualRows[virtualRows.length - 1]!.end : 0
 
   const handleSelect = React.useCallback(
     (iconName: string) => {
@@ -182,18 +157,13 @@ export const IconPicker = React.memo(function IconPicker({
           </div>
           <div ref={scrollRef} className='max-h-[300px] overflow-y-auto p-2'>
             {filteredIcons.length === 0 ? (
-              <p className='text-muted-foreground py-8 text-center text-sm'>
-                未找到图标
-              </p>
+              <p className='text-muted-foreground py-8 text-center text-sm'>未找到图标</p>
             ) : (
               <TooltipProvider delayDuration={300}>
                 <div style={{ paddingTop, paddingBottom }}>
                   {virtualRows.map((virtualRow) => {
                     const startIndex = virtualRow.index * COLUMN_COUNT
-                    const rowIcons = filteredIcons.slice(
-                      startIndex,
-                      startIndex + COLUMN_COUNT
-                    )
+                    const rowIcons = filteredIcons.slice(startIndex, startIndex + COLUMN_COUNT)
                     return (
                       <div
                         key={virtualRow.key}
@@ -224,9 +194,7 @@ export const IconPicker = React.memo(function IconPicker({
                 </p>
               )}
               {debouncedSearch && filteredIcons.length === 500 && (
-                <p className='text-muted-foreground px-2 pb-2 text-center text-xs'>
-                  已显示 500 个结果，请细化搜索...
-                </p>
+                <p className='text-muted-foreground px-2 pb-2 text-center text-xs'>已显示 500 个结果，请细化搜索...</p>
               )}
             </>
           )}

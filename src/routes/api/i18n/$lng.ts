@@ -35,6 +35,6 @@ export const Route = createFileRoute('/api/i18n/$lng')({
           return new Response('Failed to load translations', { status: 500 })
         }
       },
-    }
-  }
+    },
+  },
 })

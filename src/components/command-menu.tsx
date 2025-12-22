@@ -1,3 +1,10 @@
+import React from 'react'
+import { useNavigate } from '@tanstack/react-router'
+import { ArrowRight, ChevronRight, Laptop, Moon, Sun } from 'lucide-react'
+import { useSidebar } from '~/lib/sidebar'
+import { iconResolver } from '~/utils/icon-resolver'
+import { useSearch } from '@/context/search-provider'
+import { useTheme } from '@/context/theme-provider'
 import {
   CommandDialog,
   CommandEmpty,
@@ -7,14 +14,7 @@ import {
   CommandList,
   CommandSeparator,
 } from '@/components/ui/command'
-import { useSearch } from '@/context/search-provider'
-import { useTheme } from '@/context/theme-provider'
-import { useNavigate } from '@tanstack/react-router'
-import { ArrowRight, ChevronRight, Laptop, Moon, Sun } from 'lucide-react'
-import React from 'react'
-import { useSidebar } from '~/lib/sidebar'
 import type { SidebarData, NavGroup, NavItem } from '@/components/layout/types'
-import { iconResolver } from '~/utils/icon-resolver'
 import { ScrollArea } from './ui/scroll-area'
 
 export function CommandMenu() {
@@ -41,7 +41,7 @@ export function CommandMenu() {
           {sidebarData.navGroups.map((group: any) => (
             <CommandGroup key={group.title} heading={group.title}>
               {group.items.map((navItem: any, i: number) => {
-                if ("url" in navItem && navItem.url)
+                if ('url' in navItem && navItem.url)
                   return (
                     <CommandItem
                       key={`${(navItem as any).url}-${i}`}

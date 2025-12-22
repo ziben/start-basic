@@ -4,13 +4,7 @@ import { faker } from '@faker-js/faker'
 faker.seed(12345)
 
 export const tasks = Array.from({ length: 100 }, () => {
-  const statuses = [
-    'todo',
-    'in progress',
-    'done',
-    'canceled',
-    'backlog',
-  ] as const
+  const statuses = ['todo', 'in progress', 'done', 'canceled', 'backlog'] as const
   const labels = ['bug', 'feature', 'documentation'] as const
   const priorities = ['low', 'medium', 'high'] as const
 

@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from 'zod'
 
 // 子导航项schema
 export const childNavItemSchema = z.object({
@@ -13,7 +13,7 @@ export const childNavItemSchema = z.object({
   parentId: z.string().nullable().optional(),
   createdAt: z.string().or(z.date()),
   updatedAt: z.string().or(z.date()),
-});
+})
 
 // 导航项schema
 export const adminNavItemSchema = z.object({
@@ -30,9 +30,9 @@ export const adminNavItemSchema = z.object({
   updatedAt: z.string().or(z.date()),
   children: z.array(childNavItemSchema).optional(),
   depth: z.number().int().optional(), // 添加深度属性，用于树形结构显示
-});
+})
 
-export const adminNavItemListSchema = z.array(adminNavItemSchema);
+export const adminNavItemListSchema = z.array(adminNavItemSchema)
 
 // 创建导航项的schema
 export const createNavItemSchema = z.object({
@@ -44,7 +44,7 @@ export const createNavItemSchema = z.object({
   navGroupId: z.string().min(1, { message: '导航组ID不能为空' }),
   parentId: z.string().optional(),
   orderIndex: z.number().int().optional(),
-});
+})
 
 // 更新导航项的schema
 export const updateNavItemSchema = z.object({
@@ -56,10 +56,10 @@ export const updateNavItemSchema = z.object({
   navGroupId: z.string().min(1, { message: '导航组ID不能为空' }).optional(),
   parentId: z.string().optional(),
   orderIndex: z.number().int().optional(),
-});
+})
 
-export type AdminNavItem = z.infer<typeof adminNavItemSchema>;
-export type AdminNavItemList = z.infer<typeof adminNavItemListSchema>;
-export type ChildNavItem = z.infer<typeof childNavItemSchema>;
-export type CreateNavItemData = z.infer<typeof createNavItemSchema>;
-export type UpdateNavItemData = z.infer<typeof updateNavItemSchema>;
+export type AdminNavItem = z.infer<typeof adminNavItemSchema>
+export type AdminNavItemList = z.infer<typeof adminNavItemListSchema>
+export type ChildNavItem = z.infer<typeof childNavItemSchema>
+export type CreateNavItemData = z.infer<typeof createNavItemSchema>
+export type UpdateNavItemData = z.infer<typeof updateNavItemSchema>

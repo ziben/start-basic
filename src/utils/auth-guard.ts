@@ -17,23 +17,21 @@ type AuthMiddlewareCtx = {
   next: (opts?: { context?: AuthContext }) => Promise<{ context?: AuthContext }>
 }
 
-export const authMiddleware = createMiddleware({ type: 'function' }).server(
-  async ({ next }: AuthMiddlewareCtx) => {
-    const request = getRequest()
-    const headers = request?.headers
+export const authMiddleware = createMiddleware({ type: 'function' }).server(async ({ next }: AuthMiddlewareCtx) => {
+  const request = getRequest()
+  const headers = request?.headers
 
-    const session = headers
-      ? await auth.api.getSession({
-          headers,
-          query: {
-            // ensure session is fresh
-            // https://www.better-auth.com/docs/concepts/session-management#session-caching
-            disableCookieCache: true,
-          },
-        })
-      : null
+  const session = headers
+    ? await auth.api.getSession({
+        headers,
+        query: {
+          // ensure session is fresh
+          // https://www.better-auth.com/docs/concepts/session-management#session-caching
+          disableCookieCache: true,
+        },
+      })
+    : null
 
-    // 不抛错，让路由层处理认证逻辑
-    return next({ context: { user: session?.user ?? null } })
-  },
-)
+  // 不抛错，让路由层处理认证逻辑
+  return next({ context: { user: session?.user ?? null } })
+})

@@ -15,10 +15,7 @@ interface ErrorResponseOptions {
  * - 开发环境：显示详细错误信息便于调试
  * - 生产环境：显示通用错误信息，详细信息仅记录日志
  */
-export function createSafeErrorResponse(
-  error: unknown,
-  options: ErrorResponseOptions = {}
-): Response {
+export function createSafeErrorResponse(error: unknown, options: ErrorResponseOptions = {}): Response {
   const { status = 500, defaultMessage = '操作失败' } = options
 
   // 开发环境显示详细错误
@@ -36,15 +33,10 @@ export function createSafeErrorResponse(
 /**
  * 创建安全的 JSON 错误响应
  */
-export function createSafeJsonErrorResponse(
-  error: unknown,
-  options: ErrorResponseOptions = {}
-): Response {
+export function createSafeJsonErrorResponse(error: unknown, options: ErrorResponseOptions = {}): Response {
   const { status = 500, defaultMessage = '操作失败' } = options
 
-  const errorMessage = isDev
-    ? (error instanceof Error ? error.message : String(error))
-    : defaultMessage
+  const errorMessage = isDev ? (error instanceof Error ? error.message : String(error)) : defaultMessage
 
   if (isDev) {
     console.error('[DEV ERROR]', error)
@@ -52,10 +44,7 @@ export function createSafeJsonErrorResponse(
     console.error('[PROD ERROR]', error)
   }
 
-  return Response.json(
-    { error: errorMessage, success: false },
-    { status }
-  )
+  return Response.json({ error: errorMessage, success: false }, { status })
 }
 
 /**

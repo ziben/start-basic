@@ -25,17 +25,11 @@ export function SignIn2() {
           <UserAuthForm />
           <p className='text-muted-foreground px-8 text-center text-sm'>
             By clicking sign in, you agree to our{' '}
-            <a
-              href='/terms'
-              className='hover:text-primary underline underline-offset-4'
-            >
+            <a href='/terms' className='hover:text-primary underline underline-offset-4'>
               Terms of Service
             </a>{' '}
             and{' '}
-            <a
-              href='/privacy'
-              className='hover:text-primary underline underline-offset-4'
-            >
+            <a href='/privacy' className='hover:text-primary underline underline-offset-4'>
               Privacy Policy
             </a>
             .
@@ -49,20 +43,8 @@ export function SignIn2() {
           '[&>img]:absolute [&>img]:top-[15%] [&>img]:left-20 [&>img]:h-full [&>img]:w-full [&>img]:object-cover [&>img]:object-top-left [&>img]:select-none'
         )}
       >
-        <img
-          src={dashboardLight}
-          className='dark:hidden'
-          width={1024}
-          height={1151}
-          alt='Shadcn-Admin'
-        />
-        <img
-          src={dashboardDark}
-          className='hidden dark:block'
-          width={1024}
-          height={1138}
-          alt='Shadcn-Admin'
-        />
+        <img src={dashboardLight} className='dark:hidden' width={1024} height={1151} alt='Shadcn-Admin' />
+        <img src={dashboardDark} className='hidden dark:block' width={1024} height={1138} alt='Shadcn-Admin' />
       </div>
     </div>
   )

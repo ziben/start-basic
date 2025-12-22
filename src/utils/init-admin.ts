@@ -5,8 +5,8 @@ async function createAdminUser() {
   try {
     const adminEmail = 'admin@example.com'
     const adminPassword = 'AdminPassword123!'
-  // short-term: relax createHash arg typing
-  const hashedPassword = await createHash(adminPassword as any)
+    // short-term: relax createHash arg typing
+    const hashedPassword = await createHash(adminPassword as any)
 
     const existingAdmin = await prisma.user.findUnique({
       where: { email: adminEmail },

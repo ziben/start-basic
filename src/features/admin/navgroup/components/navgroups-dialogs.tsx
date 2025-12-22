@@ -1,11 +1,11 @@
+import { toast } from 'sonner'
+import { useDeleteNavgroup } from '~/hooks/useNavgroupApi'
+import { useTranslation } from '~/hooks/useTranslation'
 import { showSubmittedData } from '@/lib/show-submitted-data'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { NavGroupsImportDialog } from './navgroups-import-dialog'
 import { NavGroupsMutateDrawer } from './navgroups-mutate-drawer'
 import { useNavGroups } from './navgroups-provider'
-import { useDeleteNavgroup } from '~/hooks/useNavgroupApi'
-import { useTranslation } from '~/hooks/useTranslation'
-import { toast } from 'sonner'
 
 export function NavGroupsDialogs() {
   const { open, setOpen, currentRow, setCurrentRow } = useNavGroups()
@@ -13,17 +13,9 @@ export function NavGroupsDialogs() {
   const { t } = useTranslation()
   return (
     <>
-      <NavGroupsMutateDrawer
-        key='navgroup-create'
-        open={open === 'create'}
-        onOpenChange={() => setOpen('create')}
-      />
+      <NavGroupsMutateDrawer key='navgroup-create' open={open === 'create'} onOpenChange={() => setOpen('create')} />
 
-      <NavGroupsImportDialog
-        key='navgroups-import'
-        open={open === 'import'}
-        onOpenChange={() => setOpen('import')}
-      />
+      <NavGroupsImportDialog key='navgroups-import' open={open === 'import'} onOpenChange={() => setOpen('import')} />
 
       {currentRow && (
         <>

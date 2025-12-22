@@ -1,7 +1,7 @@
-import { ConfirmDialog } from '@/components/confirm-dialog'
 import { toast } from 'sonner'
 import { useTranslation } from '~/hooks/useTranslation'
 import { useDeleteTranslation } from '~/hooks/useTranslationApi'
+import { ConfirmDialog } from '@/components/confirm-dialog'
 import { TranslationsImportDialog } from './translations-import-dialog'
 import { TranslationsMutateDrawer } from './translations-mutate-drawer'
 import { useTranslations } from './translations-provider'

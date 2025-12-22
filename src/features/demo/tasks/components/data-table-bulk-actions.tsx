@@ -4,17 +4,8 @@ import { Trash2, CircleArrowUp, ArrowUpDown, Download } from 'lucide-react'
 import { toast } from 'sonner'
 import { sleep } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { DataTableBulkActions as BulkActionsToolbar } from '@/components/data-table'
 import { priorities, statuses } from '../data/data'
 import { type Task } from '../data/schema'
@@ -24,9 +15,7 @@ type DataTableBulkActionsProps<TData> = {
   table: Table<TData>
 }
 
-export function DataTableBulkActions<TData>({
-  table,
-}: DataTableBulkActionsProps<TData>) {
+export function DataTableBulkActions<TData>({ table }: DataTableBulkActionsProps<TData>) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const selectedRows = table.getFilteredSelectedRowModel().rows
 
@@ -99,9 +88,7 @@ export function DataTableBulkActions<TData>({
                 defaultValue={status.value}
                 onClick={() => handleBulkStatusChange(status.value)}
               >
-                {status.icon && (
-                  <status.icon className='text-muted-foreground size-4' />
-                )}
+                {status.icon && <status.icon className='text-muted-foreground size-4' />}
                 {status.label}
               </DropdownMenuItem>
             ))}
@@ -135,9 +122,7 @@ export function DataTableBulkActions<TData>({
                 defaultValue={priority.value}
                 onClick={() => handleBulkPriorityChange(priority.value)}
               >
-                {priority.icon && (
-                  <priority.icon className='text-muted-foreground size-4' />
-                )}
+                {priority.icon && <priority.icon className='text-muted-foreground size-4' />}
                 {priority.label}
               </DropdownMenuItem>
             ))}
@@ -183,11 +168,7 @@ export function DataTableBulkActions<TData>({
         </Tooltip>
       </BulkActionsToolbar>
 
-      <TasksMultiDeleteDialog
-        open={showDeleteConfirm}
-        onOpenChange={setShowDeleteConfirm}
-        table={table}
-      />
+      <TasksMultiDeleteDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm} table={table} />
     </>
   )
 }

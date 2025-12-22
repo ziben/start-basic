@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
-import useDialogState from '@/hooks/use-dialog-state';
+import React, { useState } from 'react'
 import { Translation } from '~/generated/prisma/client'
-
+import useDialogState from '@/hooks/use-dialog-state'
 
 type TranslationsDialogType = 'create' | 'update' | 'delete' | 'import'
 

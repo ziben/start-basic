@@ -32,9 +32,7 @@ export function ProfileDropdown() {
           <DropdownMenuLabel className='font-normal'>
             <div className='flex flex-col gap-1.5'>
               <p className='text-sm leading-none font-medium'>satnaing</p>
-              <p className='text-muted-foreground text-xs leading-none'>
-                satnaingdev@gmail.com
-              </p>
+              <p className='text-muted-foreground text-xs leading-none'>satnaingdev@gmail.com</p>
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />

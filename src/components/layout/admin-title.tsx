@@ -1,12 +1,7 @@
 import { Link } from '@tanstack/react-router'
 import { Menu, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import {
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  useSidebar,
-} from '@/components/ui/sidebar'
+import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar'
 import { Button } from '../ui/button'
 
 export function AdminTitle() {
@@ -14,11 +9,7 @@ export function AdminTitle() {
   return (
     <SidebarMenu>
       <SidebarMenuItem>
-        <SidebarMenuButton
-          size='lg'
-          className='gap-0 py-0 hover:bg-transparent active:bg-transparent'
-          asChild
-        >
+        <SidebarMenuButton size='lg' className='gap-0 py-0 hover:bg-transparent active:bg-transparent' asChild>
           <div>
             <Link
               to='/admin'
@@ -36,11 +27,7 @@ export function AdminTitle() {
   )
 }
 
-function ToggleSidebar({
-  className,
-  onClick,
-  ...props
-}: React.ComponentProps<typeof Button>) {
+function ToggleSidebar({ className, onClick, ...props }: React.ComponentProps<typeof Button>) {
   const { toggleSidebar } = useSidebar()
 
   return (

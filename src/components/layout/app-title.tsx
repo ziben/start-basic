@@ -1,12 +1,7 @@
 import { Link } from '@tanstack/react-router'
 import { Menu, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import {
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  useSidebar,
-} from '@/components/ui/sidebar'
+import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar'
 import { Button } from '../ui/button'
 
 export function AppTitle() {
@@ -14,17 +9,9 @@ export function AppTitle() {
   return (
     <SidebarMenu>
       <SidebarMenuItem>
-        <SidebarMenuButton
-          size='lg'
-          className='gap-0 py-0 hover:bg-transparent active:bg-transparent'
-          asChild
-        >
+        <SidebarMenuButton size='lg' className='gap-0 py-0 hover:bg-transparent active:bg-transparent' asChild>
           <div>
-            <Link
-              to='/'
-              onClick={() => setOpenMobile(false)}
-              className='grid flex-1 text-start text-sm leading-tight'
-            >
+            <Link to='/' onClick={() => setOpenMobile(false)} className='grid flex-1 text-start text-sm leading-tight'>
               <span className='truncate font-bold'>Shadcn-Admin</span>
               <span className='truncate text-xs'>Vite + ShadcnUI</span>
             </Link>
@@ -36,11 +23,7 @@ export function AppTitle() {
   )
 }
 
-function ToggleSidebar({
-  className,
-  onClick,
-  ...props
-}: React.ComponentProps<typeof Button>) {
+function ToggleSidebar({ className, onClick, ...props }: React.ComponentProps<typeof Button>) {
   const { toggleSidebar } = useSidebar()
 
   return (

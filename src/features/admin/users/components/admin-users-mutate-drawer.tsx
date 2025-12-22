@@ -3,15 +3,9 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
+import { apiClient } from '~/lib/api-client'
 import { Button } from '@/components/ui/button'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import {
@@ -25,7 +19,6 @@ import {
 } from '@/components/ui/sheet'
 import { SelectDropdown } from '@/components/select-dropdown'
 import { type AdminUsers } from '../data/schema'
-import { apiClient } from '~/lib/api-client'
 
 type AdminUsersMutateDrawerProps = {
   open: boolean
@@ -45,11 +38,7 @@ const formSchema = z.object({
 })
 type AdminUserForm = z.infer<typeof formSchema>
 
-export function AdminUsersMutateDrawer({
-  open,
-  onOpenChange,
-  currentRow,
-}: AdminUsersMutateDrawerProps) {
+export function AdminUsersMutateDrawer({ open, onOpenChange, currentRow }: AdminUsersMutateDrawerProps) {
   const isUpdate = !!currentRow
   // 将后端 row 转换为表单期望的默认值形状，避免 null/undefined 导致的类型不匹配
   const toFormValues = (row?: AdminUsers): AdminUserForm => ({
@@ -114,9 +103,7 @@ export function AdminUsersMutateDrawer({
   })
 
   const onSubmit = (data: AdminUserForm) => {
-    const promise = isUpdate
-      ? updateMutation.mutateAsync(data)
-      : createMutation.mutateAsync(data)
+    const promise = isUpdate ? updateMutation.mutateAsync(data) : createMutation.mutateAsync(data)
 
     toast.promise(promise, {
       loading: isUpdate ? 'Saving user...' : 'Creating user...',
@@ -137,9 +124,7 @@ export function AdminUsersMutateDrawer({
         <SheetHeader className='text-start'>
           <SheetTitle>{isUpdate ? 'Update' : 'Create'} User</SheetTitle>
           <SheetDescription>
-            {isUpdate
-              ? 'Update the user by providing necessary info.'
-              : 'Add a new user by providing necessary info.'}
+            {isUpdate ? 'Update the user by providing necessary info.' : 'Add a new user by providing necessary info.'}
             Click save when you&apos;re done.
           </SheetDescription>
         </SheetHeader>
@@ -291,11 +276,7 @@ export function AdminUsersMutateDrawer({
           <SheetClose asChild>
             <Button variant='outline'>Close</Button>
           </SheetClose>
-          <Button
-            form='tasks-form'
-            type='submit'
-            disabled={updateMutation.isPending || createMutation.isPending}
-          >
+          <Button form='tasks-form' type='submit' disabled={updateMutation.isPending || createMutation.isPending}>
             Save changes
           </Button>
         </SheetFooter>

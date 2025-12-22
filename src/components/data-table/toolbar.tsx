@@ -1,6 +1,6 @@
+import { memo } from 'react'
 import { Cross2Icon } from '@radix-ui/react-icons'
 import { type Table } from '@tanstack/react-table'
-import { memo } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { DataTableFacetedFilter } from './faceted-filter'
@@ -27,8 +27,7 @@ function DataTableToolbarInner<TData>({
   searchKey,
   filters = [],
 }: DataTableToolbarProps<TData>) {
-  const isFiltered =
-    table.getState().columnFilters.length > 0 || table.getState().globalFilter
+  const isFiltered = table.getState().columnFilters.length > 0 || table.getState().globalFilter
 
   return (
     <div className='flex items-center justify-between'>
@@ -36,12 +35,8 @@ function DataTableToolbarInner<TData>({
         {searchKey ? (
           <Input
             placeholder={searchPlaceholder}
-            value={
-              (table.getColumn(searchKey)?.getFilterValue() as string) ?? ''
-            }
-            onChange={(event) =>
-              table.getColumn(searchKey)?.setFilterValue(event.target.value)
-            }
+            value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ''}
+            onChange={(event) => table.getColumn(searchKey)?.setFilterValue(event.target.value)}
             className='h-8 w-[150px] lg:w-[250px]'
           />
         ) : (

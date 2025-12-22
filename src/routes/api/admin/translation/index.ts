@@ -1,7 +1,7 @@
-import { createFileRoute } from '@tanstack/react-router'
 import { z } from 'zod'
-import { withAdminAuth } from '../../../../middleware'
+import { createFileRoute } from '@tanstack/react-router'
 import prisma from '~/lib/db'
+import { withAdminAuth } from '../../../../middleware'
 
 export const Route = createFileRoute('/api/admin/translation/')({
   server: {
@@ -29,6 +29,6 @@ export const Route = createFileRoute('/api/admin/translation/')({
           return new Response(String(err), { status: 400 })
         }
       }),
-    }
-  }
+    },
+  },
 })

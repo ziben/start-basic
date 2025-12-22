@@ -1,11 +1,11 @@
-import { ConfirmDialog } from '@/components/confirm-dialog'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
+import { apiClient } from '~/lib/api-client'
+import { ConfirmDialog } from '@/components/confirm-dialog'
+import { type AdminUsers } from '../data/schema'
 import { AdminUserImportDialog } from './admin-users-import-dialog'
 import { AdminUsersMutateDrawer } from './admin-users-mutate-drawer'
 import { useAdminUsers } from './admin-users-provider'
-import { type AdminUsers } from '../data/schema'
-import { apiClient } from '~/lib/api-client'
 
 export function AdminUsersDialogs() {
   const { open, setOpen, currentRow, setCurrentRow } = useAdminUsers()
@@ -113,8 +113,7 @@ export function AdminUsersDialogs() {
             title={`Delete this user: ${currentRow.id} ?`}
             desc={
               <>
-                You are about to delete a user with the ID{' '}
-                <strong>{currentRow.id}</strong>. <br />
+                You are about to delete a user with the ID <strong>{currentRow.id}</strong>. <br />
                 This action cannot be undone.
               </>
             }

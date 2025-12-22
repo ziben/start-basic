@@ -2,12 +2,7 @@ import { type SVGProps } from 'react'
 
 export function IconSidebarInset(props: SVGProps<SVGSVGElement>) {
   return (
-    <svg
-      data-name='icon-sidebar-inset'
-      xmlns='http://www.w3.org/2000/svg'
-      viewBox='0 0 79.86 51.14'
-      {...props}
-    >
+    <svg data-name='icon-sidebar-inset' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 79.86 51.14' {...props}>
       <rect
         x={23.39}
         y={5.57}
@@ -45,12 +40,7 @@ export function IconSidebarInset(props: SVGProps<SVGSVGElement>) {
       />
       <g strokeLinecap='round' strokeMiterlimit={10}>
         <circle cx={7.04} cy={9.57} r={2.54} opacity={0.8} />
-        <path
-          fill='none'
-          opacity={0.8}
-          strokeWidth='2px'
-          d='M11.59 8.3L17.31 8.3'
-        />
+        <path fill='none' opacity={0.8} strokeWidth='2px' d='M11.59 8.3L17.31 8.3' />
         <path fill='none' opacity={0.6} d='M11.38 10.95L16.44 10.95' />
       </g>
     </svg>

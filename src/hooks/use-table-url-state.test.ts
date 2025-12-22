@@ -1,5 +1,5 @@
-import { describe, expect, it, vi } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
+import { describe, expect, it, vi } from 'vitest'
 import { useTableUrlState, type NavigateFn } from './use-table-url-state'
 
 describe('useTableUrlState', () => {

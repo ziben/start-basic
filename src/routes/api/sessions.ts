@@ -17,7 +17,7 @@ export const Route = createFileRoute('/api/sessions')({
     handlers: {
       GET: async ({ request }) => {
         console.info('Fetching sessions... @', request.url)
-    
+
         // 模拟会话数据 - 实际应用中应从数据库获取
         const mockSessions: SessionInfo[] = [
           {
@@ -57,6 +57,6 @@ export const Route = createFileRoute('/api/sessions')({
 
         return Response.json(mockSessions)
       },
-    }
-  }
+    },
+  },
 })

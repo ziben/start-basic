@@ -1,10 +1,10 @@
+import { z } from 'zod'
 import { createFileRoute } from '@tanstack/react-router'
 import { adminUsersPageSchema } from '~/features/admin/users/data/schema'
 import { adminUsersSchema } from '~/features/admin/users/data/schema'
-import { z } from 'zod'
+import type { Prisma, User as PrismaUser } from '~/generated/prisma/client'
 import prisma from '~/lib/db'
 import { withAdminAuth } from '~/middleware'
-import type { Prisma, User as PrismaUser } from '~/generated/prisma/client'
 
 const querySchema = z.object({
   page: z.coerce.number().int().positive().optional().default(1),
@@ -48,19 +48,10 @@ export const Route = createFileRoute('/api/admin/user/')({
             }
           : {}
 
-        const allowedSort = [
-          'createdAt',
-          'updatedAt',
-          'name',
-          'email',
-          'username',
-          'role',
-          'banned',
-        ] as const
+        const allowedSort = ['createdAt', 'updatedAt', 'name', 'email', 'username', 'role', 'banned'] as const
         type SortField = (typeof allowedSort)[number]
 
-        const isAllowedSortField = (v: string): v is SortField =>
-          (allowedSort as readonly string[]).includes(v)
+        const isAllowedSortField = (v: string): v is SortField => (allowedSort as readonly string[]).includes(v)
 
         const orderBy: Prisma.UserOrderByWithRelationInput =
           parsed.sortBy && isAllowedSortField(parsed.sortBy)

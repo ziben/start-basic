@@ -1,14 +1,7 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { useSearch } from '@tanstack/react-router'
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { AuthLayout } from '../auth-layout'
 import { UserAuthForm } from './components/user-auth-form'
-import { useSearch } from '@tanstack/react-router'
 
 export function SignIn() {
   const { redirect } = useSearch({ from: '/(auth)/sign-in' })
@@ -19,27 +12,22 @@ export function SignIn() {
         <CardHeader>
           <CardTitle className='text-lg tracking-tight'>登录</CardTitle>
           <CardDescription>
-            请在下方输入您的邮箱和密码<br />
+            请在下方输入您的邮箱和密码
+            <br />
             登录您的账户
           </CardDescription>
         </CardHeader>
         <CardContent>
-        <UserAuthForm redirectTo={redirect} />
+          <UserAuthForm redirectTo={redirect} />
         </CardContent>
         <CardFooter>
           <p className='text-muted-foreground px-8 text-center text-sm'>
             点击登录，即表示您同意我们的{' '}
-            <a
-              href='/terms'
-              className='hover:text-primary underline underline-offset-4'
-            >
+            <a href='/terms' className='hover:text-primary underline underline-offset-4'>
               服务条款
-            </a>
-            {' '}和{' '}
-            <a
-              href='/privacy'
-              className='hover:text-primary underline underline-offset-4'
-            >
+            </a>{' '}
+            和{' '}
+            <a href='/privacy' className='hover:text-primary underline underline-offset-4'>
               隐私政策
             </a>
             。

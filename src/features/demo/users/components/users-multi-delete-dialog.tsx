@@ -18,11 +18,7 @@ type UserMultiDeleteDialogProps<TData> = {
 
 const CONFIRM_WORD = 'DELETE'
 
-export function UsersMultiDeleteDialog<TData>({
-  open,
-  onOpenChange,
-  table,
-}: UserMultiDeleteDialogProps<TData>) {
+export function UsersMultiDeleteDialog<TData>({ open, onOpenChange, table }: UserMultiDeleteDialogProps<TData>) {
   const [value, setValue] = useState('')
 
   const selectedRows = table.getFilteredSelectedRowModel().rows
@@ -39,9 +35,7 @@ export function UsersMultiDeleteDialog<TData>({
       loading: 'Deleting users...',
       success: () => {
         table.resetRowSelection()
-        return `Deleted ${selectedRows.length} ${
-          selectedRows.length > 1 ? 'users' : 'user'
-        }`
+        return `Deleted ${selectedRows.length} ${selectedRows.length > 1 ? 'users' : 'user'}`
       },
       error: 'Error',
     })
@@ -55,11 +49,7 @@ export function UsersMultiDeleteDialog<TData>({
       disabled={value.trim() !== CONFIRM_WORD}
       title={
         <span className='text-destructive'>
-          <AlertTriangle
-            className='stroke-destructive me-1 inline-block'
-            size={18}
-          />{' '}
-          Delete {selectedRows.length}{' '}
+          <AlertTriangle className='stroke-destructive me-1 inline-block' size={18} /> Delete {selectedRows.length}{' '}
           {selectedRows.length > 1 ? 'users' : 'user'}
         </span>
       }
@@ -81,9 +71,7 @@ export function UsersMultiDeleteDialog<TData>({
 
           <Alert variant='destructive'>
             <AlertTitle>Warning!</AlertTitle>
-            <AlertDescription>
-              Please be careful, this operation can not be rolled back.
-            </AlertDescription>
+            <AlertDescription>Please be careful, this operation can not be rolled back.</AlertDescription>
           </Alert>
         </div>
       }

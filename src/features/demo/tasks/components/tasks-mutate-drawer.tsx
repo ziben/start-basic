@@ -3,14 +3,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { showSubmittedData } from '@/lib/show-submitted-data'
 import { Button } from '@/components/ui/button'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import {
@@ -39,11 +32,7 @@ const formSchema = z.object({
 })
 type TaskForm = z.infer<typeof formSchema>
 
-export function TasksMutateDrawer({
-  open,
-  onOpenChange,
-  currentRow,
-}: TaskMutateDrawerProps) {
+export function TasksMutateDrawer({ open, onOpenChange, currentRow }: TaskMutateDrawerProps) {
   const isUpdate = !!currentRow
 
   const form = useForm<TaskForm>({
@@ -75,9 +64,7 @@ export function TasksMutateDrawer({
         <SheetHeader className='text-start'>
           <SheetTitle>{isUpdate ? 'Update' : 'Create'} Task</SheetTitle>
           <SheetDescription>
-            {isUpdate
-              ? 'Update the task by providing necessary info.'
-              : 'Add a new task by providing necessary info.'}
+            {isUpdate ? 'Update the task by providing necessary info.' : 'Add a new task by providing necessary info.'}
             Click save when you&apos;re done.
           </SheetDescription>
         </SheetHeader>
@@ -138,9 +125,7 @@ export function TasksMutateDrawer({
                         <FormControl>
                           <RadioGroupItem value='documentation' />
                         </FormControl>
-                        <FormLabel className='font-normal'>
-                          Documentation
-                        </FormLabel>
+                        <FormLabel className='font-normal'>Documentation</FormLabel>
                       </FormItem>
                       <FormItem className='flex items-center'>
                         <FormControl>

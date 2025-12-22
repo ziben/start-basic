@@ -1,32 +1,21 @@
 import React, { useState } from 'react'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { type Table } from '@tanstack/react-table'
 import { Trash2, CircleArrowUp, Download } from 'lucide-react'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
+import { apiClient } from '~/lib/api-client'
 import { Button } from '@/components/ui/button'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { DataTableBulkActions as BulkActionsToolbar } from '@/components/data-table'
 import { type AdminUsers } from '../data/schema'
 import { AdminUsersMultiDeleteDialog } from './admin-users-multi-delete-dialog'
-import { apiClient } from '~/lib/api-client'
 
 type DataTableBulkActionsProps<TData> = {
   table: Table<TData>
 }
 
-function DataTableBulkActionsInner<TData>({
-  table,
-}: Readonly<DataTableBulkActionsProps<TData>>) {
+function DataTableBulkActionsInner<TData>({ table }: Readonly<DataTableBulkActionsProps<TData>>) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const selectedRows = table.getFilteredSelectedRowModel().rows
   const queryClient = useQueryClient()
@@ -53,8 +42,8 @@ function DataTableBulkActionsInner<TData>({
               ? {
                   ...u,
                   banned: input.banned,
-                  banReason: input.banned ? u.banReason ?? null : null,
-                  banExpires: input.banned ? u.banExpires ?? null : null,
+                  banReason: input.banned ? (u.banReason ?? null) : null,
+                  banExpires: input.banned ? (u.banExpires ?? null) : null,
                 }
               : u
           ),
@@ -147,12 +136,8 @@ function DataTableBulkActionsInner<TData>({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent sideOffset={14}>
-            <DropdownMenuItem onClick={() => void runBulkBan()}>
-              Ban selected
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => void runBulkUnban()}>
-              Unban selected
-            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => void runBulkBan()}>Ban selected</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => void runBulkUnban()}>Unban selected</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
 
@@ -195,16 +180,10 @@ function DataTableBulkActionsInner<TData>({
         </Tooltip>
       </BulkActionsToolbar>
 
-      <AdminUsersMultiDeleteDialog
-        open={showDeleteConfirm}
-        onOpenChange={setShowDeleteConfirm}
-        table={table}
-      />
+      <AdminUsersMultiDeleteDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm} table={table} />
     </>
   )
 }
 
 // 使用 memo 优化，避免不必要的重渲染
-export const DataTableBulkActions = React.memo(
-  DataTableBulkActionsInner
-) as typeof DataTableBulkActionsInner
+export const DataTableBulkActions = React.memo(DataTableBulkActionsInner) as typeof DataTableBulkActionsInner

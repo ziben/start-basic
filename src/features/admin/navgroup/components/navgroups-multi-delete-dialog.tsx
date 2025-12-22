@@ -39,9 +39,7 @@ export function NavGroupsMultiDeleteDialog<TData>({
       loading: 'Deleting navgroups...',
       success: () => {
         table.resetRowSelection()
-        return `Deleted ${selectedRows.length} ${
-          selectedRows.length > 1 ? 'navgroups' : 'navgroup'
-        }`
+        return `Deleted ${selectedRows.length} ${selectedRows.length > 1 ? 'navgroups' : 'navgroup'}`
       },
       error: 'Error',
     })
@@ -55,11 +53,7 @@ export function NavGroupsMultiDeleteDialog<TData>({
       disabled={value.trim() !== CONFIRM_WORD}
       title={
         <span className='text-destructive'>
-          <AlertTriangle
-            className='stroke-destructive me-1 inline-block'
-            size={18}
-          />{' '}
-          Delete {selectedRows.length}{' '}
+          <AlertTriangle className='stroke-destructive me-1 inline-block' size={18} /> Delete {selectedRows.length}{' '}
           {selectedRows.length > 1 ? 'navgroups' : 'navgroup'}
         </span>
       }
@@ -81,9 +75,7 @@ export function NavGroupsMultiDeleteDialog<TData>({
 
           <Alert variant='destructive'>
             <AlertTitle>Warning!</AlertTitle>
-            <AlertDescription>
-              Please be careful, this operation can not be rolled back.
-            </AlertDescription>
+            <AlertDescription>Please be careful, this operation can not be rolled back.</AlertDescription>
           </Alert>
         </div>
       }

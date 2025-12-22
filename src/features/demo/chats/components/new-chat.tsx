@@ -3,20 +3,8 @@ import { Check, X } from 'lucide-react'
 import { showSubmittedData } from '@/lib/show-submitted-data'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from '@/components/ui/command'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { type ChatUser } from '../data/chat-types'
 
 type User = Omit<ChatUser, 'messages'>
@@ -76,10 +64,7 @@ export function NewChat({ users, onOpenChange, open }: NewChatProps) {
             ))}
           </div>
           <Command className='rounded-lg border'>
-            <CommandInput
-              placeholder='Search people...'
-              className='text-foreground'
-            />
+            <CommandInput placeholder='Search people...' className='text-foreground' />
             <CommandList>
               <CommandEmpty>No people found.</CommandEmpty>
               <CommandGroup>
@@ -96,18 +81,12 @@ export function NewChat({ users, onOpenChange, open }: NewChatProps) {
                         className='h-8 w-8 rounded-full'
                       />
                       <div className='flex flex-col'>
-                        <span className='text-sm font-medium'>
-                          {user.fullName}
-                        </span>
-                        <span className='text-accent-foreground/70 text-xs'>
-                          {user.username}
-                        </span>
+                        <span className='text-sm font-medium'>{user.fullName}</span>
+                        <span className='text-accent-foreground/70 text-xs'>{user.username}</span>
                       </div>
                     </div>
 
-                    {selectedUsers.find((u) => u.id === user.id) && (
-                      <Check className='h-4 w-4' />
-                    )}
+                    {selectedUsers.find((u) => u.id === user.id) && <Check className='h-4 w-4' />}
                   </CommandItem>
                 ))}
               </CommandGroup>

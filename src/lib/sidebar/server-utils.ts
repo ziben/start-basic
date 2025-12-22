@@ -1,6 +1,6 @@
-import prisma from '~/lib/db'
 import { createSidebarData } from '~/components/layout/data/sidebar-data'
 import type { SidebarData, NavGroup as NavGroupType, NavItem } from '~/components/layout/types'
+import prisma from '~/lib/db'
 
 // 从数据库获取侧边栏数据并转换为前端需要的格式
 export async function getSidebarData(
@@ -30,13 +30,13 @@ export async function getSidebarData(
         },
         roleNavGroups: role
           ? {
-            where: { role },
-          }
+              where: { role },
+            }
           : undefined,
         userRoleNavGroups: userId
           ? {
-            where: { userId, visible: true },
-          }
+              where: { userId, visible: true },
+            }
           : undefined,
       },
     })
@@ -55,9 +55,9 @@ export async function getSidebarData(
     // 获取用户数据
     const user = userId
       ? await prisma.user.findUnique({
-        where: { id: userId },
-        select: { name: true, email: true, image: true },
-      })
+          where: { id: userId },
+          select: { name: true, email: true, image: true },
+        })
       : null
 
     // 创建空的侧边栏数据
@@ -95,10 +95,10 @@ export async function getSidebarData(
     return {
       user: user
         ? {
-          name: user.name,
-          email: user.email,
-          avatar: user.image || '/avatars/shadcn.jpg',
-        }
+            name: user.name,
+            email: user.email,
+            avatar: user.image || '/avatars/shadcn.jpg',
+          }
         : defaultData.user,
       teams: serializedTeams,
       navGroups: adaptedGroups.length > 0 ? adaptedGroups : serializedNavGroups,

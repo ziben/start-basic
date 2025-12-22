@@ -67,11 +67,7 @@ export function ConfigDrawer() {
           <DirConfig />
         </div>
         <SheetFooter className='gap-2'>
-          <Button
-            variant='destructive'
-            onClick={handleReset}
-            aria-label='Reset all settings to default values'
-          >
+          <Button variant='destructive' onClick={handleReset} aria-label='Reset all settings to default values'>
             Reset
           </Button>
         </SheetFooter>
@@ -92,20 +88,10 @@ function SectionTitle({
   className?: string
 }) {
   return (
-    <div
-      className={cn(
-        'text-muted-foreground mb-2 flex items-center gap-2 text-sm font-semibold',
-        className
-      )}
-    >
+    <div className={cn('text-muted-foreground mb-2 flex items-center gap-2 text-sm font-semibold', className)}>
       {title}
       {showReset && onReset && (
-        <Button
-          size='icon'
-          variant='secondary'
-          className='size-4 rounded-full'
-          onClick={onReset}
-        >
+        <Button size='icon' variant='secondary' className='size-4 rounded-full' onClick={onReset}>
           <RotateCcw className='size-3' />
         </Button>
       )}
@@ -157,11 +143,7 @@ function RadioGroupItem({
           aria-hidden='true'
         />
       </div>
-      <div
-        className='mt-1 text-xs'
-        id={`${item.value}-description`}
-        aria-live='polite'
-      >
+      <div className='mt-1 text-xs' id={`${item.value}-description`} aria-live='polite'>
         {item.label}
       </div>
     </Item>
@@ -172,11 +154,7 @@ function ThemeConfig() {
   const { defaultTheme, theme, setTheme } = useTheme()
   return (
     <div>
-      <SectionTitle
-        title='Theme'
-        showReset={theme !== defaultTheme}
-        onReset={() => setTheme(defaultTheme)}
-      />
+      <SectionTitle title='Theme' showReset={theme !== defaultTheme} onReset={() => setTheme(defaultTheme)} />
       <Radio
         value={theme}
         onValueChange={setTheme}
@@ -215,11 +193,7 @@ function SidebarConfig() {
   const { defaultVariant, variant, setVariant } = useLayout()
   return (
     <div className='max-md:hidden'>
-      <SectionTitle
-        title='Sidebar'
-        showReset={defaultVariant !== variant}
-        onReset={() => setVariant(defaultVariant)}
-      />
+      <SectionTitle title='Sidebar' showReset={defaultVariant !== variant} onReset={() => setVariant(defaultVariant)} />
       <Radio
         value={variant}
         onValueChange={setVariant}
@@ -315,11 +289,7 @@ function DirConfig() {
   const { defaultDir, dir, setDir } = useDirection()
   return (
     <div>
-      <SectionTitle
-        title='Direction'
-        showReset={defaultDir !== dir}
-        onReset={() => setDir(defaultDir)}
-      />
+      <SectionTitle title='Direction' showReset={defaultDir !== dir} onReset={() => setDir(defaultDir)} />
       <Radio
         value={dir}
         onValueChange={setDir}
@@ -331,16 +301,12 @@ function DirConfig() {
           {
             value: 'ltr',
             label: 'Left to Right',
-            icon: (props: SVGProps<SVGSVGElement>) => (
-              <IconDir dir='ltr' {...props} />
-            ),
+            icon: (props: SVGProps<SVGSVGElement>) => <IconDir dir='ltr' {...props} />,
           },
           {
             value: 'rtl',
             label: 'Right to Left',
-            icon: (props: SVGProps<SVGSVGElement>) => (
-              <IconDir dir='rtl' {...props} />
-            ),
+            icon: (props: SVGProps<SVGSVGElement>) => <IconDir dir='rtl' {...props} />,
           },
         ].map((item) => (
           <RadioGroupItem key={item.value} item={item} />

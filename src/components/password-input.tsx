@@ -3,19 +3,11 @@ import { Eye, EyeOff } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from './ui/button'
 
-type PasswordInputProps = Omit<
-  React.InputHTMLAttributes<HTMLInputElement>,
-  'type'
-> & {
+type PasswordInputProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type'> & {
   ref?: React.Ref<HTMLInputElement>
 }
 
-export function PasswordInput({
-  className,
-  disabled,
-  ref,
-  ...props
-}: PasswordInputProps) {
+export function PasswordInput({ className, disabled, ref, ...props }: PasswordInputProps) {
   const [showPassword, setShowPassword] = React.useState(false)
 
   return (

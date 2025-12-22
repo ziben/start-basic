@@ -1,8 +1,8 @@
-import { createFileRoute } from '@tanstack/react-router'
 import { z } from 'zod'
+import { createFileRoute } from '@tanstack/react-router'
+import { adminUsersSchema } from '~/features/admin/users/data/schema'
 import prisma from '~/lib/db'
 import { withAdminAuth } from '~/middleware'
-import { adminUsersSchema } from '~/features/admin/users/data/schema'
 
 const bodySchema = z
   .object({
@@ -18,7 +18,9 @@ const bodySchema = z
 export const Route = createFileRoute('/api/admin/user/$id' as any)({
   server: {
     handlers: {
-      PATCH: withAdminAuth(async ({ request, params }) => {
+      PATCH: withAdminAuth(async (ctx) => {
+        const { request } = ctx
+        const params = (ctx as any).params as { id: string }
         try {
           const body = await request.json()
           const data = bodySchema.parse(body)

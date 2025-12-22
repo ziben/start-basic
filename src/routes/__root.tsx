@@ -1,12 +1,8 @@
-import { GeneralError } from '@/features/demo/errors/general-error'
-import { NotFoundError } from '@/features/demo/errors/not-found-error'
-import { type QueryClient } from '@tanstack/react-query'
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { HeadContent, Outlet, Scripts, createRootRouteWithContext } from '@tanstack/react-router'
-import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
-import { createServerFn } from "@tanstack/react-start"
-import { getRequestHeaders } from "@tanstack/react-start/server"
 import * as React from 'react'
+import { type QueryClient } from '@tanstack/react-query'
+import { HeadContent, Outlet, Scripts, createRootRouteWithContext } from '@tanstack/react-router'
+import { createServerFn } from '@tanstack/react-start'
+import { getRequestHeaders } from '@tanstack/react-start/server'
 import Devtools from '~/components/devtools'
 import { NavigationProgress } from '~/components/navigation-progress'
 import { Toaster } from '~/components/ui/sonner'
@@ -17,25 +13,27 @@ import { LocaleProvider } from '~/context/locale-context'
 import { ThemeProvider } from '~/context/theme-provider'
 import appCss from '~/styles/index.css?url'
 import { seo } from '~/utils/seo'
+import { GeneralError } from '@/features/demo/errors/general-error'
+import { NotFoundError } from '@/features/demo/errors/not-found-error'
 
-const getUser = createServerFn({ method: "GET" }).handler(async () => {
-  const { auth } = await import('~/lib/auth');
-  const headers = getRequestHeaders();
-  const session = await auth.api.getSession({ headers });
+const getUser = createServerFn({ method: 'GET' }).handler(async () => {
+  const { auth } = await import('~/lib/auth')
+  const headers = getRequestHeaders()
+  const session = await auth.api.getSession({ headers })
 
-  return session?.user || null;
-});
+  return session?.user || null
+})
 
 export const Route = createRootRouteWithContext<{
-  queryClient: QueryClient,
-  user: Awaited<ReturnType<typeof getUser>>;
+  queryClient: QueryClient
+  user: Awaited<ReturnType<typeof getUser>>
 }>()({
   beforeLoad: async ({ context }) => {
     const user = await context.queryClient.fetchQuery({
-      queryKey: ["user"],
+      queryKey: ['user'],
       queryFn: ({ signal }) => getUser({ signal }),
-    }); // we're using react-query for caching, see router.tsx
-    return { user };
+    }) // we're using react-query for caching, see router.tsx
+    return { user }
   },
   head: () => ({
     meta: [

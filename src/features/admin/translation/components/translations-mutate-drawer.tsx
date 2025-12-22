@@ -1,16 +1,24 @@
-import { z } from 'zod'
 import { useEffect } from 'react'
+import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Translation } from '~/generated/prisma/client'
 import { toast } from 'sonner'
+import { Translation } from '~/generated/prisma/client'
 import { useTranslation } from '~/hooks/useTranslation'
 import { useCreateTranslation, useUpdateTranslation } from '~/hooks/useTranslationApi'
 import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet'
 import { Textarea } from '@/components/ui/textarea'
-import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 
 type TranslationsMutateDrawerProps = {
   open: boolean
@@ -65,7 +73,11 @@ export function TranslationsMutateDrawer({ open, onOpenChange, currentRow }: Tra
       form.reset()
     } catch (err: any) {
       console.error(err)
-      toast.error(isUpdate ? t('admin.translation.toast.updateError') || 'Update failed' : t('admin.translation.toast.createError') || 'Create failed')
+      toast.error(
+        isUpdate
+          ? t('admin.translation.toast.updateError') || 'Update failed'
+          : t('admin.translation.toast.createError') || 'Create failed'
+      )
     }
   }
 
@@ -81,14 +93,20 @@ export function TranslationsMutateDrawer({ open, onOpenChange, currentRow }: Tra
     >
       <SheetContent className='flex flex-col'>
         <SheetHeader className='text-start'>
-          <SheetTitle>{isUpdate ? t('admin.translation.dialog.editTitle') : t('admin.translation.dialog.createTitle')}</SheetTitle>
+          <SheetTitle>
+            {isUpdate ? t('admin.translation.dialog.editTitle') : t('admin.translation.dialog.createTitle')}
+          </SheetTitle>
           <SheetDescription>
             {isUpdate ? t('admin.translation.dialog.editTitle') : t('admin.translation.dialog.createTitle')}
           </SheetDescription>
         </SheetHeader>
 
         <Form {...form}>
-          <form id='translations-form' onSubmit={form.handleSubmit(onSubmit)} className='flex-1 space-y-6 overflow-y-auto px-4'>
+          <form
+            id='translations-form'
+            onSubmit={form.handleSubmit(onSubmit)}
+            className='flex-1 space-y-6 overflow-y-auto px-4'
+          >
             <FormField
               control={form.control}
               name='locale'
@@ -96,7 +114,11 @@ export function TranslationsMutateDrawer({ open, onOpenChange, currentRow }: Tra
                 <FormItem>
                   <FormLabel>{t('admin.translation.form.locale') || 'Locale'}</FormLabel>
                   <FormControl>
-                    <Input placeholder={t('admin.translation.form.localePlaceholder') || 'en'} {...field} disabled={isUpdate} />
+                    <Input
+                      placeholder={t('admin.translation.form.localePlaceholder') || 'en'}
+                      {...field}
+                      disabled={isUpdate}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -110,7 +132,11 @@ export function TranslationsMutateDrawer({ open, onOpenChange, currentRow }: Tra
                 <FormItem>
                   <FormLabel>{t('admin.translation.form.key') || 'Key'}</FormLabel>
                   <FormControl>
-                    <Input placeholder={t('admin.translation.form.keyPlaceholder') || 'namespace.key'} {...field} disabled={isUpdate} />
+                    <Input
+                      placeholder={t('admin.translation.form.keyPlaceholder') || 'namespace.key'}
+                      {...field}
+                      disabled={isUpdate}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -124,7 +150,10 @@ export function TranslationsMutateDrawer({ open, onOpenChange, currentRow }: Tra
                 <FormItem>
                   <FormLabel>{t('admin.translation.form.value') || 'Value'}</FormLabel>
                   <FormControl>
-                    <Textarea placeholder={t('admin.translation.form.valuePlaceholder') || 'Translated string'} {...field} />
+                    <Textarea
+                      placeholder={t('admin.translation.form.valuePlaceholder') || 'Translated string'}
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -135,10 +164,12 @@ export function TranslationsMutateDrawer({ open, onOpenChange, currentRow }: Tra
 
         <SheetFooter className='gap-2'>
           <SheetClose asChild>
-            <Button variant='outline' disabled={isSubmitting}>{t('common.cancel')}</Button>
+            <Button variant='outline' disabled={isSubmitting}>
+              {t('common.cancel')}
+            </Button>
           </SheetClose>
           <Button form='translations-form' type='submit' disabled={isSubmitting}>
-            {isSubmitting ? (t('common.saving') || 'Saving...') : t('common.save')}
+            {isSubmitting ? t('common.saving') || 'Saving...' : t('common.save')}
           </Button>
         </SheetFooter>
       </SheetContent>

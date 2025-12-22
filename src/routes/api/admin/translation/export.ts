@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { withAdminAuth } from '~/middleware'
 import prisma from '~/lib/db'
+import { withAdminAuth } from '~/middleware'
 
 export const Route = createFileRoute('/api/admin/translation/export')({
   server: {
@@ -20,8 +20,10 @@ export const Route = createFileRoute('/api/admin/translation/export')({
           csv.push(line)
         }
 
-        return new Response(csv.join('\n'), { headers: { 'Content-Type': 'text/csv', 'Content-Disposition': 'attachment; filename="translations.csv"' } })
+        return new Response(csv.join('\n'), {
+          headers: { 'Content-Type': 'text/csv', 'Content-Disposition': 'attachment; filename="translations.csv"' },
+        })
       }),
-    }
-  }
+    },
+  },
 })

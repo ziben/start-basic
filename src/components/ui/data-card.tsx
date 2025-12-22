@@ -1,15 +1,10 @@
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 interface DataCardProps {
-  title: string;
-  value: string;
-  description: string;
-  icon: React.ReactNode;
+  title: string
+  value: string
+  description: string
+  icon: React.ReactNode
 }
 
 export function DataCard({ title, value, description, icon }: DataCardProps) {

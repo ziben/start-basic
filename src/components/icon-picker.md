@@ -21,13 +21,7 @@ import { IconPicker } from '@/components/icon-picker'
 function MyComponent() {
   const [icon, setIcon] = useState('')
 
-  return (
-    <IconPicker 
-      value={icon} 
-      onValueChange={setIcon}
-      placeholder="选择图标"
-    />
-  )
+  return <IconPicker value={icon} onValueChange={setIcon} placeholder='选择图标' />
 }
 ```
 
@@ -35,8 +29,8 @@ function MyComponent() {
 
 ```tsx
 import { useForm } from 'react-hook-form'
-import { IconPicker } from '@/components/icon-picker'
 import { Form, FormField, FormItem, FormLabel, FormControl } from '@/components/ui/form'
+import { IconPicker } from '@/components/icon-picker'
 
 function MyForm() {
   const form = useForm({
@@ -49,15 +43,12 @@ function MyForm() {
     <Form {...form}>
       <FormField
         control={form.control}
-        name="icon"
+        name='icon'
         render={({ field }) => (
           <FormItem>
             <FormLabel>图标</FormLabel>
             <FormControl>
-              <IconPicker
-                value={field.value}
-                onValueChange={field.onChange}
-              />
+              <IconPicker value={field.value} onValueChange={field.onChange} />
             </FormControl>
           </FormItem>
         )}
@@ -75,23 +66,19 @@ import * as LucideIcons from 'lucide-react'
 function DisplayIcon({ iconName }: { iconName: string }) {
   const IconComponent = LucideIcons[iconName as keyof typeof LucideIcons] as React.ComponentType
 
-  return (
-    <div>
-      {IconComponent && <IconComponent className="size-6" />}
-    </div>
-  )
+  return <div>{IconComponent && <IconComponent className='size-6' />}</div>
 }
 ```
 
 ## Props
 
-| 属性 | 类型 | 默认值 | 描述 |
-|-----|------|--------|------|
-| `value` | `string` | - | 当前选中的图标名称 |
-| `onValueChange` | `(value: string) => void` | - | 图标变化时的回调 |
-| `disabled` | `boolean` | `false` | 是否禁用 |
-| `className` | `string` | - | 自定义类名 |
-| `placeholder` | `string` | `'选择图标'` | 占位符文本 |
+| 属性            | 类型                      | 默认值       | 描述               |
+| --------------- | ------------------------- | ------------ | ------------------ |
+| `value`         | `string`                  | -            | 当前选中的图标名称 |
+| `onValueChange` | `(value: string) => void` | -            | 图标变化时的回调   |
+| `disabled`      | `boolean`                 | `false`      | 是否禁用           |
+| `className`     | `string`                  | -            | 自定义类名         |
+| `placeholder`   | `string`                  | `'选择图标'` | 占位符文本         |
 
 ## 示例
 

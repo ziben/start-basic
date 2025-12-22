@@ -1,13 +1,10 @@
-import { createFileRoute } from '@tanstack/react-router'
 import { z } from 'zod'
-import { withAdminAuth } from '~/middleware'
+import { createFileRoute } from '@tanstack/react-router'
 import prisma from '~/lib/db'
+import { withAdminAuth } from '~/middleware'
 
 // Prisma 事务客户端类型
-type TransactionClient = Omit<
-  typeof prisma,
-  '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'
->
+type TransactionClient = Omit<typeof prisma, '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'>
 
 // 创建导航组API路由
 export const Route = createFileRoute('/api/admin/navgroup/')({
@@ -44,11 +41,10 @@ export const Route = createFileRoute('/api/admin/navgroup/')({
         } catch (error) {
           return new Response(String(error), { status: 400 })
         }
-      })
+      }),
     },
-  }
+  },
 })
-
 
 /**
  * 获取所有导航组
@@ -288,11 +284,7 @@ export async function updateNavGroupOrder(groupIds: string[]) {
 /**
  * 更新用户个性化导航组设置
  */
-export async function updateUserNavGroupVisibility(
-  userId: string,
-  navGroupId: string,
-  visible: boolean
-) {
+export async function updateUserNavGroupVisibility(userId: string, navGroupId: string, visible: boolean) {
   try {
     // 检查关联是否存在
     const existing = await prisma.userRoleNavGroup.findFirst({

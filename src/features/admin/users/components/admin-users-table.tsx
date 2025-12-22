@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
-import { getRouteApi } from '@tanstack/react-router'
 import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useVirtualizer } from '@tanstack/react-virtual'
+import { getRouteApi } from '@tanstack/react-router'
 import {
   type SortingState,
   type VisibilityState,
@@ -11,20 +10,14 @@ import {
   getFacetedUniqueValues,
   useReactTable,
 } from '@tanstack/react-table'
+import { useVirtualizer } from '@tanstack/react-virtual'
+import { apiClient } from '~/lib/api-client'
 import { type NavigateFn, useTableUrlState } from '@/hooks/use-table-url-state'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
 import { type AdminUsers } from '../data/schema'
-import { DataTableBulkActions } from './data-table-bulk-actions'
 import { useAdminUsersColumns } from './admin-users-columns'
-import { apiClient } from '~/lib/api-client'
+import { DataTableBulkActions } from './data-table-bulk-actions'
 
 const route = getRouteApi('/admin/users')
 
@@ -63,13 +56,7 @@ export function AdminUsersTable() {
   })
 
   const usersQueryKey = useMemo(() => {
-    return [
-      'admin-users',
-      pagination.pageIndex,
-      pagination.pageSize,
-      globalFilter ?? '',
-      sorting,
-    ]
+    return ['admin-users', pagination.pageIndex, pagination.pageSize, globalFilter ?? '', sorting]
   }, [pagination.pageIndex, pagination.pageSize, globalFilter, sorting])
 
   const { data: pageData } = useQuery({
@@ -93,13 +80,7 @@ export function AdminUsersTable() {
     const nextPageIndex = pagination.pageIndex + 1
     if (nextPageIndex >= pageData.pageCount) return
 
-    const nextQueryKey = [
-      'admin-users',
-      nextPageIndex,
-      pagination.pageSize,
-      globalFilter ?? '',
-      sorting,
-    ]
+    const nextQueryKey = ['admin-users', nextPageIndex, pagination.pageSize, globalFilter ?? '', sorting]
 
     void queryClient.prefetchQuery({
       queryKey: nextQueryKey,
@@ -110,23 +91,12 @@ export function AdminUsersTable() {
           pageSize: pagination.pageSize,
           filter: globalFilter ? globalFilter : undefined,
           sortBy: firstSort?.id,
-          sortDir: firstSort?.id
-            ? firstSort.desc
-              ? 'desc'
-              : 'asc'
-            : undefined,
+          sortDir: firstSort?.id ? (firstSort.desc ? 'desc' : 'asc') : undefined,
           signal,
         })
       },
     })
-  }, [
-    pageData,
-    pagination.pageIndex,
-    pagination.pageSize,
-    globalFilter,
-    sorting,
-    queryClient,
-  ])
+  }, [pageData, pagination.pageIndex, pagination.pageSize, globalFilter, sorting, queryClient])
 
   const data: AdminUsers[] = pageData?.items ?? []
   const serverPageCount = pageData?.pageCount ?? 0
@@ -203,17 +173,11 @@ export function AdminUsersTable() {
   const virtualRows = rowVirtualizer.getVirtualItems()
   const paddingTop = virtualRows.length > 0 ? virtualRows[0]!.start : 0
   const paddingBottom =
-    virtualRows.length > 0
-      ? rowVirtualizer.getTotalSize() - virtualRows[virtualRows.length - 1]!.end
-      : 0
+    virtualRows.length > 0 ? rowVirtualizer.getTotalSize() - virtualRows[virtualRows.length - 1]!.end : 0
 
   return (
     <div className='space-y-4 max-sm:has-[div[role="toolbar"]]:mb-16'>
-      <DataTableToolbar
-        table={table}
-        searchPlaceholder='Filter by name or ID...'
-        filters={[]}
-      />
+      <DataTableToolbar table={table} searchPlaceholder='Filter by name or ID...' filters={[]} />
       <div className='overflow-hidden rounded-md border'>
         <div ref={tableContainerRef} className='max-h-[70vh] overflow-auto'>
           <Table>
@@ -223,12 +187,7 @@ export function AdminUsersTable() {
                   {headerGroup.headers.map((header) => {
                     return (
                       <TableHead key={header.id} colSpan={header.colSpan}>
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                        {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                       </TableHead>
                     )
                   })}
@@ -239,31 +198,18 @@ export function AdminUsersTable() {
               {rows?.length ? (
                 <>
                   {paddingTop > 0 ? (
-                    <TableRow
-                      aria-hidden='true'
-                      className='border-0 hover:bg-transparent'
-                    >
-                      <TableCell
-                        colSpan={columns.length}
-                        className='p-0'
-                        style={{ height: `${paddingTop}px` }}
-                      />
+                    <TableRow aria-hidden='true' className='border-0 hover:bg-transparent'>
+                      <TableCell colSpan={columns.length} className='p-0' style={{ height: `${paddingTop}px` }} />
                     </TableRow>
                   ) : null}
 
                   {virtualRows.map((virtualRow) => {
                     const row = rows[virtualRow.index]!
                     return (
-                      <TableRow
-                        key={row.id}
-                        data-state={row.getIsSelected() && 'selected'}
-                      >
+                      <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
                         {row.getVisibleCells().map((cell) => (
                           <TableCell key={cell.id}>
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext()
-                            )}
+                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
                           </TableCell>
                         ))}
                       </TableRow>
@@ -271,24 +217,14 @@ export function AdminUsersTable() {
                   })}
 
                   {paddingBottom > 0 ? (
-                    <TableRow
-                      aria-hidden='true'
-                      className='border-0 hover:bg-transparent'
-                    >
-                      <TableCell
-                        colSpan={columns.length}
-                        className='p-0'
-                        style={{ height: `${paddingBottom}px` }}
-                      />
+                    <TableRow aria-hidden='true' className='border-0 hover:bg-transparent'>
+                      <TableCell colSpan={columns.length} className='p-0' style={{ height: `${paddingBottom}px` }} />
                     </TableRow>
                   ) : null}
                 </>
               ) : (
                 <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className='h-24 text-center'
-                  >
+                  <TableCell colSpan={columns.length} className='h-24 text-center'>
                     No results.
                   </TableCell>
                 </TableRow>

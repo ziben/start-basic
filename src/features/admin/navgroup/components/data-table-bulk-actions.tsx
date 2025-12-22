@@ -1,16 +1,12 @@
-import { DataTableBulkActions as BulkActionsToolbar } from '@/components/data-table'
-import { Button } from '@/components/ui/button'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
-import { sleep } from '@/lib/utils'
+import { useState } from 'react'
 import { type Table } from '@tanstack/react-table'
 import { Download, Trash2 } from 'lucide-react'
-import { useState } from 'react'
 import { toast } from 'sonner'
 import { useTranslation } from '~/hooks/useTranslation'
+import { sleep } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { DataTableBulkActions as BulkActionsToolbar } from '@/components/data-table'
 import { type AdminNavgroup } from '../data/schema'
 import { NavGroupsMultiDeleteDialog } from './navgroups-multi-delete-dialog'
 
@@ -18,9 +14,7 @@ type DataTableBulkActionsProps<TData> = {
   table: Table<TData>
 }
 
-export function DataTableBulkActions<TData>({
-  table,
-}: DataTableBulkActionsProps<TData>) {
+export function DataTableBulkActions<TData>({ table }: DataTableBulkActionsProps<TData>) {
   const { t } = useTranslation()
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const selectedRows = table.getFilteredSelectedRowModel().rows
@@ -114,11 +108,7 @@ export function DataTableBulkActions<TData>({
         </Tooltip>
       </BulkActionsToolbar>
 
-      <NavGroupsMultiDeleteDialog
-        open={showDeleteConfirm}
-        onOpenChange={setShowDeleteConfirm}
-        table={table}
-      />
+      <NavGroupsMultiDeleteDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm} table={table} />
     </>
   )
 }

@@ -1,7 +1,7 @@
+import { memo } from 'react'
 import { DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu'
 import { MixerHorizontalIcon } from '@radix-ui/react-icons'
 import { type Table } from '@tanstack/react-table'
-import { memo } from 'react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -15,17 +15,11 @@ type DataTableViewOptionsProps<TData> = {
   table: Table<TData>
 }
 
-function DataTableViewOptionsInner<TData>({
-  table,
-}: DataTableViewOptionsProps<TData>) {
+function DataTableViewOptionsInner<TData>({ table }: DataTableViewOptionsProps<TData>) {
   return (
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
-        <Button
-          variant='outline'
-          size='sm'
-          className='ms-auto hidden h-8 lg:flex'
-        >
+        <Button variant='outline' size='sm' className='ms-auto hidden h-8 lg:flex'>
           <MixerHorizontalIcon className='size-4' />
           View
         </Button>
@@ -35,10 +29,7 @@ function DataTableViewOptionsInner<TData>({
         <DropdownMenuSeparator />
         {table
           .getAllColumns()
-          .filter(
-            (column) =>
-              typeof column.accessorFn !== 'undefined' && column.getCanHide()
-          )
+          .filter((column) => typeof column.accessorFn !== 'undefined' && column.getCanHide())
           .map((column) => {
             return (
               <DropdownMenuCheckboxItem
@@ -56,6 +47,4 @@ function DataTableViewOptionsInner<TData>({
   )
 }
 
-export const DataTableViewOptions = memo(
-  DataTableViewOptionsInner
-) as typeof DataTableViewOptionsInner
+export const DataTableViewOptions = memo(DataTableViewOptionsInner) as typeof DataTableViewOptionsInner

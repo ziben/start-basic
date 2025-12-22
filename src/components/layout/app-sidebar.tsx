@@ -1,23 +1,17 @@
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarRail,
-} from '@/components/ui/sidebar'
-import { NavGroup as NavGroupComponent } from '@/components/layout/nav-group'
-import { NavUser } from '@/components/layout/nav-user'
+import { useLayout } from '~/context/layout-provider'
 import { useTranslation } from '~/hooks/useTranslation'
-import { createSidebarData } from './data/sidebar-data'
 import { useSidebar } from '~/lib/sidebar'
 import { iconResolver } from '~/utils/icon-resolver'
-import type { NavGroup as NavGroupType } from './types'
-import { useLayout } from '~/context/layout-provider'
+import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from '@/components/ui/sidebar'
+import { NavGroup as NavGroupComponent } from '@/components/layout/nav-group'
+import { NavUser } from '@/components/layout/nav-user'
 import { AppTitle } from './app-title'
-
+import { createSidebarData } from './data/sidebar-data'
+import type { NavGroup as NavGroupType } from './types'
 
 export function AppSidebar() {
   const { t } = useTranslation()
+  const { collapsible, variant } = useLayout()
 
   // 从API获取侧边栏数据，如果失败则使用默认数据
   const { data: sidebarData, isLoading } = useSidebar(iconResolver)
@@ -26,7 +20,6 @@ export function AppSidebar() {
   if (isLoading) {
     // 使用默认数据作为骨架屏
     const defaultData = createSidebarData(t)
-    const { collapsible, variant } = useLayout()
     return (
       <Sidebar collapsible={collapsible} variant={variant}>
         <SidebarHeader>
@@ -48,7 +41,6 @@ export function AppSidebar() {
       </Sidebar>
     )
   }
-  const { collapsible, variant } = useLayout()
 
   return (
     <Sidebar collapsible={collapsible} variant={variant}>
