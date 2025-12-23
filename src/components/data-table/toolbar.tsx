@@ -23,7 +23,7 @@ type DataTableToolbarProps<TData> = {
   onColumnVisibilityChange?: (visibility: Record<string, boolean>) => void
 }
 
-function DataTableToolbarInner<TData>({
+export function DataTableToolbar<TData>({
   table,
   searchPlaceholder = 'Filter...',
   searchKey,
@@ -79,13 +79,9 @@ function DataTableToolbarInner<TData>({
           </Button>
         )}
       </div>
-      <DataTableViewOptions
-        table={table}
-        columnVisibility={columnVisibility ?? {}}
-        onColumnVisibilityChange={onColumnVisibilityChange ?? (() => {})}
-      />
+      <DataTableViewOptions table={table} />
     </div>
   )
 }
 
-export const DataTableToolbar = memo(DataTableToolbarInner) as typeof DataTableToolbarInner
+// export const DataTableToolbar = memo(DataTableToolbarInner) as typeof DataTableToolbarInner

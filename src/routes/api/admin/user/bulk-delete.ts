@@ -2,6 +2,7 @@ import { z } from 'zod'
 import { createFileRoute } from '@tanstack/react-router'
 import prisma from '~/lib/db'
 import { withAdminAuth } from '~/middleware'
+import { handleError, getErrorStatus } from '~/lib/admin-utils'
 
 const bodySchema = z.object({
   ids: z.array(z.string().min(1)).min(1),
@@ -21,7 +22,8 @@ export const Route = createFileRoute('/api/admin/user/bulk-delete' as any)({
 
           return Response.json({ count: result.count })
         } catch (error) {
-          return new Response(String(error), { status: 400 })
+          const apiError = handleError(error)
+          return Response.json(apiError, { status: getErrorStatus(apiError.type) })
         }
       }),
     },

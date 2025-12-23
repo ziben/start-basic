@@ -58,3 +58,32 @@ export function getPageNumbers(currentPage: number, totalPages: number) {
 
   return rangeWithDots
 }
+
+/**
+ * Format a date to localized string
+ * @param date - Date string, Date object, or null/undefined
+ * @param locale - Locale for formatting (default: browser default)
+ * @returns Formatted date string or '-' for null/undefined
+ */
+export function formatDate(date: string | Date | null | undefined, locale?: string): string {
+  if (!date) return '-'
+  try {
+    return new Date(date).toLocaleString(locale)
+  } catch {
+    return '-'
+  }
+}
+
+/**
+ * Format a date to ISO string
+ * @param date - Date string, Date object, or null/undefined
+ * @returns ISO date string or null for null/undefined
+ */
+export function toISODate(date: string | Date | null | undefined): string | null {
+  if (!date) return null
+  try {
+    return new Date(date).toISOString()
+  } catch {
+    return null
+  }
+}

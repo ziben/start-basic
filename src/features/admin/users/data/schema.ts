@@ -32,6 +32,17 @@ export const adminUsersPageSchema = z.object({
   pageCount: z.number().int().nonnegative(),
 })
 
+export const banned = [
+  {
+    label: '已封禁',
+    value: true,
+  },
+  {
+    label: '正常',
+    value: false,
+  },
+]
+
 export type AdminUsers = z.infer<typeof adminUsersSchema>
 export type AdminUsersList = z.infer<typeof adminUsersListSchema>
 export type AdminUsersPage = z.infer<typeof adminUsersPageSchema>

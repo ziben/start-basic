@@ -29,7 +29,7 @@ function DataTableBulkActionsInner<TData>({
   children,
 }: DataTableBulkActionsProps<TData>): React.ReactNode | null {
   const selectedRows = table.getFilteredSelectedRowModel().rows
-  const selectedCount = selectedRows.length
+  const selectedCount = selectedRows.length  
   const toolbarRef = useRef<HTMLDivElement>(null)
   const [announcement, setAnnouncement] = useState('')
 

@@ -307,6 +307,7 @@ export const apiClient = {
       page: number
       pageSize: number
       filter?: string
+      banned?: boolean
       sortBy?: string
       sortDir?: 'asc' | 'desc'
       signal?: AbortSignal
@@ -315,6 +316,7 @@ export const apiClient = {
       qs.set('page', String(params.page))
       qs.set('pageSize', String(params.pageSize))
       if (params.filter) qs.set('filter', params.filter)
+      if (typeof params.banned === 'boolean') qs.set('banned', String(params.banned))
       if (params.sortBy) qs.set('sortBy', params.sortBy)
       if (params.sortBy && params.sortDir) qs.set('sortDir', params.sortDir)
 

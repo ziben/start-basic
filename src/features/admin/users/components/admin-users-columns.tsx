@@ -1,17 +1,12 @@
 import { useMemo } from 'react'
 import { type ColumnDef } from '@tanstack/react-table'
 import { useTranslation } from '~/hooks/useTranslation'
-import { cn } from '~/lib/utils'
+import { cn, formatDate } from '~/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import { DataTableColumnHeader } from '@/components/data-table'
 import { type AdminUsers } from '../data/schema'
 import { DataTableRowActions } from './data-table-row-actions'
-
-const formatDate = (date: string | Date | null | undefined) => {
-  if (!date) return '-'
-  return new Date(date).toLocaleString()
-}
 
 export function useAdminUsersColumns(): ColumnDef<AdminUsers>[] {
   const { t } = useTranslation()
@@ -28,6 +23,9 @@ export function useAdminUsersColumns(): ColumnDef<AdminUsers>[] {
             className='translate-y-[2px]'
           />
         ),
+        meta: {
+          className: cn('max-md:sticky start-0 z-10 rounded-tl-[inherit]'),
+        },
         cell: ({ row }) => (
           <Checkbox
             checked={row.getIsSelected()}
@@ -41,31 +39,51 @@ export function useAdminUsersColumns(): ColumnDef<AdminUsers>[] {
       },
       {
         accessorKey: 'name',
-        header: () => t('admin.user.table.name'),
-        cell: ({ row }) => row.getValue('name'),
-        meta: { className: 'w-32' },
+        header: ({ column }) => <DataTableColumnHeader column={column} title={t('admin.user.table.name')} />,
+        cell: ({ row }) => {
+          const value = row.getValue('name') as string
+          return (
+            <div className='ps-2 text-nowrap' title={value}>
+              {value?.length > 20 ? `${value.slice(0, 20)}...` : value}
+            </div>
+          )
+        },
+        meta: { className: 'w-32', title: '姓名' },
       },
       {
         accessorKey: 'username',
-        header: () => t('admin.user.table.username'),
-        cell: ({ row }) => row.getValue('username'),
-        meta: { className: 'w-32' },
+        header: ({ column }) => <DataTableColumnHeader column={column} title={t('admin.user.table.username')} />,
+        cell: ({ row }) => {
+          const value = row.getValue('username') as string | null
+          return <div className='text-muted-foreground'>{value || '-'}</div>
+        },
+        meta: { className: 'w-32', title: '用户名' },
       },
       {
         accessorKey: 'email',
-        header: () => t('admin.user.table.email'),
-        cell: ({ row }) => row.getValue('email'),
-        meta: { className: 'w-48' },
+        header: ({ column }) => <DataTableColumnHeader column={column} title={t('admin.user.table.email')} />,
+        cell: ({ row }) => <div className='w-fit ps-2 text-nowrap'>{row.getValue('email')}</div>,
+        meta: { className: 'w-48', title: '邮箱' },
       },
       {
         accessorKey: 'role',
-        header: () => t('admin.user.table.role'),
-        cell: ({ row }) => row.getValue('role'),
-        meta: { className: 'w-24' },
+        header: ({ column }) => <DataTableColumnHeader column={column} title={t('admin.user.table.role')} />,
+        cell: ({ row }) => {
+          const value = row.getValue('role') as string
+          return (
+            <Badge
+              variant='outline'
+              className={cn('capitalize', value === 'admin' && 'border-primary bg-primary/10 text-primary')}
+            >
+              {value}
+            </Badge>
+          )
+        },
+        meta: { className: 'w-24', title: '角色' },
       },
       {
         accessorKey: 'banned',
-        header: () => t('admin.user.table.status'),
+        header: ({ column }) => <DataTableColumnHeader column={column} title={t('admin.user.table.status')} />,
         cell: ({ row }) => (
           <Badge
             variant='outline'
@@ -77,35 +95,41 @@ export function useAdminUsersColumns(): ColumnDef<AdminUsers>[] {
             {row.getValue('banned') ? t('admin.user.table.status.banned') : t('admin.user.table.status.normal')}
           </Badge>
         ),
-        meta: { className: 'w-24' },
+        meta: { className: 'w-24', title: '状态' },
       },
       {
         accessorKey: 'banReason',
-        header: () => t('admin.user.table.banReason'),
-        cell: ({ row }) => row.getValue('banReason') || '-',
-        meta: { className: 'w-32' },
+        header: ({ column }) => <DataTableColumnHeader column={column} title={t('admin.user.table.banReason')} />,
+        cell: ({ row }) => {
+          const value = row.getValue('banReason') as string | null
+          return <div className='text-muted-foreground'>{value || '-'}</div>
+        },
+        meta: { className: 'w-32', title: '封禁原因' },
       },
       {
         accessorKey: 'banExpires',
-        header: () => t('admin.user.table.banExpires'),
-        cell: ({ row }) => formatDate(row.getValue('banExpires')),
-        meta: { className: 'w-32' },
+        header: ({ column }) => <DataTableColumnHeader column={column} title={t('admin.user.table.banExpires')} />,
+        cell: ({ row }) => {
+          const value = formatDate(row.getValue('banExpires'))
+          return <div className='text-muted-foreground'>{value}</div>
+        },
+        meta: { className: 'w-32', title: '封禁到期' },
       },
       {
         accessorKey: 'createdAt',
         header: ({ column }) => <DataTableColumnHeader column={column} title={t('admin.user.table.createdAt')} />,
-        cell: ({ row }) => formatDate(row.getValue('createdAt')),
-        meta: { className: 'w-32' },
+        cell: ({ row }) => <div className='text-muted-foreground'>{formatDate(row.getValue('createdAt'))}</div>,
+        meta: { className: 'w-32', title: '创建时间' },
       },
       {
         accessorKey: 'updatedAt',
         header: ({ column }) => <DataTableColumnHeader column={column} title={t('admin.user.table.updatedAt')} />,
-        cell: ({ row }) => formatDate(row.getValue('updatedAt')),
-        meta: { className: 'w-32' },
+        cell: ({ row }) => <div className='text-muted-foreground'>{formatDate(row.getValue('updatedAt'))}</div>,
+        meta: { className: 'w-32', title: '更新时间' },
       },
       {
         id: 'actions',
-        cell: ({ row }) => <DataTableRowActions row={row} />,
+        cell: DataTableRowActions,
       },
     ],
     [t]

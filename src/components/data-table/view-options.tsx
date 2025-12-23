@@ -13,28 +13,23 @@ import {
 
 type DataTableViewOptionsProps<TData> = {
   table: Table<TData>
-  columnVisibility: Record<string, boolean>
-  onColumnVisibilityChange: (visibility: Record<string, boolean>) => void
 }
 
-function DataTableViewOptionsInner<TData>({
+export function DataTableViewOptions<TData>({
   table,
-  columnVisibility,
-  onColumnVisibilityChange,
 }: DataTableViewOptionsProps<TData>) {
   const hasAccessorKey = (def: any): def is { accessorKey: string } => typeof def.accessorKey === 'string'
-  const useCustomVisibility = columnVisibility !== undefined && onColumnVisibilityChange !== undefined
 
   return (
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
         <Button variant='outline' size='sm' className='ms-auto hidden h-8 lg:flex'>
           <MixerHorizontalIcon className='size-4' />
-          View
+          查看
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align='end' className='w-[150px]'>
-        <DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
+        <DropdownMenuLabel>切换列</DropdownMenuLabel>
         <DropdownMenuSeparator />
         {table
           .getAllColumns()
@@ -44,17 +39,13 @@ function DataTableViewOptionsInner<TData>({
           )
           .map((column) => {
             const title = (column.columnDef.meta as any)?.title as string | undefined
-            const isVisible = useCustomVisibility ? (columnVisibility[column.id] ?? true) : column.getIsVisible()
+            const isVisible = column.getIsVisible()
             return (
               <DropdownMenuCheckboxItem
                 key={column.id}
                 className='capitalize'
                 checked={isVisible}
-                onCheckedChange={(checked) =>
-                  useCustomVisibility
-                    ? onColumnVisibilityChange({ ...columnVisibility, [column.id]: Boolean(checked) })
-                    : column.toggleVisibility(!!checked)
-                }
+                onCheckedChange={(checked) => column.toggleVisibility(checked)}
               >
                 {title ?? column.id}
               </DropdownMenuCheckboxItem>
@@ -65,4 +56,4 @@ function DataTableViewOptionsInner<TData>({
   )
 }
 
-export const DataTableViewOptions = memo(DataTableViewOptionsInner) as typeof DataTableViewOptionsInner
+// export const DataTableViewOptions = memo(DataTableViewOptionsInner) as typeof DataTableViewOptionsInner

@@ -1,111 +1,71 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useEffect } from 'react'
+import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { apiClient } from '~/lib/api-client'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { type AdminUsers } from '../data/schema'
+import { useUsersOptimisticUpdate, createBulkDeleteUpdateFn } from '../hooks/use-users-optimistic-update'
 import { AdminUserImportDialog } from './admin-users-import-dialog'
-import { AdminUsersMutateDrawer } from './admin-users-mutate-drawer'
+import { AdminUsersMutateDialog } from './admin-users-mutate-dialog'
 import { useAdminUsers } from './admin-users-provider'
 
 export function AdminUsersDialogs() {
   const { open, setOpen, currentRow, setCurrentRow } = useAdminUsers()
-  const queryClient = useQueryClient()
+  const { getOptimisticMutationOptions } = useUsersOptimisticUpdate<{ id: string }>()
 
   const deleteOneMutation = useMutation({
     mutationFn: async (input: { id: string }) => {
       return await apiClient.users.bulkDelete({ ids: [input.id] })
     },
-    onMutate: async (input) => {
-      await queryClient.cancelQueries({ queryKey: ['admin-users'] })
-      const previous = queryClient.getQueriesData({ queryKey: ['admin-users'] })
-
-      queryClient.setQueriesData({ queryKey: ['admin-users'] }, (old: any) => {
-        if (!old || !Array.isArray(old.items)) return old
-        const nextItems = old.items.filter((u: AdminUsers) => u.id !== input.id)
-        const deleted = old.items.length - nextItems.length
-
-        const total = typeof old.total === 'number' ? Math.max(0, old.total - deleted) : old.total
-        const pageSize = typeof old.pageSize === 'number' ? old.pageSize : undefined
-        const pageCount =
-          typeof total === 'number' && typeof pageSize === 'number' && pageSize > 0
-            ? Math.ceil(total / pageSize)
-            : old.pageCount
-
-        return {
-          ...old,
-          items: nextItems,
-          total,
-          pageCount,
-        }
-      })
-
-      return { previous }
-    },
-    onError: (_err, _input, ctx) => {
-      for (const [key, data] of ctx?.previous ?? []) {
-        queryClient.setQueryData(key, data)
-      }
-    },
-    onSettled: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['admin-users'] })
-    },
+    ...getOptimisticMutationOptions({
+      queryKey: ['admin-users'],
+      updateFn: (users, variables) => createBulkDeleteUpdateFn(users, [variables.id]),
+    }),
   })
+
+  // Clear currentRow when dialog closes
+  useEffect(() => {
+    if (!open) {
+      setCurrentRow(null)
+    }
+  }, [open, setCurrentRow])
 
   return (
     <>
-      <AdminUsersMutateDrawer
-        key='task-create'
+      <AdminUsersMutateDialog
+        key='user-create'
         open={open === 'create'}
-        onOpenChange={(nextOpen) => setOpen(nextOpen ? 'create' : null)}
+        onOpenChange={() => setOpen('create')}
       />
 
       <AdminUserImportDialog
-        key='tasks-import'
+        key='user-import'
         open={open === 'import'}
-        onOpenChange={(nextOpen) => setOpen(nextOpen ? 'import' : null)}
+        onOpenChange={() => setOpen('import')}
       />
 
       {currentRow && (
         <>
-          <AdminUsersMutateDrawer
-            key={`task-update-${currentRow.id}`}
+          <AdminUsersMutateDialog
+            key={`user-edit-${currentRow.id}`}
             open={open === 'update'}
-            onOpenChange={(nextOpen) => {
-              setOpen(nextOpen ? 'update' : null)
-              if (!nextOpen) {
-                setTimeout(() => {
-                  setCurrentRow(null)
-                }, 500)
-              }
-            }}
+            onOpenChange={() => setOpen('update')}
             currentRow={currentRow}
           />
 
           <ConfirmDialog
-            key='task-delete'
+            key={`user-delete-${currentRow.id}`}
             destructive
             open={open === 'delete'}
-            onOpenChange={(nextOpen) => {
-              setOpen(nextOpen ? 'delete' : null)
-              if (!nextOpen) {
-                setTimeout(() => {
-                  setCurrentRow(null)
-                }, 500)
-              }
-            }}
+            onOpenChange={() => setOpen('delete')}
             handleConfirm={() => {
               const id = currentRow.id
               setOpen(null)
-              setTimeout(() => {
-                setCurrentRow(null)
-              }, 500)
 
               const promise = deleteOneMutation.mutateAsync({ id })
               toast.promise(promise, {
                 loading: 'Deleting user...',
-                success: () => {
-                  return `Deleted ${id}`
-                },
+                success: () => `Deleted ${id}`,
                 error: String,
               })
             }}

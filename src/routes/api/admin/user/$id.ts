@@ -3,12 +3,13 @@ import { createFileRoute } from '@tanstack/react-router'
 import { adminUsersSchema } from '~/features/admin/users/data/schema'
 import prisma from '~/lib/db'
 import { withAdminAuth } from '~/middleware'
+import { serializeAdminUser, handleError, getErrorStatus } from '~/lib/admin-utils'
 
 const bodySchema = z
   .object({
     name: z.string().min(1).optional(),
     username: z.string().min(1).nullable().optional(),
-    role: z.string().min(1).nullable().optional(),
+    role: z.enum(['admin', 'user']).nullable().optional(),
     banned: z.boolean().nullable().optional(),
     banReason: z.string().nullable().optional(),
     banExpires: z.string().datetime().nullable().optional(),
@@ -39,25 +40,24 @@ export const Route = createFileRoute('/api/admin/user/$id' as any)({
             },
           })
 
-          return Response.json(
-            adminUsersSchema.parse({
-              id: updated.id,
-              name: updated.name,
-              email: updated.email,
-              emailVerified: updated.emailVerified,
-              image: updated.image ?? null,
-              createdAt: updated.createdAt,
-              updatedAt: updated.updatedAt,
-              role: updated.role ?? 'user',
-              banned: updated.banned ?? null,
-              banReason: updated.banReason ?? null,
-              banExpires: updated.banExpires ?? null,
-              username: updated.username ?? null,
-              displayUsername: updated.displayUsername ?? null,
-            })
-          )
+          return Response.json(adminUsersSchema.parse(serializeAdminUser(updated)))
         } catch (error) {
-          return new Response(String(error), { status: 400 })
+          const apiError = handleError(error)
+          return Response.json(apiError, { status: getErrorStatus(apiError.type) })
+        }
+      }),
+
+      DELETE: withAdminAuth(async (ctx) => {
+        const params = (ctx as any).params as { id: string }
+        try {
+          await prisma.user.delete({
+            where: { id: params.id },
+          })
+
+          return new Response(null, { status: 204 })
+        } catch (error) {
+          const apiError = handleError(error)
+          return Response.json(apiError, { status: getErrorStatus(apiError.type) })
         }
       }),
     },

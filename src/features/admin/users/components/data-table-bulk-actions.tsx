@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useState } from 'react'
+import { useMutation } from '@tanstack/react-query'
 import { type Table } from '@tanstack/react-table'
 import { Trash2, CircleArrowUp, Download } from 'lucide-react'
 import { toast } from 'sonner'
@@ -9,16 +9,17 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { DataTableBulkActions as BulkActionsToolbar } from '@/components/data-table'
 import { type AdminUsers } from '../data/schema'
+import { useUsersOptimisticUpdate, createBulkBanUpdateFn } from '../hooks/use-users-optimistic-update'
 import { AdminUsersMultiDeleteDialog } from './admin-users-multi-delete-dialog'
 
 type DataTableBulkActionsProps<TData> = {
   table: Table<TData>
 }
 
-function DataTableBulkActionsInner<TData>({ table }: Readonly<DataTableBulkActionsProps<TData>>) {
+export function DataTableBulkActions<TData>({ table }: DataTableBulkActionsProps<TData>) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const selectedRows = table.getFilteredSelectedRowModel().rows
-  const queryClient = useQueryClient()
+  const { getOptimisticMutationOptions } = useUsersOptimisticUpdate<{ ids: string[]; banned: boolean }>()
 
   const bulkBanMutation = useMutation({
     mutationFn: async (input: { ids: string[]; banned: boolean }) => {
@@ -29,37 +30,10 @@ function DataTableBulkActionsInner<TData>({ table }: Readonly<DataTableBulkActio
         banExpires: null,
       })
     },
-    onMutate: async (input) => {
-      await queryClient.cancelQueries({ queryKey: ['admin-users'] })
-      const previous = queryClient.getQueriesData({ queryKey: ['admin-users'] })
-
-      queryClient.setQueriesData({ queryKey: ['admin-users'] }, (old: any) => {
-        if (!old || !Array.isArray(old.items)) return old
-        return {
-          ...old,
-          items: old.items.map((u: AdminUsers) =>
-            input.ids.includes(u.id)
-              ? {
-                  ...u,
-                  banned: input.banned,
-                  banReason: input.banned ? (u.banReason ?? null) : null,
-                  banExpires: input.banned ? (u.banExpires ?? null) : null,
-                }
-              : u
-          ),
-        }
-      })
-
-      return { previous }
-    },
-    onError: (_err, _input, ctx) => {
-      for (const [key, data] of ctx?.previous ?? []) {
-        queryClient.setQueryData(key, data)
-      }
-    },
-    onSettled: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['admin-users'] })
-    },
+    ...getOptimisticMutationOptions({
+      queryKey: ['admin-users'],
+      updateFn: (users, variables) => createBulkBanUpdateFn(users, variables.ids, variables.banned),
+    }),
   })
 
   const runBulkBan = async () => {
@@ -71,15 +45,9 @@ function DataTableBulkActionsInner<TData>({ table }: Readonly<DataTableBulkActio
       table.resetRowSelection()
     })
 
-    const noun = selectedUsers.length > 1 ? 'users' : 'user'
-    const verb = 'Banned'
-    const loading = 'Banning users...'
-
     toast.promise(promise, {
-      loading,
-      success: () => {
-        return `${verb} ${selectedUsers.length} ${noun}.`
-      },
+      loading: 'Banning users...',
+      success: () => `Banned ${selectedUsers.length} user${selectedUsers.length > 1 ? 's' : ''}.`,
       error: String,
     })
   }
@@ -93,15 +61,9 @@ function DataTableBulkActionsInner<TData>({ table }: Readonly<DataTableBulkActio
       table.resetRowSelection()
     })
 
-    const noun = selectedUsers.length > 1 ? 'users' : 'user'
-    const verb = 'Unbanned'
-    const loading = 'Unbanning users...'
-
     toast.promise(promise, {
-      loading,
-      success: () => {
-        return `${verb} ${selectedUsers.length} ${noun}.`
-      },
+      loading: 'Unbanning users...',
+      success: () => `Unbanned ${selectedUsers.length} user${selectedUsers.length > 1 ? 's' : ''}.`,
       error: String,
     })
   }
@@ -184,6 +146,3 @@ function DataTableBulkActionsInner<TData>({ table }: Readonly<DataTableBulkActio
     </>
   )
 }
-
-// 使用 memo 优化，避免不必要的重渲染
-export const DataTableBulkActions = React.memo(DataTableBulkActionsInner) as typeof DataTableBulkActionsInner

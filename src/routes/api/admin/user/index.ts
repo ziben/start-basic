@@ -1,15 +1,23 @@
 import { z } from 'zod'
 import { createFileRoute } from '@tanstack/react-router'
-import { adminUsersPageSchema } from '~/features/admin/users/data/schema'
-import { adminUsersSchema } from '~/features/admin/users/data/schema'
-import type { Prisma, User as PrismaUser } from '~/generated/prisma/client'
+import { adminUsersPageSchema, adminUsersSchema } from '~/features/admin/users/data/schema'
+import type { Prisma } from '~/generated/prisma/client'
 import prisma from '~/lib/db'
 import { withAdminAuth } from '~/middleware'
+import { serializeAdminUser, serializeAdminUsers, isValidUserSortField, handleError, getErrorStatus } from '~/lib/admin-utils'
 
 const querySchema = z.object({
   page: z.coerce.number().int().positive().optional().default(1),
   pageSize: z.coerce.number().int().positive().max(100).optional().default(10),
   filter: z.string().optional().default(''),
+  banned: z
+    .enum(['true', 'false'])
+    .optional()
+    .transform((v) => {
+      if (v === 'true') return true
+      if (v === 'false') return false
+      return undefined
+    }),
   sortBy: z.string().optional(),
   sortDir: z.enum(['asc', 'desc']).optional(),
 })
@@ -32,29 +40,28 @@ export const Route = createFileRoute('/api/admin/user/')({
           page: url.searchParams.get('page') ?? undefined,
           pageSize: url.searchParams.get('pageSize') ?? undefined,
           filter: url.searchParams.get('filter') ?? undefined,
+          banned: url.searchParams.get('banned') ?? undefined,
           sortBy: url.searchParams.get('sortBy') ?? undefined,
           sortDir: url.searchParams.get('sortDir') ?? undefined,
         })
 
         const q = parsed.filter.trim()
-        const where: Prisma.UserWhereInput = q
-          ? {
-              OR: [
-                { id: { contains: q } },
-                { name: { contains: q } },
-                { email: { contains: q } },
-                { username: { contains: q } },
-              ],
-            }
-          : {}
-
-        const allowedSort = ['createdAt', 'updatedAt', 'name', 'email', 'username', 'role', 'banned'] as const
-        type SortField = (typeof allowedSort)[number]
-
-        const isAllowedSortField = (v: string): v is SortField => (allowedSort as readonly string[]).includes(v)
+        const where: Prisma.UserWhereInput = {
+          ...(q
+            ? {
+                OR: [
+                  { id: { contains: q } },
+                  { name: { contains: q } },
+                  { email: { contains: q } },
+                  { username: { contains: q } },
+                ],
+              }
+            : {}),
+          ...(typeof parsed.banned === 'boolean' ? { banned: parsed.banned } : {}),
+        }
 
         const orderBy: Prisma.UserOrderByWithRelationInput =
-          parsed.sortBy && isAllowedSortField(parsed.sortBy)
+          parsed.sortBy && isValidUserSortField(parsed.sortBy)
             ? { [parsed.sortBy]: parsed.sortDir ?? 'asc' }
             : { createdAt: 'desc' }
 
@@ -73,22 +80,7 @@ export const Route = createFileRoute('/api/admin/user/')({
         ])
 
         const pageCount = Math.ceil(total / pageSize)
-
-        const items = (users as PrismaUser[]).map((u) => ({
-          id: u.id,
-          name: u.name,
-          email: u.email,
-          emailVerified: u.emailVerified,
-          image: u.image ?? null,
-          createdAt: u.createdAt,
-          updatedAt: u.updatedAt,
-          role: u.role ?? 'user',
-          banned: u.banned ?? null,
-          banReason: u.banReason ?? null,
-          banExpires: u.banExpires ?? null,
-          username: u.username ?? null,
-          displayUsername: u.displayUsername ?? null,
-        }))
+        const items = serializeAdminUsers(users as any)
 
         return Response.json(
           adminUsersPageSchema.parse({
@@ -134,7 +126,8 @@ export const Route = createFileRoute('/api/admin/user/')({
           const newUserId = json?.newUser?.id ?? json?.user?.id ?? json?.id
 
           if (typeof newUserId !== 'string' || !newUserId) {
-            return new Response('Create user failed: missing user id', { status: 500 })
+            const error = handleError('Create user failed: missing user id')
+            return Response.json(error, { status: 500 })
           }
 
           const updated = await prisma.user.update({
@@ -146,25 +139,10 @@ export const Route = createFileRoute('/api/admin/user/')({
             },
           })
 
-          return Response.json(
-            adminUsersSchema.parse({
-              id: updated.id,
-              name: updated.name,
-              email: updated.email,
-              emailVerified: updated.emailVerified,
-              image: updated.image ?? null,
-              createdAt: updated.createdAt,
-              updatedAt: updated.updatedAt,
-              role: updated.role ?? 'user',
-              banned: updated.banned ?? null,
-              banReason: updated.banReason ?? null,
-              banExpires: updated.banExpires ?? null,
-              username: updated.username ?? null,
-              displayUsername: updated.displayUsername ?? null,
-            })
-          )
+          return Response.json(adminUsersSchema.parse(serializeAdminUser(updated)))
         } catch (error) {
-          return new Response(String(error), { status: 400 })
+          const apiError = handleError(error)
+          return Response.json(apiError, { status: getErrorStatus(apiError.type) })
         }
       }),
     },

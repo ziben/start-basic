@@ -17,15 +17,18 @@ export function AdminUsersProvider({ children }: { children: React.ReactNode }) 
   const [open, setOpen] = useDialogState<AdminUsersDialogType>(null)
   const [currentRow, setCurrentRow] = useState<AdminUsers | null>(null)
 
-  const value = useMemo(
-    () => ({ open, setOpen, currentRow, setCurrentRow }),
-    [open, setOpen, currentRow, setCurrentRow]
-  )
+  const value = useMemo<AdminUsersContextType>(() => {
+    return {
+      open,
+      setOpen,
+      currentRow,
+      setCurrentRow,
+    }
+  }, [open, setOpen, currentRow, setCurrentRow])
 
   return <AdminUsersContext value={value}>{children}</AdminUsersContext>
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const useAdminUsers = () => {
   const adminUsersContext = React.useContext(AdminUsersContext)
 
