@@ -93,7 +93,8 @@ export const Route = createFileRoute('/api/admin/user/')({
         )
       }),
 
-      POST: withAdminAuth(async ({ request }) => {
+      POST: withAdminAuth(async (ctx) => {
+        const { request } = ctx
         try {
           const body = await request.json()
           const input = createBodySchema.parse(body)
@@ -139,8 +140,31 @@ export const Route = createFileRoute('/api/admin/user/')({
             },
           })
 
+          void ctx.audit.log({
+            action: 'user.create',
+            targetType: 'user',
+            targetId: newUserId,
+            success: true,
+            message: '创建用户',
+            meta: {
+              email: input.email,
+              name: input.name,
+              role: input.role,
+              banned: input.banned,
+              username: input.username ?? null,
+            },
+          })
+
           return Response.json(adminUsersSchema.parse(serializeAdminUser(updated)))
         } catch (error) {
+          void ctx.audit.log({
+            action: 'user.create',
+            targetType: 'user',
+            targetId: null,
+            success: false,
+            message: '创建用户失败',
+            meta: { error: String(error) },
+          })
           const apiError = handleError(error)
           return Response.json(apiError, { status: getErrorStatus(apiError.type) })
         }

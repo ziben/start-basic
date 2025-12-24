@@ -14,7 +14,8 @@ const bodySchema = z.object({
 export const Route = createFileRoute('/api/admin/user/bulk-ban' as any)({
   server: {
     handlers: {
-      POST: withAdminAuth(async ({ request }) => {
+      POST: withAdminAuth(async (ctx) => {
+        const { request } = ctx
         try {
           const body = await request.json()
           const data = bodySchema.parse(body)
@@ -36,8 +37,30 @@ export const Route = createFileRoute('/api/admin/user/bulk-ban' as any)({
             data: updateData,
           })
 
+          void ctx.audit.log({
+            action: data.banned ? 'user.bulk_ban' : 'user.bulk_unban',
+            targetType: 'user',
+            targetId: null,
+            success: true,
+            message: data.banned ? '批量封禁用户' : '批量解封用户',
+            meta: {
+              ids: data.ids,
+              count: result.count,
+              banReason: data.banReason ?? null,
+              banExpires: data.banExpires ?? null,
+            },
+          })
+
           return Response.json({ count: result.count })
         } catch (error) {
+          void ctx.audit.log({
+            action: 'user.bulk_ban',
+            targetType: 'user',
+            targetId: null,
+            success: false,
+            message: '批量封禁/解封失败',
+            meta: { error: String(error) },
+          })
           const apiError = handleError(error)
           return Response.json(apiError, { status: getErrorStatus(apiError.type) })
         }

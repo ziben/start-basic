@@ -13,6 +13,8 @@ type MiddlewareCtx = {
   context?: LogContext
 }
 
+const enableClientTimingLog = import.meta.env.DEV || import.meta.env.VITE_ENABLE_CLIENT_TIMING_LOG === 'true'
+
 const preLogMiddleware = createMiddleware({ type: 'function' })
   .client(async (ctx: MiddlewareCtx) => {
     const clientTime = new Date()
@@ -50,7 +52,7 @@ export const logMiddleware = createMiddleware({ type: 'function' })
     const durationTotal = clientTime ? now.getTime() - clientTime.getTime() : undefined
     const durationFromServer = serverTime ? now.getTime() - serverTime.getTime() : undefined
 
-    if (import.meta.env.DEV) {
+    if (enableClientTimingLog) {
       console.log('Client Req/Res:', {
         durationTotal,
         durationToServer,

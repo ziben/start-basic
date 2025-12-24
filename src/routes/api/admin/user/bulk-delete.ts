@@ -11,7 +11,8 @@ const bodySchema = z.object({
 export const Route = createFileRoute('/api/admin/user/bulk-delete' as any)({
   server: {
     handlers: {
-      POST: withAdminAuth(async ({ request }) => {
+      POST: withAdminAuth(async (ctx) => {
+        const { request } = ctx
         try {
           const body = await request.json()
           const data = bodySchema.parse(body)
@@ -20,8 +21,28 @@ export const Route = createFileRoute('/api/admin/user/bulk-delete' as any)({
             where: { id: { in: data.ids } },
           })
 
+          void ctx.audit.log({
+            action: 'user.bulk_delete',
+            targetType: 'user',
+            targetId: null,
+            success: true,
+            message: '批量删除用户',
+            meta: {
+              ids: data.ids,
+              count: result.count,
+            },
+          })
+
           return Response.json({ count: result.count })
         } catch (error) {
+          void ctx.audit.log({
+            action: 'user.bulk_delete',
+            targetType: 'user',
+            targetId: null,
+            success: false,
+            message: '批量删除用户失败',
+            meta: { error: String(error) },
+          })
           const apiError = handleError(error)
           return Response.json(apiError, { status: getErrorStatus(apiError.type) })
         }

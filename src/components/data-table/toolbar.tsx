@@ -1,6 +1,7 @@
-import { memo } from 'react'
+import React from 'react'
 import { Cross2Icon } from '@radix-ui/react-icons'
 import { type Table } from '@tanstack/react-table'
+import { RefreshCw } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { DataTableFacetedFilter } from './faceted-filter'
@@ -10,6 +11,8 @@ type DataTableToolbarProps<TData> = {
   table: Table<TData>
   searchPlaceholder?: string
   searchKey?: string
+  onReload?: () => void
+  isReloading?: boolean
   filters?: {
     columnId: string
     title: string
@@ -27,9 +30,9 @@ export function DataTableToolbar<TData>({
   table,
   searchPlaceholder = 'Filter...',
   searchKey,
+  onReload,
+  isReloading = false,
   filters = [],
-  columnVisibility,
-  onColumnVisibilityChange,
 }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0 || table.getState().globalFilter
 
@@ -74,12 +77,27 @@ export function DataTableToolbar<TData>({
             }}
             className='h-8 px-2 lg:px-3'
           >
-            Reset
+            重置
             <Cross2Icon className='ms-2 h-4 w-4' />
           </Button>
         )}
       </div>
-      <DataTableViewOptions table={table} />
+      <div className='flex items-center gap-2'>
+        {onReload ? (
+          <Button
+            variant='outline'
+            size='icon'
+            className='size-8'
+            onClick={onReload}
+            disabled={isReloading}
+            aria-label='Reload'
+            title='Reload'
+          >
+            <RefreshCw className={isReloading ? 'animate-spin' : undefined} />
+          </Button>
+        ) : null}
+        <DataTableViewOptions table={table} />
+      </div>
     </div>
   )
 }

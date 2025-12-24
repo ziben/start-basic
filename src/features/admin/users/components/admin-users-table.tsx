@@ -121,7 +121,11 @@ export function AdminUsersTable() {
     [pagination.pageIndex, pagination.pageSize, globalFilter, sorting, bannedFilter]
   )
 
-  const { data: pageData } = useQuery({
+  const {
+    data: pageData,
+    refetch,
+    isRefetching,
+  } = useQuery({
     queryKey: usersQueryKey,
     placeholderData: keepPreviousData,
     queryFn: async ({ signal }) => {
@@ -227,6 +231,8 @@ export function AdminUsersTable() {
       <DataTableToolbar
         table={table}
         searchPlaceholder='根据名称或ID过滤...'
+        onReload={() => void refetch()}
+        isReloading={isRefetching}
         filters={[
           {
             columnId: 'banned',

@@ -1,7 +1,7 @@
 import { DotsHorizontalIcon } from '@radix-ui/react-icons'
 import { useMutation } from '@tanstack/react-query'
 import { type Row } from '@tanstack/react-table'
-import { Trash2, UserPen } from 'lucide-react'
+import { Trash2, UserPen, Ban } from 'lucide-react'
 import { toast } from 'sonner'
 import { apiClient } from '~/lib/api-client'
 import { Button } from '@/components/ui/button'
@@ -22,7 +22,7 @@ type DataTableRowActionsProps<TData> = {
 }
 
 export function DataTableRowActions<TData>({ row }: DataTableRowActionsProps<TData>) {
-  const task = adminUsersSchema.parse(row.original)
+  const user = adminUsersSchema.parse(row.original)
 
   const { setOpen, setCurrentRow } = useAdminUsers()
   const { getOptimisticMutationOptions } = useUsersOptimisticUpdate<{ id: string; banned: boolean }>()
@@ -43,10 +43,10 @@ export function DataTableRowActions<TData>({ row }: DataTableRowActionsProps<TDa
   })
 
   const runBanToggle = (nextBanned: boolean) => {
-    const promise = banMutation.mutateAsync({ id: task.id, banned: nextBanned })
+    const promise = banMutation.mutateAsync({ id: user.id, banned: nextBanned })
     toast.promise(promise, {
-      loading: nextBanned ? 'Banning user...' : 'Unbanning user...',
-      success: nextBanned ? 'User banned' : 'User unbanned',
+      loading: nextBanned ? '封禁用户...' : '解封用户...',
+      success: nextBanned ? '用户已封禁' : '用户已解封',
       error: String,
     })
   }
@@ -59,14 +59,26 @@ export function DataTableRowActions<TData>({ row }: DataTableRowActionsProps<TDa
           <span className='sr-only'>Open menu</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align='end' className='w-[160px]'>
+      <DropdownMenuContent align='end' className='w-[60px]'>
         <DropdownMenuItem
           onClick={() => {
-            setCurrentRow(task)
+            setCurrentRow(user)
+            runBanToggle(!user.banned)
+          }}
+        >
+          {user.banned ? '解封' : '封禁'}
+          <DropdownMenuShortcut>
+            <Ban size={16} />
+          </DropdownMenuShortcut>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          onClick={() => {
+            setCurrentRow(user)
             setOpen('update')
           }}
         >
-          Edit
+          编辑
           <DropdownMenuShortcut>
             <UserPen size={16} />
           </DropdownMenuShortcut>
@@ -74,12 +86,12 @@ export function DataTableRowActions<TData>({ row }: DataTableRowActionsProps<TDa
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onClick={() => {
-            setCurrentRow(task)
+            setCurrentRow(user)
             setOpen('delete')
           }}
           className='text-red-500!'
         >
-          Delete
+          删除
           <DropdownMenuShortcut>
             <Trash2 size={16} />
           </DropdownMenuShortcut>

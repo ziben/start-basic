@@ -37,6 +37,9 @@ model User {
   // 角色与侧边栏的关联
   roleNavGroups UserRoleNavGroup[]
 
+  systemLogs SystemLog[] @relation("UserSystemLogs")
+  auditLogs  AuditLog[]  @relation("UserAuditLogs")
+
   @@unique([email])
   @@map("user")
   @@unique([username])
@@ -207,4 +210,57 @@ model Translation {
 
   @@unique([locale, key])
   @@map("translation")
+}
+
+model SystemLog {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+
+  level       String   @default("info")
+  requestId   String?
+
+  method      String
+  path        String
+  query       String?
+  status      Int
+  durationMs  Int
+
+  ip          String?
+  userAgent   String?
+
+  userId      String?
+  user        User?    @relation("UserSystemLogs", fields: [userId], references: [id], onDelete: SetNull)
+  userRole    String?
+
+  error       String?
+  meta        Json?
+
+  @@index([createdAt])
+  @@index([method, path])
+  @@index([userId])
+  @@map("system_log")
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+
+  actorUserId String?
+  actorUser   User?    @relation("UserAuditLogs", fields: [actorUserId], references: [id], onDelete: SetNull)
+  actorRole   String?
+
+  action      String
+  targetType  String
+  targetId    String?
+
+  ip          String?
+  userAgent   String?
+  success     Boolean  @default(true)
+  message     String?
+  meta        Json?
+
+  @@index([createdAt])
+  @@index([actorUserId])
+  @@index([targetType, targetId])
+  @@map("audit_log")
 }

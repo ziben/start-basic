@@ -1,5 +1,5 @@
 import { useRouteContext } from '@tanstack/react-router'
-import { LayoutDashboard, Users, Navigation, Languages, Building2, Shield, Key, UserCheck, Menu } from 'lucide-react'
+import { LayoutDashboard, ScrollText } from 'lucide-react'
 import { useLayout } from '~/context/layout-provider'
 import { useSidebar as useDynamicSidebar } from '~/lib/sidebar'
 import { iconResolver } from '~/utils/icon-resolver'
@@ -43,17 +43,30 @@ export function AdminSidebar() {
     avatar: user?.image || '/avatars/admin.jpg',
   }
 
+  const baseGroups = isLoading || sidebarData.navGroups.length === 0 ? fallbackData.navGroups : sidebarData.navGroups
+  const groupsWithLogs: NavGroupType[] = [
+    ...baseGroups,
+    {
+      title: '系统',
+      items: [
+        {
+          title: '日志',
+          url: '/admin/log',
+          icon: ScrollText,
+        },
+      ],
+    },
+  ]
+
   return (
     <Sidebar collapsible={collapsible} variant={variant}>
       <SidebarHeader>
         <AdminTitle />
       </SidebarHeader>
       <SidebarContent>
-        {(isLoading || sidebarData.navGroups.length === 0 ? fallbackData.navGroups : sidebarData.navGroups).map(
-          (props: NavGroupType) => (
-            <NavGroupComponent key={props.title} {...props} />
-          )
-        )}
+        {groupsWithLogs.map((props: NavGroupType) => (
+          <NavGroupComponent key={props.title} {...props} />
+        ))}
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={userData} />

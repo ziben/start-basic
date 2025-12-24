@@ -1,7 +1,16 @@
 import { toast } from 'sonner'
 
 export function handleServerError(error: unknown) {
-  // eslint-disable-next-line no-console
+  if (
+    error &&
+    typeof error === 'object' &&
+    'name' in error &&
+    typeof (error as any).name === 'string' &&
+    (error as any).name === 'AbortError'
+  ) {
+    return
+  }
+
   console.log(error)
 
   let errMsg = 'Something went wrong!'

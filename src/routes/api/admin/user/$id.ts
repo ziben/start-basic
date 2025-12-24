@@ -40,8 +40,25 @@ export const Route = createFileRoute('/api/admin/user/$id' as any)({
             },
           })
 
+          void ctx.audit.log({
+            action: 'user.update',
+            targetType: 'user',
+            targetId: params.id,
+            success: true,
+            message: '更新用户',
+            meta: data,
+          })
+
           return Response.json(adminUsersSchema.parse(serializeAdminUser(updated)))
         } catch (error) {
+          void ctx.audit.log({
+            action: 'user.update',
+            targetType: 'user',
+            targetId: params.id,
+            success: false,
+            message: '更新用户失败',
+            meta: { error: String(error) },
+          })
           const apiError = handleError(error)
           return Response.json(apiError, { status: getErrorStatus(apiError.type) })
         }
@@ -54,8 +71,25 @@ export const Route = createFileRoute('/api/admin/user/$id' as any)({
             where: { id: params.id },
           })
 
+          void ctx.audit.log({
+            action: 'user.delete',
+            targetType: 'user',
+            targetId: params.id,
+            success: true,
+            message: '删除用户',
+            meta: null,
+          })
+
           return new Response(null, { status: 204 })
         } catch (error) {
+          void ctx.audit.log({
+            action: 'user.delete',
+            targetType: 'user',
+            targetId: params.id,
+            success: false,
+            message: '删除用户失败',
+            meta: { error: String(error) },
+          })
           const apiError = handleError(error)
           return Response.json(apiError, { status: getErrorStatus(apiError.type) })
         }

@@ -28,6 +28,7 @@ import { Route as AdminNavitemRouteImport } from './routes/admin/navitem'
 import { Route as AdminNavigationRouteImport } from './routes/admin/navigation'
 import { Route as AdminNavgroupRouteImport } from './routes/admin/navgroup'
 import { Route as AdminMemberRouteImport } from './routes/admin/member'
+import { Route as AdminLogRouteImport } from './routes/admin/log'
 import { Route as AdminInvitationRouteImport } from './routes/admin/invitation'
 import { Route as AdminAccountRouteImport } from './routes/admin/account'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
@@ -60,6 +61,7 @@ import { Route as ApiAdminOrganizationIndexRouteImport } from './routes/api/admi
 import { Route as ApiAdminNavitemIndexRouteImport } from './routes/api/admin/navitem/index'
 import { Route as ApiAdminNavgroupIndexRouteImport } from './routes/api/admin/navgroup/index'
 import { Route as ApiAdminMemberIndexRouteImport } from './routes/api/admin/member/index'
+import { Route as ApiAdminLogIndexRouteImport } from './routes/api/admin/log/index'
 import { Route as ApiAdminInvitationIndexRouteImport } from './routes/api/admin/invitation/index'
 import { Route as AuthenticatedDemoUsersIndexRouteImport } from './routes/_authenticated/demo/users/index'
 import { Route as AuthenticatedDemoTasksIndexRouteImport } from './routes/_authenticated/demo/tasks/index'
@@ -181,6 +183,11 @@ const AdminNavgroupRoute = AdminNavgroupRouteImport.update({
 const AdminMemberRoute = AdminMemberRouteImport.update({
   id: '/member',
   path: '/member',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminLogRoute = AdminLogRouteImport.update({
+  id: '/log',
+  path: '/log',
   getParentRoute: () => AdminRouteRoute,
 } as any)
 const AdminInvitationRoute = AdminInvitationRouteImport.update({
@@ -347,6 +354,11 @@ const ApiAdminNavgroupIndexRoute = ApiAdminNavgroupIndexRouteImport.update({
 const ApiAdminMemberIndexRoute = ApiAdminMemberIndexRouteImport.update({
   id: '/api/admin/member/',
   path: '/api/admin/member/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminLogIndexRoute = ApiAdminLogIndexRouteImport.update({
+  id: '/api/admin/log/',
+  path: '/api/admin/log/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAdminInvitationIndexRoute = ApiAdminInvitationIndexRouteImport.update({
@@ -525,6 +537,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/admin/account': typeof AdminAccountRoute
   '/admin/invitation': typeof AdminInvitationRoute
+  '/admin/log': typeof AdminLogRoute
   '/admin/member': typeof AdminMemberRouteWithChildren
   '/admin/navgroup': typeof AdminNavgroupRoute
   '/admin/navigation': typeof AdminNavigationRoute
@@ -580,6 +593,7 @@ export interface FileRoutesByFullPath {
   '/demo/tasks': typeof AuthenticatedDemoTasksIndexRoute
   '/demo/users': typeof AuthenticatedDemoUsersIndexRoute
   '/api/admin/invitation': typeof ApiAdminInvitationIndexRoute
+  '/api/admin/log': typeof ApiAdminLogIndexRoute
   '/api/admin/member': typeof ApiAdminMemberIndexRoute
   '/api/admin/navgroup': typeof ApiAdminNavgroupIndexRoute
   '/api/admin/navitem': typeof ApiAdminNavitemIndexRoute
@@ -604,6 +618,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/admin/account': typeof AdminAccountRoute
   '/admin/invitation': typeof AdminInvitationRoute
+  '/admin/log': typeof AdminLogRoute
   '/admin/member': typeof AdminMemberRouteWithChildren
   '/admin/navgroup': typeof AdminNavgroupRoute
   '/admin/navigation': typeof AdminNavigationRoute
@@ -658,6 +673,7 @@ export interface FileRoutesByTo {
   '/demo/tasks': typeof AuthenticatedDemoTasksIndexRoute
   '/demo/users': typeof AuthenticatedDemoUsersIndexRoute
   '/api/admin/invitation': typeof ApiAdminInvitationIndexRoute
+  '/api/admin/log': typeof ApiAdminLogIndexRoute
   '/api/admin/member': typeof ApiAdminMemberIndexRoute
   '/api/admin/navgroup': typeof ApiAdminNavgroupIndexRoute
   '/api/admin/navitem': typeof ApiAdminNavitemIndexRoute
@@ -686,6 +702,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/admin/account': typeof AdminAccountRoute
   '/admin/invitation': typeof AdminInvitationRoute
+  '/admin/log': typeof AdminLogRoute
   '/admin/member': typeof AdminMemberRouteWithChildren
   '/admin/navgroup': typeof AdminNavgroupRoute
   '/admin/navigation': typeof AdminNavigationRoute
@@ -741,6 +758,7 @@ export interface FileRoutesById {
   '/_authenticated/demo/tasks/': typeof AuthenticatedDemoTasksIndexRoute
   '/_authenticated/demo/users/': typeof AuthenticatedDemoUsersIndexRoute
   '/api/admin/invitation/': typeof ApiAdminInvitationIndexRoute
+  '/api/admin/log/': typeof ApiAdminLogIndexRoute
   '/api/admin/member/': typeof ApiAdminMemberIndexRoute
   '/api/admin/navgroup/': typeof ApiAdminNavgroupIndexRoute
   '/api/admin/navitem/': typeof ApiAdminNavitemIndexRoute
@@ -768,6 +786,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/admin/account'
     | '/admin/invitation'
+    | '/admin/log'
     | '/admin/member'
     | '/admin/navgroup'
     | '/admin/navigation'
@@ -823,6 +842,7 @@ export interface FileRouteTypes {
     | '/demo/tasks'
     | '/demo/users'
     | '/api/admin/invitation'
+    | '/api/admin/log'
     | '/api/admin/member'
     | '/api/admin/navgroup'
     | '/api/admin/navitem'
@@ -847,6 +867,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/admin/account'
     | '/admin/invitation'
+    | '/admin/log'
     | '/admin/member'
     | '/admin/navgroup'
     | '/admin/navigation'
@@ -901,6 +922,7 @@ export interface FileRouteTypes {
     | '/demo/tasks'
     | '/demo/users'
     | '/api/admin/invitation'
+    | '/api/admin/log'
     | '/api/admin/member'
     | '/api/admin/navgroup'
     | '/api/admin/navitem'
@@ -928,6 +950,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/admin/account'
     | '/admin/invitation'
+    | '/admin/log'
     | '/admin/member'
     | '/admin/navgroup'
     | '/admin/navigation'
@@ -983,6 +1006,7 @@ export interface FileRouteTypes {
     | '/_authenticated/demo/tasks/'
     | '/_authenticated/demo/users/'
     | '/api/admin/invitation/'
+    | '/api/admin/log/'
     | '/api/admin/member/'
     | '/api/admin/navgroup/'
     | '/api/admin/navitem/'
@@ -1031,6 +1055,7 @@ export interface RootRouteChildren {
   ApiAdminUserBulkBanRoute: typeof ApiAdminUserBulkBanRoute
   ApiAdminUserBulkDeleteRoute: typeof ApiAdminUserBulkDeleteRoute
   ApiAdminInvitationIndexRoute: typeof ApiAdminInvitationIndexRoute
+  ApiAdminLogIndexRoute: typeof ApiAdminLogIndexRoute
   ApiAdminMemberIndexRoute: typeof ApiAdminMemberIndexRoute
   ApiAdminNavgroupIndexRoute: typeof ApiAdminNavgroupIndexRoute
   ApiAdminNavitemIndexRoute: typeof ApiAdminNavitemIndexRoute
@@ -1174,6 +1199,13 @@ declare module '@tanstack/react-router' {
       path: '/member'
       fullPath: '/admin/member'
       preLoaderRoute: typeof AdminMemberRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/log': {
+      id: '/admin/log'
+      path: '/log'
+      fullPath: '/admin/log'
+      preLoaderRoute: typeof AdminLogRouteImport
       parentRoute: typeof AdminRouteRoute
     }
     '/admin/invitation': {
@@ -1398,6 +1430,13 @@ declare module '@tanstack/react-router' {
       path: '/api/admin/member'
       fullPath: '/api/admin/member'
       preLoaderRoute: typeof ApiAdminMemberIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/log/': {
+      id: '/api/admin/log/'
+      path: '/api/admin/log'
+      fullPath: '/api/admin/log'
+      preLoaderRoute: typeof ApiAdminLogIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/admin/invitation/': {
@@ -1704,6 +1743,7 @@ const AdminOrganizationRouteWithChildren =
 interface AdminRouteRouteChildren {
   AdminAccountRoute: typeof AdminAccountRoute
   AdminInvitationRoute: typeof AdminInvitationRoute
+  AdminLogRoute: typeof AdminLogRoute
   AdminMemberRoute: typeof AdminMemberRouteWithChildren
   AdminNavgroupRoute: typeof AdminNavgroupRoute
   AdminNavigationRoute: typeof AdminNavigationRoute
@@ -1721,6 +1761,7 @@ interface AdminRouteRouteChildren {
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminAccountRoute: AdminAccountRoute,
   AdminInvitationRoute: AdminInvitationRoute,
+  AdminLogRoute: AdminLogRoute,
   AdminMemberRoute: AdminMemberRouteWithChildren,
   AdminNavgroupRoute: AdminNavgroupRoute,
   AdminNavigationRoute: AdminNavigationRoute,
@@ -1789,6 +1830,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminUserBulkBanRoute: ApiAdminUserBulkBanRoute,
   ApiAdminUserBulkDeleteRoute: ApiAdminUserBulkDeleteRoute,
   ApiAdminInvitationIndexRoute: ApiAdminInvitationIndexRoute,
+  ApiAdminLogIndexRoute: ApiAdminLogIndexRoute,
   ApiAdminMemberIndexRoute: ApiAdminMemberIndexRoute,
   ApiAdminNavgroupIndexRoute: ApiAdminNavgroupIndexRoute,
   ApiAdminNavitemIndexRoute: ApiAdminNavitemIndexRoute,
