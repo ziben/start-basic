@@ -3,7 +3,6 @@ import { format } from 'date-fns'
 import { getRouteApi } from '@tanstack/react-router'
 import {
   type ColumnDef,
-  type SortingState,
   type VisibilityState,
   flexRender,
   getCoreRowModel,
@@ -22,7 +21,8 @@ import {
   type AdminSessionInfo,
 } from '~/hooks/use-admin-session-api'
 import { useTranslation } from '~/hooks/useTranslation'
-import { type NavigateFn, useTableUrlState } from '@/hooks/use-table-url-state'
+import { type NavigateFn } from '@/hooks/use-table-url-state'
+import { useUrlSyncedSorting } from '@/hooks/use-url-synced-sorting'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -55,17 +55,22 @@ export default function AdminSession() {
   const deleteOne = useDeleteAdminSession()
   const bulkDelete = useBulkDeleteAdminSessions()
 
-  const initialSorting = useMemo<SortingState>(() => {
-    const sortBy = (search as Record<string, unknown>).sortBy
-    const sortDir = (search as Record<string, unknown>).sortDir
-    if (typeof sortBy !== 'string' || !sortBy) return []
-
-    const normalizedSortBy = sortBy === 'loginTime' ? 'createdAt' : sortBy
-    return [{ id: normalizedSortBy, desc: sortDir === 'desc' }]
-  }, [search])
-
   const [rowSelection, setRowSelection] = useState({})
-  const [sorting, setSorting] = useState<SortingState>(initialSorting)
+
+  const tableUrl = useUrlSyncedSorting({
+    search: search as any,
+    navigate: navigate as unknown as NavigateFn,
+    pagination: { defaultPage: 1, defaultPageSize: 10 },
+    globalFilter: { enabled: true, key: 'filter' },
+    columnFilters: [{ columnId: 'isActive', searchKey: 'status', type: 'array' }],
+    sorting: {
+      normalizeSortBy: (sortBy) => (sortBy === 'loginTime' ? 'createdAt' : sortBy),
+      resetPageOnSort: true,
+    },
+  })
+
+  const sorting = tableUrl.sorting
+
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
     id: false,
     userId: false,
@@ -263,14 +268,6 @@ export default function AdminSession() {
     return cols
   }, [formatDate, formatUserAgent, isMutating, openSingleDelete, t])
 
-  const tableUrl = useTableUrlState({
-    search: search as any,
-    navigate: navigate as unknown as NavigateFn,
-    pagination: { defaultPage: 1, defaultPageSize: 10 },
-    globalFilter: { enabled: true, key: 'filter' },
-    columnFilters: [{ columnId: 'isActive', searchKey: 'status', type: 'array' }],
-  })
-
   const statusFilter = tableUrl.columnFilters.find((f) => f.id === 'isActive')
   const status = Array.isArray(statusFilter?.value)
     ? (statusFilter!.value.map((v) => String(v)) as Array<'active' | 'expired'>)
@@ -315,20 +312,7 @@ export default function AdminSession() {
     manualSorting: true,
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
-    onSortingChange: (updater) => {
-      const next = typeof updater === 'function' ? updater(sorting) : updater
-      setSorting(next)
-
-      const s = next[0]
-      ;(navigate as any)({
-        search: (prev: any) => ({
-          ...prev,
-          page: undefined,
-          sortBy: s?.id ? s.id : undefined,
-          sortDir: s?.id ? (s.desc ? 'desc' : 'asc') : undefined,
-        }),
-      })
-    },
+    onSortingChange: tableUrl.onSortingChange,
     onColumnVisibilityChange: setColumnVisibility,
     onPaginationChange: tableUrl.onPaginationChange,
     onGlobalFilterChange: tableUrl.onGlobalFilterChange,

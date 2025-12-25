@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from 'react'
 import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query'
 import { getRouteApi } from '@tanstack/react-router'
 import {
-  type SortingState,
   type VisibilityState,
   flexRender,
   getCoreRowModel,
@@ -12,7 +11,8 @@ import {
 } from '@tanstack/react-table'
 import { apiClient } from '~/lib/api-client'
 import { cn } from '@/lib/utils'
-import { type NavigateFn, useTableUrlState } from '@/hooks/use-table-url-state'
+import { type NavigateFn } from '@/hooks/use-table-url-state'
+import { useUrlSyncedSorting } from '@/hooks/use-url-synced-sorting'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
 import { priorities, statuses } from '../data/data'
@@ -29,23 +29,9 @@ export function TasksTable() {
   const routeNavigate = route.useNavigate()
   const queryClient = useQueryClient()
 
-  const initialSorting = useMemo<SortingState>(() => {
-    const sortBy = (search as Record<string, unknown>).sortBy
-    const sortDir = (search as Record<string, unknown>).sortDir
-    if (typeof sortBy !== 'string' || !sortBy) return []
-    return [{ id: sortBy, desc: sortDir === 'desc' }]
-  }, [search])
-
-  const [sorting, setSorting] = useState<SortingState>(initialSorting)
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
-
-  // Local state management for table (uncomment to use local-only state, not synced with URL)
-  // const [globalFilter, onGlobalFilterChange] = useState('')
-  // const [columnFilters, onColumnFiltersChange] = useState<ColumnFiltersState>([])
-  // const [pagination, onPaginationChange] = useState<PaginationState>({ pageIndex: 0, pageSize: 10 })
-
-  // Synced with URL states (updated to match route search schema defaults)
   const {
+    sorting,
+    onSortingChange,
     globalFilter,
     onGlobalFilterChange,
     columnFilters,
@@ -53,7 +39,7 @@ export function TasksTable() {
     pagination,
     onPaginationChange,
     ensurePageInRange,
-  } = useTableUrlState({
+  } = useUrlSyncedSorting({
     search,
     navigate: routeNavigate as unknown as NavigateFn,
     pagination: { defaultPage: 1, defaultPageSize: 10 },
@@ -63,6 +49,13 @@ export function TasksTable() {
       { columnId: 'priority', searchKey: 'priority', type: 'array' },
     ],
   })
+
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+
+  // Local state management for table (uncomment to use local-only state, not synced with URL)
+  // const [globalFilter, onGlobalFilterChange] = useState('')
+  // const [columnFilters, onColumnFiltersChange] = useState<ColumnFiltersState>([])
+  // const [pagination, onPaginationChange] = useState<PaginationState>({ pageIndex: 0, pageSize: 10 })
 
   const tasksQueryKey = useMemo(() => {
     return ['demo-tasks', pagination.pageIndex, pagination.pageSize, globalFilter ?? '', columnFilters, sorting]
@@ -138,30 +131,7 @@ export function TasksTable() {
     manualSorting: true,
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
-    onSortingChange: (updater) => {
-      const next = typeof updater === 'function' ? updater(sorting) : updater
-      setSorting(next)
-
-      const firstSort = next[0]
-      let sortDir: 'asc' | 'desc' | undefined = undefined
-      if (firstSort?.id) {
-        sortDir = firstSort.desc ? 'desc' : 'asc'
-      }
-
-      ;(routeNavigate as any)({
-        search: (prev: any) => ({
-          ...prev,
-          page: undefined,
-          sortBy: firstSort?.id ? firstSort.id : undefined,
-          sortDir,
-        }),
-      })
-
-      onPaginationChange((prev) => ({
-        ...prev,
-        pageIndex: 0,
-      }))
-    },
+    onSortingChange,
     onColumnVisibilityChange: setColumnVisibility,
     globalFilterFn: (row, _columnId, filterValue) => {
       const id = String(row.getValue('id')).toLowerCase()

@@ -1,9 +1,10 @@
-import { normalizePath } from 'vite'
-import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { devtools } from '@tanstack/devtools-vite'
 import { tanstackStart } from '@tanstack/react-start/plugin/vite'
+import viteReact from '@vitejs/plugin-react'
+import { nitro } from 'nitro/vite'
 import { fileURLToPath } from 'node:url'
+import { normalizePath } from 'vite'
 import Inspect from 'vite-plugin-inspect'
 import tsconfigPaths from 'vite-tsconfig-paths'
 import { defineConfig } from 'vitest/config'
@@ -26,10 +27,51 @@ export default defineConfig({
     }),
     tailwindcss(),
     tanstackStart({
+      nitro: {
+        wasm: false,
+        commonJS: {
+          ignoreDynamicRequires: true,
+        },
+        rollupConfig: {
+          external: [
+            'libsql',
+            '@libsql/client',
+            '@libsql/core',
+            '@libsql/hrana-client',
+            '@neon-rs/load',
+            '@libsql/win32-x64-msvc',
+            '@libsql/linux-x64-gnu',
+            '@libsql/linux-x64-musl',
+            '@libsql/darwin-x64',
+            '@libsql/darwin-arm64',
+          ],
+        },
+      },
       customViteReactPlugin: true,
-    } as any),
-    react(),
+    }),
+    nitro(),
+    viteReact(),
   ],
+  nitro: {
+    wasm: false,
+    commonJS: {
+      ignoreDynamicRequires: true,
+    },
+    rollupConfig: {
+      external: [
+        'libsql',
+        '@libsql/client',
+        '@libsql/core',
+        '@libsql/hrana-client',
+        '@neon-rs/load',
+        '@libsql/win32-x64-msvc',
+        '@libsql/linux-x64-gnu',
+        '@libsql/linux-x64-musl',
+        '@libsql/darwin-x64',
+        '@libsql/darwin-arm64',
+      ],
+    },
+  },
   resolve: {
     alias: [
       {

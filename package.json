@@ -8,16 +8,14 @@
     "build": "vite build",
     "preview": "vite preview",
     "start": "pnpx srvx --prod -s ../client dist/server/server.js",
+    "start2": "node .output/server/index.mjs",
     "lint": "eslint .",
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
     "format": "prettier --write .",
     "lint-staged": "lint-staged",
-    "prepare": "husky",
     "check-types": "tsc --noEmit",
-    "check": "pnpm format && pnpm lint && pnpm check-types",
-    "deps": "pnpm dlx taze@latest -Ilw",
-    "deps:major": "pnpm dlx taze@latest major -Ilw"
+    "check": "pnpm format && pnpm lint && pnpm check-types"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx,mjs,cjs}": [
@@ -91,7 +89,7 @@
     "@tanstack/devtools-event-client": "^0.4.0",
     "@tanstack/devtools-vite": "^0.3.12",
     "@tanstack/eslint-plugin-query": "^5.91.2",
-    "@tanstack/react-devtools": "^0.8.4",
+    "@tanstack/react-devtools": "^0.8.6",
     "@tanstack/react-query-devtools": "^5.91.1",
     "@tanstack/react-router-devtools": "^1.143.4",
     "@tanstack/router-devtools": "^1.143.4",
@@ -112,9 +110,9 @@
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.26",
     "globals": "^16.5.0",
-    "husky": "^9.1.7",
     "jsdom": "^27.3.0",
     "lint-staged": "^16.2.7",
+    "nitro": "npm:nitro-nightly@3.0.1-20251224-090424-fb6b85d0",
     "postcss": "^8.5.6",
     "prettier": "^3.7.4",
     "prettier-plugin-organize-imports": "^4.3.0",
