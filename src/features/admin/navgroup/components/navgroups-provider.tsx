@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import useDialogState from '@/hooks/use-dialog-state'
+import React from 'react'
+import { useDialogRowState } from '@/hooks/use-dialog-row-state'
 import { type AdminNavgroup } from '../data/schema'
 
 type NavGroupsDialogType = 'create' | 'update' | 'delete' | 'import'
@@ -14,14 +14,9 @@ type NavGroupsContextType = {
 const NavGroupsContext = React.createContext<NavGroupsContextType | null>(null)
 
 export function NavGroupsProvider({ children }: { children: React.ReactNode }) {
-  const [open, setOpen] = useDialogState<NavGroupsDialogType>(null)
-  const [currentRow, setCurrentRow] = useState<AdminNavgroup | null>(null)
+  const value = useDialogRowState<NavGroupsDialogType, AdminNavgroup>()
 
-  return (
-    <NavGroupsContext.Provider value={{ open, setOpen, currentRow, setCurrentRow }}>
-      {children}
-    </NavGroupsContext.Provider>
-  )
+  return <NavGroupsContext.Provider value={value}>{children}</NavGroupsContext.Provider>
 }
 
 // eslint-disable-next-line react-refresh/only-export-components

@@ -4,6 +4,7 @@ import { toast } from 'sonner'
 import { apiClient } from '~/lib/api-client'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { type AdminUsers } from '../data/schema'
+import { ADMIN_USERS_QUERY_KEY } from '../hooks/use-admin-users-list-query'
 import { useUsersOptimisticUpdate, createBulkDeleteUpdateFn } from '../hooks/use-users-optimistic-update'
 import { AdminUserImportDialog } from './admin-users-import-dialog'
 import { AdminUsersMutateDialog } from './admin-users-mutate-dialog'
@@ -11,14 +12,14 @@ import { useAdminUsers } from './admin-users-provider'
 
 export function AdminUsersDialogs() {
   const { open, setOpen, currentRow, setCurrentRow } = useAdminUsers()
-  const { getOptimisticMutationOptions } = useUsersOptimisticUpdate<{ id: string }>()
+  const { getOptimisticMutationOptions } = useUsersOptimisticUpdate()
 
   const deleteOneMutation = useMutation({
     mutationFn: async (input: { id: string }) => {
       return await apiClient.users.bulkDelete({ ids: [input.id] })
     },
     ...getOptimisticMutationOptions({
-      queryKey: ['admin-users'],
+      queryKey: ADMIN_USERS_QUERY_KEY,
       updateFn: (users, variables) => createBulkDeleteUpdateFn(users, [variables.id]),
     }),
   })

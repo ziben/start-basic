@@ -17,8 +17,9 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { SelectDropdown } from '@/components/select-dropdown'
+import { getErrorMessage } from '~/lib/error-handler'
 import { type AdminUsers } from '../data/schema'
-import { getErrorMessage } from '../utils/error-handler'
+import { ADMIN_USERS_QUERY_KEY } from '../hooks/use-admin-users-list-query'
 
 type AdminUsersMutateDialogProps = {
   currentRow?: AdminUsers
@@ -82,7 +83,7 @@ export function AdminUsersMutateDialog({ currentRow, open, onOpenChange }: Admin
       })
     },
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['admin-users'] })
+      await queryClient.invalidateQueries({ queryKey: ADMIN_USERS_QUERY_KEY })
       onOpenChange(false)
       form.reset()
     },
@@ -104,7 +105,7 @@ export function AdminUsersMutateDialog({ currentRow, open, onOpenChange }: Admin
       })
     },
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['admin-users'] })
+      await queryClient.invalidateQueries({ queryKey: ADMIN_USERS_QUERY_KEY })
       onOpenChange(false)
       form.reset()
     },

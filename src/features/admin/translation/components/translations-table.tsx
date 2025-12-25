@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { getRouteApi } from '@tanstack/react-router'
 import {
-  type SortingState,
   type VisibilityState,
   flexRender,
   getCoreRowModel,
@@ -15,7 +14,7 @@ import {
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { Translation } from '~/generated/prisma/client'
 import { useTranslation } from '~/hooks/useTranslation'
-import { useTableUrlState } from '@/hooks/use-table-url-state'
+import { useUrlSyncedSorting } from '@/hooks/use-url-synced-sorting'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
 import { DataTableBulkActions } from './data-table-bulk-actions'
@@ -30,18 +29,12 @@ type DataTableProps = {
 export function TranslationsTable({ data }: DataTableProps) {
   const { t } = useTranslation()
   const columns = useTranslationColumns()
-  // Local UI-only states
   const [rowSelection, setRowSelection] = useState({})
-  const [sorting, setSorting] = useState<SortingState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 
-  // Local state management for table (uncomment to use local-only state, not synced with URL)
-  // const [globalFilter, onGlobalFilterChange] = useState('')
-  // const [columnFilters, onColumnFiltersChange] = useState<ColumnFiltersState>([])
-  // const [pagination, onPaginationChange] = useState<PaginationState>({ pageIndex: 0, pageSize: 10 })
-
-  // Synced with URL states (updated to match route search schema defaults)
   const {
+    sorting,
+    onSortingChange,
     globalFilter,
     onGlobalFilterChange,
     columnFilters,
@@ -49,7 +42,7 @@ export function TranslationsTable({ data }: DataTableProps) {
     pagination,
     onPaginationChange,
     ensurePageInRange,
-  } = useTableUrlState({
+  } = useUrlSyncedSorting({
     search: route.useSearch(),
     navigate: route.useNavigate(),
     pagination: { defaultPage: 1, defaultPageSize: 10 },
@@ -73,7 +66,7 @@ export function TranslationsTable({ data }: DataTableProps) {
     },
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
-    onSortingChange: setSorting,
+    onSortingChange,
     onColumnVisibilityChange: setColumnVisibility,
     globalFilterFn: (row, _columnId, filterValue) => {
       const key = String(row.getValue('key')).toLowerCase()

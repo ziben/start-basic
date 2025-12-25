@@ -1,16 +1,12 @@
 'use client'
 
-import { useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { type Table } from '@tanstack/react-table'
-import { AlertTriangle } from 'lucide-react'
 import { toast } from 'sonner'
 import { apiClient } from '~/lib/api-client'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { ConfirmDialog } from '@/components/confirm-dialog'
+import { ConfirmDeleteDialog } from '@/components/confirm-delete-dialog'
 import { type AdminUsers } from '../data/schema'
+import { ADMIN_USERS_QUERY_KEY } from '../hooks/use-admin-users-list-query'
 
 type AdminUserMultiDeleteDialogProps<TData> = {
   open: boolean
@@ -18,14 +14,11 @@ type AdminUserMultiDeleteDialogProps<TData> = {
   table: Table<TData>
 }
 
-const CONFIRM_WORD = 'DELETE'
-
 export function AdminUsersMultiDeleteDialog<TData>({
   open,
   onOpenChange,
   table,
 }: Readonly<AdminUserMultiDeleteDialogProps<TData>>) {
-  const [value, setValue] = useState('')
   const queryClient = useQueryClient()
 
   const selectedRows = table.getFilteredSelectedRowModel().rows
@@ -35,10 +28,10 @@ export function AdminUsersMultiDeleteDialog<TData>({
       return await apiClient.users.bulkDelete(input)
     },
     onMutate: async (input) => {
-      await queryClient.cancelQueries({ queryKey: ['admin-users'] })
-      const previous = queryClient.getQueriesData({ queryKey: ['admin-users'] })
+      await queryClient.cancelQueries({ queryKey: ADMIN_USERS_QUERY_KEY })
+      const previous = queryClient.getQueriesData({ queryKey: ADMIN_USERS_QUERY_KEY })
 
-      queryClient.setQueriesData({ queryKey: ['admin-users'] }, (old: any) => {
+      queryClient.setQueriesData({ queryKey: ADMIN_USERS_QUERY_KEY }, (old: any) => {
         if (!old || !Array.isArray(old.items)) return old
         const nextItems = old.items.filter((u: AdminUsers) => !input.ids.includes(u.id))
         const deleted = old.items.length - nextItems.length
@@ -66,16 +59,11 @@ export function AdminUsersMultiDeleteDialog<TData>({
       }
     },
     onSettled: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['admin-users'] })
+      await queryClient.invalidateQueries({ queryKey: ADMIN_USERS_QUERY_KEY })
     },
   })
 
   const handleDelete = () => {
-    if (value.trim() !== CONFIRM_WORD) {
-      toast.error(`Please type "${CONFIRM_WORD}" to confirm.`)
-      return
-    }
-
     const selectedUsers = selectedRows.map((row) => row.original as AdminUsers)
     const ids = selectedUsers.map((u) => u.id)
     if (ids.length === 0) return
@@ -96,41 +84,14 @@ export function AdminUsersMultiDeleteDialog<TData>({
   }
 
   return (
-    <ConfirmDialog
+    <ConfirmDeleteDialog
       open={open}
       onOpenChange={onOpenChange}
-      handleConfirm={handleDelete}
-      disabled={value.trim() !== CONFIRM_WORD}
-      title={
-        <span className='text-destructive'>
-          <AlertTriangle className='me-1 inline-block stroke-destructive' size={18} /> Delete {selectedRows.length}{' '}
-          {selectedRows.length > 1 ? 'users' : 'user'}
-        </span>
-      }
-      desc={
-        <div className='space-y-4'>
-          <p className='mb-2'>
-            Are you sure you want to delete the selected users? <br />
-            This action cannot be undone.
-          </p>
-
-          <Label className='my-4 flex flex-col items-start gap-1.5'>
-            <span className=''>Confirm by typing "{CONFIRM_WORD}":</span>
-            <Input
-              value={value}
-              onChange={(e) => setValue(e.target.value)}
-              placeholder={`Type "${CONFIRM_WORD}" to confirm.`}
-            />
-          </Label>
-
-          <Alert variant='destructive'>
-            <AlertTitle>Warning!</AlertTitle>
-            <AlertDescription>Please be careful, this operation can not be rolled back.</AlertDescription>
-          </Alert>
-        </div>
-      }
-      confirmText='Delete'
-      destructive
+      onConfirm={handleDelete}
+      confirmWord='DELETE'
+      itemCount={selectedRows.length}
+      itemName='user'
+      isLoading={bulkDeleteMutation.isPending}
     />
   )
 }

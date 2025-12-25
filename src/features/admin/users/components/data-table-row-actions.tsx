@@ -14,6 +14,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { adminUsersSchema, type AdminUsers } from '../data/schema'
+import { ADMIN_USERS_QUERY_KEY } from '../hooks/use-admin-users-list-query'
 import { useUsersOptimisticUpdate, createBulkBanUpdateFn } from '../hooks/use-users-optimistic-update'
 import { useAdminUsers } from './admin-users-provider'
 
@@ -25,7 +26,7 @@ export function DataTableRowActions<TData>({ row }: DataTableRowActionsProps<TDa
   const user = adminUsersSchema.parse(row.original)
 
   const { setOpen, setCurrentRow } = useAdminUsers()
-  const { getOptimisticMutationOptions } = useUsersOptimisticUpdate<{ id: string; banned: boolean }>()
+  const { getOptimisticMutationOptions } = useUsersOptimisticUpdate()
 
   const banMutation = useMutation({
     mutationFn: async (input: { id: string; banned: boolean }) => {
@@ -37,7 +38,7 @@ export function DataTableRowActions<TData>({ row }: DataTableRowActionsProps<TDa
       })
     },
     ...getOptimisticMutationOptions({
-      queryKey: ['admin-users'],
+      queryKey: ADMIN_USERS_QUERY_KEY,
       updateFn: (users, variables) => createBulkBanUpdateFn(users, [variables.id], variables.banned),
     }),
   })

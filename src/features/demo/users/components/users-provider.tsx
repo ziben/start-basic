@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import useDialogState from '@/hooks/use-dialog-state'
+import React from 'react'
+import { useDialogRowState } from '@/hooks/use-dialog-row-state'
 import { type User } from '../data/schema'
 
 type UsersDialogType = 'invite' | 'add' | 'edit' | 'delete'
@@ -14,10 +14,9 @@ type UsersContextType = {
 const UsersContext = React.createContext<UsersContextType | null>(null)
 
 export function UsersProvider({ children }: { children: React.ReactNode }) {
-  const [open, setOpen] = useDialogState<UsersDialogType>(null)
-  const [currentRow, setCurrentRow] = useState<User | null>(null)
+  const value = useDialogRowState<UsersDialogType, User>()
 
-  return <UsersContext value={{ open, setOpen, currentRow, setCurrentRow }}>{children}</UsersContext>
+  return <UsersContext value={value}>{children}</UsersContext>
 }
 
 // eslint-disable-next-line react-refresh/only-export-components

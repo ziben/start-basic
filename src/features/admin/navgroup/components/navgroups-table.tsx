@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { getRouteApi } from '@tanstack/react-router'
 import {
-  type SortingState,
   type VisibilityState,
   flexRender,
   getCoreRowModel,
@@ -14,7 +13,7 @@ import {
 } from '@tanstack/react-table'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { useTranslation } from '~/hooks/useTranslation'
-import { useTableUrlState } from '@/hooks/use-table-url-state'
+import { useUrlSyncedSorting } from '@/hooks/use-url-synced-sorting'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
 import { type AdminNavgroup } from '../data/schema'
@@ -32,18 +31,12 @@ type DataTableProps = {
 function NavGroupsTableInner({ data, search, navigate }: DataTableProps) {
   const { t } = useTranslation()
   const columns = useNavGroupColumns()
-  // Local UI-only states
   const [rowSelection, setRowSelection] = useState({})
-  const [sorting, setSorting] = useState<SortingState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 
-  // Local state management for table (uncomment to use local-only state, not synced with URL)
-  // const [globalFilter, onGlobalFilterChange] = useState('')
-  // const [columnFilters, onColumnFiltersChange] = useState<ColumnFiltersState>([])
-  // const [pagination, onPaginationChange] = useState<PaginationState>({ pageIndex: 0, pageSize: 10 })
-
-  // Synced with URL states (updated to match route search schema defaults)
   const {
+    sorting,
+    onSortingChange,
     globalFilter,
     onGlobalFilterChange,
     columnFilters,
@@ -51,7 +44,7 @@ function NavGroupsTableInner({ data, search, navigate }: DataTableProps) {
     pagination,
     onPaginationChange,
     ensurePageInRange,
-  } = useTableUrlState({
+  } = useUrlSyncedSorting({
     search,
     navigate,
     pagination: { defaultPage: 1, defaultPageSize: 10 },
@@ -75,7 +68,7 @@ function NavGroupsTableInner({ data, search, navigate }: DataTableProps) {
     },
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
-    onSortingChange: setSorting,
+    onSortingChange,
     onColumnVisibilityChange: setColumnVisibility,
     globalFilterFn: (row, _columnId, filterValue) => {
       const id = String(row.getValue('id')).toLowerCase()

@@ -9,6 +9,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { DataTableBulkActions as BulkActionsToolbar } from '@/components/data-table'
 import { type AdminUsers } from '../data/schema'
+import { ADMIN_USERS_QUERY_KEY } from '../hooks/use-admin-users-list-query'
 import { useUsersOptimisticUpdate, createBulkBanUpdateFn } from '../hooks/use-users-optimistic-update'
 import { AdminUsersMultiDeleteDialog } from './admin-users-multi-delete-dialog'
 
@@ -19,7 +20,7 @@ type DataTableBulkActionsProps<TData> = {
 export function DataTableBulkActions<TData>({ table }: DataTableBulkActionsProps<TData>) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const selectedRows = table.getFilteredSelectedRowModel().rows
-  const { getOptimisticMutationOptions } = useUsersOptimisticUpdate<{ ids: string[]; banned: boolean }>()
+  const { getOptimisticMutationOptions } = useUsersOptimisticUpdate()
 
   const bulkBanMutation = useMutation({
     mutationFn: async (input: { ids: string[]; banned: boolean }) => {
@@ -31,7 +32,7 @@ export function DataTableBulkActions<TData>({ table }: DataTableBulkActionsProps
       })
     },
     ...getOptimisticMutationOptions({
-      queryKey: ['admin-users'],
+      queryKey: ADMIN_USERS_QUERY_KEY,
       updateFn: (users, variables) => createBulkBanUpdateFn(users, variables.ids, variables.banned),
     }),
   })

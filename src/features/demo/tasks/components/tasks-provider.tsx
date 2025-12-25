@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import useDialogState from '@/hooks/use-dialog-state'
+import React from 'react'
+import { useDialogRowState } from '@/hooks/use-dialog-row-state'
 import { type Task } from '../data/schema'
 
 type TasksDialogType = 'create' | 'update' | 'delete' | 'import'
@@ -14,10 +14,9 @@ type TasksContextType = {
 const TasksContext = React.createContext<TasksContextType | null>(null)
 
 export function TasksProvider({ children }: { children: React.ReactNode }) {
-  const [open, setOpen] = useDialogState<TasksDialogType>(null)
-  const [currentRow, setCurrentRow] = useState<Task | null>(null)
+  const value = useDialogRowState<TasksDialogType, Task>()
 
-  return <TasksContext value={{ open, setOpen, currentRow, setCurrentRow }}>{children}</TasksContext>
+  return <TasksContext value={value}>{children}</TasksContext>
 }
 
 // eslint-disable-next-line react-refresh/only-export-components

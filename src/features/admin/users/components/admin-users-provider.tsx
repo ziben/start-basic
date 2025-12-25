@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from 'react'
-import useDialogState from '@/hooks/use-dialog-state'
+import React from 'react'
+import { useDialogRowState } from '@/hooks/use-dialog-row-state'
 import { type AdminUsers } from '../data/schema'
 
 type AdminUsersDialogType = 'create' | 'update' | 'delete' | 'import'
@@ -14,17 +14,7 @@ type AdminUsersContextType = {
 const AdminUsersContext = React.createContext<AdminUsersContextType | null>(null)
 
 export function AdminUsersProvider({ children }: { children: React.ReactNode }) {
-  const [open, setOpen] = useDialogState<AdminUsersDialogType>(null)
-  const [currentRow, setCurrentRow] = useState<AdminUsers | null>(null)
-
-  const value = useMemo<AdminUsersContextType>(() => {
-    return {
-      open,
-      setOpen,
-      currentRow,
-      setCurrentRow,
-    }
-  }, [open, setOpen, currentRow, setCurrentRow])
+  const value = useDialogRowState<AdminUsersDialogType, AdminUsers>()
 
   return <AdminUsersContext value={value}>{children}</AdminUsersContext>
 }

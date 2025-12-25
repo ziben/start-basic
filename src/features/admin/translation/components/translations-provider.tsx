@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { Translation } from '~/generated/prisma/client'
-import useDialogState from '@/hooks/use-dialog-state'
+import { useDialogRowState } from '@/hooks/use-dialog-row-state'
 
 type TranslationsDialogType = 'create' | 'update' | 'delete' | 'import'
 
@@ -14,14 +14,9 @@ type TranslationsContextType = {
 const TranslationsContext = React.createContext<TranslationsContextType | null>(null)
 
 export function TranslationsProvider({ children }: { children: React.ReactNode }) {
-  const [open, setOpen] = useDialogState<TranslationsDialogType>(null)
-  const [currentRow, setCurrentRow] = useState<Translation | null>(null)
+  const value = useDialogRowState<TranslationsDialogType, Translation>()
 
-  return (
-    <TranslationsContext.Provider value={{ open, setOpen, currentRow, setCurrentRow }}>
-      {children}
-    </TranslationsContext.Provider>
-  )
+  return <TranslationsContext.Provider value={value}>{children}</TranslationsContext.Provider>
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
