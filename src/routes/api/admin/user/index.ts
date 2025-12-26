@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { createFileRoute } from '@tanstack/react-router'
-import { adminUsersPageSchema, adminUsersSchema } from '~/features/admin/users/data/schema'
+import { adminUsersSchema } from '~/features/admin/users/data/schema'
 import type { Prisma } from '~/generated/prisma/client'
 import prisma from '~/lib/db'
 import { withAdminAuth } from '~/middleware'
@@ -82,14 +82,13 @@ export const Route = createFileRoute('/api/admin/user/')({
         const pageCount = Math.ceil(total / pageSize)
         const items = serializeAdminUsers(users as any)
 
-        return Response.json(
-          adminUsersPageSchema.parse({
+        return Response.json({
             items,
             total,
             page,
             pageSize,
             pageCount,
-          })
+          }
         )
       }),
 

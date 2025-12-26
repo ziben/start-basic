@@ -32,6 +32,8 @@ import { Route as AdminLogRouteImport } from './routes/admin/log'
 import { Route as AdminInvitationRouteImport } from './routes/admin/invitation'
 import { Route as AdminAccountRouteImport } from './routes/admin/account'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as publicTermsRouteImport } from './routes/(public)/terms'
+import { Route as publicPrivacyRouteImport } from './routes/(public)/privacy'
 import { Route as publicAboutRouteImport } from './routes/(public)/about'
 import { Route as errors503RouteImport } from './routes/(errors)/503'
 import { Route as errors500RouteImport } from './routes/(errors)/500'
@@ -204,6 +206,16 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const publicTermsRoute = publicTermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => publicRouteRoute,
+} as any)
+const publicPrivacyRoute = publicPrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => publicRouteRoute,
 } as any)
 const publicAboutRoute = publicAboutRouteImport.update({
   id: '/about',
@@ -534,6 +546,8 @@ export interface FileRoutesByFullPath {
   '/500': typeof errors500Route
   '/503': typeof errors503Route
   '/about': typeof publicAboutRoute
+  '/privacy': typeof publicPrivacyRoute
+  '/terms': typeof publicTermsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/admin/account': typeof AdminAccountRoute
   '/admin/invitation': typeof AdminInvitationRoute
@@ -615,6 +629,8 @@ export interface FileRoutesByTo {
   '/500': typeof errors500Route
   '/503': typeof errors503Route
   '/about': typeof publicAboutRoute
+  '/privacy': typeof publicPrivacyRoute
+  '/terms': typeof publicTermsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/admin/account': typeof AdminAccountRoute
   '/admin/invitation': typeof AdminInvitationRoute
@@ -699,6 +715,8 @@ export interface FileRoutesById {
   '/(errors)/500': typeof errors500Route
   '/(errors)/503': typeof errors503Route
   '/(public)/about': typeof publicAboutRoute
+  '/(public)/privacy': typeof publicPrivacyRoute
+  '/(public)/terms': typeof publicTermsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/admin/account': typeof AdminAccountRoute
   '/admin/invitation': typeof AdminInvitationRoute
@@ -783,6 +801,8 @@ export interface FileRouteTypes {
     | '/500'
     | '/503'
     | '/about'
+    | '/privacy'
+    | '/terms'
     | '/dashboard'
     | '/admin/account'
     | '/admin/invitation'
@@ -864,6 +884,8 @@ export interface FileRouteTypes {
     | '/500'
     | '/503'
     | '/about'
+    | '/privacy'
+    | '/terms'
     | '/dashboard'
     | '/admin/account'
     | '/admin/invitation'
@@ -947,6 +969,8 @@ export interface FileRouteTypes {
     | '/(errors)/500'
     | '/(errors)/503'
     | '/(public)/about'
+    | '/(public)/privacy'
+    | '/(public)/terms'
     | '/_authenticated/dashboard'
     | '/admin/account'
     | '/admin/invitation'
@@ -1228,6 +1252,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/dashboard'
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/(public)/terms': {
+      id: '/(public)/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof publicTermsRouteImport
+      parentRoute: typeof publicRouteRoute
+    }
+    '/(public)/privacy': {
+      id: '/(public)/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof publicPrivacyRouteImport
+      parentRoute: typeof publicRouteRoute
     }
     '/(public)/about': {
       id: '/(public)/about'
@@ -1647,11 +1685,15 @@ declare module '@tanstack/react-router' {
 
 interface publicRouteRouteChildren {
   publicAboutRoute: typeof publicAboutRoute
+  publicPrivacyRoute: typeof publicPrivacyRoute
+  publicTermsRoute: typeof publicTermsRoute
   publicIndexRoute: typeof publicIndexRoute
 }
 
 const publicRouteRouteChildren: publicRouteRouteChildren = {
   publicAboutRoute: publicAboutRoute,
+  publicPrivacyRoute: publicPrivacyRoute,
+  publicTermsRoute: publicTermsRoute,
   publicIndexRoute: publicIndexRoute,
 }
 

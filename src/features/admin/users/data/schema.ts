@@ -1,10 +1,5 @@
 import { z } from 'zod'
 
-const userStatusSchema = z.union([z.literal('banned'), z.literal('active')])
-export type AdminUserStatus = z.infer<typeof userStatusSchema>
-
-const userRoleSchema = z.union([z.literal('admin'), z.literal('user')])
-
 export const adminUsersSchema = z.object({
   id: z.string(),
   name: z.string(),
@@ -32,17 +27,12 @@ export const adminUsersPageSchema = z.object({
   pageCount: z.number().int().nonnegative(),
 })
 
-export const banned = [
-  {
-    label: '已封禁',
-    value: true,
-  },
-  {
-    label: '正常',
-    value: false,
-  },
-]
-
 export type AdminUsers = z.infer<typeof adminUsersSchema>
 export type AdminUsersList = z.infer<typeof adminUsersListSchema>
 export type AdminUsersPage = z.infer<typeof adminUsersPageSchema>
+
+// UI 常量
+export const banned = [
+  { label: '已封禁', value: true },
+  { label: '正常', value: false },
+]

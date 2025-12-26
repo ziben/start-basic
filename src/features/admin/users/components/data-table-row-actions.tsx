@@ -22,8 +22,8 @@ type DataTableRowActionsProps<TData> = {
   row: Row<TData>
 }
 
-export function DataTableRowActions<TData>({ row }: DataTableRowActionsProps<TData>) {
-  const user = adminUsersSchema.parse(row.original)
+export function DataTableRowActions<TData>({ row }: DataTableRowActionsProps<TData>) {  
+  const user = row.original as AdminUsers
 
   const { setOpen, setCurrentRow } = useAdminUsers()
   const { getOptimisticMutationOptions } = useUsersOptimisticUpdate()
