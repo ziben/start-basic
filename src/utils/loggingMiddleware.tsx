@@ -1,4 +1,5 @@
 import { createMiddleware } from '@tanstack/react-start'
+import { logger } from './logger'
 
 type LogContext = {
   clientTime?: Date
@@ -53,7 +54,7 @@ export const logMiddleware = createMiddleware({ type: 'function' })
     const durationFromServer = serverTime ? now.getTime() - serverTime.getTime() : undefined
 
     if (enableClientTimingLog) {
-      console.log('Client Req/Res:', {
+      logger.debug('Client Req/Res:', {
         durationTotal,
         durationToServer,
         durationFromServer,
