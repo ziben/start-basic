@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import AdminNavigationPage from '~/features/admin/navigation'
+import { AdminNavigationPage } from '~/modules/system-admin'
 
 export const Route = createFileRoute('/admin/navigation')({
   component: AdminNavigationPage,

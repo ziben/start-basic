@@ -4,7 +4,7 @@ import type {
   AdminNavItemList,
   CreateNavItemData,
   UpdateNavItemData as SchemaUpdateNavItemData,
-} from '~/features/admin/navitem/data/schema'
+} from '~/modules/system-admin/features/navigation/navitem/data/schema'
 import { apiClient } from '~/lib/api-client'
 import type { NavItemVisibilityResponse, SuccessIdResponse } from '~/lib/api-client'
 import { SIDEBAR_QUERY_KEY } from '~/lib/sidebar'

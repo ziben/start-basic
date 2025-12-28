@@ -3,10 +3,10 @@ import { createFileRoute } from '@tanstack/react-router'
 import prisma from '~/lib/db'
 import { withAdminAuth } from '~/middleware'
 
-export const Route = createFileRoute('/api/admin/organization/')({
+export const Route = (createFileRoute('/api/admin/organization/' as any) as any)({
   server: {
     handlers: {
-      GET: withAdminAuth(async ({ request }) => {
+      GET: withAdminAuth(async ({ request }: any) => {
         const url = new URL(request.url)
         const page = Math.max(1, Number(url.searchParams.get('page') ?? '1') || 1)
         const pageSize = Math.min(100, Math.max(1, Number(url.searchParams.get('pageSize') ?? '10') || 10))
@@ -53,13 +53,13 @@ export const Route = createFileRoute('/api/admin/organization/')({
           }),
         ])
 
-        const items = organizations.map((org: any) => ({
+        const items = (organizations as any[]).map((org) => ({
           id: org.id,
           name: org.name,
           slug: org.slug,
           logo: org.logo ?? '',
           createdAt: org.createdAt.toISOString(),
-          metadata: JSON.stringify(org.metadata ?? {}),
+          metadata: org.metadata ?? '',
           memberCount: org._count.members,
           invitationCount: org._count.invitations,
         }))
@@ -68,14 +68,14 @@ export const Route = createFileRoute('/api/admin/organization/')({
         return Response.json({ items, total, pageCount })
       }),
 
-      POST: withAdminAuth(async ({ request }) => {
+      POST: withAdminAuth(async ({ request }: any) => {
         try {
           const body = await request.json()
           const schema = z.object({
             name: z.string().min(1),
             slug: z.string().optional(),
             logo: z.string().optional(),
-            metadata: z.record(z.any()).optional(),
+            metadata: z.record(z.string(), z.any()).optional(),
           })
           const input = schema.parse(body)
 
@@ -99,7 +99,7 @@ export const Route = createFileRoute('/api/admin/organization/')({
               name: input.name,
               slug,
               logo: input.logo ?? '',
-              metadata: input.metadata ?? {},
+              metadata: input.metadata ? JSON.stringify(input.metadata) : null,
               createdAt: new Date(),
             },
             include: {
@@ -118,7 +118,7 @@ export const Route = createFileRoute('/api/admin/organization/')({
             slug: organization.slug,
             logo: organization.logo ?? '',
             createdAt: organization.createdAt.toISOString(),
-            metadata: JSON.stringify(organization.metadata ?? {}),
+            metadata: organization.metadata ?? '',
             memberCount: organization._count.members,
             invitationCount: organization._count.invitations,
           })

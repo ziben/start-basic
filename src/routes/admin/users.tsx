@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { createFileRoute } from '@tanstack/react-router'
-import AdminUsers from '~/features/admin/users'
+import { AdminUsers } from '~/modules/system-admin'
 
 const userSearchSchema = z.object({
   page: z.number().optional().catch(1),

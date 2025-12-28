@@ -47,6 +47,117 @@ function hasAdminRole(role: unknown) {
     .some((r) => ADMIN_ROLES.has(r))
 }
 
+
+// 普通用户鉴权中间件（登录即可）
+export function withAuth(handler: Handler<AuthenticatedContext>) {
+  return async (ctx: HandlerContext) => {
+    const start = Date.now()
+    const request = getRequest() ?? ctx.request
+    const requestId = createRequestId()
+    const ip = getIpFromRequest(request)
+    const userAgent = getUserAgentFromRequest(request)
+    const shouldLogBody = process.env.LOG_REQUEST_BODY === 'true'
+    const requestBody = shouldLogBody ? await readRequestBodySafe(request) : null
+
+    try {
+      const headers = request?.headers
+      const session = headers ? await auth.api.getSession({ headers }) : null
+
+      if (!session) {
+        const res = new Response('您没有访问此资源的权限', { status: 403 })
+        void writeSystemLog({
+          level: 'warn',
+          requestId,
+          method: request.method,
+          path: new URL(request.url).pathname,
+          query: new URL(request.url).search || null,
+          status: res.status,
+          durationMs: Date.now() - start,
+          ip,
+          userAgent,
+          userId: null,
+          userRole: null,
+          error: null,
+          meta: { reason: 'forbidden' },
+        })
+        return res
+      }
+
+      const role = session?.user?.role
+
+      const audit = {
+        log: async (
+          input: Omit<
+            Parameters<typeof writeAuditLog>[0],
+            'actorUserId' | 'actorRole' | 'ip' | 'userAgent'
+          > & {
+            actorUserId?: string | null
+            actorRole?: string | null
+            ip?: string | null
+            userAgent?: string | null
+          }
+        ) => {
+          await writeAuditLog({
+            actorUserId: input.actorUserId ?? session.user.id,
+            actorRole: input.actorRole ?? (typeof role === 'string' ? role : null),
+            ip: input.ip ?? ip,
+            userAgent: input.userAgent ?? userAgent,
+            action: input.action,
+            targetType: input.targetType,
+            targetId: input.targetId ?? null,
+            success: input.success ?? true,
+            message: input.message ?? null,
+            meta: input.meta ?? null,
+          })
+        },
+      }
+
+      const res = await handler({
+        ...ctx,
+        user: session.user as SessionUser,
+        requestId,
+        audit,
+      })
+
+      void writeSystemLog({
+        level: res.status >= 500 ? 'error' : res.status >= 400 ? 'warn' : 'info',
+        requestId,
+        method: request.method,
+        path: new URL(request.url).pathname,
+        query: new URL(request.url).search || null,
+        status: res.status,
+        durationMs: Date.now() - start,
+        ip,
+        userAgent,
+        userId: session.user.id,
+        userRole: typeof role === 'string' ? role : null,
+        error: null,
+        meta: requestBody ? { requestBody } : null,
+      })
+
+      return res
+    } catch (err) {
+      const res = new Response('鉴权失败', { status: 401 })
+      void writeSystemLog({
+        level: 'error',
+        requestId,
+        method: request.method,
+        path: new URL(request.url).pathname,
+        query: new URL(request.url).search || null,
+        status: res.status,
+        durationMs: Date.now() - start,
+        ip,
+        userAgent,
+        userId: null,
+        userRole: null,
+        error: toErrorString(err),
+        meta: { phase: 'auth' },
+      })
+      return res
+    }
+  }
+}
+
 // 管理员鉴权中间件
 export function withAdminAuth(handler: Handler<AuthenticatedContext>) {
   return async (ctx: HandlerContext) => {
@@ -158,3 +269,5 @@ export function withAdminAuth(handler: Handler<AuthenticatedContext>) {
 
 // 导出类型供其他模块使用
 export type { SessionUser, AuthenticatedContext, HandlerContext }
+
+

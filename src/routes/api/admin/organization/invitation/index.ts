@@ -3,7 +3,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import prisma from '~/lib/db'
 import { withAdminAuth } from '~/middleware'
 
-export const Route = createFileRoute('/api/admin/organization/invitation/')({
+export const Route = (createFileRoute('/api/admin/organization/invitation/' as any) as any)({
   server: {
     handlers: {
       GET: withAdminAuth(async ({ request }) => {
@@ -70,23 +70,26 @@ export const Route = createFileRoute('/api/admin/organization/invitation/')({
           }),
         ])
 
-        const items = invitations.map((invitation) => ({
-          id: invitation.id,
-          email: invitation.email,
-          organizationId: invitation.organizationId,
-          organizationName: invitation.organization?.name ?? '',
-          organizationSlug: invitation.organization?.slug ?? '',
-          role: invitation.role,
-          status: invitation.status,
-          createdAt: invitation.createdAt.toISOString(),
-          expiresAt: invitation.expiresAt?.toISOString() ?? null,
-        }))
+        const items = invitations.map((invitation) => {
+          const inv: any = invitation as any
+          return {
+            id: inv.id,
+            email: inv.email,
+            organizationId: inv.organizationId,
+            organizationName: inv.organization?.name ?? '',
+            organizationSlug: inv.organization?.slug ?? '',
+            role: inv.role,
+            status: inv.status,
+            createdAt: inv.createdAt ? new Date(inv.createdAt).toISOString() : null,
+            expiresAt: inv.expiresAt ? new Date(inv.expiresAt).toISOString() : null,
+          }
+        })
 
         const pageCount = Math.ceil(total / pageSize)
         return Response.json({ items, total, pageCount })
       }),
 
-      POST: withAdminAuth(async ({ request }) => {
+      POST: withAdminAuth(async ({ request, user }) => {
         try {
           const body = await request.json()
           const schema = z.object({
@@ -115,8 +118,8 @@ export const Route = createFileRoute('/api/admin/organization/invitation/')({
               email: input.email,
               role: input.role,
               status: 'pending',
-              createdAt: new Date(),
-              expiresAt: input.expiresAt ? new Date(input.expiresAt) : null,
+              inviterId: user.id,
+              expiresAt: input.expiresAt ? new Date(input.expiresAt) : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
             },
             include: {
               organization: {
@@ -129,16 +132,17 @@ export const Route = createFileRoute('/api/admin/organization/invitation/')({
             },
           })
 
+          const inv: any = invitation as any
           return Response.json({
-            id: invitation.id,
-            email: invitation.email,
-            organizationId: invitation.organizationId,
-            organizationName: invitation.organization?.name ?? '',
-            organizationSlug: invitation.organization?.slug ?? '',
-            role: invitation.role,
-            status: invitation.status,
-            createdAt: invitation.createdAt.toISOString(),
-            expiresAt: invitation.expiresAt?.toISOString() ?? null,
+            id: inv.id,
+            email: inv.email,
+            organizationId: inv.organizationId,
+            organizationName: inv.organization?.name ?? '',
+            organizationSlug: inv.organization?.slug ?? '',
+            role: inv.role,
+            status: inv.status,
+            createdAt: inv.createdAt ? new Date(inv.createdAt).toISOString() : null,
+            expiresAt: inv.expiresAt ? new Date(inv.expiresAt).toISOString() : null,
           })
         } catch (error) {
           return new Response(String(error), { status: 400 })

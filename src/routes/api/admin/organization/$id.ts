@@ -3,10 +3,10 @@ import { createFileRoute } from '@tanstack/react-router'
 import prisma from '~/lib/db'
 import { withAdminAuth } from '~/middleware'
 
-export const Route = createFileRoute('/api/admin/organization/$id')({
+export const Route = (createFileRoute('/api/admin/organization/$id' as any) as any)({
   server: {
     handlers: {
-      GET: withAdminAuth(async ({ params }) => {
+      GET: withAdminAuth(async ({ params }: any) => {
         const { id } = params as { id: string }
 
         const organization = await prisma.organization.findUnique({
@@ -31,13 +31,13 @@ export const Route = createFileRoute('/api/admin/organization/$id')({
           slug: organization.slug,
           logo: organization.logo,
           createdAt: organization.createdAt.toISOString(),
-          metadata: organization.metadata,
+          metadata: organization.metadata ?? '',
           memberCount: organization._count.members,
           invitationCount: organization._count.invitations,
         })
       }),
 
-      PUT: withAdminAuth(async ({ params, request }) => {
+      PUT: withAdminAuth(async ({ params, request }: any) => {
         try {
           const { id } = params as { id: string }
           const body = await request.json()
@@ -90,7 +90,7 @@ export const Route = createFileRoute('/api/admin/organization/$id')({
             slug: updated.slug,
             logo: updated.logo,
             createdAt: updated.createdAt.toISOString(),
-            metadata: updated.metadata,
+            metadata: updated.metadata ?? '',
             memberCount: updated._count.members,
             invitationCount: updated._count.invitations,
           })
@@ -99,7 +99,7 @@ export const Route = createFileRoute('/api/admin/organization/$id')({
         }
       }),
 
-      DELETE: withAdminAuth(async ({ params }) => {
+      DELETE: withAdminAuth(async ({ params }: any) => {
         const { id } = params as { id: string }
 
         const organization = await prisma.organization.findUnique({

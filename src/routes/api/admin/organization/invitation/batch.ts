@@ -3,10 +3,10 @@ import { createFileRoute } from '@tanstack/react-router'
 import prisma from '~/lib/db'
 import { withAdminAuth } from '~/middleware'
 
-export const Route = createFileRoute('/api/admin/organization/invitation/batch')({
+export const Route = (createFileRoute('/api/admin/organization/invitation/batch' as any) as any)({
   server: {
     handlers: {
-      POST: withAdminAuth(async ({ request }) => {
+      POST: withAdminAuth(async ({ request }: any) => {
         try {
           const body = await request.json()
           const schema = z.object({

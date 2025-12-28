@@ -3,10 +3,10 @@ import { createFileRoute } from '@tanstack/react-router'
 import prisma from '~/lib/db'
 import { withAdminAuth } from '~/middleware'
 
-export const Route = createFileRoute('/api/admin/organization/invitation/$id')({
+export const Route = (createFileRoute('/api/admin/organization/invitation/$id' as any) as any)({
   server: {
     handlers: {
-      GET: withAdminAuth(async ({ params }) => {
+      GET: withAdminAuth(async ({ params }: any) => {
         const { id } = params as { id: string }
 
         const invitation = await prisma.invitation.findUnique({
@@ -34,12 +34,12 @@ export const Route = createFileRoute('/api/admin/organization/invitation/$id')({
           organizationSlug: invitation.organization?.slug ?? '',
           role: invitation.role,
           status: invitation.status,
-          createdAt: invitation.createdAt.toISOString(),
+          createdAt: null,
           expiresAt: invitation.expiresAt?.toISOString() ?? null,
         })
       }),
 
-      PUT: withAdminAuth(async ({ params, request }) => {
+      PUT: withAdminAuth(async ({ params, request }: any) => {
         try {
           const { id } = params as { id: string }
           const body = await request.json()
@@ -62,7 +62,11 @@ export const Route = createFileRoute('/api/admin/organization/invitation/$id')({
           if (input.email !== undefined) updateData.email = input.email
           if (input.role !== undefined) updateData.role = input.role
           if (input.status !== undefined) updateData.status = input.status
-          if (input.expiresAt !== undefined) updateData.expiresAt = input.expiresAt ? new Date(input.expiresAt) : null
+          if (input.expiresAt !== undefined) {
+            updateData.expiresAt = input.expiresAt
+              ? new Date(input.expiresAt)
+              : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+          }
 
           const updated = await prisma.invitation.update({
             where: { id },
@@ -86,7 +90,7 @@ export const Route = createFileRoute('/api/admin/organization/invitation/$id')({
             organizationSlug: updated.organization?.slug ?? '',
             role: updated.role,
             status: updated.status,
-            createdAt: updated.createdAt.toISOString(),
+            createdAt: null,
             expiresAt: updated.expiresAt?.toISOString() ?? null,
           })
         } catch (error) {
@@ -94,7 +98,7 @@ export const Route = createFileRoute('/api/admin/organization/invitation/$id')({
         }
       }),
 
-      DELETE: withAdminAuth(async ({ params }) => {
+      DELETE: withAdminAuth(async ({ params }: any) => {
         const { id } = params as { id: string }
 
         const invitation = await prisma.invitation.findUnique({

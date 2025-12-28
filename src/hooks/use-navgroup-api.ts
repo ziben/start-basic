@@ -4,7 +4,7 @@ import type {
   CreateNavgroupData,
   UpdateNavgroupData,
   UserRoleNavGroup,
-} from '~/features/admin/navgroup/data/schema'
+} from '~/modules/system-admin/features/navigation/navgroup/data/schema'
 import { apiClient, type SuccessIdResponse, type UpdateNavgroupVisibilityData } from '~/lib/api-client'
 import { SIDEBAR_QUERY_KEY } from '~/lib/sidebar'
 
