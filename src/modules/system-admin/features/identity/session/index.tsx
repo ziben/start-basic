@@ -146,18 +146,15 @@ export default function AdminSession() {
       {
         accessorKey: 'id',
         header: ({ column }) => <DataTableColumnHeader column={column} title='ID' />,
-        meta: { title: 'ID' },
       },
       {
         accessorKey: 'userId',
         header: ({ column }) => <DataTableColumnHeader column={column} title='UserId' />,
-        meta: { title: 'UserId' },
       },
       {
         id: 'user',
         accessorFn: (row) => `${row.username} ${row.email}`,
         header: t('admin.session.columns.user', { defaultMessage: '用户' }),
-        meta: { title: t('admin.session.columns.user', { defaultMessage: '用户' }) },
         cell: ({ row }) => {
           const s = row.original
           return (
@@ -171,7 +168,6 @@ export default function AdminSession() {
       {
         accessorKey: 'isActive',
         header: t('admin.session.columns.status', { defaultMessage: '状态' }),
-        meta: { title: t('admin.session.columns.status', { defaultMessage: '状态' }) },
         enableSorting: false,
         cell: ({ row }) => {
           const s = row.original
@@ -193,7 +189,6 @@ export default function AdminSession() {
             title={t('admin.session.columns.loginTime', { defaultMessage: '登录时间' })}
           />
         ),
-        meta: { title: t('admin.session.columns.loginTime', { defaultMessage: '登录时间' }) },
         cell: ({ row }) => <span className='text-sm'>{formatDate(row.original.loginTime)}</span>,
       },
       {
@@ -204,7 +199,6 @@ export default function AdminSession() {
             title={t('admin.session.columns.expiresAt', { defaultMessage: '过期时间' })}
           />
         ),
-        meta: { title: t('admin.session.columns.expiresAt', { defaultMessage: '过期时间' }) },
         cell: ({ row }) => <span className='text-sm'>{formatDate(row.original.expiresAt)}</span>,
       },
       {
@@ -212,14 +206,12 @@ export default function AdminSession() {
         header: ({ column }) => (
           <DataTableColumnHeader column={column} title={t('admin.session.columns.ip', { defaultMessage: 'IP' })} />
         ),
-        meta: { title: t('admin.session.columns.ip', { defaultMessage: 'IP' }) },
         cell: ({ row }) => <span className='text-sm'>{row.original.ipAddress || '-'}</span>,
       },
       {
         id: 'device',
         accessorFn: (row) => row.userAgent,
         header: t('admin.session.columns.device', { defaultMessage: '设备' }),
-        meta: { title: t('admin.session.columns.device', { defaultMessage: '设备' }) },
         cell: ({ row }) => <span className='text-sm'>{formatUserAgent(row.original.userAgent || '')}</span>,
       },
       {
