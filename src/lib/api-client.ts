@@ -4,14 +4,14 @@ import type {
   CreateNavgroupData,
   UpdateNavgroupData,
   UserRoleNavGroup,
-} from '~/features/admin/navgroup/data/schema'
+} from '~/modules/system-admin/features/navigation/navgroup/data/schema'
 import type {
   AdminNavItem,
   AdminNavItemList,
   CreateNavItemData,
   UpdateNavItemData,
-} from '~/features/admin/navitem/data/schema'
-import { adminUsersSchema, adminUsersPageSchema, type AdminUsersPage } from '~/features/admin/users/data/schema'
+} from '~/modules/system-admin/features/navigation/navitem/data/schema'
+import { adminUsersSchema, adminUsersPageSchema, type AdminUsersPage } from '~/modules/system-admin/features/identity/users/data/schema'
 import { tasksPageSchema, type TasksPage } from '~/features/demo/tasks/data/schema'
 import type { AdminSessionInfo } from '~/hooks/use-admin-session-api'
 

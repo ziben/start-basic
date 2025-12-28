@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { createFileRoute } from '@tanstack/react-router'
-import { adminUsersSchema } from '~/features/admin/users/data/schema'
+import { adminUsersSchema } from '~/modules/system-admin/features/identity/users/data/schema'
 import type { Prisma } from '~/generated/prisma/client'
 import prisma from '~/lib/db'
 import { withAdminAuth } from '~/middleware'

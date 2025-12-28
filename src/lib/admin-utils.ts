@@ -1,5 +1,5 @@
-import type { Prisma, User as PrismaUser } from '~/generated/prisma/client'
-import type { AdminUsers } from '~/features/admin/users/data/schema'
+import type { User as PrismaUser } from '~/generated/prisma/client'
+import type { AdminUsers } from '~/modules/system-admin/features/identity/users/data/schema'
 
 /**
  * Sort fields allowed for user queries
