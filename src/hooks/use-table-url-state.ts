@@ -8,7 +8,7 @@ export type NavigateFn = (opts: {
   replace?: boolean
 }) => void
 
-type UseTableUrlStateParams = {
+export type UseTableUrlStateParams = {
   search: SearchRecord
   navigate: NavigateFn
   pagination?: {

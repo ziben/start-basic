@@ -56,9 +56,9 @@ function parseEnv(): Env {
   }
 
   // Vite exposes env vars with VITE_ prefix to client
-  // @ts-expect-error - import.meta is Vite specific
+  // @ts-ignore - import.meta is Vite specific
   if (typeof import.meta !== 'undefined' && import.meta.env) {
-    // @ts-expect-error - import.meta.env is Vite specific
+    // @ts-ignore - import.meta.env is Vite specific
     rawEnv.VITE_APP_URL = import.meta.env.VITE_APP_URL
   }
 

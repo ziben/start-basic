@@ -4,7 +4,7 @@ import { ApiError, fetchJson, fetchJsonWithSchema, fetchText } from './api-clien
 
 // Mock fetch
 const mockFetch = vi.fn()
-global.fetch = mockFetch
+global.fetch = mockFetch as any
 
 describe('api-client', () => {
   beforeEach(() => {
