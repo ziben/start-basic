@@ -1,6 +1,6 @@
 import { toast } from 'sonner'
-import { useTranslation } from '~/hooks/useTranslation'
-import { useDeleteTranslation } from '~/hooks/useTranslationApi'
+import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
+import { useDeleteTranslation } from '~/modules/system-admin/shared/hooks/use-translation-api'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { TranslationsImportDialog } from './translations-import-dialog'
 import { TranslationsMutateDrawer } from './translations-mutate-drawer'
@@ -79,3 +79,7 @@ export function TranslationsDialogs() {
     </>
   )
 }
+
+
+
+

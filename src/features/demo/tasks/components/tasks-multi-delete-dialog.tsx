@@ -2,7 +2,7 @@
 
 import { type Table } from '@tanstack/react-table'
 import { toast } from 'sonner'
-import { sleep } from '@/lib/utils'
+import { sleep } from '@/shared/lib/utils'
 import { ConfirmDeleteDialog } from '@/components/confirm-delete-dialog'
 
 type TaskMultiDeleteDialogProps<TData> = {
@@ -38,3 +38,5 @@ export function TasksMultiDeleteDialog<TData>({ open, onOpenChange, table }: Tas
     />
   )
 }
+
+

@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { createFileRoute } from '@tanstack/react-router'
-import prisma from '~/lib/db'
+import prisma from '@/shared/lib/db'
 import { withAdminAuth } from '~/middleware'
 
 const querySchema = z.object({
@@ -149,3 +149,7 @@ export const Route = createFileRoute('/api/admin/log/' as any)({
     },
   },
 })
+
+
+
+

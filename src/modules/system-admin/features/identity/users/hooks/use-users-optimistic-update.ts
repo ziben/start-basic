@@ -1,4 +1,4 @@
-import { useOptimisticListUpdate } from '@/hooks/use-optimistic-list-update'
+import { useOptimisticListUpdate } from '@/shared/hooks/use-optimistic-list-update'
 import { type AdminUsers } from '../data/schema'
 
 export function useUsersOptimisticUpdate() {
@@ -21,3 +21,5 @@ export function createBulkBanUpdateFn(users: AdminUsers[], ids: string[], banned
 export function createBulkDeleteUpdateFn(users: AdminUsers[], ids: string[]) {
   return users.filter((u) => !ids.includes(u.id))
 }
+
+

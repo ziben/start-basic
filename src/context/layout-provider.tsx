@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useMemo, useState } from 'react'
-import { getCookie, setCookie } from '@/lib/cookies'
+import { getCookie, setCookie } from '@/shared/lib/cookies'
 
 export type Collapsible = 'offcanvas' | 'icon' | 'none'
 export type Variant = 'inset' | 'sidebar' | 'floating'
@@ -82,3 +82,5 @@ export function useLayout() {
   }
   return context
 }
+
+

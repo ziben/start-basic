@@ -12,12 +12,12 @@ import { FontProvider } from '~/context/font-provider'
 import { LocaleProvider } from '~/context/locale-context'
 import { ThemeProvider } from '~/context/theme-provider'
 import appCss from '~/styles/index.css?url'
-import { seo } from '~/utils/seo'
+import { seo } from '@/shared/utils/seo'
 import { GeneralError } from '@/features/demo/errors/general-error'
 import { NotFoundError } from '@/features/demo/errors/not-found-error'
 
 const getUser = createServerFn({ method: 'GET' }).handler(async () => {
-  const { auth } = await import('~/lib/auth')
+  const { auth } = await import('~/modules/identity/shared/lib/auth')
   const headers = getRequestHeaders()
   const session = await auth.api.getSession({ headers })
 
@@ -113,3 +113,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
     </html>
   )
 }
+
+
+
+

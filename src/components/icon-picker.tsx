@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import * as LucideIcons from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn } from '@/shared/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
@@ -203,3 +203,5 @@ export const IconPicker = React.memo(function IconPicker({
     </Popover>
   )
 })
+
+

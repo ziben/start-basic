@@ -8,9 +8,9 @@ import {
   getFacetedUniqueValues,
   useReactTable,
 } from '@tanstack/react-table'
-import { cn } from '~/lib/utils'
-import { type NavigateFn } from '@/hooks/use-table-url-state'
-import { useUrlSyncedSorting } from '@/hooks/use-url-synced-sorting'
+import { cn } from '@/shared/lib/utils'
+import { type NavigateFn } from '@/shared/hooks/use-table-url-state'
+import { useUrlSyncedSorting } from '@/shared/hooks/use-url-synced-sorting'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
 import { auditResults, logLevels } from '../data/schema'
@@ -232,3 +232,8 @@ export function AdminLogTable({ type }: AdminLogTableProps) {
     </div>
   )
 }
+
+
+
+
+

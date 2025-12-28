@@ -2,9 +2,9 @@ import { z } from 'zod'
 import { createFileRoute } from '@tanstack/react-router'
 import { adminUsersSchema } from '~/modules/system-admin/features/identity/users/data/schema'
 import type { Prisma } from '~/generated/prisma/client'
-import prisma from '~/lib/db'
+import prisma from '@/shared/lib/db'
 import { withAdminAuth } from '~/middleware'
-import { serializeAdminUser, serializeAdminUsers, isValidUserSortField, handleError, getErrorStatus } from '~/lib/admin-utils'
+import { serializeAdminUser, serializeAdminUsers, isValidUserSortField, handleError, getErrorStatus } from '~/modules/system-admin/shared/utils/admin-utils'
 
 const querySchema = z.object({
   page: z.coerce.number().int().positive().optional().default(1),
@@ -171,3 +171,7 @@ export const Route = createFileRoute('/api/admin/user/')({
     },
   },
 })
+
+
+
+

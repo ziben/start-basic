@@ -3,8 +3,8 @@ import { type Table } from '@tanstack/react-table'
 import { Download, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { Translation } from '~/generated/prisma/client'
-import { useTranslation } from '~/hooks/useTranslation'
-import { sleep } from '@/lib/utils'
+import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
+import { sleep } from '@/shared/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { DataTableBulkActions as BulkActionsToolbar } from '@/components/data-table'
@@ -112,3 +112,8 @@ export function DataTableBulkActions<TData>({ table }: DataTableBulkActionsProps
     </>
   )
 }
+
+
+
+
+

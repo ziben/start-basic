@@ -2,9 +2,9 @@ import React from 'react'
 import { Link } from '@tanstack/react-router'
 import { ChevronRight, Home } from 'lucide-react'
 import { Toaster } from '~/components/ui/sonner'
-import { useNavgroup } from '~/hooks/useNavgroupApi'
-import { useNavitems } from '~/hooks/useNavitemApi'
-import { useTranslation } from '~/hooks/useTranslation'
+import { useNavgroup } from '~/modules/system-admin/shared/hooks/use-navgroup-api'
+import { useNavitems } from '~/modules/system-admin/shared/hooks/use-navitem-api'
+import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
 import { Route as NavItemRoute } from '~/routes/admin/navitem'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
@@ -73,3 +73,7 @@ export default function AdminNavItemPage() {
     </AdminNavItemProvider>
   )
 }
+
+
+
+

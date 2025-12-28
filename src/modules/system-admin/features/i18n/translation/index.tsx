@@ -1,6 +1,6 @@
 import { ConfigDrawer } from '~/components/config-drawer'
-import { useTranslation } from '~/hooks/useTranslation'
-import { useTranslations } from '~/hooks/useTranslationApi'
+import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
+import { useTranslations } from '~/modules/system-admin/shared/hooks/use-translation-api'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
@@ -49,3 +49,7 @@ export function AdminTranslations() {
 }
 
 export default AdminTranslations
+
+
+
+

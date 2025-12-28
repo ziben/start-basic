@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { cn } from '@/lib/utils'
+import { cn } from '@/shared/lib/utils'
 import { Separator } from '@/components/ui/separator'
 import { SidebarTrigger } from '@/components/ui/sidebar'
 
@@ -48,3 +48,5 @@ export function Header({ className, fixed, children, ...props }: HeaderProps) {
     </header>
   )
 }
+
+

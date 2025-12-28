@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Eye, EyeOff } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn } from '@/shared/lib/utils'
 import { Button } from './ui/button'
 
 type PasswordInputProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type'> & {
@@ -32,3 +32,5 @@ export function PasswordInput({ className, disabled, ref, ...props }: PasswordIn
     </div>
   )
 }
+
+

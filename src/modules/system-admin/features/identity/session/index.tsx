@@ -19,10 +19,10 @@ import {
   useBulkDeleteAdminSessions,
   useDeleteAdminSession,
   type AdminSessionInfo,
-} from '~/hooks/use-admin-session-api'
-import { useTranslation } from '~/hooks/useTranslation'
-import { type NavigateFn } from '@/hooks/use-table-url-state'
-import { useUrlSyncedSorting } from '@/hooks/use-url-synced-sorting'
+} from '~/modules/system-admin/shared/hooks/use-admin-session-api'
+import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
+import { type NavigateFn } from '@/shared/hooks/use-table-url-state'
+import { useUrlSyncedSorting } from '@/shared/hooks/use-url-synced-sorting'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -549,3 +549,10 @@ export default function AdminSession() {
     </>
   )
 }
+
+
+
+
+
+
+

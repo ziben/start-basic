@@ -3,7 +3,7 @@ import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { apiClient } from '~/lib/api-client'
+import { apiClient } from '@/shared/lib/api-client'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -17,7 +17,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { SelectDropdown } from '@/components/select-dropdown'
-import { getErrorMessage } from '~/lib/error-handler'
+import { getErrorMessage } from '@/shared/lib/error-handler'
 import { type AdminUsers } from '../data/schema'
 import { ADMIN_USERS_QUERY_KEY } from '../hooks/use-admin-users-list-query'
 
@@ -301,3 +301,7 @@ export function AdminUsersMutateDialog({ currentRow, open, onOpenChange }: Admin
     </Dialog>
   )
 }
+
+
+
+

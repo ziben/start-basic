@@ -1,8 +1,8 @@
 import React from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { ArrowRight, ChevronRight, Laptop, Moon, Sun } from 'lucide-react'
-import { useSidebar } from '~/lib/sidebar'
-import { iconResolver } from '~/utils/icon-resolver'
+import { useSidebar } from '~/modules/system-admin/shared/sidebar'
+import { iconResolver } from '@/shared/utils/icon-resolver'
 import { useSearch } from '@/context/search-provider'
 import { useTheme } from '@/context/theme-provider'
 import {
@@ -93,3 +93,7 @@ export function CommandMenu() {
     </CommandDialog>
   )
 }
+
+
+
+

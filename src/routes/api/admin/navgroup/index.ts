@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { createFileRoute } from '@tanstack/react-router'
-import prisma from '~/lib/db'
+import prisma from '@/shared/lib/db'
 import { withAdminAuth } from '~/middleware'
 
 // Prisma 事务客户端类型
@@ -315,3 +315,7 @@ export async function updateUserNavGroupVisibility(userId: string, navGroupId: s
     throw new Error('更新用户导航组可见性失败')
   }
 }
+
+
+
+

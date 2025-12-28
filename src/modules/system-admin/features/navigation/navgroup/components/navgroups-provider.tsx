@@ -1,5 +1,5 @@
 import React from 'react'
-import { useDialogRowState } from '@/hooks/use-dialog-row-state'
+import { useDialogRowState } from '@/shared/hooks/use-dialog-row-state'
 import { type AdminNavgroup } from '../data/schema'
 
 type NavGroupsDialogType = 'create' | 'update' | 'delete' | 'import'
@@ -29,3 +29,5 @@ export const useNavGroups = () => {
 
   return navGroupsContext
 }
+
+

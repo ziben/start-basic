@@ -13,7 +13,7 @@ import {
   ExpandedState,
 } from '@tanstack/react-table'
 import { useVirtualizer } from '@tanstack/react-virtual'
-import { useTranslation } from '~/hooks/useTranslation'
+import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
 import { AdminNavItem } from '../data/schema'
@@ -287,3 +287,7 @@ export default function AdminNavItemTable({ data, isLoading, error, navGroupId }
     </div>
   )
 }
+
+
+
+

@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { AuthLayout } from '../auth-layout'
 import { ForgotPasswordForm } from './components/forgot-password-form'
 
-export function ForgotPassword() {
+export default function ForgotPassword() {
   return (
     <AuthLayout>
       <Card className='gap-4'>

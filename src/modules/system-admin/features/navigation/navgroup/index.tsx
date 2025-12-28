@@ -1,6 +1,6 @@
 import { ConfigDrawer } from '~/components/config-drawer'
-import { useNavgroups } from '~/hooks/useNavgroupApi'
-import { useTranslation } from '~/hooks/useTranslation'
+import { useNavgroups } from '~/modules/system-admin/shared/hooks/use-navgroup-api'
+import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
@@ -45,3 +45,7 @@ export function AdminNavGroups() {
     </NavGroupsProvider>
   )
 }
+
+
+
+

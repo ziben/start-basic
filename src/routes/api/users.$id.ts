@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import type { User } from '../../utils/users'
+import type { User } from '@/shared/utils/users'
 
 export const Route = createFileRoute('/api/users/$id')({
   server: {

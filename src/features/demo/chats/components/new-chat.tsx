@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Check, X } from 'lucide-react'
-import { showSubmittedData } from '@/lib/show-submitted-data'
+import { showSubmittedData } from '@/shared/utils/show-submitted-data'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command'
@@ -104,3 +104,5 @@ export function NewChat({ users, onOpenChange, open }: NewChatProps) {
     </Dialog>
   )
 }
+
+

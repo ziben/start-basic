@@ -1,6 +1,6 @@
 {
   "include": ["**/*.ts", "**/*.tsx"],
-  "exclude": ["src/utils/init-admin.ts"],
+  "exclude": ["src/modules/system-admin/shared/utils/init-admin.ts"],
   "compilerOptions": {
     "strict": true,
     "esModuleInterop": true,

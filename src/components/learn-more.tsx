@@ -1,6 +1,6 @@
 import { type Root, type Content, type Trigger } from '@radix-ui/react-popover'
 import { CircleQuestionMark } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn } from '@/shared/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 
@@ -29,3 +29,5 @@ export function LearnMore({ children, contentProps, triggerProps, ...props }: Le
     </Popover>
   )
 }
+
+

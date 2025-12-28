@@ -1,9 +1,9 @@
 import { z } from 'zod'
 import { createFileRoute } from '@tanstack/react-router'
 import { adminUsersSchema } from '~/modules/system-admin/features/identity/users/data/schema'
-import prisma from '~/lib/db'
+import prisma from '@/shared/lib/db'
 import { withAdminAuth } from '~/middleware'
-import { serializeAdminUser, handleError, getErrorStatus } from '~/lib/admin-utils'
+import { serializeAdminUser, handleError, getErrorStatus } from '~/modules/system-admin/shared/utils/admin-utils'
 
 const bodySchema = z
   .object({
@@ -97,3 +97,7 @@ export const Route = createFileRoute('/api/admin/user/$id' as any)({
     },
   },
 })
+
+
+
+

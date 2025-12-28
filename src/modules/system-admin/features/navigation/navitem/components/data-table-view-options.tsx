@@ -1,7 +1,7 @@
 import { DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu'
 import { MixerHorizontalIcon } from '@radix-ui/react-icons'
 import { Table } from '@tanstack/react-table'
-import { useTranslation } from '~/hooks/useTranslation'
+import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -66,3 +66,7 @@ export function DataTableViewOptions<TData>({ table }: DataTableViewOptionsProps
     </DropdownMenu>
   )
 }
+
+
+
+

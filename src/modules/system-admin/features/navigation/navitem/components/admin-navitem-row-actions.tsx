@@ -1,8 +1,8 @@
 import { Row } from '@tanstack/react-table'
 import { Eye, EyeOff, Pencil, Trash } from 'lucide-react'
 import { toast } from 'sonner'
-import { useToggleNavItemVisibility } from '~/hooks/useNavitemApi'
-import { useTranslation } from '~/hooks/useTranslation'
+import { useToggleNavItemVisibility } from '~/modules/system-admin/shared/hooks/use-navitem-api'
+import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { useAdminNavItemContext } from '../context/admin-navitem-context'
@@ -94,3 +94,7 @@ export function DataTableRowActions<TData>({ row }: DataTableRowActionsProps<TDa
     </div>
   )
 }
+
+
+
+

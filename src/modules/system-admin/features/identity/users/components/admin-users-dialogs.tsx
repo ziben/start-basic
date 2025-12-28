@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { apiClient } from '~/lib/api-client'
+import { apiClient } from '@/shared/lib/api-client'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { type AdminUsers } from '../data/schema'
 import { ADMIN_USERS_QUERY_KEY } from '../hooks/use-admin-users-list-query'
@@ -85,3 +85,7 @@ export function AdminUsersDialogs() {
     </>
   )
 }
+
+
+
+

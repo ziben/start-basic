@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { AuthLayout } from '../auth-layout'
 import { SignUpForm } from './components/sign-up-form'
 
-export function SignUp() {
+export default function SignUp() {
   return (
     <AuthLayout>
       <Card className='gap-4'>

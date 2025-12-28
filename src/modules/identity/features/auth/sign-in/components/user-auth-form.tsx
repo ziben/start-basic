@@ -6,8 +6,8 @@ import { Link, useNavigate } from '@tanstack/react-router'
 import { Loader2, LogIn } from 'lucide-react'
 import { toast } from 'sonner'
 import { Route } from '~/routes/(auth)/sign-in'
-import { authClient } from '@/lib/auth-client'
-import { cn } from '@/lib/utils'
+import { authClient } from '@/modules/identity/shared/lib/auth-client'
+import { cn } from '@/shared/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
@@ -137,3 +137,5 @@ export function UserAuthForm({ className, redirectTo, ...props }: UserAuthFormPr
     </Form>
   )
 }
+
+

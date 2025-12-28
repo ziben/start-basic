@@ -1,5 +1,5 @@
 import { type SVGProps } from 'react'
-import { cn } from '@/lib/utils'
+import { cn } from '@/shared/lib/utils'
 import { type Direction } from '@/context/direction-provider'
 
 type IconDirProps = SVGProps<SVGSVGElement> & {
@@ -103,3 +103,5 @@ export function IconDir({ dir, className, ...props }: IconDirProps) {
     </svg>
   )
 }
+
+

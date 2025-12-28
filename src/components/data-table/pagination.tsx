@@ -1,7 +1,7 @@
 import { memo } from 'react'
 import { ChevronLeftIcon, ChevronRightIcon, DoubleArrowLeftIcon, DoubleArrowRightIcon } from '@radix-ui/react-icons'
 import { type Table } from '@tanstack/react-table'
-import { cn, getPageNumbers } from '@/lib/utils'
+import { cn, getPageNumbers } from '@/shared/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
@@ -117,3 +117,5 @@ function DataTablePaginationInner<TData>({ table, className }: DataTablePaginati
 }
 
 export const DataTablePagination = memo(DataTablePaginationInner) as typeof DataTablePaginationInner
+
+

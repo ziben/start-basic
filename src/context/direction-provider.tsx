@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { DirectionProvider as RdxDirProvider } from '@radix-ui/react-direction'
-import { getCookie, setCookie, removeCookie } from '@/lib/cookies'
+import { getCookie, setCookie, removeCookie } from '@/shared/lib/cookies'
 
 export type Direction = 'ltr' | 'rtl'
 
@@ -60,3 +60,5 @@ export function useDirection() {
   }
   return context
 }
+
+

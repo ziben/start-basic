@@ -1,5 +1,5 @@
 import { type SVGProps } from 'react'
-import { cn } from '@/lib/utils'
+import { cn } from '@/shared/lib/utils'
 
 export function IconDocker({ className, ...props }: SVGProps<SVGSVGElement>) {
   return (
@@ -31,3 +31,5 @@ export function IconDocker({ className, ...props }: SVGProps<SVGSVGElement>) {
     </svg>
   )
 }
+
+

@@ -1,6 +1,6 @@
 import React from 'react'
 import { Translation } from '~/generated/prisma/client'
-import { useDialogRowState } from '@/hooks/use-dialog-row-state'
+import { useDialogRowState } from '@/shared/hooks/use-dialog-row-state'
 
 type TranslationsDialogType = 'create' | 'update' | 'delete' | 'import'
 
@@ -29,3 +29,5 @@ export const useTranslations = () => {
 
   return translationsContext
 }
+
+

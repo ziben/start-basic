@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils'
+import { cn } from '@/shared/lib/utils'
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -63,3 +63,5 @@ export function ConfirmDialog(props: ConfirmDialogProps) {
     </AlertDialog>
   )
 }
+
+

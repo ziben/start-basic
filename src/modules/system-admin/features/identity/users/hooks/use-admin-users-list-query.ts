@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from 'react'
 import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query'
 import { type SortingState } from '@tanstack/react-table'
-import { apiClient } from '~/lib/api-client'
+import { apiClient } from '@/shared/lib/api-client'
 import { type AdminUsers } from '../data/schema'
 
 export const ADMIN_USERS_QUERY_KEY = ['admin-users'] as const
@@ -104,3 +104,7 @@ export function useAdminUsersListQuery(input: UseAdminUsersListQueryInput) {
     isRefetching,
   }
 }
+
+
+
+

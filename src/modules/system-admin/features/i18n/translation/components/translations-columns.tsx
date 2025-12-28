@@ -1,6 +1,6 @@
 import { type ColumnDef } from '@tanstack/react-table'
 import { Translation } from '~/generated/prisma/client'
-import { useTranslation } from '~/hooks/useTranslation'
+import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
 import { Checkbox } from '@/components/ui/checkbox'
 import { DataTableRowActions } from './data-table-row-actions'
 
@@ -58,3 +58,7 @@ export function useTranslationColumns(): ColumnDef<Translation>[] {
     },
   ]
 }
+
+
+
+

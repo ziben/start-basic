@@ -1,6 +1,6 @@
 import { ChevronLeftIcon, ChevronRightIcon, DoubleArrowLeftIcon, DoubleArrowRightIcon } from '@radix-ui/react-icons'
 import { Table } from '@tanstack/react-table'
-import { useTranslation } from '~/hooks/useTranslation'
+import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
@@ -86,3 +86,7 @@ export function DataTablePagination<TData>({ table }: DataTablePaginationProps<T
     </div>
   )
 }
+
+
+
+

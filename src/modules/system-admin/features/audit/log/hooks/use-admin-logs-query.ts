@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { type SortingState } from '@tanstack/react-table'
-import { useAdminLogs } from '~/hooks/use-admin-log-api'
+import { useAdminLogs } from '~/modules/system-admin/shared/hooks/use-admin-log-api'
 
 type UseAdminLogsQueryProps = {
   type: 'system' | 'audit'
@@ -41,3 +41,6 @@ export function useAdminLogsQuery({
     isRefetching,
   }
 }
+
+
+

@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { AuthLayout } from '../auth-layout'
 import { UserAuthForm } from './components/user-auth-form'
 
-export function SignIn() {
+export default function SignIn() {
   const { redirect } = useSearch({ from: '/(auth)/sign-in' })
 
   return (

@@ -1,5 +1,5 @@
 import { type SVGProps } from 'react'
-import { cn } from '@/lib/utils'
+import { cn } from '@/shared/lib/utils'
 
 export function IconSkype({ className, ...props }: SVGProps<SVGSVGElement>) {
   return (
@@ -24,3 +24,5 @@ export function IconSkype({ className, ...props }: SVGProps<SVGSVGElement>) {
     </svg>
   )
 }
+
+

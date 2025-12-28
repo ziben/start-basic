@@ -1,6 +1,6 @@
-import { useNavgroups } from '~/hooks/useNavgroupApi'
-import { useNavitems } from '~/hooks/useNavitemApi'
-import { useTranslation } from '~/hooks/useTranslation'
+import { useNavgroups } from '~/modules/system-admin/shared/hooks/use-navgroup-api'
+import { useNavitems } from '~/modules/system-admin/shared/hooks/use-navitem-api'
+import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
 import { Route as NavigationRoute } from '~/routes/admin/navigation'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Header } from '@/components/layout/header'
@@ -106,3 +106,7 @@ function HeaderAndMain({ children }: { children: React.ReactNode }) {
     </>
   )
 }
+
+
+
+

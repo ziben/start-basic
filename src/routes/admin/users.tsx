@@ -14,3 +14,4 @@ export const Route = createFileRoute('/admin/users')({
   validateSearch: userSearchSchema,
   component: AdminUsers,
 })
+

@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import prisma from '~/lib/db'
+import prisma from '@/shared/lib/db'
 import { withAdminAuth } from '~/middleware'
 
 export const Route = createFileRoute('/api/admin/translation/import')({
@@ -34,3 +34,7 @@ export const Route = createFileRoute('/api/admin/translation/import')({
     },
   },
 })
+
+
+
+

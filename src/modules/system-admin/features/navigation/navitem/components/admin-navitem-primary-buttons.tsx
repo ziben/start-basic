@@ -1,6 +1,6 @@
 import React from 'react'
 import { Plus } from 'lucide-react'
-import { useTranslation } from '~/hooks/useTranslation'
+import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
 import { Button } from '@/components/ui/button'
 import { useAdminNavItemContext } from '../context/admin-navitem-context'
 
@@ -29,3 +29,7 @@ const AdminNavItemPrimaryButtons: React.FC<Props> = ({ navGroupId }) => {
 }
 
 export default AdminNavItemPrimaryButtons
+
+
+
+

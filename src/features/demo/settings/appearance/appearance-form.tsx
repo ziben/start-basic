@@ -3,8 +3,8 @@ import { useForm } from 'react-hook-form'
 import { ChevronDownIcon } from '@radix-ui/react-icons'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { fonts } from '@/config/fonts'
-import { showSubmittedData } from '@/lib/show-submitted-data'
-import { cn } from '@/lib/utils'
+import { showSubmittedData } from '@/shared/utils/show-submitted-data'
+import { cn } from '@/shared/lib/utils'
 import { useFont } from '@/context/font-provider'
 import { useTheme } from '@/context/theme-provider'
 import { Button, buttonVariants } from '@/components/ui/button'
@@ -146,3 +146,5 @@ export function AppearanceForm() {
     </Form>
   )
 }
+
+

@@ -3,7 +3,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { type Table } from '@tanstack/react-table'
 import { toast } from 'sonner'
-import { apiClient } from '~/lib/api-client'
+import { apiClient } from '@/shared/lib/api-client'
 import { ConfirmDeleteDialog } from '@/components/confirm-delete-dialog'
 import { type AdminUsers } from '../data/schema'
 import { ADMIN_USERS_QUERY_KEY } from '../hooks/use-admin-users-list-query'
@@ -95,3 +95,7 @@ export function AdminUsersMultiDeleteDialog<TData>({
     />
   )
 }
+
+
+
+

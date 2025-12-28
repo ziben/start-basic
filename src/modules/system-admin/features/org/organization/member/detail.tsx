@@ -1,4 +1,4 @@
-import { useTranslation } from '~/hooks/useTranslation'
+import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
 
 export default function AdminMemberDetail() {
   const { t } = useTranslation()
@@ -9,3 +9,7 @@ export default function AdminMemberDetail() {
     </div>
   )
 }
+
+
+
+

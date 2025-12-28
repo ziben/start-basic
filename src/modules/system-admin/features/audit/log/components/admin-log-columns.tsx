@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { type ColumnDef } from '@tanstack/react-table'
-import { type AdminAuditLog, type AdminSystemLog } from '~/hooks/use-admin-log-api'
+import { type AdminAuditLog, type AdminSystemLog } from '~/modules/system-admin/shared/hooks/use-admin-log-api'
 import { Badge } from '@/components/ui/badge'
 import { DataTableColumnHeader } from '@/components/data-table'
 
@@ -135,3 +135,6 @@ export function useAuditLogColumns() {
     []
   )
 }
+
+
+

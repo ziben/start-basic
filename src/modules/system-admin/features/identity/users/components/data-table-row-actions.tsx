@@ -3,7 +3,7 @@ import { useMutation } from '@tanstack/react-query'
 import { type Row } from '@tanstack/react-table'
 import { Trash2, UserPen, Ban } from 'lucide-react'
 import { toast } from 'sonner'
-import { apiClient } from '~/lib/api-client'
+import { apiClient } from '@/shared/lib/api-client'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -101,3 +101,7 @@ export function DataTableRowActions<TData>({ row }: DataTableRowActionsProps<TDa
     </DropdownMenu>
   )
 }
+
+
+
+

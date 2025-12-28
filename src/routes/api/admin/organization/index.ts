@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { createFileRoute } from '@tanstack/react-router'
-import prisma from '~/lib/db'
+import prisma from '@/shared/lib/db'
 import { withAdminAuth } from '~/middleware'
 
 export const Route = (createFileRoute('/api/admin/organization/' as any) as any)({
@@ -129,3 +129,7 @@ export const Route = (createFileRoute('/api/admin/organization/' as any) as any)
     },
   },
 })
+
+
+
+

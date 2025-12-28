@@ -1,8 +1,8 @@
 import { z } from 'zod'
 import { createFileRoute } from '@tanstack/react-router'
-import prisma from '~/lib/db'
+import prisma from '@/shared/lib/db'
 import { withAdminAuth } from '~/middleware'
-import { handleError, getErrorStatus } from '~/lib/admin-utils'
+import { handleError, getErrorStatus } from '~/modules/system-admin/shared/utils/admin-utils'
 
 const bodySchema = z.object({
   ids: z.array(z.string().min(1)).min(1),
@@ -50,3 +50,7 @@ export const Route = createFileRoute('/api/admin/user/bulk-delete' as any)({
     },
   },
 })
+
+
+
+

@@ -1,5 +1,5 @@
 import { type ColumnDef } from '@tanstack/react-table'
-import { useTranslation } from '~/hooks/useTranslation'
+import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import { type AdminNavgroup } from '../data/schema'
@@ -92,3 +92,7 @@ export function useNavGroupColumns(): ColumnDef<AdminNavgroup>[] {
     },
   ]
 }
+
+
+
+

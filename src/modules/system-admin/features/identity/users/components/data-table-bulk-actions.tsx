@@ -3,7 +3,7 @@ import { useMutation } from '@tanstack/react-query'
 import { type Table } from '@tanstack/react-table'
 import { Trash2, CircleArrowUp, Download } from 'lucide-react'
 import { toast } from 'sonner'
-import { apiClient } from '~/lib/api-client'
+import { apiClient } from '@/shared/lib/api-client'
 import { Button } from '@/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
@@ -147,3 +147,7 @@ export function DataTableBulkActions<TData>({ table }: DataTableBulkActionsProps
     </>
   )
 }
+
+
+
+

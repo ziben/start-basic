@@ -4,8 +4,8 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
 import { Translation } from '~/generated/prisma/client'
-import { useTranslation } from '~/hooks/useTranslation'
-import { useCreateTranslation, useUpdateTranslation } from '~/hooks/useTranslationApi'
+import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
+import { useCreateTranslation, useUpdateTranslation } from '~/modules/system-admin/shared/hooks/use-translation-api'
 import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
@@ -176,3 +176,7 @@ export function TranslationsMutateDrawer({ open, onOpenChange, currentRow }: Tra
     </Sheet>
   )
 }
+
+
+
+

@@ -1,6 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import { BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut, Sparkles } from 'lucide-react'
-import useDialogState from '@/hooks/use-dialog-state'
+import useDialogState from '@/shared/hooks/use-dialog-state'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   DropdownMenu,
@@ -107,3 +107,5 @@ export function NavUser({ user }: NavUserProps) {
     </>
   )
 }
+
+

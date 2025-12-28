@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
-import { getCookie, setCookie, removeCookie } from '@/lib/cookies'
+import { getCookie, setCookie, removeCookie } from '@/shared/lib/cookies'
 
 type Theme = 'dark' | 'light' | 'system'
 type ResolvedTheme = Exclude<Theme, 'system'>
@@ -110,3 +110,5 @@ export const useTheme = () => {
 
   return context
 }
+
+

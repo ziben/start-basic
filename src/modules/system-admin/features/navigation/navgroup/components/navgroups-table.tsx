@@ -12,8 +12,8 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import { useVirtualizer } from '@tanstack/react-virtual'
-import { useTranslation } from '~/hooks/useTranslation'
-import { useUrlSyncedSorting } from '@/hooks/use-url-synced-sorting'
+import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
+import { useUrlSyncedSorting } from '@/shared/hooks/use-url-synced-sorting'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
 import { type AdminNavgroup } from '../data/schema'
@@ -187,3 +187,8 @@ export function NavGroupsTable({ data, search, navigate }: DataTableProps) {
 
   return <NavGroupsTableInner data={data} search={resolvedSearch} navigate={resolvedNavigate} />
 }
+
+
+
+
+

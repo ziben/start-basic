@@ -1,5 +1,5 @@
 import React from 'react'
-import { useDialogRowState } from '@/hooks/use-dialog-row-state'
+import { useDialogRowState } from '@/shared/hooks/use-dialog-row-state'
 import { type Task } from '../data/schema'
 
 type TasksDialogType = 'create' | 'update' | 'delete' | 'import'
@@ -29,3 +29,5 @@ export const useTasks = () => {
 
   return tasksContext
 }
+
+

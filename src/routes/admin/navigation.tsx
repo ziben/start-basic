@@ -24,3 +24,4 @@ export const Route = createFileRoute('/admin/navigation')({
     }
   },
 })
+

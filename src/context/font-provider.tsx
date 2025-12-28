@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { fonts } from '@/config/fonts'
-import { getCookie, setCookie, removeCookie } from '@/lib/cookies'
+import { getCookie, setCookie, removeCookie } from '@/shared/lib/cookies'
 
 type Font = (typeof fonts)[number]
 
@@ -56,3 +56,5 @@ export const useFont = () => {
   }
   return context
 }
+
+

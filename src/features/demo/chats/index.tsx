@@ -14,7 +14,7 @@ import {
   Video,
   MessagesSquare,
 } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn } from '@/shared/lib/utils'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -297,3 +297,5 @@ export function Chats() {
     </>
   )
 }
+
+

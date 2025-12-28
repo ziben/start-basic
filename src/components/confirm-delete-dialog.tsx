@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { AlertTriangle } from 'lucide-react'
 import { toast } from 'sonner'
-import { cn } from '@/lib/utils'
+import { cn } from '@/shared/lib/utils'
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -124,3 +124,5 @@ export function ConfirmDeleteDialog({
     </AlertDialog>
   )
 }
+
+

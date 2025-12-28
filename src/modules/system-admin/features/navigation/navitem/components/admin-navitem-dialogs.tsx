@@ -3,9 +3,9 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
 import { IconPicker } from '~/components/icon-picker'
-import { useNavgroups } from '~/hooks/useNavgroupApi'
-import { useCreateNavitem, useUpdateNavitem, useDeleteNavitem } from '~/hooks/useNavitemApi'
-import { useTranslation } from '~/hooks/useTranslation'
+import { useNavgroups } from '~/modules/system-admin/shared/hooks/use-navgroup-api'
+import { useCreateNavitem, useUpdateNavitem, useDeleteNavitem } from '~/modules/system-admin/shared/hooks/use-navitem-api'
+import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -457,3 +457,7 @@ const AdminNavItemDialogs: React.FC = () => {
 }
 
 export default AdminNavItemDialogs
+
+
+
+

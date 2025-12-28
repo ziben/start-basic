@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { type ColumnDef } from '@tanstack/react-table'
-import { useTranslation } from '~/hooks/useTranslation'
-import { cn, formatDate } from '~/lib/utils'
+import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
+import { cn, formatDate } from '@/shared/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import { DataTableColumnHeader } from '@/components/data-table'
@@ -135,3 +135,9 @@ export function useAdminUsersColumns(): ColumnDef<AdminUsers>[] {
     [t]
   )
 }
+
+
+
+
+
+

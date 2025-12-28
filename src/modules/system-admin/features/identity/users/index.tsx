@@ -1,4 +1,4 @@
-import { useTranslation } from '~/hooks/useTranslation'
+import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
 import { ConfigDrawer } from '@/components/config-drawer'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
@@ -41,3 +41,7 @@ export default function AdminUsers() {
     </AdminUsersProvider>
   )
 }
+
+
+
+

@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils'
+import { cn } from '@/shared/lib/utils'
 
 type MainProps = React.HTMLAttributes<HTMLElement> & {
   fixed?: boolean
@@ -24,3 +24,5 @@ export function Main({ fixed, className, fluid, ...props }: MainProps) {
     />
   )
 }
+
+

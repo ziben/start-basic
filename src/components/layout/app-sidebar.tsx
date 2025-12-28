@@ -1,7 +1,7 @@
 import { useLayout } from '~/context/layout-provider'
-import { useTranslation } from '~/hooks/useTranslation'
-import { useSidebar } from '~/lib/sidebar'
-import { iconResolver } from '~/utils/icon-resolver'
+import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
+import { useSidebar } from '~/modules/system-admin/shared/sidebar'
+import { iconResolver } from '@/shared/utils/icon-resolver'
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from '@/components/ui/sidebar'
 import { NavGroup as NavGroupComponent } from '@/components/layout/nav-group'
 import { NavUser } from '@/components/layout/nav-user'
@@ -60,3 +60,9 @@ export function AppSidebar() {
     </Sidebar>
   )
 }
+
+
+
+
+
+

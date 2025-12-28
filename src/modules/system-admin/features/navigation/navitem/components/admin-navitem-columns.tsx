@@ -1,10 +1,10 @@
 import React from 'react'
 import { ColumnDef, FilterFn, Row } from '@tanstack/react-table'
 import { ChevronDown, ChevronRight } from 'lucide-react'
-import { useNavgroups } from '~/hooks/useNavgroupApi'
-import { useTranslation } from '~/hooks/useTranslation'
-import { iconResolver } from '~/utils/icon-resolver'
-import { cn } from '@/lib/utils'
+import { useNavgroups } from '~/modules/system-admin/shared/hooks/use-navgroup-api'
+import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
+import { iconResolver } from '@/shared/utils/icon-resolver'
+import { cn } from '@/shared/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -232,3 +232,10 @@ export function useAdminNavItemColumns({ navGroupId: currentNavGroupIdProp }: Us
   ]
   return { columns }
 }
+
+
+
+
+
+
+

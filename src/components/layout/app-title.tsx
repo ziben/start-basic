@@ -1,6 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import { Menu, X } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn } from '@/shared/lib/utils'
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar'
 import { Button } from '../ui/button'
 
@@ -45,3 +45,5 @@ function ToggleSidebar({ className, onClick, ...props }: React.ComponentProps<ty
     </Button>
   )
 }
+
+

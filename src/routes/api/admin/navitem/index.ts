@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { createFileRoute } from '@tanstack/react-router'
-import prisma from '~/lib/db'
+import prisma from '@/shared/lib/db'
 import { withAdminAuth } from '~/middleware'
 
 // 创建导航项API路由
@@ -373,3 +373,7 @@ export async function toggleNavItemVisibility(id: string, isVisible: boolean) {
     throw new Error('更新导航项可见性失败')
   }
 }
+
+
+
+

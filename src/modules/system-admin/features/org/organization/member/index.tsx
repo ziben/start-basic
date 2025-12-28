@@ -20,9 +20,9 @@ import {
   useDeleteAdminMember,
   useBulkDeleteAdminMembers,
   type AdminMemberInfo,
-} from '~/hooks/use-admin-member-api'
-import { useTranslation } from '~/hooks/useTranslation'
-import { type NavigateFn, useTableUrlState } from '@/hooks/use-table-url-state'
+} from '~/modules/system-admin/shared/hooks/use-admin-member-api'
+import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
+import { type NavigateFn, useTableUrlState } from '@/shared/hooks/use-table-url-state'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -424,3 +424,10 @@ export default function AdminMember() {
     </>
   )
 }
+
+
+
+
+
+
+

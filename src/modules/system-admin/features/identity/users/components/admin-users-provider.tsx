@@ -1,5 +1,5 @@
 import React from 'react'
-import { useDialogRowState } from '@/hooks/use-dialog-row-state'
+import { useDialogRowState } from '@/shared/hooks/use-dialog-row-state'
 import { type AdminUsers } from '../data/schema'
 
 type AdminUsersDialogType = 'create' | 'update' | 'delete' | 'import'
@@ -28,3 +28,5 @@ export const useAdminUsers = () => {
 
   return adminUsersContext
 }
+
+

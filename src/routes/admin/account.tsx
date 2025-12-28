@@ -4,3 +4,4 @@ import { AdminAccount } from '~/modules/system-admin'
 export const Route = createFileRoute('/admin/account')({
   component: AdminAccount,
 })
+
