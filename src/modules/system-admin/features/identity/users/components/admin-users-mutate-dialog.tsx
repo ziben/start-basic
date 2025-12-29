@@ -3,7 +3,7 @@ import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { apiClient } from '@/shared/lib/api-client'
+import { userApi } from '../../../../shared/services/user-api'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -18,11 +18,11 @@ import { Input } from '@/components/ui/input'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { SelectDropdown } from '@/components/select-dropdown'
 import { getErrorMessage } from '@/shared/lib/error-handler'
-import { type AdminUsers } from '../data/schema'
+import { type AdminUser } from '../data/schema'
 import { ADMIN_USERS_QUERY_KEY } from '../hooks/use-admin-users-list-query'
 
-type AdminUsersMutateDialogProps = {
-  currentRow?: AdminUsers
+type AdminUserMutateDialogProps = {
+  currentRow?: AdminUser
   open: boolean
   onOpenChange: (open: boolean) => void
 }
@@ -40,10 +40,10 @@ const formSchema = z.object({
 
 type AdminUserForm = z.infer<typeof formSchema>
 
-export function AdminUsersMutateDialog({ currentRow, open, onOpenChange }: AdminUsersMutateDialogProps) {
+export function AdminUsersMutateDialog({ currentRow, open, onOpenChange }: AdminUserMutateDialogProps) {
   const isEdit = !!currentRow
 
-  const toFormValues = (row?: AdminUsers): AdminUserForm => ({
+  const toFormValues = (row?: AdminUser): AdminUserForm => ({
     name: row?.name ?? '',
     email: row?.email ?? '',
     password: '',
@@ -73,7 +73,7 @@ export function AdminUsersMutateDialog({ currentRow, open, onOpenChange }: Admin
         throw new Error('Password is required for new users')
       }
 
-      return await apiClient.users.create({
+      return await userApi.create({
         email: data.email,
         password: data.password,
         name: data.name,
@@ -95,7 +95,7 @@ export function AdminUsersMutateDialog({ currentRow, open, onOpenChange }: Admin
         throw new Error('Missing current user')
       }
 
-      return await apiClient.users.update(currentRow.id, {
+      return await userApi.update(currentRow.id, {
         name: data.name,
         username: data.username ? data.username : null,
         role: data.role,
@@ -301,6 +301,8 @@ export function AdminUsersMutateDialog({ currentRow, open, onOpenChange }: Admin
     </Dialog>
   )
 }
+
+
 
 
 

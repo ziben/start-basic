@@ -12,7 +12,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import { useVirtualizer } from '@tanstack/react-virtual'
-import { Translation } from '~/generated/prisma/client'
+import type { Translation } from '~/modules/system-admin/shared/types/translation'
 import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
 import { useUrlSyncedSorting } from '@/shared/hooks/use-url-synced-sorting'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
@@ -180,6 +180,7 @@ export function TranslationsTable({ data }: DataTableProps) {
     </div>
   )
 }
+
 
 
 

@@ -1,6 +1,6 @@
 import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
 
-export default function AdminOrganizationCreate() {
+export function AdminOrganizationCreate() {
   const { t } = useTranslation()
   return (
     <div>
@@ -9,6 +9,7 @@ export default function AdminOrganizationCreate() {
     </div>
   )
 }
+
 
 
 

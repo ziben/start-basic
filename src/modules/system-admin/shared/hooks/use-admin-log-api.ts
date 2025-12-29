@@ -1,5 +1,5 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
-import { apiClient } from '@/shared/lib/api-client'
+import { logApi } from '../services/log-api'
 
 export type AdminSystemLog = {
   id: string
@@ -60,12 +60,8 @@ export function useAdminLogs(params: {
   return useQuery<AdminLogsPage>({
     queryKey: ['admin', 'logs', params],
     placeholderData: keepPreviousData,
-    queryFn: async ({ signal }) => {
-      return await apiClient.adminLogs.list({ ...params, signal })
-    },
+    queryFn: ({ signal }) => logApi.list({ ...params, signal }),
   })
 }
-
-
 
 

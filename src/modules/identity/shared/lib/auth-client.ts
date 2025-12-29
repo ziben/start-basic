@@ -4,3 +4,4 @@ import { adminClient, usernameClient, organizationClient } from 'better-auth/cli
 export const authClient = createAuthClient({
   plugins: [usernameClient(), adminClient(), organizationClient()],
 })
+

@@ -41,3 +41,4 @@ export function IconLayoutDefault(props: SVGProps<SVGSVGElement>) {
     </svg>
   )
 }
+

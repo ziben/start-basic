@@ -1,4 +1,4 @@
-import { fetchJson, fetchText } from '@/shared/lib/api-client'
+import { fetchJson, fetchText } from '@/shared/lib/fetch-utils'
 
 export interface Category {
   id: string
@@ -162,6 +162,7 @@ export const qbApiClient = {
       }),
   },
 } as const
+
 
 
 

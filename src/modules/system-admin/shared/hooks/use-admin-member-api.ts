@@ -1,17 +1,8 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { apiClient } from '@/shared/lib/api-client'
+import { memberApi } from '../services/member-api'
+import type { AdminMemberInfo } from '../types/member'
 
-export type AdminMemberInfo = {
-  id: string
-  userId: string
-  username: string
-  email: string
-  organizationId: string
-  organizationName: string
-  organizationSlug: string
-  role: string
-  createdAt: string
-}
+export type { AdminMemberInfo }
 
 export type AdminMembersPage = {
   items: AdminMemberInfo[]
@@ -29,7 +20,7 @@ export function useAdminMembers(params?: {
 }) {
   return useQuery({
     queryKey: ['admin-members', params],
-    queryFn: () => apiClient.adminMembers.list(params),
+    queryFn: () => memberApi.list(params),
     placeholderData: keepPreviousData,
   })
 }
@@ -37,7 +28,7 @@ export function useAdminMembers(params?: {
 export function useAdminMember(id: string) {
   return useQuery({
     queryKey: ['admin-member', id],
-    queryFn: () => apiClient.adminMembers.get(id),
+    queryFn: () => memberApi.get(id),
     enabled: !!id,
   })
 }
@@ -45,7 +36,7 @@ export function useAdminMember(id: string) {
 export function useCreateAdminMember() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (data: { organizationId: string; userId: string; role: string }) => apiClient.adminMembers.create(data),
+    mutationFn: (data: { organizationId: string; userId: string; role: string }) => memberApi.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-members'] })
     },
@@ -55,7 +46,7 @@ export function useCreateAdminMember() {
 export function useUpdateAdminMember() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: { role?: string } }) => apiClient.adminMembers.update(id, data),
+    mutationFn: ({ id, data }: { id: string; data: { role?: string } }) => memberApi.update(id, data),
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: ['admin-members'] })
       queryClient.invalidateQueries({ queryKey: ['admin-member', id] })
@@ -66,7 +57,7 @@ export function useUpdateAdminMember() {
 export function useDeleteAdminMember() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (id: string) => apiClient.adminMembers.remove(id),
+    mutationFn: (id: string) => memberApi.remove(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-members'] })
     },
@@ -76,12 +67,13 @@ export function useDeleteAdminMember() {
 export function useBulkDeleteAdminMembers() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (data: { ids: string[] }) => apiClient.adminMembers.bulkDelete(data),
+    mutationFn: (data: { ids: string[] }) => memberApi.bulkDelete(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-members'] })
     },
   })
 }
+
 
 
 

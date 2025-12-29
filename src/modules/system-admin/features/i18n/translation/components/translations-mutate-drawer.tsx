@@ -3,7 +3,7 @@ import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
-import { Translation } from '~/generated/prisma/client'
+import type { Translation } from '~/modules/system-admin/shared/types/translation'
 import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
 import { useCreateTranslation, useUpdateTranslation } from '~/modules/system-admin/shared/hooks/use-translation-api'
 import { Button } from '@/components/ui/button'
@@ -63,7 +63,7 @@ export function TranslationsMutateDrawer({ open, onOpenChange, currentRow }: Tra
   const onSubmit = async (data: TranslationForm) => {
     try {
       if (isUpdate && currentRow) {
-        await updateMutation.mutateAsync({ id: currentRow.id, value: data.value ?? '' })
+        await updateMutation.mutateAsync({ id: currentRow.id, data: { value: data.value ?? '' } })
         toast.success(t('admin.translation.toast.updateSuccess') || 'Updated')
       } else {
         await createMutation.mutateAsync({ locale: data.locale, key: data.key, value: data.value ?? '' })
@@ -176,6 +176,7 @@ export function TranslationsMutateDrawer({ open, onOpenChange, currentRow }: Tra
     </Sheet>
   )
 }
+
 
 
 

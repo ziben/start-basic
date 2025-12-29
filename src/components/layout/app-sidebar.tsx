@@ -1,4 +1,4 @@
-import { useLayout } from '~/context/layout-provider'
+import { useLayout } from '~/shared/context/layout-provider'
 import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
 import { useSidebar } from '~/modules/system-admin/shared/sidebar'
 import { iconResolver } from '@/shared/utils/icon-resolver'
@@ -60,6 +60,8 @@ export function AppSidebar() {
     </Sidebar>
   )
 }
+
+
 
 
 

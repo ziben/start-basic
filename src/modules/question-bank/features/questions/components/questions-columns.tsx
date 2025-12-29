@@ -118,3 +118,4 @@ export const columns: ColumnDef<Question>[] = [
 function cn(...inputs: any[]) {
   return inputs.filter(Boolean).join(' ')
 }
+

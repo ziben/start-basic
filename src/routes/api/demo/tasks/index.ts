@@ -1,7 +1,6 @@
 import { z } from 'zod'
 import { createFileRoute } from '@tanstack/react-router'
-import { tasksPageSchema } from '~/features/demo/tasks/data/schema'
-import { tasks } from '~/features/demo/tasks/data/tasks'
+import { tasksPageSchema, tasks } from '@/modules/demo'
 
 const querySchema = z.object({
   page: z.coerce.number().int().positive().optional().default(1),
@@ -93,3 +92,7 @@ export const Route = createFileRoute('/api/demo/tasks/' as never)({
     },
   },
 })
+
+
+
+

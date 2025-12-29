@@ -5,10 +5,10 @@ import { cn, formatDate } from '@/shared/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import { DataTableColumnHeader } from '@/components/data-table'
-import { type AdminUsers } from '../data/schema'
+import { type AdminUser } from '../data/schema'
 import { DataTableRowActions } from './data-table-row-actions'
 
-export function useAdminUsersColumns(): ColumnDef<AdminUsers>[] {
+export function useAdminUsersColumns(): ColumnDef<AdminUser>[] {
   const { t } = useTranslation()
 
   return useMemo(
@@ -135,6 +135,8 @@ export function useAdminUsersColumns(): ColumnDef<AdminUsers>[] {
     [t]
   )
 }
+
+
 
 
 

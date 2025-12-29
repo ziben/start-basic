@@ -10,3 +10,4 @@ export function showSubmittedData(data: unknown, title: string = 'You submitted 
     ),
   })
 }
+

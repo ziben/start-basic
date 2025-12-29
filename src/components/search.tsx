@@ -1,6 +1,6 @@
 import { SearchIcon } from 'lucide-react'
 import { cn } from '@/shared/lib/utils'
-import { useSearch } from '@/context/search-provider'
+import { useSearch } from '@/shared/context/search-provider'
 import { Button } from './ui/button'
 
 type SearchProps = {
@@ -28,5 +28,7 @@ export function Search({ className = '', placeholder = 'Search' }: SearchProps) 
     </Button>
   )
 }
+
+
 
 

@@ -452,3 +452,4 @@ export default {
   'admin.verification.title': 'Verification',
   'admin.verification.desc': 'Manage verification records.',
 }
+

@@ -24,3 +24,4 @@ export const messages = {
 type DeepPartial<T> = T extends object ? { [K in keyof T]?: DeepPartial<T[K]> } : T
 export type IntlMessages = typeof en
 export type PartialIntlMessages = DeepPartial<IntlMessages>
+

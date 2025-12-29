@@ -61,3 +61,4 @@ export const Route = createFileRoute('/api/admin/navgroup/$id')({
     },
   },
 })
+

@@ -3,7 +3,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import prisma from '@/shared/lib/db'
 import { withAdminAuth } from '~/middleware'
 
-export const Route = (createFileRoute('/api/admin/organization/' as any) as any)({
+export const Route = createFileRoute('/api/admin/organization/')({
   server: {
     handlers: {
       GET: withAdminAuth(async ({ request }: any) => {
@@ -129,6 +129,7 @@ export const Route = (createFileRoute('/api/admin/organization/' as any) as any)
     },
   },
 })
+
 
 
 

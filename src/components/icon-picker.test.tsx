@@ -30,3 +30,4 @@ describe('IconPicker', () => {
     vi.useRealTimers()
   })
 })
+

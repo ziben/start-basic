@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker'
-import { AdminUsers } from './schema'
+import { type AdminUser } from './schema'
 
-export const adminUsers: AdminUsers[] = Array.from({ length: 20 }, () => {
+export const adminUsers: AdminUser[] = Array.from({ length: 20 }, () => {
   const firstName = faker.person.firstName()
   const lastName = faker.person.lastName()
   return {
@@ -19,3 +19,5 @@ export const adminUsers: AdminUsers[] = Array.from({ length: 20 }, () => {
     updatedAt: faker.date.recent().toISOString(),
   }
 })
+
+

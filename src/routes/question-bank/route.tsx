@@ -9,3 +9,4 @@ export const Route = createFileRoute('/question-bank' as any)({
   },
   component: AuthenticatedLayout,
 })
+

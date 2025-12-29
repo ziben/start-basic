@@ -67,3 +67,4 @@ function DataTableColumnHeaderInner<TData, TValue>({
 export const DataTableColumnHeader = memo(DataTableColumnHeaderInner) as typeof DataTableColumnHeaderInner
 
 
+

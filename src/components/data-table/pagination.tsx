@@ -119,3 +119,4 @@ function DataTablePaginationInner<TData>({ table, className }: DataTablePaginati
 export const DataTablePagination = memo(DataTablePaginationInner) as typeof DataTablePaginationInner
 
 
+

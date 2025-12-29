@@ -1,6 +1,6 @@
 import { useRouteContext } from '@tanstack/react-router'
 import { LayoutDashboard, ScrollText } from 'lucide-react'
-import { useLayout } from '~/context/layout-provider'
+import { useLayout } from '~/shared/context/layout-provider'
 import { useSidebar as useDynamicSidebar } from '~/modules/system-admin/shared/sidebar'
 import { iconResolver } from '@/shared/utils/icon-resolver'
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from '@/components/ui/sidebar'
@@ -75,6 +75,8 @@ export function AdminSidebar() {
     </Sidebar>
   )
 }
+
+
 
 
 

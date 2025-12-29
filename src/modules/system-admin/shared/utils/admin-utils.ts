@@ -1,5 +1,21 @@
-import type { User as PrismaUser } from '~/generated/prisma/client'
-import type { AdminUsers } from '~/modules/system-admin/features/identity/users/data/schema'
+import type { AdminUser } from '@/modules/system-admin/features/identity/users'
+
+// 本地类型定义，避免导入 Prisma Client
+type PrismaUser = {
+  id: string
+  name: string
+  email: string
+  emailVerified: boolean
+  image: string | null
+  createdAt: Date
+  updatedAt: Date
+  role: string | null
+  banned: boolean | null
+  banReason: string | null
+  banExpires: Date | null
+  username: string | null
+  displayUsername: string | null
+}
 
 /**
  * Sort fields allowed for user queries
@@ -30,7 +46,7 @@ export function isValidUserRole(value: string): value is UserRole {
 /**
  * Serialize Prisma User to AdminUsers schema format
  */
-export function serializeAdminUser(user: PrismaUser): AdminUsers {
+export function serializeAdminUser(user: PrismaUser): AdminUser {
   return {
     id: user.id,
     name: user.name,
@@ -51,7 +67,7 @@ export function serializeAdminUser(user: PrismaUser): AdminUsers {
 /**
  * Serialize array of Prisma Users to AdminUsers format
  */
-export function serializeAdminUsers(users: PrismaUser[]): AdminUsers[] {
+export function serializeAdminUsers(users: PrismaUser[]): AdminUser[] {
   return users.map(serializeAdminUser)
 }
 
@@ -153,4 +169,7 @@ export function getErrorStatus(type: ApiErrorType): number {
       return 500
   }
 }
+
+
+
 

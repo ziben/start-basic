@@ -1,7 +1,6 @@
 import { z } from 'zod'
 import { createFileRoute } from '@tanstack/react-router'
-import { Tasks } from '@/features/demo/tasks'
-import { priorities, statuses } from '@/features/demo/tasks/data/data'
+import { Tasks, priorities, statuses } from '@/modules/demo'
 
 const taskSearchSchema = z.object({
   page: z.number().optional().catch(1),
@@ -23,3 +22,6 @@ export const Route = createFileRoute('/_authenticated/demo/tasks/')({
   validateSearch: taskSearchSchema,
   component: Tasks,
 })
+
+
+

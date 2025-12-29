@@ -8,3 +8,4 @@ declare module '@tanstack/react-table' {
     thClassName?: string
   }
 }
+

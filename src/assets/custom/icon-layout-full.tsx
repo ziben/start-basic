@@ -61,3 +61,4 @@ export function IconLayoutFull(props: SVGProps<SVGSVGElement>) {
     </svg>
   )
 }
+

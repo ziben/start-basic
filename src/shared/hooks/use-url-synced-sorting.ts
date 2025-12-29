@@ -90,3 +90,4 @@ export function useUrlSyncedSorting(params: UseUrlSyncedSortingParams): UseUrlSy
     onSortingChange,
   }
 }
+

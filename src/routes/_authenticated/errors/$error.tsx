@@ -4,11 +4,7 @@ import { Header } from '@/components/layout/header'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
-import { ForbiddenError } from '@/features/demo/errors/forbidden'
-import { GeneralError } from '@/features/demo/errors/general-error'
-import { MaintenanceError } from '@/features/demo/errors/maintenance-error'
-import { NotFoundError } from '@/features/demo/errors/not-found-error'
-import { UnauthorisedError } from '@/features/demo/errors/unauthorized-error'
+import { ForbiddenError, GeneralError, MaintenanceError, NotFoundError, UnauthorisedError } from '@/modules/demo'
 
 export const Route = createFileRoute('/_authenticated/errors/$error')({
   component: RouteComponent,
@@ -43,3 +39,7 @@ function RouteComponent() {
     </>
   )
 }
+
+
+
+

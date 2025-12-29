@@ -3,7 +3,7 @@ import { format } from 'date-fns'
 import { useQuery } from '@tanstack/react-query'
 import { zhCN } from 'date-fns/locale'
 import { RefreshCw, User, Clock, Globe, Shield } from 'lucide-react'
-import { apiClient } from '@/shared/lib/api-client'
+import { sessionApi } from '../../shared/services/session-api'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -19,7 +19,7 @@ export const Sessions: React.FC = () => {
     isRefetching,
   } = useQuery({
     queryKey: ['sessions'],
-    queryFn: async () => await apiClient.sessions.list(),
+    queryFn: async () => await sessionApi.list(),
     refetchInterval: 30000, // 30秒自动刷新
   })
 
@@ -152,6 +152,7 @@ export const Sessions: React.FC = () => {
 }
 
 export default Sessions
+
 
 
 

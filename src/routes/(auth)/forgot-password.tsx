@@ -5,3 +5,4 @@ export const Route = createFileRoute('/(auth)/forgot-password')({
   component: ForgotPassword,
 })
 
+

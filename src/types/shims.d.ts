@@ -27,3 +27,4 @@ declare module '@tanstack/react-start' {
 declare module '@tanstack/react-start/plugin/vite' {
   export const tanstackStart: any
 }
+

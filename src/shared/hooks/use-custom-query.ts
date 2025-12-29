@@ -30,3 +30,4 @@ const getStaleTime = (dataType: DataType): number => {
       return 1000 * 60 // 1 minute as default
   }
 }
+

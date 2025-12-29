@@ -1,5 +1,5 @@
 import { useTranslation as useI18nextTranslation } from 'react-i18next'
-import { useOptionalLocale } from '~/context/locale-context'
+import { useOptionalLocale } from '~/shared/context/locale-context'
 import { DEFAULT_LOCALE, LocaleType, messages } from '~/i18n'
 import i18n from '~/i18n/i18n'
 
@@ -81,3 +81,5 @@ export const useTranslation = () => {
     setLocale: setLocaleWrapper,
   }
 }
+
+

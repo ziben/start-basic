@@ -1,9 +1,9 @@
 import { useEffect } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { apiClient } from '@/shared/lib/api-client'
+import { userApi } from '../../../../shared/services/user-api'
 import { ConfirmDialog } from '@/components/confirm-dialog'
-import { type AdminUsers } from '../data/schema'
+import { type AdminUser } from '../data/schema'
 import { ADMIN_USERS_QUERY_KEY } from '../hooks/use-admin-users-list-query'
 import { useUsersOptimisticUpdate, createBulkDeleteUpdateFn } from '../hooks/use-users-optimistic-update'
 import { AdminUserImportDialog } from './admin-users-import-dialog'
@@ -16,7 +16,7 @@ export function AdminUsersDialogs() {
 
   const deleteOneMutation = useMutation({
     mutationFn: async (input: { id: string }) => {
-      return await apiClient.users.bulkDelete({ ids: [input.id] })
+      return await userApi.bulkDelete({ ids: [input.id] })
     },
     ...getOptimisticMutationOptions({
       queryKey: ADMIN_USERS_QUERY_KEY,
@@ -85,6 +85,8 @@ export function AdminUsersDialogs() {
     </>
   )
 }
+
+
 
 
 

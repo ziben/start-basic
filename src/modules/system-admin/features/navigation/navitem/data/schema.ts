@@ -63,3 +63,4 @@ export type AdminNavItemList = z.infer<typeof adminNavItemListSchema>
 export type ChildNavItem = z.infer<typeof childNavItemSchema>
 export type CreateNavItemData = z.infer<typeof createNavItemSchema>
 export type UpdateNavItemData = z.infer<typeof updateNavItemSchema>
+

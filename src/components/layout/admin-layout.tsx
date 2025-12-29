@@ -1,8 +1,8 @@
 import { Outlet } from '@tanstack/react-router'
 import { getCookie } from '@/shared/lib/cookies'
 import { cn } from '@/shared/lib/utils'
-import { LayoutProvider } from '@/context/layout-provider'
-import { SearchProvider } from '@/context/search-provider'
+import { LayoutProvider } from '@/shared/context/layout-provider'
+import { SearchProvider } from '@/shared/context/search-provider'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 import { AdminSidebar } from '@/components/layout/admin-sidebar'
 import { SkipToMain } from '@/components/skip-to-main'
@@ -40,5 +40,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     </SearchProvider>
   )
 }
+
+
 
 

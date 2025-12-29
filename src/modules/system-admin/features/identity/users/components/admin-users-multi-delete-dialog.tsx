@@ -3,9 +3,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { type Table } from '@tanstack/react-table'
 import { toast } from 'sonner'
-import { apiClient } from '@/shared/lib/api-client'
+import { userApi } from '../../../../shared/services/user-api'
 import { ConfirmDeleteDialog } from '@/components/confirm-delete-dialog'
-import { type AdminUsers } from '../data/schema'
+import { type AdminUser } from '../data/schema'
 import { ADMIN_USERS_QUERY_KEY } from '../hooks/use-admin-users-list-query'
 
 type AdminUserMultiDeleteDialogProps<TData> = {
@@ -25,7 +25,7 @@ export function AdminUsersMultiDeleteDialog<TData>({
 
   const bulkDeleteMutation = useMutation({
     mutationFn: async (input: { ids: string[] }) => {
-      return await apiClient.users.bulkDelete(input)
+      return await userApi.bulkDelete(input)
     },
     onMutate: async (input) => {
       await queryClient.cancelQueries({ queryKey: ADMIN_USERS_QUERY_KEY })
@@ -33,7 +33,7 @@ export function AdminUsersMultiDeleteDialog<TData>({
 
       queryClient.setQueriesData({ queryKey: ADMIN_USERS_QUERY_KEY }, (old: any) => {
         if (!old || !Array.isArray(old.items)) return old
-        const nextItems = old.items.filter((u: AdminUsers) => !input.ids.includes(u.id))
+        const nextItems = old.items.filter((u: AdminUser) => !input.ids.includes(u.id))
         const deleted = old.items.length - nextItems.length
 
         const total = typeof old.total === 'number' ? Math.max(0, old.total - deleted) : old.total
@@ -64,7 +64,7 @@ export function AdminUsersMultiDeleteDialog<TData>({
   })
 
   const handleDelete = () => {
-    const selectedUsers = selectedRows.map((row) => row.original as AdminUsers)
+    const selectedUsers = selectedRows.map((row) => row.original as AdminUser)
     const ids = selectedUsers.map((u) => u.id)
     if (ids.length === 0) return
 
@@ -95,6 +95,9 @@ export function AdminUsersMultiDeleteDialog<TData>({
     />
   )
 }
+
+
+
 
 
 

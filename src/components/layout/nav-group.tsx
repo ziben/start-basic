@@ -141,3 +141,4 @@ function checkIsActive(href: string, item: NavItem, mainNav = false) {
     (mainNav && href.split('/')[1] !== '' && href.split('/')[1] === item?.url?.split('/')[1])
   )
 }
+

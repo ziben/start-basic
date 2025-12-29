@@ -9,3 +9,4 @@ Object.defineProperty(HTMLElement.prototype, 'clientWidth', {
   configurable: true,
   value: 800,
 })
+

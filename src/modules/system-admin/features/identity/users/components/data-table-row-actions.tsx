@@ -3,7 +3,7 @@ import { useMutation } from '@tanstack/react-query'
 import { type Row } from '@tanstack/react-table'
 import { Trash2, UserPen, Ban } from 'lucide-react'
 import { toast } from 'sonner'
-import { apiClient } from '@/shared/lib/api-client'
+import { userApi } from '../../../../shared/services/user-api'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -13,7 +13,7 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { adminUsersSchema, type AdminUsers } from '../data/schema'
+import { adminUsersSchema, type AdminUser } from '../data/schema'
 import { ADMIN_USERS_QUERY_KEY } from '../hooks/use-admin-users-list-query'
 import { useUsersOptimisticUpdate, createBulkBanUpdateFn } from '../hooks/use-users-optimistic-update'
 import { useAdminUsers } from './admin-users-provider'
@@ -23,14 +23,14 @@ type DataTableRowActionsProps<TData> = {
 }
 
 export function DataTableRowActions<TData>({ row }: DataTableRowActionsProps<TData>) {  
-  const user = row.original as AdminUsers
+  const user = row.original as AdminUser
 
   const { setOpen, setCurrentRow } = useAdminUsers()
   const { getOptimisticMutationOptions } = useUsersOptimisticUpdate()
 
   const banMutation = useMutation({
     mutationFn: async (input: { id: string; banned: boolean }) => {
-      return await apiClient.users.bulkBan({
+      return await userApi.bulkBan({
         ids: [input.id],
         banned: input.banned,
         banReason: null,
@@ -101,6 +101,9 @@ export function DataTableRowActions<TData>({ row }: DataTableRowActionsProps<TDa
     </DropdownMenu>
   )
 }
+
+
+
 
 
 

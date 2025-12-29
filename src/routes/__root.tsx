@@ -6,15 +6,15 @@ import { getRequestHeaders } from '@tanstack/react-start/server'
 import Devtools from '~/components/devtools'
 import { NavigationProgress } from '~/components/navigation-progress'
 import { Toaster } from '~/components/ui/sonner'
-import { AuthProvider } from '~/context/auth-context'
-import { DirectionProvider } from '~/context/direction-provider'
-import { FontProvider } from '~/context/font-provider'
-import { LocaleProvider } from '~/context/locale-context'
-import { ThemeProvider } from '~/context/theme-provider'
+import { AuthProvider } from '~/shared/context/auth-context'
+import { DirectionProvider } from '~/shared/context/direction-provider'
+import { FontProvider } from '~/shared/context/font-provider'
+import { LocaleProvider } from '~/shared/context/locale-context'
+import { ThemeProvider } from '~/shared/context/theme-provider'
 import appCss from '~/styles/index.css?url'
 import { seo } from '@/shared/utils/seo'
-import { GeneralError } from '@/features/demo/errors/general-error'
-import { NotFoundError } from '@/features/demo/errors/not-found-error'
+import { GeneralError } from '@/modules/demo'
+import { NotFoundError } from '@/modules/demo'
 
 const getUser = createServerFn({ method: 'GET' }).handler(async () => {
   const { auth } = await import('~/modules/identity/shared/lib/auth')
@@ -113,6 +113,11 @@ function RootDocument({ children }: { children: React.ReactNode }) {
     </html>
   )
 }
+
+
+
+
+
 
 
 

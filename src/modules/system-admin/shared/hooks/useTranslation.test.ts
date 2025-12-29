@@ -8,3 +8,4 @@ describe('useTranslation', () => {
     expect(result.current.t('__missing.key__', { defaultMessage: 'fallback' })).toBe('fallback')
   })
 })
+

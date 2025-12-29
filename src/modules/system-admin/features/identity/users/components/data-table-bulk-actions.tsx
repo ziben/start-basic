@@ -3,12 +3,12 @@ import { useMutation } from '@tanstack/react-query'
 import { type Table } from '@tanstack/react-table'
 import { Trash2, CircleArrowUp, Download } from 'lucide-react'
 import { toast } from 'sonner'
-import { apiClient } from '@/shared/lib/api-client'
+import { userApi } from '../../../../shared/services/user-api'
 import { Button } from '@/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { DataTableBulkActions as BulkActionsToolbar } from '@/components/data-table'
-import { type AdminUsers } from '../data/schema'
+import { type AdminUser } from '../data/schema'
 import { ADMIN_USERS_QUERY_KEY } from '../hooks/use-admin-users-list-query'
 import { useUsersOptimisticUpdate, createBulkBanUpdateFn } from '../hooks/use-users-optimistic-update'
 import { AdminUsersMultiDeleteDialog } from './admin-users-multi-delete-dialog'
@@ -24,7 +24,7 @@ export function DataTableBulkActions<TData>({ table }: DataTableBulkActionsProps
 
   const bulkBanMutation = useMutation({
     mutationFn: async (input: { ids: string[]; banned: boolean }) => {
-      return await apiClient.users.bulkBan({
+      return await userApi.bulkBan({
         ids: input.ids,
         banned: input.banned,
         banReason: null,
@@ -38,7 +38,7 @@ export function DataTableBulkActions<TData>({ table }: DataTableBulkActionsProps
   })
 
   const runBulkBan = async () => {
-    const selectedUsers = selectedRows.map((row) => row.original as AdminUsers)
+    const selectedUsers = selectedRows.map((row) => row.original as AdminUser)
     if (selectedUsers.length === 0) return
     const ids = selectedUsers.map((u) => u.id)
 
@@ -54,7 +54,7 @@ export function DataTableBulkActions<TData>({ table }: DataTableBulkActionsProps
   }
 
   const runBulkUnban = async () => {
-    const selectedUsers = selectedRows.map((row) => row.original as AdminUsers)
+    const selectedUsers = selectedRows.map((row) => row.original as AdminUser)
     if (selectedUsers.length === 0) return
     const ids = selectedUsers.map((u) => u.id)
 
@@ -70,7 +70,7 @@ export function DataTableBulkActions<TData>({ table }: DataTableBulkActionsProps
   }
 
   const handleBulkExport = () => {
-    const selectedUsers = selectedRows.map((row) => row.original as AdminUsers)
+    const selectedUsers = selectedRows.map((row) => row.original as AdminUser)
     toast.promise(Promise.resolve(), {
       loading: 'Exporting users...',
       success: () => {
@@ -147,6 +147,9 @@ export function DataTableBulkActions<TData>({ table }: DataTableBulkActionsProps
     </>
   )
 }
+
+
+
 
 
 

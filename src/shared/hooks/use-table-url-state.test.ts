@@ -83,3 +83,4 @@ describe('useTableUrlState', () => {
     expect(patched.page).toBeUndefined()
   })
 })
+

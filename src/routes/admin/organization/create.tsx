@@ -5,3 +5,4 @@ export const Route = createFileRoute('/admin/organization/create')({
   component: AdminOrganizationCreate,
 })
 
+

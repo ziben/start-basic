@@ -2,7 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import prisma from '@/shared/lib/db'
 import { withAdminAuth } from '~/middleware'
 
-export const Route = createFileRoute('/api/admin/session/$id' as any)({
+export const Route = createFileRoute('/api/admin/session/$id')({
   server: {
     handlers: {
       DELETE: withAdminAuth(async ({ params }: any) => {
@@ -19,6 +19,7 @@ export const Route = createFileRoute('/api/admin/session/$id' as any)({
     },
   },
 })
+
 
 
 

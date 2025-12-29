@@ -15,3 +15,4 @@ export function useDialogRowState<TDialog extends string, TRow = unknown>() {
     [open, setOpen, currentRow, setCurrentRow]
   )
 }
+

@@ -25,7 +25,7 @@ const querySchema = z.object({
   to: z.string().datetime().optional(),
 })
 
-export const Route = createFileRoute('/api/admin/log/' as any)({
+export const Route = createFileRoute('/api/admin/log/')({
   server: {
     handlers: {
       GET: withAdminAuth(async ({ request }) => {
@@ -149,6 +149,7 @@ export const Route = createFileRoute('/api/admin/log/' as any)({
     },
   },
 })
+
 
 
 

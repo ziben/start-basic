@@ -36,3 +36,4 @@ export const fetchPosts = createServerFn({ method: 'GET' }).handler(async () => 
 
   return posts
 })
+

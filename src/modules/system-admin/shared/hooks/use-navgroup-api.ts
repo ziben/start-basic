@@ -1,20 +1,20 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { navgroupApi, type UpdateNavgroupVisibilityData } from '../services/navgroup-api'
 import type {
   AdminNavgroup,
   CreateNavgroupData,
   UpdateNavgroupData,
   UserRoleNavGroup,
-} from '~/modules/system-admin/features/navigation/navgroup/data/schema'
-import { apiClient, type SuccessIdResponse, type UpdateNavgroupVisibilityData } from '@/shared/lib/api-client'
+} from '@/modules/system-admin/features/navigation/navgroup'
 import { SIDEBAR_QUERY_KEY } from '~/modules/system-admin/shared/sidebar'
+
+type SuccessIdResponse = { success: true; id: string }
 
 // 获取所有导航组
 export function useNavgroups(scope?: 'APP' | 'ADMIN') {
   return useQuery<AdminNavgroup[]>({
     queryKey: ['admin', 'navgroups', scope ?? 'ALL'],
-    queryFn: async () => {
-      return await apiClient.navgroups.list(scope)
-    },
+    queryFn: () => navgroupApi.list(scope),
   })
 }
 
@@ -22,9 +22,9 @@ export function useNavgroups(scope?: 'APP' | 'ADMIN') {
 export function useNavgroup(id?: string) {
   return useQuery<AdminNavgroup | null>({
     queryKey: ['admin', 'navgroup', id],
-    queryFn: async () => {
+    queryFn: () => {
       if (!id) return null
-      return await apiClient.navgroups.get(id)
+      return navgroupApi.get(id)
     },
     enabled: !!id,
   })
@@ -35,9 +35,7 @@ export function useCreateNavgroup() {
   const queryClient = useQueryClient()
 
   return useMutation<AdminNavgroup, Error, CreateNavgroupData>({
-    mutationFn: async (data: CreateNavgroupData) => {
-      return await apiClient.navgroups.create(data)
-    },
+    mutationFn: (data: CreateNavgroupData) => navgroupApi.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'navgroups'] })
       queryClient.invalidateQueries({ queryKey: SIDEBAR_QUERY_KEY })
@@ -50,9 +48,7 @@ export function useUpdateNavgroup() {
   const queryClient = useQueryClient()
 
   return useMutation<AdminNavgroup, Error, { id: string; data: UpdateNavgroupData }>({
-    mutationFn: async ({ id, data }: { id: string; data: UpdateNavgroupData }) => {
-      return await apiClient.navgroups.update(id, data)
-    },
+    mutationFn: ({ id, data }: { id: string; data: UpdateNavgroupData }) => navgroupApi.update(id, data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'navgroups'] })
       queryClient.invalidateQueries({ queryKey: ['admin', 'navgroup', variables.id] })
@@ -66,9 +62,7 @@ export function useDeleteNavgroup() {
   const queryClient = useQueryClient()
 
   return useMutation<SuccessIdResponse, Error, string>({
-    mutationFn: async (id: string) => {
-      return await apiClient.navgroups.remove(id)
-    },
+    mutationFn: (id: string) => navgroupApi.remove(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'navgroups'] })
       queryClient.invalidateQueries({ queryKey: SIDEBAR_QUERY_KEY })
@@ -80,10 +74,8 @@ export function useDeleteNavgroup() {
 export function useUpdateNavgroupOrder() {
   const queryClient = useQueryClient()
 
-  return useMutation<void, Error, string[]>({
-    mutationFn: async (groupIds: string[]) => {
-      await apiClient.navgroups.updateOrder(groupIds)
-    },
+  return useMutation<{ success: true }, Error, string[]>({
+    mutationFn: (groupIds: string[]) => navgroupApi.updateOrder(groupIds),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'navgroups'] })
       queryClient.invalidateQueries({ queryKey: SIDEBAR_QUERY_KEY })
@@ -97,7 +89,7 @@ export function useUpdateNavgroupVisibility() {
 
   return useMutation<UserRoleNavGroup, Error, UpdateNavgroupVisibilityData>({
     mutationFn: async (data: UpdateNavgroupVisibilityData) => {
-      return await apiClient.navgroups.updateVisibility(data)
+      return await navgroupApi.updateVisibility(data)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'navgroups'] })
@@ -108,6 +100,9 @@ export function useUpdateNavgroupVisibility() {
 
 // Re-export a compact name expected elsewhere in the codebase
 export type NavGroup = AdminNavgroup
+
+
+
 
 
 

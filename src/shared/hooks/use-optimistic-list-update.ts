@@ -38,3 +38,4 @@ export function useOptimisticListUpdate<TItem>() {
 
   return { getOptimisticMutationOptions }
 }
+

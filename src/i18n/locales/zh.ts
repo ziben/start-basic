@@ -473,3 +473,4 @@ export default {
   'admin.verification.title': '验证',
   'admin.verification.desc': '管理验证记录。',
 }
+

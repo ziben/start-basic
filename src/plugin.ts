@@ -52,3 +52,4 @@ export function getQueryPlugin(): Promise<QueryPlugin> {
 
   return queryPluginPromise
 }
+

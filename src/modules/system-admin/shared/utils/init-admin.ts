@@ -1,12 +1,11 @@
-import { createHash } from '@better-auth/utils/hash'
+import { hashPassword } from 'better-auth/crypto'
 import prisma from '@/shared/lib/db'
 
 async function createAdminUser() {
   try {
     const adminEmail = 'admin@example.com'
     const adminPassword = 'AdminPassword123!'
-    // short-term: relax createHash arg typing
-    const hashedPassword = await createHash(adminPassword as any)
+    const hashedPassword = await hashPassword(adminPassword)
 
     const existingAdmin = await prisma.user.findUnique({
       where: { email: adminEmail },
@@ -41,6 +40,7 @@ async function createAdminUser() {
 }
 
 createAdminUser()
+
 
 
 

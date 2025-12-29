@@ -1,29 +1,27 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { navitemApi } from '../services/navitem-api'
 import type {
   AdminNavItem,
   AdminNavItemList,
   CreateNavItemData,
   UpdateNavItemData as SchemaUpdateNavItemData,
-} from '~/modules/system-admin/features/navigation/navitem/data/schema'
-import { apiClient } from '@/shared/lib/api-client'
-import type { NavItemVisibilityResponse, SuccessIdResponse } from '@/shared/lib/api-client'
+} from '@/modules/system-admin/features/navigation/navitem'
 import { SIDEBAR_QUERY_KEY } from '~/modules/system-admin/shared/sidebar'
+
+type SuccessIdResponse = { success: true; id: string }
+type NavItemVisibilityResponse = { success: true; id: string; isVisible: boolean }
 
 export function useNavitems(navGroupId?: string, scope?: 'APP' | 'ADMIN') {
   return useQuery<AdminNavItemList>({
     queryKey: ['admin', 'navitems', navGroupId, scope ?? 'ALL'],
-    queryFn: async () => {
-      return await apiClient.navitems.list(navGroupId, scope)
-    },
+    queryFn: () => navitemApi.list(navGroupId, scope),
   })
 }
 
 export function useNavitem(id: string) {
   return useQuery<AdminNavItem>({
     queryKey: ['admin', 'navitem', id],
-    queryFn: async () => {
-      return await apiClient.navitems.get(id)
-    },
+    queryFn: () => navitemApi.get(id),
     enabled: !!id,
   })
 }
@@ -32,9 +30,7 @@ export function useCreateNavitem() {
   const queryClient = useQueryClient()
 
   return useMutation<AdminNavItem, Error, CreateNavItemData>({
-    mutationFn: async (data: CreateNavItemData) => {
-      return await apiClient.navitems.create(data)
-    },
+    mutationFn: (data: CreateNavItemData) => navitemApi.create(data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'navitems', variables.navGroupId] })
       queryClient.invalidateQueries({ queryKey: SIDEBAR_QUERY_KEY })
@@ -51,9 +47,7 @@ export function useUpdateNavitem() {
   const queryClient = useQueryClient()
 
   return useMutation<AdminNavItem, Error, UpdateNavItemData>({
-    mutationFn: async ({ id, data }: UpdateNavItemData) => {
-      return await apiClient.navitems.update(id, data)
-    },
+    mutationFn: ({ id, data }: UpdateNavItemData) => navitemApi.update(id, data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'navitems'] })
       queryClient.invalidateQueries({ queryKey: ['admin', 'navitem', variables.id] })
@@ -71,9 +65,7 @@ export function useDeleteNavitem() {
   const queryClient = useQueryClient()
 
   return useMutation<SuccessIdResponse, Error, DeleteNavItemData>({
-    mutationFn: async ({ id }: DeleteNavItemData) => {
-      return await apiClient.navitems.remove(id)
-    },
+    mutationFn: (variables: DeleteNavItemData) => navitemApi.remove(variables.id),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'navitems', variables.navGroupId] })
       queryClient.invalidateQueries({ queryKey: ['admin', 'navitems'] })
@@ -86,9 +78,7 @@ export function useUpdateNavitemOrder() {
   const queryClient = useQueryClient()
 
   return useMutation<{ success: true }, Error, string[]>({
-    mutationFn: async (itemIds: string[]) => {
-      return await apiClient.navitems.updateOrder(itemIds)
-    },
+    mutationFn: (itemIds: string[]) => navitemApi.updateOrder(itemIds),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'navitems'] })
       queryClient.invalidateQueries({ queryKey: SIDEBAR_QUERY_KEY })
@@ -106,7 +96,7 @@ export function useToggleNavItemVisibility() {
 
   return useMutation<NavItemVisibilityResponse, Error, ToggleNavItemVisibilityData>({
     mutationFn: async ({ id, isVisible }: ToggleNavItemVisibilityData) => {
-      return await apiClient.navitems.toggleVisibility({ id, isVisible })
+      return await navitemApi.toggleVisibility({ id, isVisible })
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'navitems'] })
@@ -114,6 +104,9 @@ export function useToggleNavItemVisibility() {
     },
   })
 }
+
+
+
 
 
 

@@ -21,3 +21,4 @@ export const Route = createFileRoute('/admin/navgroup')({
 function RouteComponent() {
   return null
 }
+

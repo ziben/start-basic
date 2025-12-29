@@ -26,3 +26,4 @@ export const Route = createFileRoute('/admin/navitem')({
 function RouteComponent() {
   return null
 }
+

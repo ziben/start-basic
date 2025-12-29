@@ -26,3 +26,4 @@ export function IconZoom({ className, ...props }: SVGProps<SVGSVGElement>) {
 }
 
 
+

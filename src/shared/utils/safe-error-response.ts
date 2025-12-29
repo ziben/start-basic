@@ -66,3 +66,4 @@ export const SafeResponse = {
   serverError: (error: unknown, message = '服务器错误') =>
     createSafeErrorResponse(error, { status: 500, defaultMessage: message }),
 }
+

@@ -37,3 +37,4 @@ export function removeCookie(name: string): void {
 
   document.cookie = `${name}=; path=/; max-age=0`
 }
+

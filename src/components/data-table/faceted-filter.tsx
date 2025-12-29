@@ -128,3 +128,4 @@ function DataTableFacetedFilterInner<TData, TValue>({
 export const DataTableFacetedFilter = React.memo(DataTableFacetedFilterInner) as typeof DataTableFacetedFilterInner
 
 
+

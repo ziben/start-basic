@@ -1,16 +1,8 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { apiClient } from '@/shared/lib/api-client'
+import { organizationApi } from '../services/organization-api'
+import type { AdminOrganizationInfo } from '../types/organization'
 
-export type AdminOrganizationInfo = {
-  id: string
-  name: string
-  slug: string
-  logo: string
-  createdAt: string
-  metadata: string
-  memberCount: number
-  invitationCount: number
-}
+export type { AdminOrganizationInfo }
 
 export type AdminOrganizationsPage = {
   items: AdminOrganizationInfo[]
@@ -27,7 +19,7 @@ export function useAdminOrganizations(params?: {
 }) {
   return useQuery({
     queryKey: ['admin-organizations', params],
-    queryFn: () => apiClient.adminOrganizations.list(params),
+    queryFn: () => organizationApi.list(params),
     placeholderData: keepPreviousData,
   })
 }
@@ -35,7 +27,7 @@ export function useAdminOrganizations(params?: {
 export function useAdminOrganization(id: string) {
   return useQuery({
     queryKey: ['admin-organization', id],
-    queryFn: () => apiClient.adminOrganizations.get(id),
+    queryFn: () => organizationApi.get(id),
     enabled: !!id,
   })
 }
@@ -44,7 +36,7 @@ export function useCreateAdminOrganization() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (data: { name: string; slug?: string; logo?: string; metadata?: string }) =>
-      apiClient.adminOrganizations.create(data),
+      organizationApi.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-organizations'] })
     },
@@ -60,7 +52,7 @@ export function useUpdateAdminOrganization() {
     }: {
       id: string
       data: { name?: string; slug?: string; logo?: string; metadata?: string }
-    }) => apiClient.adminOrganizations.update(id, data),
+    }) => organizationApi.update(id, data),
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: ['admin-organizations'] })
       queryClient.invalidateQueries({ queryKey: ['admin-organization', id] })
@@ -71,7 +63,7 @@ export function useUpdateAdminOrganization() {
 export function useDeleteAdminOrganization() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (id: string) => apiClient.adminOrganizations.remove(id),
+    mutationFn: (id: string) => organizationApi.remove(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-organizations'] })
     },
@@ -81,12 +73,13 @@ export function useDeleteAdminOrganization() {
 export function useBulkDeleteAdminOrganizations() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (data: { ids: string[] }) => apiClient.adminOrganizations.bulkDelete(data),
+    mutationFn: (data: { ids: string[] }) => organizationApi.bulkDelete(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-organizations'] })
     },
   })
 }
+
 
 
 

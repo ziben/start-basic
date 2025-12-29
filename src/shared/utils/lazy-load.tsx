@@ -90,3 +90,4 @@ export function addDnsPrefetch(origin: string) {
   link.href = origin
   document.head.appendChild(link)
 }
+

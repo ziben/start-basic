@@ -21,3 +21,4 @@ export function getDb() {
 
 const prisma = getDb()
 export default prisma
+

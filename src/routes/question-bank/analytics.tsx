@@ -5,3 +5,4 @@ export const Route = createFileRoute('/question-bank/analytics' as any)({
   component: AnalyticsPage,
 })
 
+

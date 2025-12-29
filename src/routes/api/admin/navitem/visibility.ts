@@ -26,3 +26,4 @@ export const Route = createFileRoute('/api/admin/navitem/visibility')({
     },
   },
 })
+

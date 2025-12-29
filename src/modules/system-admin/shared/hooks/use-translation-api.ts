@@ -1,27 +1,26 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { apiClient, type Translation, type TranslationImportResult } from '@/shared/lib/api-client'
+import { translationApi } from '../services/translation-api'
+import type { Translation, TranslationImportResult } from '../types/translation'
 
 export function useTranslations(locale?: string) {
   return useQuery<Translation[]>({
     queryKey: ['admin', 'translations', locale || 'all'],
-    queryFn: async () => {
-      return await apiClient.translations.list(locale)
-    },
+    queryFn: () => translationApi.list(locale),
   })
 }
 
 export function useCreateTranslation() {
   const qc = useQueryClient()
   return useMutation<Translation, Error, { locale: string; key: string; value: string }>({
-    mutationFn: async (data) => await apiClient.translations.create(data),
+    mutationFn: (data: Omit<Translation, 'id' | 'createdAt'>) => translationApi.create(data),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['admin', 'translations'] }),
   })
 }
 
 export function useUpdateTranslation() {
   const qc = useQueryClient()
-  return useMutation<Translation, Error, { id: string; value: string }>({
-    mutationFn: async ({ id, value }) => await apiClient.translations.update(id, { value }),
+  return useMutation<Translation, Error, { id: string; data: Partial<Pick<Translation, 'value'>> }>({
+    mutationFn: ({ id, data }) => translationApi.update(id, data),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['admin', 'translations'] }),
   })
 }
@@ -29,7 +28,7 @@ export function useUpdateTranslation() {
 export function useDeleteTranslation() {
   const qc = useQueryClient()
   return useMutation<{ success: true }, Error, string>({
-    mutationFn: async (id) => await apiClient.translations.remove(id),
+    mutationFn: (id: string) => translationApi.remove(id),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['admin', 'translations'] }),
   })
 }
@@ -37,16 +36,17 @@ export function useDeleteTranslation() {
 export function useImportTranslations() {
   const qc = useQueryClient()
   return useMutation<TranslationImportResult, Error, Array<Pick<Translation, 'locale' | 'key' | 'value'>>>({
-    mutationFn: async (items) => await apiClient.translations.import(items),
+    mutationFn: (items) => translationApi.import(items),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['admin', 'translations'] }),
   })
 }
 
 export function useExportTranslations() {
   return async (locale?: string) => {
-    return await apiClient.translations.exportCsv(locale)
+    return await translationApi.exportCsv(locale)
   }
 }
+
 
 
 

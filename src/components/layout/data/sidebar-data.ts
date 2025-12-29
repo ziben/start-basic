@@ -263,3 +263,4 @@ export const sidebarData: SidebarData = {
   teams: [],
   navGroups: [],
 }
+

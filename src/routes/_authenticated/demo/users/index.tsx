@@ -1,7 +1,6 @@
 import z from 'zod'
 import { createFileRoute } from '@tanstack/react-router'
-import { Users } from '@/features/demo/users'
-import { roles } from '@/features/demo/users/data/data'
+import { Users, roles } from '@/modules/demo'
 
 const usersSearchSchema = z.object({
   page: z.number().optional().catch(1),
@@ -23,3 +22,6 @@ export const Route = createFileRoute('/_authenticated/demo/users/')({
   validateSearch: usersSearchSchema,
   component: Users,
 })
+
+
+

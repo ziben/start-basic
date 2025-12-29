@@ -1,7 +1,7 @@
 import { DotsHorizontalIcon } from '@radix-ui/react-icons'
 import { type Row } from '@tanstack/react-table'
 import { Trash2 } from 'lucide-react'
-import { Translation } from '~/generated/prisma/client'
+import type { Translation } from '~/modules/system-admin/shared/types/translation'
 import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
 import { Button } from '@/components/ui/button'
 import {
@@ -59,6 +59,7 @@ export function DataTableRowActions<TData>({ row }: DataTableRowActionsProps<TDa
     </DropdownMenu>
   )
 }
+
 
 
 

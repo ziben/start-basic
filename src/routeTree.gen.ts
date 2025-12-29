@@ -10,11 +10,19 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as StudioRouteImport } from './routes/studio'
+import { Route as QuestionBankRouteRouteImport } from './routes/question-bank/route'
 import { Route as AdminRouteRouteImport } from './routes/admin/route'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as publicRouteRouteImport } from './routes/(public)/route'
+import { Route as QuestionBankIndexRouteImport } from './routes/question-bank/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as publicIndexRouteImport } from './routes/(public)/index'
+import { Route as QuestionBankTagsRouteImport } from './routes/question-bank/tags'
+import { Route as QuestionBankQuestionsRouteImport } from './routes/question-bank/questions'
+import { Route as QuestionBankPracticeRouteImport } from './routes/question-bank/practice'
+import { Route as QuestionBankImportExportRouteImport } from './routes/question-bank/import-export'
+import { Route as QuestionBankCategoriesRouteImport } from './routes/question-bank/categories'
+import { Route as QuestionBankAnalyticsRouteImport } from './routes/question-bank/analytics'
 import { Route as ApiUsersRouteImport } from './routes/api/users'
 import { Route as ApiSessionsRouteImport } from './routes/api/sessions'
 import { Route as AdminVerificationRouteImport } from './routes/admin/verification'
@@ -23,13 +31,10 @@ import { Route as AdminUserrolenavgroupRouteImport } from './routes/admin/userro
 import { Route as AdminTranslationRouteImport } from './routes/admin/translation'
 import { Route as AdminSessionRouteImport } from './routes/admin/session'
 import { Route as AdminRolenavgroupRouteImport } from './routes/admin/rolenavgroup'
-import { Route as AdminOrganizationRouteImport } from './routes/admin/organization'
 import { Route as AdminNavitemRouteImport } from './routes/admin/navitem'
 import { Route as AdminNavigationRouteImport } from './routes/admin/navigation'
 import { Route as AdminNavgroupRouteImport } from './routes/admin/navgroup'
-import { Route as AdminMemberRouteImport } from './routes/admin/member'
 import { Route as AdminLogRouteImport } from './routes/admin/log'
-import { Route as AdminInvitationRouteImport } from './routes/admin/invitation'
 import { Route as AdminAccountRouteImport } from './routes/admin/account'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as publicTermsRouteImport } from './routes/(public)/terms'
@@ -44,17 +49,21 @@ import { Route as authSignUpRouteImport } from './routes/(auth)/sign-up'
 import { Route as authSignIn2RouteImport } from './routes/(auth)/sign-in-2'
 import { Route as authSignInRouteImport } from './routes/(auth)/sign-in'
 import { Route as authForgotPasswordRouteImport } from './routes/(auth)/forgot-password'
+import { Route as AdminOrganizationIndexRouteImport } from './routes/admin/organization/index'
 import { Route as AuthenticatedSessionsIndexRouteImport } from './routes/_authenticated/sessions/index'
 import { Route as AuthenticatedHelpCenterIndexRouteImport } from './routes/_authenticated/help-center/index'
 import { Route as ApiUsersIdRouteImport } from './routes/api/users.$id'
 import { Route as ApiI18nLngRouteImport } from './routes/api/i18n/$lng'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
+import { Route as AdminOrganizationMemberRouteImport } from './routes/admin/organization/member'
+import { Route as AdminOrganizationInvitationRouteImport } from './routes/admin/organization/invitation'
 import { Route as AdminOrganizationCreateRouteImport } from './routes/admin/organization/create'
 import { Route as AdminOrganizationIdRouteImport } from './routes/admin/organization/$id'
-import { Route as AdminMemberCreateRouteImport } from './routes/admin/member/create'
-import { Route as AdminMemberIdRouteImport } from './routes/admin/member/$id'
 import { Route as AuthenticatedErrorsErrorRouteImport } from './routes/_authenticated/errors/$error'
 import { Route as AuthenticatedDemoSettingsRouteRouteImport } from './routes/_authenticated/demo/settings/route'
+import { Route as ApiQuestionBankTagsIndexRouteImport } from './routes/api/question-bank/tags/index'
+import { Route as ApiQuestionBankQuestionsIndexRouteImport } from './routes/api/question-bank/questions/index'
+import { Route as ApiQuestionBankCategoriesIndexRouteImport } from './routes/api/question-bank/categories/index'
 import { Route as ApiDemoTasksIndexRouteImport } from './routes/api/demo/tasks/index'
 import { Route as ApiAdminUserIndexRouteImport } from './routes/api/admin/user/index'
 import { Route as ApiAdminTranslationIndexRouteImport } from './routes/api/admin/translation/index'
@@ -70,6 +79,9 @@ import { Route as AuthenticatedDemoTasksIndexRouteImport } from './routes/_authe
 import { Route as AuthenticatedDemoSettingsIndexRouteImport } from './routes/_authenticated/demo/settings/index'
 import { Route as AuthenticatedDemoChatsIndexRouteImport } from './routes/_authenticated/demo/chats/index'
 import { Route as AuthenticatedDemoAppsIndexRouteImport } from './routes/_authenticated/demo/apps/index'
+import { Route as ApiQuestionBankTagsIdRouteImport } from './routes/api/question-bank/tags/$id'
+import { Route as ApiQuestionBankQuestionsIdRouteImport } from './routes/api/question-bank/questions/$id'
+import { Route as ApiQuestionBankCategoriesIdRouteImport } from './routes/api/question-bank/categories/$id'
 import { Route as ApiAdminUserBulkDeleteRouteImport } from './routes/api/admin/user/bulk-delete'
 import { Route as ApiAdminUserBulkBanRouteImport } from './routes/api/admin/user/bulk-ban'
 import { Route as ApiAdminUserIdRouteImport } from './routes/api/admin/user/$id'
@@ -89,6 +101,8 @@ import { Route as ApiAdminMemberBatchRouteImport } from './routes/api/admin/memb
 import { Route as ApiAdminMemberIdRouteImport } from './routes/api/admin/member/$id'
 import { Route as ApiAdminInvitationBatchRouteImport } from './routes/api/admin/invitation/batch'
 import { Route as ApiAdminInvitationIdRouteImport } from './routes/api/admin/invitation/$id'
+import { Route as AdminOrganizationMemberCreateRouteImport } from './routes/admin/organization/member/create'
+import { Route as AdminOrganizationMemberIdRouteImport } from './routes/admin/organization/member/$id'
 import { Route as AuthenticatedDemoSettingsNotificationsRouteImport } from './routes/_authenticated/demo/settings/notifications'
 import { Route as AuthenticatedDemoSettingsDisplayRouteImport } from './routes/_authenticated/demo/settings/display'
 import { Route as AuthenticatedDemoSettingsAppearanceRouteImport } from './routes/_authenticated/demo/settings/appearance'
@@ -97,6 +111,11 @@ import { Route as AuthenticatedDemoSettingsAccountRouteImport } from './routes/_
 const StudioRoute = StudioRouteImport.update({
   id: '/studio',
   path: '/studio',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const QuestionBankRouteRoute = QuestionBankRouteRouteImport.update({
+  id: '/question-bank',
+  path: '/question-bank',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminRouteRoute = AdminRouteRouteImport.update({
@@ -112,6 +131,11 @@ const publicRouteRoute = publicRouteRouteImport.update({
   id: '/(public)',
   getParentRoute: () => rootRouteImport,
 } as any)
+const QuestionBankIndexRoute = QuestionBankIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => QuestionBankRouteRoute,
+} as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -121,6 +145,37 @@ const publicIndexRoute = publicIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => publicRouteRoute,
+} as any)
+const QuestionBankTagsRoute = QuestionBankTagsRouteImport.update({
+  id: '/tags',
+  path: '/tags',
+  getParentRoute: () => QuestionBankRouteRoute,
+} as any)
+const QuestionBankQuestionsRoute = QuestionBankQuestionsRouteImport.update({
+  id: '/questions',
+  path: '/questions',
+  getParentRoute: () => QuestionBankRouteRoute,
+} as any)
+const QuestionBankPracticeRoute = QuestionBankPracticeRouteImport.update({
+  id: '/practice',
+  path: '/practice',
+  getParentRoute: () => QuestionBankRouteRoute,
+} as any)
+const QuestionBankImportExportRoute =
+  QuestionBankImportExportRouteImport.update({
+    id: '/import-export',
+    path: '/import-export',
+    getParentRoute: () => QuestionBankRouteRoute,
+  } as any)
+const QuestionBankCategoriesRoute = QuestionBankCategoriesRouteImport.update({
+  id: '/categories',
+  path: '/categories',
+  getParentRoute: () => QuestionBankRouteRoute,
+} as any)
+const QuestionBankAnalyticsRoute = QuestionBankAnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => QuestionBankRouteRoute,
 } as any)
 const ApiUsersRoute = ApiUsersRouteImport.update({
   id: '/api/users',
@@ -162,11 +217,6 @@ const AdminRolenavgroupRoute = AdminRolenavgroupRouteImport.update({
   path: '/rolenavgroup',
   getParentRoute: () => AdminRouteRoute,
 } as any)
-const AdminOrganizationRoute = AdminOrganizationRouteImport.update({
-  id: '/organization',
-  path: '/organization',
-  getParentRoute: () => AdminRouteRoute,
-} as any)
 const AdminNavitemRoute = AdminNavitemRouteImport.update({
   id: '/navitem',
   path: '/navitem',
@@ -182,19 +232,9 @@ const AdminNavgroupRoute = AdminNavgroupRouteImport.update({
   path: '/navgroup',
   getParentRoute: () => AdminRouteRoute,
 } as any)
-const AdminMemberRoute = AdminMemberRouteImport.update({
-  id: '/member',
-  path: '/member',
-  getParentRoute: () => AdminRouteRoute,
-} as any)
 const AdminLogRoute = AdminLogRouteImport.update({
   id: '/log',
   path: '/log',
-  getParentRoute: () => AdminRouteRoute,
-} as any)
-const AdminInvitationRoute = AdminInvitationRouteImport.update({
-  id: '/invitation',
-  path: '/invitation',
   getParentRoute: () => AdminRouteRoute,
 } as any)
 const AdminAccountRoute = AdminAccountRouteImport.update({
@@ -267,6 +307,11 @@ const authForgotPasswordRoute = authForgotPasswordRouteImport.update({
   path: '/forgot-password',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminOrganizationIndexRoute = AdminOrganizationIndexRouteImport.update({
+  id: '/organization/',
+  path: '/organization/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const AuthenticatedSessionsIndexRoute =
   AuthenticatedSessionsIndexRouteImport.update({
     id: '/sessions/',
@@ -294,25 +339,26 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminOrganizationMemberRoute = AdminOrganizationMemberRouteImport.update({
+  id: '/organization/member',
+  path: '/organization/member',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminOrganizationInvitationRoute =
+  AdminOrganizationInvitationRouteImport.update({
+    id: '/organization/invitation',
+    path: '/organization/invitation',
+    getParentRoute: () => AdminRouteRoute,
+  } as any)
 const AdminOrganizationCreateRoute = AdminOrganizationCreateRouteImport.update({
-  id: '/create',
-  path: '/create',
-  getParentRoute: () => AdminOrganizationRoute,
+  id: '/organization/create',
+  path: '/organization/create',
+  getParentRoute: () => AdminRouteRoute,
 } as any)
 const AdminOrganizationIdRoute = AdminOrganizationIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => AdminOrganizationRoute,
-} as any)
-const AdminMemberCreateRoute = AdminMemberCreateRouteImport.update({
-  id: '/create',
-  path: '/create',
-  getParentRoute: () => AdminMemberRoute,
-} as any)
-const AdminMemberIdRoute = AdminMemberIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => AdminMemberRoute,
+  id: '/organization/$id',
+  path: '/organization/$id',
+  getParentRoute: () => AdminRouteRoute,
 } as any)
 const AuthenticatedErrorsErrorRoute =
   AuthenticatedErrorsErrorRouteImport.update({
@@ -325,6 +371,24 @@ const AuthenticatedDemoSettingsRouteRoute =
     id: '/demo/settings',
     path: '/demo/settings',
     getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const ApiQuestionBankTagsIndexRoute =
+  ApiQuestionBankTagsIndexRouteImport.update({
+    id: '/api/question-bank/tags/',
+    path: '/api/question-bank/tags/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiQuestionBankQuestionsIndexRoute =
+  ApiQuestionBankQuestionsIndexRouteImport.update({
+    id: '/api/question-bank/questions/',
+    path: '/api/question-bank/questions/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiQuestionBankCategoriesIndexRoute =
+  ApiQuestionBankCategoriesIndexRouteImport.update({
+    id: '/api/question-bank/categories/',
+    path: '/api/question-bank/categories/',
+    getParentRoute: () => rootRouteImport,
   } as any)
 const ApiDemoTasksIndexRoute = ApiDemoTasksIndexRouteImport.update({
   id: '/api/demo/tasks/',
@@ -407,6 +471,23 @@ const AuthenticatedDemoAppsIndexRoute =
     id: '/demo/apps/',
     path: '/demo/apps/',
     getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const ApiQuestionBankTagsIdRoute = ApiQuestionBankTagsIdRouteImport.update({
+  id: '/api/question-bank/tags/$id',
+  path: '/api/question-bank/tags/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiQuestionBankQuestionsIdRoute =
+  ApiQuestionBankQuestionsIdRouteImport.update({
+    id: '/api/question-bank/questions/$id',
+    path: '/api/question-bank/questions/$id',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiQuestionBankCategoriesIdRoute =
+  ApiQuestionBankCategoriesIdRouteImport.update({
+    id: '/api/question-bank/categories/$id',
+    path: '/api/question-bank/categories/$id',
+    getParentRoute: () => rootRouteImport,
   } as any)
 const ApiAdminUserBulkDeleteRoute = ApiAdminUserBulkDeleteRouteImport.update({
   id: '/api/admin/user/bulk-delete',
@@ -508,6 +589,18 @@ const ApiAdminInvitationIdRoute = ApiAdminInvitationIdRouteImport.update({
   path: '/api/admin/invitation/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminOrganizationMemberCreateRoute =
+  AdminOrganizationMemberCreateRouteImport.update({
+    id: '/create',
+    path: '/create',
+    getParentRoute: () => AdminOrganizationMemberRoute,
+  } as any)
+const AdminOrganizationMemberIdRoute =
+  AdminOrganizationMemberIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => AdminOrganizationMemberRoute,
+  } as any)
 const AuthenticatedDemoSettingsNotificationsRoute =
   AuthenticatedDemoSettingsNotificationsRouteImport.update({
     id: '/notifications',
@@ -535,6 +628,7 @@ const AuthenticatedDemoSettingsAccountRoute =
 
 export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteRouteWithChildren
+  '/question-bank': typeof QuestionBankRouteRouteWithChildren
   '/studio': typeof StudioRoute
   '/forgot-password': typeof authForgotPasswordRoute
   '/sign-in': typeof authSignInRoute
@@ -550,13 +644,10 @@ export interface FileRoutesByFullPath {
   '/terms': typeof publicTermsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/admin/account': typeof AdminAccountRoute
-  '/admin/invitation': typeof AdminInvitationRoute
   '/admin/log': typeof AdminLogRoute
-  '/admin/member': typeof AdminMemberRouteWithChildren
   '/admin/navgroup': typeof AdminNavgroupRoute
   '/admin/navigation': typeof AdminNavigationRoute
   '/admin/navitem': typeof AdminNavitemRoute
-  '/admin/organization': typeof AdminOrganizationRouteWithChildren
   '/admin/rolenavgroup': typeof AdminRolenavgroupRoute
   '/admin/session': typeof AdminSessionRoute
   '/admin/translation': typeof AdminTranslationRoute
@@ -565,23 +656,33 @@ export interface FileRoutesByFullPath {
   '/admin/verification': typeof AdminVerificationRoute
   '/api/sessions': typeof ApiSessionsRoute
   '/api/users': typeof ApiUsersRouteWithChildren
+  '/question-bank/analytics': typeof QuestionBankAnalyticsRoute
+  '/question-bank/categories': typeof QuestionBankCategoriesRoute
+  '/question-bank/import-export': typeof QuestionBankImportExportRoute
+  '/question-bank/practice': typeof QuestionBankPracticeRoute
+  '/question-bank/questions': typeof QuestionBankQuestionsRoute
+  '/question-bank/tags': typeof QuestionBankTagsRoute
   '/': typeof publicIndexRoute
   '/admin/': typeof AdminIndexRoute
+  '/question-bank/': typeof QuestionBankIndexRoute
   '/demo/settings': typeof AuthenticatedDemoSettingsRouteRouteWithChildren
   '/errors/$error': typeof AuthenticatedErrorsErrorRoute
-  '/admin/member/$id': typeof AdminMemberIdRoute
-  '/admin/member/create': typeof AdminMemberCreateRoute
   '/admin/organization/$id': typeof AdminOrganizationIdRoute
   '/admin/organization/create': typeof AdminOrganizationCreateRoute
+  '/admin/organization/invitation': typeof AdminOrganizationInvitationRoute
+  '/admin/organization/member': typeof AdminOrganizationMemberRouteWithChildren
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/i18n/$lng': typeof ApiI18nLngRoute
   '/api/users/$id': typeof ApiUsersIdRoute
   '/help-center': typeof AuthenticatedHelpCenterIndexRoute
   '/sessions': typeof AuthenticatedSessionsIndexRoute
+  '/admin/organization': typeof AdminOrganizationIndexRoute
   '/demo/settings/account': typeof AuthenticatedDemoSettingsAccountRoute
   '/demo/settings/appearance': typeof AuthenticatedDemoSettingsAppearanceRoute
   '/demo/settings/display': typeof AuthenticatedDemoSettingsDisplayRoute
   '/demo/settings/notifications': typeof AuthenticatedDemoSettingsNotificationsRoute
+  '/admin/organization/member/$id': typeof AdminOrganizationMemberIdRoute
+  '/admin/organization/member/create': typeof AdminOrganizationMemberCreateRoute
   '/api/admin/invitation/$id': typeof ApiAdminInvitationIdRoute
   '/api/admin/invitation/batch': typeof ApiAdminInvitationBatchRoute
   '/api/admin/member/$id': typeof ApiAdminMemberIdRoute
@@ -601,6 +702,9 @@ export interface FileRoutesByFullPath {
   '/api/admin/user/$id': typeof ApiAdminUserIdRoute
   '/api/admin/user/bulk-ban': typeof ApiAdminUserBulkBanRoute
   '/api/admin/user/bulk-delete': typeof ApiAdminUserBulkDeleteRoute
+  '/api/question-bank/categories/$id': typeof ApiQuestionBankCategoriesIdRoute
+  '/api/question-bank/questions/$id': typeof ApiQuestionBankQuestionsIdRoute
+  '/api/question-bank/tags/$id': typeof ApiQuestionBankTagsIdRoute
   '/demo/apps': typeof AuthenticatedDemoAppsIndexRoute
   '/demo/chats': typeof AuthenticatedDemoChatsIndexRoute
   '/demo/settings/': typeof AuthenticatedDemoSettingsIndexRoute
@@ -616,6 +720,9 @@ export interface FileRoutesByFullPath {
   '/api/admin/translation': typeof ApiAdminTranslationIndexRoute
   '/api/admin/user': typeof ApiAdminUserIndexRoute
   '/api/demo/tasks': typeof ApiDemoTasksIndexRoute
+  '/api/question-bank/categories': typeof ApiQuestionBankCategoriesIndexRoute
+  '/api/question-bank/questions': typeof ApiQuestionBankQuestionsIndexRoute
+  '/api/question-bank/tags': typeof ApiQuestionBankTagsIndexRoute
 }
 export interface FileRoutesByTo {
   '/studio': typeof StudioRoute
@@ -633,13 +740,10 @@ export interface FileRoutesByTo {
   '/terms': typeof publicTermsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/admin/account': typeof AdminAccountRoute
-  '/admin/invitation': typeof AdminInvitationRoute
   '/admin/log': typeof AdminLogRoute
-  '/admin/member': typeof AdminMemberRouteWithChildren
   '/admin/navgroup': typeof AdminNavgroupRoute
   '/admin/navigation': typeof AdminNavigationRoute
   '/admin/navitem': typeof AdminNavitemRoute
-  '/admin/organization': typeof AdminOrganizationRouteWithChildren
   '/admin/rolenavgroup': typeof AdminRolenavgroupRoute
   '/admin/session': typeof AdminSessionRoute
   '/admin/translation': typeof AdminTranslationRoute
@@ -648,22 +752,32 @@ export interface FileRoutesByTo {
   '/admin/verification': typeof AdminVerificationRoute
   '/api/sessions': typeof ApiSessionsRoute
   '/api/users': typeof ApiUsersRouteWithChildren
+  '/question-bank/analytics': typeof QuestionBankAnalyticsRoute
+  '/question-bank/categories': typeof QuestionBankCategoriesRoute
+  '/question-bank/import-export': typeof QuestionBankImportExportRoute
+  '/question-bank/practice': typeof QuestionBankPracticeRoute
+  '/question-bank/questions': typeof QuestionBankQuestionsRoute
+  '/question-bank/tags': typeof QuestionBankTagsRoute
   '/': typeof publicIndexRoute
   '/admin': typeof AdminIndexRoute
+  '/question-bank': typeof QuestionBankIndexRoute
   '/errors/$error': typeof AuthenticatedErrorsErrorRoute
-  '/admin/member/$id': typeof AdminMemberIdRoute
-  '/admin/member/create': typeof AdminMemberCreateRoute
   '/admin/organization/$id': typeof AdminOrganizationIdRoute
   '/admin/organization/create': typeof AdminOrganizationCreateRoute
+  '/admin/organization/invitation': typeof AdminOrganizationInvitationRoute
+  '/admin/organization/member': typeof AdminOrganizationMemberRouteWithChildren
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/i18n/$lng': typeof ApiI18nLngRoute
   '/api/users/$id': typeof ApiUsersIdRoute
   '/help-center': typeof AuthenticatedHelpCenterIndexRoute
   '/sessions': typeof AuthenticatedSessionsIndexRoute
+  '/admin/organization': typeof AdminOrganizationIndexRoute
   '/demo/settings/account': typeof AuthenticatedDemoSettingsAccountRoute
   '/demo/settings/appearance': typeof AuthenticatedDemoSettingsAppearanceRoute
   '/demo/settings/display': typeof AuthenticatedDemoSettingsDisplayRoute
   '/demo/settings/notifications': typeof AuthenticatedDemoSettingsNotificationsRoute
+  '/admin/organization/member/$id': typeof AdminOrganizationMemberIdRoute
+  '/admin/organization/member/create': typeof AdminOrganizationMemberCreateRoute
   '/api/admin/invitation/$id': typeof ApiAdminInvitationIdRoute
   '/api/admin/invitation/batch': typeof ApiAdminInvitationBatchRoute
   '/api/admin/member/$id': typeof ApiAdminMemberIdRoute
@@ -683,6 +797,9 @@ export interface FileRoutesByTo {
   '/api/admin/user/$id': typeof ApiAdminUserIdRoute
   '/api/admin/user/bulk-ban': typeof ApiAdminUserBulkBanRoute
   '/api/admin/user/bulk-delete': typeof ApiAdminUserBulkDeleteRoute
+  '/api/question-bank/categories/$id': typeof ApiQuestionBankCategoriesIdRoute
+  '/api/question-bank/questions/$id': typeof ApiQuestionBankQuestionsIdRoute
+  '/api/question-bank/tags/$id': typeof ApiQuestionBankTagsIdRoute
   '/demo/apps': typeof AuthenticatedDemoAppsIndexRoute
   '/demo/chats': typeof AuthenticatedDemoChatsIndexRoute
   '/demo/settings': typeof AuthenticatedDemoSettingsIndexRoute
@@ -698,12 +815,16 @@ export interface FileRoutesByTo {
   '/api/admin/translation': typeof ApiAdminTranslationIndexRoute
   '/api/admin/user': typeof ApiAdminUserIndexRoute
   '/api/demo/tasks': typeof ApiDemoTasksIndexRoute
+  '/api/question-bank/categories': typeof ApiQuestionBankCategoriesIndexRoute
+  '/api/question-bank/questions': typeof ApiQuestionBankQuestionsIndexRoute
+  '/api/question-bank/tags': typeof ApiQuestionBankTagsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/(public)': typeof publicRouteRouteWithChildren
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/admin': typeof AdminRouteRouteWithChildren
+  '/question-bank': typeof QuestionBankRouteRouteWithChildren
   '/studio': typeof StudioRoute
   '/(auth)/forgot-password': typeof authForgotPasswordRoute
   '/(auth)/sign-in': typeof authSignInRoute
@@ -719,13 +840,10 @@ export interface FileRoutesById {
   '/(public)/terms': typeof publicTermsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/admin/account': typeof AdminAccountRoute
-  '/admin/invitation': typeof AdminInvitationRoute
   '/admin/log': typeof AdminLogRoute
-  '/admin/member': typeof AdminMemberRouteWithChildren
   '/admin/navgroup': typeof AdminNavgroupRoute
   '/admin/navigation': typeof AdminNavigationRoute
   '/admin/navitem': typeof AdminNavitemRoute
-  '/admin/organization': typeof AdminOrganizationRouteWithChildren
   '/admin/rolenavgroup': typeof AdminRolenavgroupRoute
   '/admin/session': typeof AdminSessionRoute
   '/admin/translation': typeof AdminTranslationRoute
@@ -734,23 +852,33 @@ export interface FileRoutesById {
   '/admin/verification': typeof AdminVerificationRoute
   '/api/sessions': typeof ApiSessionsRoute
   '/api/users': typeof ApiUsersRouteWithChildren
+  '/question-bank/analytics': typeof QuestionBankAnalyticsRoute
+  '/question-bank/categories': typeof QuestionBankCategoriesRoute
+  '/question-bank/import-export': typeof QuestionBankImportExportRoute
+  '/question-bank/practice': typeof QuestionBankPracticeRoute
+  '/question-bank/questions': typeof QuestionBankQuestionsRoute
+  '/question-bank/tags': typeof QuestionBankTagsRoute
   '/(public)/': typeof publicIndexRoute
   '/admin/': typeof AdminIndexRoute
+  '/question-bank/': typeof QuestionBankIndexRoute
   '/_authenticated/demo/settings': typeof AuthenticatedDemoSettingsRouteRouteWithChildren
   '/_authenticated/errors/$error': typeof AuthenticatedErrorsErrorRoute
-  '/admin/member/$id': typeof AdminMemberIdRoute
-  '/admin/member/create': typeof AdminMemberCreateRoute
   '/admin/organization/$id': typeof AdminOrganizationIdRoute
   '/admin/organization/create': typeof AdminOrganizationCreateRoute
+  '/admin/organization/invitation': typeof AdminOrganizationInvitationRoute
+  '/admin/organization/member': typeof AdminOrganizationMemberRouteWithChildren
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/i18n/$lng': typeof ApiI18nLngRoute
   '/api/users/$id': typeof ApiUsersIdRoute
   '/_authenticated/help-center/': typeof AuthenticatedHelpCenterIndexRoute
   '/_authenticated/sessions/': typeof AuthenticatedSessionsIndexRoute
+  '/admin/organization/': typeof AdminOrganizationIndexRoute
   '/_authenticated/demo/settings/account': typeof AuthenticatedDemoSettingsAccountRoute
   '/_authenticated/demo/settings/appearance': typeof AuthenticatedDemoSettingsAppearanceRoute
   '/_authenticated/demo/settings/display': typeof AuthenticatedDemoSettingsDisplayRoute
   '/_authenticated/demo/settings/notifications': typeof AuthenticatedDemoSettingsNotificationsRoute
+  '/admin/organization/member/$id': typeof AdminOrganizationMemberIdRoute
+  '/admin/organization/member/create': typeof AdminOrganizationMemberCreateRoute
   '/api/admin/invitation/$id': typeof ApiAdminInvitationIdRoute
   '/api/admin/invitation/batch': typeof ApiAdminInvitationBatchRoute
   '/api/admin/member/$id': typeof ApiAdminMemberIdRoute
@@ -770,6 +898,9 @@ export interface FileRoutesById {
   '/api/admin/user/$id': typeof ApiAdminUserIdRoute
   '/api/admin/user/bulk-ban': typeof ApiAdminUserBulkBanRoute
   '/api/admin/user/bulk-delete': typeof ApiAdminUserBulkDeleteRoute
+  '/api/question-bank/categories/$id': typeof ApiQuestionBankCategoriesIdRoute
+  '/api/question-bank/questions/$id': typeof ApiQuestionBankQuestionsIdRoute
+  '/api/question-bank/tags/$id': typeof ApiQuestionBankTagsIdRoute
   '/_authenticated/demo/apps/': typeof AuthenticatedDemoAppsIndexRoute
   '/_authenticated/demo/chats/': typeof AuthenticatedDemoChatsIndexRoute
   '/_authenticated/demo/settings/': typeof AuthenticatedDemoSettingsIndexRoute
@@ -785,11 +916,15 @@ export interface FileRoutesById {
   '/api/admin/translation/': typeof ApiAdminTranslationIndexRoute
   '/api/admin/user/': typeof ApiAdminUserIndexRoute
   '/api/demo/tasks/': typeof ApiDemoTasksIndexRoute
+  '/api/question-bank/categories/': typeof ApiQuestionBankCategoriesIndexRoute
+  '/api/question-bank/questions/': typeof ApiQuestionBankQuestionsIndexRoute
+  '/api/question-bank/tags/': typeof ApiQuestionBankTagsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/admin'
+    | '/question-bank'
     | '/studio'
     | '/forgot-password'
     | '/sign-in'
@@ -805,13 +940,10 @@ export interface FileRouteTypes {
     | '/terms'
     | '/dashboard'
     | '/admin/account'
-    | '/admin/invitation'
     | '/admin/log'
-    | '/admin/member'
     | '/admin/navgroup'
     | '/admin/navigation'
     | '/admin/navitem'
-    | '/admin/organization'
     | '/admin/rolenavgroup'
     | '/admin/session'
     | '/admin/translation'
@@ -820,23 +952,33 @@ export interface FileRouteTypes {
     | '/admin/verification'
     | '/api/sessions'
     | '/api/users'
+    | '/question-bank/analytics'
+    | '/question-bank/categories'
+    | '/question-bank/import-export'
+    | '/question-bank/practice'
+    | '/question-bank/questions'
+    | '/question-bank/tags'
     | '/'
     | '/admin/'
+    | '/question-bank/'
     | '/demo/settings'
     | '/errors/$error'
-    | '/admin/member/$id'
-    | '/admin/member/create'
     | '/admin/organization/$id'
     | '/admin/organization/create'
+    | '/admin/organization/invitation'
+    | '/admin/organization/member'
     | '/api/auth/$'
     | '/api/i18n/$lng'
     | '/api/users/$id'
     | '/help-center'
     | '/sessions'
+    | '/admin/organization'
     | '/demo/settings/account'
     | '/demo/settings/appearance'
     | '/demo/settings/display'
     | '/demo/settings/notifications'
+    | '/admin/organization/member/$id'
+    | '/admin/organization/member/create'
     | '/api/admin/invitation/$id'
     | '/api/admin/invitation/batch'
     | '/api/admin/member/$id'
@@ -856,6 +998,9 @@ export interface FileRouteTypes {
     | '/api/admin/user/$id'
     | '/api/admin/user/bulk-ban'
     | '/api/admin/user/bulk-delete'
+    | '/api/question-bank/categories/$id'
+    | '/api/question-bank/questions/$id'
+    | '/api/question-bank/tags/$id'
     | '/demo/apps'
     | '/demo/chats'
     | '/demo/settings/'
@@ -871,6 +1016,9 @@ export interface FileRouteTypes {
     | '/api/admin/translation'
     | '/api/admin/user'
     | '/api/demo/tasks'
+    | '/api/question-bank/categories'
+    | '/api/question-bank/questions'
+    | '/api/question-bank/tags'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/studio'
@@ -888,13 +1036,10 @@ export interface FileRouteTypes {
     | '/terms'
     | '/dashboard'
     | '/admin/account'
-    | '/admin/invitation'
     | '/admin/log'
-    | '/admin/member'
     | '/admin/navgroup'
     | '/admin/navigation'
     | '/admin/navitem'
-    | '/admin/organization'
     | '/admin/rolenavgroup'
     | '/admin/session'
     | '/admin/translation'
@@ -903,22 +1048,32 @@ export interface FileRouteTypes {
     | '/admin/verification'
     | '/api/sessions'
     | '/api/users'
+    | '/question-bank/analytics'
+    | '/question-bank/categories'
+    | '/question-bank/import-export'
+    | '/question-bank/practice'
+    | '/question-bank/questions'
+    | '/question-bank/tags'
     | '/'
     | '/admin'
+    | '/question-bank'
     | '/errors/$error'
-    | '/admin/member/$id'
-    | '/admin/member/create'
     | '/admin/organization/$id'
     | '/admin/organization/create'
+    | '/admin/organization/invitation'
+    | '/admin/organization/member'
     | '/api/auth/$'
     | '/api/i18n/$lng'
     | '/api/users/$id'
     | '/help-center'
     | '/sessions'
+    | '/admin/organization'
     | '/demo/settings/account'
     | '/demo/settings/appearance'
     | '/demo/settings/display'
     | '/demo/settings/notifications'
+    | '/admin/organization/member/$id'
+    | '/admin/organization/member/create'
     | '/api/admin/invitation/$id'
     | '/api/admin/invitation/batch'
     | '/api/admin/member/$id'
@@ -938,6 +1093,9 @@ export interface FileRouteTypes {
     | '/api/admin/user/$id'
     | '/api/admin/user/bulk-ban'
     | '/api/admin/user/bulk-delete'
+    | '/api/question-bank/categories/$id'
+    | '/api/question-bank/questions/$id'
+    | '/api/question-bank/tags/$id'
     | '/demo/apps'
     | '/demo/chats'
     | '/demo/settings'
@@ -953,11 +1111,15 @@ export interface FileRouteTypes {
     | '/api/admin/translation'
     | '/api/admin/user'
     | '/api/demo/tasks'
+    | '/api/question-bank/categories'
+    | '/api/question-bank/questions'
+    | '/api/question-bank/tags'
   id:
     | '__root__'
     | '/(public)'
     | '/_authenticated'
     | '/admin'
+    | '/question-bank'
     | '/studio'
     | '/(auth)/forgot-password'
     | '/(auth)/sign-in'
@@ -973,13 +1135,10 @@ export interface FileRouteTypes {
     | '/(public)/terms'
     | '/_authenticated/dashboard'
     | '/admin/account'
-    | '/admin/invitation'
     | '/admin/log'
-    | '/admin/member'
     | '/admin/navgroup'
     | '/admin/navigation'
     | '/admin/navitem'
-    | '/admin/organization'
     | '/admin/rolenavgroup'
     | '/admin/session'
     | '/admin/translation'
@@ -988,23 +1147,33 @@ export interface FileRouteTypes {
     | '/admin/verification'
     | '/api/sessions'
     | '/api/users'
+    | '/question-bank/analytics'
+    | '/question-bank/categories'
+    | '/question-bank/import-export'
+    | '/question-bank/practice'
+    | '/question-bank/questions'
+    | '/question-bank/tags'
     | '/(public)/'
     | '/admin/'
+    | '/question-bank/'
     | '/_authenticated/demo/settings'
     | '/_authenticated/errors/$error'
-    | '/admin/member/$id'
-    | '/admin/member/create'
     | '/admin/organization/$id'
     | '/admin/organization/create'
+    | '/admin/organization/invitation'
+    | '/admin/organization/member'
     | '/api/auth/$'
     | '/api/i18n/$lng'
     | '/api/users/$id'
     | '/_authenticated/help-center/'
     | '/_authenticated/sessions/'
+    | '/admin/organization/'
     | '/_authenticated/demo/settings/account'
     | '/_authenticated/demo/settings/appearance'
     | '/_authenticated/demo/settings/display'
     | '/_authenticated/demo/settings/notifications'
+    | '/admin/organization/member/$id'
+    | '/admin/organization/member/create'
     | '/api/admin/invitation/$id'
     | '/api/admin/invitation/batch'
     | '/api/admin/member/$id'
@@ -1024,6 +1193,9 @@ export interface FileRouteTypes {
     | '/api/admin/user/$id'
     | '/api/admin/user/bulk-ban'
     | '/api/admin/user/bulk-delete'
+    | '/api/question-bank/categories/$id'
+    | '/api/question-bank/questions/$id'
+    | '/api/question-bank/tags/$id'
     | '/_authenticated/demo/apps/'
     | '/_authenticated/demo/chats/'
     | '/_authenticated/demo/settings/'
@@ -1039,12 +1211,16 @@ export interface FileRouteTypes {
     | '/api/admin/translation/'
     | '/api/admin/user/'
     | '/api/demo/tasks/'
+    | '/api/question-bank/categories/'
+    | '/api/question-bank/questions/'
+    | '/api/question-bank/tags/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   publicRouteRoute: typeof publicRouteRouteWithChildren
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AdminRouteRoute: typeof AdminRouteRouteWithChildren
+  QuestionBankRouteRoute: typeof QuestionBankRouteRouteWithChildren
   StudioRoute: typeof StudioRoute
   authForgotPasswordRoute: typeof authForgotPasswordRoute
   authSignInRoute: typeof authSignInRoute
@@ -1078,6 +1254,9 @@ export interface RootRouteChildren {
   ApiAdminUserIdRoute: typeof ApiAdminUserIdRoute
   ApiAdminUserBulkBanRoute: typeof ApiAdminUserBulkBanRoute
   ApiAdminUserBulkDeleteRoute: typeof ApiAdminUserBulkDeleteRoute
+  ApiQuestionBankCategoriesIdRoute: typeof ApiQuestionBankCategoriesIdRoute
+  ApiQuestionBankQuestionsIdRoute: typeof ApiQuestionBankQuestionsIdRoute
+  ApiQuestionBankTagsIdRoute: typeof ApiQuestionBankTagsIdRoute
   ApiAdminInvitationIndexRoute: typeof ApiAdminInvitationIndexRoute
   ApiAdminLogIndexRoute: typeof ApiAdminLogIndexRoute
   ApiAdminMemberIndexRoute: typeof ApiAdminMemberIndexRoute
@@ -1088,6 +1267,9 @@ export interface RootRouteChildren {
   ApiAdminTranslationIndexRoute: typeof ApiAdminTranslationIndexRoute
   ApiAdminUserIndexRoute: typeof ApiAdminUserIndexRoute
   ApiDemoTasksIndexRoute: typeof ApiDemoTasksIndexRoute
+  ApiQuestionBankCategoriesIndexRoute: typeof ApiQuestionBankCategoriesIndexRoute
+  ApiQuestionBankQuestionsIndexRoute: typeof ApiQuestionBankQuestionsIndexRoute
+  ApiQuestionBankTagsIndexRoute: typeof ApiQuestionBankTagsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -1097,6 +1279,13 @@ declare module '@tanstack/react-router' {
       path: '/studio'
       fullPath: '/studio'
       preLoaderRoute: typeof StudioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/question-bank': {
+      id: '/question-bank'
+      path: '/question-bank'
+      fullPath: '/question-bank'
+      preLoaderRoute: typeof QuestionBankRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin': {
@@ -1120,6 +1309,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof publicRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/question-bank/': {
+      id: '/question-bank/'
+      path: '/'
+      fullPath: '/question-bank/'
+      preLoaderRoute: typeof QuestionBankIndexRouteImport
+      parentRoute: typeof QuestionBankRouteRoute
+    }
     '/admin/': {
       id: '/admin/'
       path: '/'
@@ -1133,6 +1329,48 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof publicIndexRouteImport
       parentRoute: typeof publicRouteRoute
+    }
+    '/question-bank/tags': {
+      id: '/question-bank/tags'
+      path: '/tags'
+      fullPath: '/question-bank/tags'
+      preLoaderRoute: typeof QuestionBankTagsRouteImport
+      parentRoute: typeof QuestionBankRouteRoute
+    }
+    '/question-bank/questions': {
+      id: '/question-bank/questions'
+      path: '/questions'
+      fullPath: '/question-bank/questions'
+      preLoaderRoute: typeof QuestionBankQuestionsRouteImport
+      parentRoute: typeof QuestionBankRouteRoute
+    }
+    '/question-bank/practice': {
+      id: '/question-bank/practice'
+      path: '/practice'
+      fullPath: '/question-bank/practice'
+      preLoaderRoute: typeof QuestionBankPracticeRouteImport
+      parentRoute: typeof QuestionBankRouteRoute
+    }
+    '/question-bank/import-export': {
+      id: '/question-bank/import-export'
+      path: '/import-export'
+      fullPath: '/question-bank/import-export'
+      preLoaderRoute: typeof QuestionBankImportExportRouteImport
+      parentRoute: typeof QuestionBankRouteRoute
+    }
+    '/question-bank/categories': {
+      id: '/question-bank/categories'
+      path: '/categories'
+      fullPath: '/question-bank/categories'
+      preLoaderRoute: typeof QuestionBankCategoriesRouteImport
+      parentRoute: typeof QuestionBankRouteRoute
+    }
+    '/question-bank/analytics': {
+      id: '/question-bank/analytics'
+      path: '/analytics'
+      fullPath: '/question-bank/analytics'
+      preLoaderRoute: typeof QuestionBankAnalyticsRouteImport
+      parentRoute: typeof QuestionBankRouteRoute
     }
     '/api/users': {
       id: '/api/users'
@@ -1190,13 +1428,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminRolenavgroupRouteImport
       parentRoute: typeof AdminRouteRoute
     }
-    '/admin/organization': {
-      id: '/admin/organization'
-      path: '/organization'
-      fullPath: '/admin/organization'
-      preLoaderRoute: typeof AdminOrganizationRouteImport
-      parentRoute: typeof AdminRouteRoute
-    }
     '/admin/navitem': {
       id: '/admin/navitem'
       path: '/navitem'
@@ -1218,25 +1449,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminNavgroupRouteImport
       parentRoute: typeof AdminRouteRoute
     }
-    '/admin/member': {
-      id: '/admin/member'
-      path: '/member'
-      fullPath: '/admin/member'
-      preLoaderRoute: typeof AdminMemberRouteImport
-      parentRoute: typeof AdminRouteRoute
-    }
     '/admin/log': {
       id: '/admin/log'
       path: '/log'
       fullPath: '/admin/log'
       preLoaderRoute: typeof AdminLogRouteImport
-      parentRoute: typeof AdminRouteRoute
-    }
-    '/admin/invitation': {
-      id: '/admin/invitation'
-      path: '/invitation'
-      fullPath: '/admin/invitation'
-      preLoaderRoute: typeof AdminInvitationRouteImport
       parentRoute: typeof AdminRouteRoute
     }
     '/admin/account': {
@@ -1337,6 +1554,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authForgotPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/organization/': {
+      id: '/admin/organization/'
+      path: '/organization'
+      fullPath: '/admin/organization'
+      preLoaderRoute: typeof AdminOrganizationIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/_authenticated/sessions/': {
       id: '/_authenticated/sessions/'
       path: '/sessions'
@@ -1372,33 +1596,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/organization/member': {
+      id: '/admin/organization/member'
+      path: '/organization/member'
+      fullPath: '/admin/organization/member'
+      preLoaderRoute: typeof AdminOrganizationMemberRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/organization/invitation': {
+      id: '/admin/organization/invitation'
+      path: '/organization/invitation'
+      fullPath: '/admin/organization/invitation'
+      preLoaderRoute: typeof AdminOrganizationInvitationRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/admin/organization/create': {
       id: '/admin/organization/create'
-      path: '/create'
+      path: '/organization/create'
       fullPath: '/admin/organization/create'
       preLoaderRoute: typeof AdminOrganizationCreateRouteImport
-      parentRoute: typeof AdminOrganizationRoute
+      parentRoute: typeof AdminRouteRoute
     }
     '/admin/organization/$id': {
       id: '/admin/organization/$id'
-      path: '/$id'
+      path: '/organization/$id'
       fullPath: '/admin/organization/$id'
       preLoaderRoute: typeof AdminOrganizationIdRouteImport
-      parentRoute: typeof AdminOrganizationRoute
-    }
-    '/admin/member/create': {
-      id: '/admin/member/create'
-      path: '/create'
-      fullPath: '/admin/member/create'
-      preLoaderRoute: typeof AdminMemberCreateRouteImport
-      parentRoute: typeof AdminMemberRoute
-    }
-    '/admin/member/$id': {
-      id: '/admin/member/$id'
-      path: '/$id'
-      fullPath: '/admin/member/$id'
-      preLoaderRoute: typeof AdminMemberIdRouteImport
-      parentRoute: typeof AdminMemberRoute
+      parentRoute: typeof AdminRouteRoute
     }
     '/_authenticated/errors/$error': {
       id: '/_authenticated/errors/$error'
@@ -1413,6 +1637,27 @@ declare module '@tanstack/react-router' {
       fullPath: '/demo/settings'
       preLoaderRoute: typeof AuthenticatedDemoSettingsRouteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/api/question-bank/tags/': {
+      id: '/api/question-bank/tags/'
+      path: '/api/question-bank/tags'
+      fullPath: '/api/question-bank/tags'
+      preLoaderRoute: typeof ApiQuestionBankTagsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/question-bank/questions/': {
+      id: '/api/question-bank/questions/'
+      path: '/api/question-bank/questions'
+      fullPath: '/api/question-bank/questions'
+      preLoaderRoute: typeof ApiQuestionBankQuestionsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/question-bank/categories/': {
+      id: '/api/question-bank/categories/'
+      path: '/api/question-bank/categories'
+      fullPath: '/api/question-bank/categories'
+      preLoaderRoute: typeof ApiQuestionBankCategoriesIndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/demo/tasks/': {
       id: '/api/demo/tasks/'
@@ -1518,6 +1763,27 @@ declare module '@tanstack/react-router' {
       fullPath: '/demo/apps'
       preLoaderRoute: typeof AuthenticatedDemoAppsIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/api/question-bank/tags/$id': {
+      id: '/api/question-bank/tags/$id'
+      path: '/api/question-bank/tags/$id'
+      fullPath: '/api/question-bank/tags/$id'
+      preLoaderRoute: typeof ApiQuestionBankTagsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/question-bank/questions/$id': {
+      id: '/api/question-bank/questions/$id'
+      path: '/api/question-bank/questions/$id'
+      fullPath: '/api/question-bank/questions/$id'
+      preLoaderRoute: typeof ApiQuestionBankQuestionsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/question-bank/categories/$id': {
+      id: '/api/question-bank/categories/$id'
+      path: '/api/question-bank/categories/$id'
+      fullPath: '/api/question-bank/categories/$id'
+      preLoaderRoute: typeof ApiQuestionBankCategoriesIdRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/admin/user/bulk-delete': {
       id: '/api/admin/user/bulk-delete'
@@ -1652,6 +1918,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminInvitationIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/organization/member/create': {
+      id: '/admin/organization/member/create'
+      path: '/create'
+      fullPath: '/admin/organization/member/create'
+      preLoaderRoute: typeof AdminOrganizationMemberCreateRouteImport
+      parentRoute: typeof AdminOrganizationMemberRoute
+    }
+    '/admin/organization/member/$id': {
+      id: '/admin/organization/member/$id'
+      path: '/$id'
+      fullPath: '/admin/organization/member/$id'
+      preLoaderRoute: typeof AdminOrganizationMemberIdRouteImport
+      parentRoute: typeof AdminOrganizationMemberRoute
+    }
     '/_authenticated/demo/settings/notifications': {
       id: '/_authenticated/demo/settings/notifications'
       path: '/notifications'
@@ -1755,42 +2035,28 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
-interface AdminMemberRouteChildren {
-  AdminMemberIdRoute: typeof AdminMemberIdRoute
-  AdminMemberCreateRoute: typeof AdminMemberCreateRoute
+interface AdminOrganizationMemberRouteChildren {
+  AdminOrganizationMemberIdRoute: typeof AdminOrganizationMemberIdRoute
+  AdminOrganizationMemberCreateRoute: typeof AdminOrganizationMemberCreateRoute
 }
 
-const AdminMemberRouteChildren: AdminMemberRouteChildren = {
-  AdminMemberIdRoute: AdminMemberIdRoute,
-  AdminMemberCreateRoute: AdminMemberCreateRoute,
-}
+const AdminOrganizationMemberRouteChildren: AdminOrganizationMemberRouteChildren =
+  {
+    AdminOrganizationMemberIdRoute: AdminOrganizationMemberIdRoute,
+    AdminOrganizationMemberCreateRoute: AdminOrganizationMemberCreateRoute,
+  }
 
-const AdminMemberRouteWithChildren = AdminMemberRoute._addFileChildren(
-  AdminMemberRouteChildren,
-)
-
-interface AdminOrganizationRouteChildren {
-  AdminOrganizationIdRoute: typeof AdminOrganizationIdRoute
-  AdminOrganizationCreateRoute: typeof AdminOrganizationCreateRoute
-}
-
-const AdminOrganizationRouteChildren: AdminOrganizationRouteChildren = {
-  AdminOrganizationIdRoute: AdminOrganizationIdRoute,
-  AdminOrganizationCreateRoute: AdminOrganizationCreateRoute,
-}
-
-const AdminOrganizationRouteWithChildren =
-  AdminOrganizationRoute._addFileChildren(AdminOrganizationRouteChildren)
+const AdminOrganizationMemberRouteWithChildren =
+  AdminOrganizationMemberRoute._addFileChildren(
+    AdminOrganizationMemberRouteChildren,
+  )
 
 interface AdminRouteRouteChildren {
   AdminAccountRoute: typeof AdminAccountRoute
-  AdminInvitationRoute: typeof AdminInvitationRoute
   AdminLogRoute: typeof AdminLogRoute
-  AdminMemberRoute: typeof AdminMemberRouteWithChildren
   AdminNavgroupRoute: typeof AdminNavgroupRoute
   AdminNavigationRoute: typeof AdminNavigationRoute
   AdminNavitemRoute: typeof AdminNavitemRoute
-  AdminOrganizationRoute: typeof AdminOrganizationRouteWithChildren
   AdminRolenavgroupRoute: typeof AdminRolenavgroupRoute
   AdminSessionRoute: typeof AdminSessionRoute
   AdminTranslationRoute: typeof AdminTranslationRoute
@@ -1798,17 +2064,19 @@ interface AdminRouteRouteChildren {
   AdminUsersRoute: typeof AdminUsersRoute
   AdminVerificationRoute: typeof AdminVerificationRoute
   AdminIndexRoute: typeof AdminIndexRoute
+  AdminOrganizationIdRoute: typeof AdminOrganizationIdRoute
+  AdminOrganizationCreateRoute: typeof AdminOrganizationCreateRoute
+  AdminOrganizationInvitationRoute: typeof AdminOrganizationInvitationRoute
+  AdminOrganizationMemberRoute: typeof AdminOrganizationMemberRouteWithChildren
+  AdminOrganizationIndexRoute: typeof AdminOrganizationIndexRoute
 }
 
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminAccountRoute: AdminAccountRoute,
-  AdminInvitationRoute: AdminInvitationRoute,
   AdminLogRoute: AdminLogRoute,
-  AdminMemberRoute: AdminMemberRouteWithChildren,
   AdminNavgroupRoute: AdminNavgroupRoute,
   AdminNavigationRoute: AdminNavigationRoute,
   AdminNavitemRoute: AdminNavitemRoute,
-  AdminOrganizationRoute: AdminOrganizationRouteWithChildren,
   AdminRolenavgroupRoute: AdminRolenavgroupRoute,
   AdminSessionRoute: AdminSessionRoute,
   AdminTranslationRoute: AdminTranslationRoute,
@@ -1816,11 +2084,39 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminUsersRoute: AdminUsersRoute,
   AdminVerificationRoute: AdminVerificationRoute,
   AdminIndexRoute: AdminIndexRoute,
+  AdminOrganizationIdRoute: AdminOrganizationIdRoute,
+  AdminOrganizationCreateRoute: AdminOrganizationCreateRoute,
+  AdminOrganizationInvitationRoute: AdminOrganizationInvitationRoute,
+  AdminOrganizationMemberRoute: AdminOrganizationMemberRouteWithChildren,
+  AdminOrganizationIndexRoute: AdminOrganizationIndexRoute,
 }
 
 const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
   AdminRouteRouteChildren,
 )
+
+interface QuestionBankRouteRouteChildren {
+  QuestionBankAnalyticsRoute: typeof QuestionBankAnalyticsRoute
+  QuestionBankCategoriesRoute: typeof QuestionBankCategoriesRoute
+  QuestionBankImportExportRoute: typeof QuestionBankImportExportRoute
+  QuestionBankPracticeRoute: typeof QuestionBankPracticeRoute
+  QuestionBankQuestionsRoute: typeof QuestionBankQuestionsRoute
+  QuestionBankTagsRoute: typeof QuestionBankTagsRoute
+  QuestionBankIndexRoute: typeof QuestionBankIndexRoute
+}
+
+const QuestionBankRouteRouteChildren: QuestionBankRouteRouteChildren = {
+  QuestionBankAnalyticsRoute: QuestionBankAnalyticsRoute,
+  QuestionBankCategoriesRoute: QuestionBankCategoriesRoute,
+  QuestionBankImportExportRoute: QuestionBankImportExportRoute,
+  QuestionBankPracticeRoute: QuestionBankPracticeRoute,
+  QuestionBankQuestionsRoute: QuestionBankQuestionsRoute,
+  QuestionBankTagsRoute: QuestionBankTagsRoute,
+  QuestionBankIndexRoute: QuestionBankIndexRoute,
+}
+
+const QuestionBankRouteRouteWithChildren =
+  QuestionBankRouteRoute._addFileChildren(QuestionBankRouteRouteChildren)
 
 interface ApiUsersRouteChildren {
   ApiUsersIdRoute: typeof ApiUsersIdRoute
@@ -1838,6 +2134,7 @@ const rootRouteChildren: RootRouteChildren = {
   publicRouteRoute: publicRouteRouteWithChildren,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AdminRouteRoute: AdminRouteRouteWithChildren,
+  QuestionBankRouteRoute: QuestionBankRouteRouteWithChildren,
   StudioRoute: StudioRoute,
   authForgotPasswordRoute: authForgotPasswordRoute,
   authSignInRoute: authSignInRoute,
@@ -1871,6 +2168,9 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminUserIdRoute: ApiAdminUserIdRoute,
   ApiAdminUserBulkBanRoute: ApiAdminUserBulkBanRoute,
   ApiAdminUserBulkDeleteRoute: ApiAdminUserBulkDeleteRoute,
+  ApiQuestionBankCategoriesIdRoute: ApiQuestionBankCategoriesIdRoute,
+  ApiQuestionBankQuestionsIdRoute: ApiQuestionBankQuestionsIdRoute,
+  ApiQuestionBankTagsIdRoute: ApiQuestionBankTagsIdRoute,
   ApiAdminInvitationIndexRoute: ApiAdminInvitationIndexRoute,
   ApiAdminLogIndexRoute: ApiAdminLogIndexRoute,
   ApiAdminMemberIndexRoute: ApiAdminMemberIndexRoute,
@@ -1881,6 +2181,9 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminTranslationIndexRoute: ApiAdminTranslationIndexRoute,
   ApiAdminUserIndexRoute: ApiAdminUserIndexRoute,
   ApiDemoTasksIndexRoute: ApiDemoTasksIndexRoute,
+  ApiQuestionBankCategoriesIndexRoute: ApiQuestionBankCategoriesIndexRoute,
+  ApiQuestionBankQuestionsIndexRoute: ApiQuestionBankQuestionsIndexRoute,
+  ApiQuestionBankTagsIndexRoute: ApiQuestionBankTagsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

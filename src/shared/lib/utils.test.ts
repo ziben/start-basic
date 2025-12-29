@@ -21,3 +21,4 @@ describe('getPageNumbers', () => {
     expect(getPageNumbers(10, 10)).toEqual([1, '...', 7, 8, 9, 10])
   })
 })
+

@@ -18,3 +18,4 @@ export function StudioPlugin() {
 
   return <Studio adapter={adapter} />
 }
+
