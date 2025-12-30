@@ -16,6 +16,7 @@ import AdminNavItemDialogs from '../navitem/components/admin-navitem-dialogs'
 import AdminNavItemPrimaryButtons from '../navitem/components/admin-navitem-primary-buttons'
 import AdminNavItemTable from '../navitem/components/admin-navitem-table'
 import AdminNavItemProvider from '../navitem/context/admin-navitem-context'
+import { AppHeader } from '~/components/layout/app-header'
 
 export default function AdminNavigationPage() {
   const { t } = useTranslation()
@@ -95,13 +96,7 @@ export default function AdminNavigationPage() {
 function HeaderAndMain({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <Header fixed>
-        <Search />
-        <div className='ms-auto flex items-center space-x-4'>
-          <ThemeSwitch />
-          <ProfileDropdown />
-        </div>
-      </Header>
+      <AppHeader />
       <Main>{children}</Main>
     </>
   )

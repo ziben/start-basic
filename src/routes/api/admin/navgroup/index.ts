@@ -58,7 +58,11 @@ export async function getAllNavGroups(scope?: 'APP' | 'ADMIN') {
         navItems: {
           orderBy: { orderIndex: 'asc' },
         },
-        roleNavGroups: true,
+        roleNavGroups: {
+          include: {
+            systemRole: true,  // 包含角色详情
+          },
+        },
       },
     })
     return navGroups
@@ -79,7 +83,11 @@ export async function getNavGroupById(id: string) {
         navItems: {
           orderBy: { orderIndex: 'asc' },
         },
-        roleNavGroups: true,
+        roleNavGroups: {
+          include: {
+            systemRole: true,  // 包含角色详情
+          },
+        },
       },
     })
     if (!navGroup) {
@@ -122,22 +130,35 @@ export async function createNavGroup(data: {
         },
       })
 
-      // 创建角色关联
+      // 创建角色关联（使用 roleId）
       if (data.roles && data.roles.length > 0) {
-        await tx.roleNavGroup.createMany({
-          data: data.roles.map((role) => ({
-            role,
-            navGroupId: group.id,
-          })),
+        // 查询角色 ID
+        const systemRoles = await tx.systemRole.findMany({
+          where: { name: { in: data.roles } },
         })
+
+        if (systemRoles.length > 0) {
+          await tx.roleNavGroup.createMany({
+            data: systemRoles.map((role) => ({
+              roleId: role.id,
+              navGroupId: group.id,
+            })),
+          })
+        }
       } else {
         // 默认所有角色可见
-        await tx.roleNavGroup.createMany({
-          data: [
-            { role: 'user', navGroupId: group.id },
-            { role: 'admin', navGroupId: group.id },
-          ],
+        const defaultRoles = await tx.systemRole.findMany({
+          where: { name: { in: ['user', 'admin'] } },
         })
+
+        if (defaultRoles.length > 0) {
+          await tx.roleNavGroup.createMany({
+            data: defaultRoles.map((role) => ({
+              roleId: role.id,
+              navGroupId: group.id,
+            })),
+          })
+        }
       }
 
       // 返回带关联的对象，便于前端立即使用
@@ -145,7 +166,11 @@ export async function createNavGroup(data: {
         where: { id: group.id },
         include: {
           navItems: { orderBy: { orderIndex: 'asc' } },
-          roleNavGroups: true,
+          roleNavGroups: {
+            include: {
+              systemRole: true,  // 包含角色详情
+            },
+          },
         },
       })
 
@@ -184,7 +209,7 @@ export async function updateNavGroup(
         data: updateData,
       })
 
-      // 更新角色关联
+      // 更新角色关联（使用 roleId）
       if (data.roles !== undefined) {
         // 先删除所有现有角色关联
         await tx.roleNavGroup.deleteMany({
@@ -193,12 +218,19 @@ export async function updateNavGroup(
 
         // 然后创建新的角色关联
         if (data.roles.length > 0) {
-          await tx.roleNavGroup.createMany({
-            data: data.roles.map((role) => ({
-              role,
-              navGroupId: id,
-            })),
+          // 查询角色 ID
+          const systemRoles = await tx.systemRole.findMany({
+            where: { name: { in: data.roles } },
           })
+
+          if (systemRoles.length > 0) {
+            await tx.roleNavGroup.createMany({
+              data: systemRoles.map((role) => ({
+                roleId: role.id,
+                navGroupId: id,
+              })),
+            })
+          }
         }
       }
 
@@ -207,7 +239,11 @@ export async function updateNavGroup(
         where: { id },
         include: {
           navItems: { orderBy: { orderIndex: 'asc' } },
-          roleNavGroups: true,
+          roleNavGroups: {
+            include: {
+              systemRole: true,  // 包含角色详情
+            },
+          },
         },
       })
 

@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { adminNavgroupSchema } from '../data/schema'
 import { useNavGroups } from './navgroups-provider'
+import { logger } from '~/shared/utils/logger'
 
 type DataTableRowActionsProps<TData> = {
   row: Row<TData>
