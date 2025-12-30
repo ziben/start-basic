@@ -25,5 +25,9 @@ export const auth = betterAuth({
       },
     }),
   ],
+  user: {
+    additionalFields: {
+    },
+  },
 })
 

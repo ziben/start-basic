@@ -27,6 +27,7 @@ import {
   AudioWaveform,
   Command,
   GalleryVerticalEnd,
+  Shield,
 } from 'lucide-react'
 import { type SidebarData } from '../types'
 
@@ -195,8 +196,13 @@ export const createSidebarData = (t: (key: string) => string): SidebarData => ({
       items: [
         {
           title: t('sidebar.User'),
-          url: '/admin/user',
+          url: '/admin/users',
           icon: Users,
+        },
+        {
+          title: t('sidebar.Role'),
+          url: '/admin/roles',
+          icon: Shield,
         },
         {
           title: t('sidebar.Session'),

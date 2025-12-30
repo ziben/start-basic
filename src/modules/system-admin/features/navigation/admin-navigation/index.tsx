@@ -56,7 +56,7 @@ export default function AdminNavigationPage() {
             <div className='mb-2 flex items-center justify-end'>
               <NavGroupsPrimaryButtons />
             </div>
-            <NavGroupsTable data={navgroupList as any[]} search={search} navigate={navigate as any} />
+            <NavGroupsTable data={navgroupList} search={search as Record<string, unknown>} navigate={navigate} />
             <NavGroupsDialogs />
           </NavGroupsProvider>
         </TabsContent>
@@ -69,7 +69,7 @@ export default function AdminNavigationPage() {
             <AdminNavItemTable
               data={navItemList}
               isLoading={navitemsLoading}
-              error={navitemsError as any}
+              error={navitemsError}
               navGroupId={navGroupId}
             />
             <AdminNavItemDialogs />

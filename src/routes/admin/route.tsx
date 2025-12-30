@@ -2,16 +2,24 @@ import { createFileRoute, redirect } from '@tanstack/react-router'
 import { AdminLayout } from '@/components/layout/admin-layout'
 
 export const Route = createFileRoute('/admin')({
-  beforeLoad: async ({ context }) => {
+  beforeLoad: async ({ context, location }) => {
     // 检查用户是否登录
     if (!context.user) {
-      throw redirect({ to: '/sign-in' })
+      throw redirect({
+        to: '/sign-in',
+        search: {
+          redirect: location.href,
+        },
+      })
     }
 
-    // TODO: 检查用户是否有管理员权限
-    // if (context.user.role !== 'admin') {
-    //   throw redirect({ to: '/403' })
-    // }
+    // 检查用户是否有管理员权限
+    const role = context.user.role
+    const systemRoleName = (context.user as any).systemRole?.name
+
+    if (role !== 'admin' && systemRoleName !== 'admin') {
+      throw redirect({ to: '/403' })
+    }
   },
   component: AdminLayout,
 })

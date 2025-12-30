@@ -14,7 +14,7 @@ import { TranslationsTable } from './components/translations-table'
 export function AdminTranslations() {
   const { t } = useTranslation()
   // 使用hooks获取数据
-  const { data: translationList = [], isLoading, error } = useTranslations()
+  const { data: translationList = [] } = useTranslations()
 
   return (
     <TranslationsProvider>
@@ -39,7 +39,7 @@ export function AdminTranslations() {
         </div>
 
         <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-y-0 lg:space-x-12'>
-          <TranslationsTable data={translationList as unknown as any[]} />
+          <TranslationsTable data={translationList} />
         </div>
       </Main>
 

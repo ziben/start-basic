@@ -71,7 +71,7 @@ export function TranslationsMutateDrawer({ open, onOpenChange, currentRow }: Tra
       }
       onOpenChange(false)
       form.reset()
-    } catch (err: any) {
+    } catch (err) {
       console.error(err)
       toast.error(
         isUpdate
@@ -81,7 +81,7 @@ export function TranslationsMutateDrawer({ open, onOpenChange, currentRow }: Tra
     }
   }
 
-  const isSubmitting = (createMutation as any).status === 'loading' || (updateMutation as any).status === 'loading'
+  const isSubmitting = createMutation.isPending || updateMutation.isPending
 
   return (
     <Sheet

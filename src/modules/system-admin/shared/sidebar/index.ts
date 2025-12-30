@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Menu } from 'lucide-react'
 import { createSidebarData } from '~/components/layout/data/sidebar-data'
-import type { SidebarData, NavItem } from '~/components/layout/types'
+import type { SidebarData, NavItem, NavCollapsible, NavLink } from '~/components/layout/types'
 import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
 import { iconResolver as defaultIconResolver, type IconResolver } from '@/shared/utils/icon-resolver'
 import { getSidebarDataFn } from './api'
@@ -66,7 +66,7 @@ function processSidebarData(
     teams:
       data.teams?.map((t) => ({
         ...t,
-        logo: processIcon(t.logo as any, iconResolver),
+        logo: processIcon(t.logo as string, iconResolver),
       })) ?? [],
     navGroups: data.navGroups.map((group) => ({
       ...group,
@@ -80,24 +80,31 @@ function processSidebarData(
 /**
  * 递归处理导航项
  */
-function processNavItems(items: any[], translate: (key: string) => string, iconResolver: IconResolver): NavItem[] {
+function processNavItems(
+  items: NavItem[],
+  translate: (key: string) => string,
+  iconResolver: IconResolver
+): NavItem[] {
   return items.map((item) => {
     // 处理基本属性：入参可能是从后端直接来的原始结构（icon 可能是字符串），这里做一次映射
-    const processedItem: any = {
-      ...item,
-      title: translate(item.title), // 翻译标题或返回原文本
-      icon: processIcon(item.icon, iconResolver),
-    }
+    const title = translate(item.title)
+    const icon = processIcon(item.icon as string, iconResolver)
 
     // 递归处理子项
-    if (item.items && item.items.length > 0) {
+    if ('items' in item && item.items && item.items.length > 0) {
       return {
-        ...processedItem,
+        ...item,
+        title,
+        icon,
         items: processNavItems(item.items, translate, iconResolver),
-      } as NavItem
+      } as NavCollapsible
     }
 
-    return processedItem as NavItem
+    return {
+      ...item,
+      title,
+      icon,
+    } as NavLink
   })
 }
 

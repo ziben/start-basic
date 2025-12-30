@@ -25,6 +25,7 @@ model User {
   accounts      Account[]
 
   role            String?
+  systemRoles     SystemRole[] @relation("UserToSystemRole")
   banned          Boolean?
   banReason       String?
   banExpires      DateTime?
@@ -43,6 +44,22 @@ model User {
   @@unique([email])
   @@map("user")
   @@unique([username])
+}
+
+// 系统角色
+model SystemRole {
+  id          String   @id @default(cuid())
+  name        String   @unique // 角色编码，如 'admin', 'user'
+  label       String   // 角色显示名称，如 '管理员', '普通用户'
+  description String?
+  isSystem    Boolean  @default(false) // 是否为系统内置角色
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  users       User[] @relation("UserToSystemRole")
+  navGroups   RoleNavGroup[]
+
+  @@map("system_role")
 }
 
 // 侧边栏导航组 - 顶层分组
@@ -88,12 +105,14 @@ model NavItem {
 // 角色与导航组关联表
 model RoleNavGroup {
   id         String   @id @default(cuid())
-  role       String   // 角色名称
+  roleName   String?  // 兼容旧的字符串角色
+  roleId     String?
+  systemRole SystemRole? @relation(fields: [roleId], references: [id], onDelete: Cascade)
   navGroupId String
   navGroup   NavGroup @relation(fields: [navGroupId], references: [id], onDelete: Cascade)
   createdAt  DateTime @default(now())
 
-  @@unique([role, navGroupId])
+  @@unique([roleId, navGroupId])
   @@map("role_nav_group")
 }
 

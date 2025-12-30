@@ -1,7 +1,7 @@
 import { createContext, useContext, type ReactNode, useMemo, useCallback } from 'react'
 import { getRouteApi } from '@tanstack/react-router'
 
-const route = getRouteApi('/admin/log' as any)
+const route = getRouteApi('/admin/log')
 
 type RouteSearch = {
   type?: 'system' | 'audit'
@@ -18,7 +18,7 @@ export function AdminLogProvider({ children }: AdminLogProviderProps) {
   const type: 'system' | 'audit' = search.type === 'audit' ? 'audit' : 'system'
 
   const setType = useCallback((newType: 'system' | 'audit') => {
-    navigate({ search: (prev: any) => ({ ...prev, type: newType, page: undefined }) } as never)
+    navigate({ search: (prev: any) => ({ ...prev, type: newType, page: undefined }) })
   }, [navigate])
 
   const value = useMemo(

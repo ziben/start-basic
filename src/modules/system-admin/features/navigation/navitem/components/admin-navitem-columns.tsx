@@ -32,13 +32,13 @@ export function useAdminNavItemColumns({ navGroupId: currentNavGroupIdProp }: Us
   const arrIncludesSomeFilterFn: FilterFn<AdminNavItem> = (
     row: Row<AdminNavItem>,
     columnId: string,
-    filterValue: any
+    filterValue: string[]
   ): boolean => {
     if (!filterValue || !Array.isArray(filterValue) || filterValue.length === 0) {
       return true
     }
     const rowValue = row.getValue<string>(columnId)
-    if (typeof rowValue === 'string' && filterValue.every((item) => typeof item === 'string')) {
+    if (typeof rowValue === 'string') {
       return filterValue.includes(rowValue)
     }
     return false
@@ -163,9 +163,8 @@ export function useAdminNavItemColumns({ navGroupId: currentNavGroupIdProp }: Us
       header: () => t('admin.navitem.table.badge'),
       cell: ({ row }) => {
         const badgeValue = row.getValue<string | null>('badge')
-        const isVisible = !row.original.badge
 
-        if (badgeValue === '隐藏' || (row.original as any).isVisible === false) {
+        if (badgeValue === '隐藏') {
           return (
             <Badge variant='outline' className='border-red-300 bg-red-50 text-red-700'>
               {t('admin.navitem.visibility.hidden')}

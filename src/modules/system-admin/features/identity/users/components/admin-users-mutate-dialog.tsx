@@ -1,10 +1,13 @@
+import { useCallback, useEffect, useMemo } from 'react'
 import { z } from 'zod'
 import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
+import { useRoles } from '~/modules/system-admin/shared/hooks/use-role-api'
 import { userApi } from '../../../../shared/services/user-api'
 import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 import {
   Dialog,
   DialogContent,
@@ -16,7 +19,6 @@ import {
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { SelectDropdown } from '@/components/select-dropdown'
 import { getErrorMessage } from '@/shared/lib/error-handler'
 import { type AdminUser } from '../data/schema'
 import { ADMIN_USERS_QUERY_KEY } from '../hooks/use-admin-users-list-query'
@@ -27,37 +29,54 @@ type AdminUserMutateDialogProps = {
   onOpenChange: (open: boolean) => void
 }
 
-const formSchema = z.object({
-  name: z.string().min(1, 'Name is required.'),
-  email: z.string().email('Email is required.'),
-  password: z.string().optional().catch(''),
-  username: z.string().optional().catch(''),
-  role: z.enum(['admin', 'user']).catch('user'),
-  banned: z.boolean().optional().catch(false),
-  banReason: z.string().optional().catch(''),
-  banExpires: z.string().optional().catch(''),
-})
-
-type AdminUserForm = z.infer<typeof formSchema>
-
 export function AdminUsersMutateDialog({ currentRow, open, onOpenChange }: AdminUserMutateDialogProps) {
   const isEdit = !!currentRow
+  const { data: rolesData } = useRoles({ page: 1, pageSize: 100 })
+  const roles = rolesData?.items ?? []
 
-  const toFormValues = (row?: AdminUser): AdminUserForm => ({
-    name: row?.name ?? '',
-    email: row?.email ?? '',
-    password: '',
-    username: row?.username ?? '',
-    role: row?.role === 'admin' ? 'admin' : 'user',
-    banned: row?.banned ?? false,
-    banReason: row?.banReason ?? '',
-    banExpires: row?.banExpires ? new Date(String(row.banExpires)).toISOString() : '',
-  })
+  const formSchema = useMemo(() => {
+    return z.object({
+      name: z.string().min(1, 'Name is required.'),
+      email: z.string().email('Email is required.'),
+      password: isEdit
+        ? z.string().default('')
+        : z.string().min(8, 'Password must be at least 8 characters.'),
+      username: z.string().default(''),
+      role: z.string().default(''),
+      roleIds: z.array(z.string()).min(1, 'At least one role is required.'),
+      banned: z.boolean().default(false),
+      banReason: z.string().default(''),
+      banExpires: z.string().default(''),
+    })
+  }, [isEdit])
+
+  type AdminUserForm = z.infer<typeof formSchema>
+
+  const toFormValues = useCallback((row?: AdminUser): AdminUserForm => {
+    return {
+      name: row?.name ?? '',
+      email: row?.email ?? '',
+      password: '',
+      username: row?.username ?? '',
+      role: row?.role ?? '',
+      roleIds: row?.roleIds ?? [],
+      banned: row?.banned ?? false,
+      banReason: row?.banReason ?? '',
+      banExpires: row?.banExpires ? new Date(String(row.banExpires)).toISOString() : '',
+    }
+  }, [])
 
   const form = useForm<AdminUserForm>({
-    resolver: zodResolver(formSchema),
-    defaultValues: toFormValues(currentRow),
+    resolver: zodResolver(formSchema) as any,
+    defaultValues: useMemo(() => toFormValues(currentRow), [currentRow, toFormValues]),
   })
+
+  // 同步重置表单
+  useEffect(() => {
+    if (open) {
+      form.reset(toFormValues(currentRow))
+    }
+  }, [open, currentRow, form, toFormValues])
 
   // Watch the banned field to conditionally show ban-related fields
   const banned = useWatch({
@@ -77,7 +96,8 @@ export function AdminUsersMutateDialog({ currentRow, open, onOpenChange }: Admin
         email: data.email,
         password: data.password,
         name: data.name,
-        role: data.role,
+        role: data.role || undefined,
+        roleIds: data.roleIds,
         username: data.username ? data.username : undefined,
         banned: data.banned,
       })
@@ -98,7 +118,8 @@ export function AdminUsersMutateDialog({ currentRow, open, onOpenChange }: Admin
       return await userApi.update(currentRow.id, {
         name: data.name,
         username: data.username ? data.username : null,
-        role: data.role,
+        role: data.role || null,
+        roleIds: data.roleIds,
         banned: data.banned,
         banReason: data.banned ? (data.banReason ? data.banReason : null) : null,
         banExpires: data.banned ? (data.banExpires ? data.banExpires : null) : null,
@@ -112,6 +133,11 @@ export function AdminUsersMutateDialog({ currentRow, open, onOpenChange }: Admin
   })
 
   const onSubmit = (data: AdminUserForm) => {
+    if (!isEdit && (!data.password || data.password.length < 8)) {
+      form.setError('password', { message: 'Password must be at least 8 characters for new users.' })
+      return
+    }
+
     const promise = isEdit ? updateMutation.mutateAsync(data) : createMutation.mutateAsync(data)
 
     toast.promise(promise, {
@@ -208,20 +234,45 @@ export function AdminUsersMutateDialog({ currentRow, open, onOpenChange }: Admin
 
               <FormField
                 control={form.control}
-                name='role'
-                render={({ field }) => (
-                  <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
-                    <FormLabel className='col-span-2 text-end'>Role</FormLabel>
-                    <SelectDropdown
-                      defaultValue={field.value}
-                      onValueChange={field.onChange}
-                      placeholder='Select role'
-                      className='col-span-4'
-                      items={[
-                        { label: 'Admin', value: 'admin' },
-                        { label: 'User', value: 'user' },
-                      ]}
-                    />
+                name='roleIds'
+                render={() => (
+                  <FormItem className='grid grid-cols-6 items-start space-y-0 gap-x-4 gap-y-1'>
+                    <FormLabel className='col-span-2 text-end pt-2'>Roles</FormLabel>
+                    <div className='col-span-4 grid grid-cols-2 gap-2'>
+                      {roles.map((role) => (
+                        <FormField
+                          key={role.id}
+                          control={form.control}
+                          name='roleIds'
+                          render={({ field }) => {
+                            return (
+                              <FormItem
+                                key={role.id}
+                                className='flex flex-row items-start space-x-3 space-y-0'
+                              >
+                                <FormControl>
+                                  <Checkbox
+                                    checked={field.value?.includes(role.id)}
+                                    onCheckedChange={(checked) => {
+                                      return checked
+                                        ? field.onChange([...(field.value || []), role.id])
+                                        : field.onChange(
+                                            field.value?.filter(
+                                              (value) => value !== role.id
+                                            )
+                                          )
+                                    }}
+                                  />
+                                </FormControl>
+                                <FormLabel className='font-normal cursor-pointer'>
+                                  {role.label}
+                                </FormLabel>
+                              </FormItem>
+                            )
+                          }}
+                        />
+                      ))}
+                    </div>
                     <FormMessage className='col-span-4 col-start-3' />
                   </FormItem>
                 )}

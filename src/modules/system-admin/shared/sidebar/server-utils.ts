@@ -1,5 +1,5 @@
 import { createSidebarData } from '~/components/layout/data/sidebar-data'
-import type { SidebarData, NavGroup as NavGroupType, NavItem } from '~/components/layout/types'
+import type { SidebarData, NavGroup as NavGroupType, NavItem, NavCollapsible, NavLink } from '~/components/layout/types'
 import prisma from '@/shared/lib/db'
 
 // 从数据库获取侧边栏数据并转换为前端需要的格式
@@ -28,11 +28,11 @@ export async function getSidebarData(
             },
           },
         },
-        roleNavGroups: role
-          ? {
-              where: { role },
-            }
-          : undefined,
+        roleNavGroups: {
+          include: {
+            systemRole: true,
+          },
+        },
         userRoleNavGroups: userId
           ? {
               where: { userId, visible: true },
@@ -41,16 +41,60 @@ export async function getSidebarData(
       },
     })
 
+    // 获取当前用户的完整信息
+    const currentUser = userId
+      ? await prisma.user.findUnique({
+          where: { id: userId },
+          select: { 
+            id: true, 
+            role: true, 
+            systemRoles: {
+              select: {
+                id: true,
+                name: true
+              }
+            }
+          },
+        })
+      : null
+
     // 如果有角色或用户ID限制，过滤可见的导航组
-    const filteredNavGroups = navGroups.filter((group: any) => {
-      if (role && group.roleNavGroups.length === 0 && userId && group.userRoleNavGroups.length === 0) {
-        return false
+    const filteredNavGroups = navGroups.filter((group) => {
+      // 1. 检查用户个性化设置 (隐藏)
+      if (userId && group.userRoleNavGroups && group.userRoleNavGroups.length > 0) {
+        if (group.userRoleNavGroups.some((urg) => !urg.visible)) return false
       }
-      return true
+
+      // 2. 如果导航组没有任何角色限制，则所有人可见
+      if (!group.roleNavGroups || group.roleNavGroups.length === 0) {
+        return true
+      }
+
+      // 3. 检查角色匹配
+      // 获取用户拥有的所有角色 ID
+      const userRoleIds = currentUser?.systemRoles?.map((r) => r.id) || []
+      // 获取用户拥有的所有角色名称 (包含 systemRoles 的 name, 旧的 role 字符串以及传入的 role)
+      const userRoleNames = new Set<string>()
+      currentUser?.systemRoles?.forEach((r) => userRoleNames.add(r.name))
+      if (currentUser?.role) userRoleNames.add(currentUser.role)
+      if (role) userRoleNames.add(role)
+
+      return group.roleNavGroups.some((rg) => {
+        // 匹配新系统的 roleId (用户拥有的任何一个角色 ID 匹配即可)
+        if (rg.roleId && userRoleIds.includes(rg.roleId)) return true
+        
+        // 匹配 roleName (兼容旧数据或动态角色名)
+        if (rg.roleName && userRoleNames.has(rg.roleName)) return true
+        
+        // 匹配关联的 systemRole 的 name
+        if (rg.systemRole?.name && userRoleNames.has(rg.systemRole.name)) return true
+
+        return false
+      })
     })
 
     // 转换为前端需要的格式
-    const adaptedGroups = mapNavGroupsToFrontend(filteredNavGroups as any)
+    const adaptedGroups = mapNavGroupsToFrontend(filteredNavGroups)
 
     // 获取用户数据
     const user = userId
@@ -66,16 +110,36 @@ export async function getSidebarData(
 
     // 为避免将 React 组件/函数（可能包含 Symbol）序列化到响应中，
     // 我们在服务器端将 logo/icon 等非可序列化值转换为字符串标识。
-    const serializeIcon = (val: any) => {
-      if (!val) return null
+    const serializeIcon = (val: unknown): string => {
+      if (!val) return ''
       if (typeof val === 'string') return val
-      // lucide-react 的组件通常有 name 属性；尝试使用它
-      if (val && (val.displayName || val.name)) return val.displayName || val.name
+      if (val && typeof val === 'object' && ('displayName' in val || 'name' in val)) {
+        const obj = val as { displayName?: string; name?: string }
+        return obj.displayName || obj.name || ''
+      }
       try {
         return String(val)
-      } catch (e) {
-        return null
+      } catch (error) {
+        console.error('Error serializing icon:', error)
+        return ''
       }
+    }
+
+    // 递归序列化导航项中的图标
+    const serializeNavItems = (items: any[]): NavItem[] => {
+      return (items || []).map((it) => {
+        const base = {
+          ...it,
+          icon: serializeIcon(it.icon),
+        }
+        if (it.items) {
+          return {
+            ...base,
+            items: serializeNavItems(it.items),
+          } as NavCollapsible
+        }
+        return base as NavLink
+      })
     }
 
     const serializedTeams = (defaultData.teams || []).map((team) => ({
@@ -85,10 +149,7 @@ export async function getSidebarData(
 
     const serializedNavGroups = (defaultData.navGroups || []).map((group) => ({
       ...group,
-      items: (group.items || []).map((it: any) => ({
-        ...it,
-        icon: serializeIcon(it.icon),
-      })),
+      items: serializeNavItems(group.items || []),
     }))
 
     // 返回结果（前端会根据字符串标识再用 iconResolver 解析回组件）
@@ -115,8 +176,8 @@ export async function getSidebarData(
 function mapNavGroupsToFrontend(dbGroups: any[]): NavGroupType[] {
   return dbGroups.map((group: any) => ({
     title: group.title,
-    items: mapNavItemsToFrontend(group.navItems),
-  })) as NavGroupType[]
+    items: mapNavItemsToFrontend(group.navItems || []),
+  }))
 }
 
 // 递归转换导航项
@@ -125,24 +186,24 @@ function mapNavItemsToFrontend(dbItems: any[]): NavItem[] {
     // 基础项目信息
     const baseItem = {
       title: item.title,
-      badge: item.badge,
-      icon: item.icon, // 前端组件需要处理图标名称转换为组件
+      badge: item.badge ?? undefined,
+      icon: item.icon ?? undefined,
     }
 
     // 如果是可折叠菜单，添加子项
     if (item?.isCollapsible) {
       return {
         ...baseItem,
-        items: mapNavItemsToFrontend(item.children),
-      }
+        items: mapNavItemsToFrontend(item.children || []),
+      } as NavCollapsible
     }
 
     // 否则是普通链接
     return {
       ...baseItem,
-      url: item.url,
-    }
-  }) as NavItem[]
+      url: item.url || '',
+    } as NavLink
+  })
 }
 
 // 初始化数据库中的侧边栏数据
@@ -160,17 +221,16 @@ export async function initSidebarData() {
   try {
     // 事务中处理所有创建操作
     await prisma.$transaction(async (tx) => {
-      const client = tx as any
       // 为每个导航组创建数据
       for (let i = 0; i < defaultData.navGroups.length; i++) {
         const group = defaultData.navGroups[i]
-        const createdGroup = await client.navGroup.create({
+        const createdGroup = await tx.navGroup.create({
           data: {
             title: group.title,
             orderIndex: i,
             // 创建角色关联 - 默认为所有人可见
             roleNavGroups: {
-              create: [{ role: 'user' }, { role: 'admin' }],
+              create: [{ roleName: 'user' }, { roleName: 'admin' }],
             },
           },
         })
@@ -178,7 +238,7 @@ export async function initSidebarData() {
         // 为每个分组下的项目创建数据
         for (let j = 0; j < group.items.length; j++) {
           const item = group.items[j]
-          await createNavItem(client, item, j, createdGroup.id)
+          await createNavItem(tx, item, j, createdGroup.id)
         }
       }
     })
@@ -191,16 +251,22 @@ export async function initSidebarData() {
 }
 
 // 递归创建导航项及其子项
-async function createNavItem(tx: any, item: any, orderIndex: number, navGroupId: string, parentId?: string) {
+async function createNavItem(
+  tx: Omit<typeof prisma, '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'>,
+  item: NavItem,
+  orderIndex: number,
+  navGroupId: string,
+  parentId?: string
+) {
   // 确定是否为可折叠菜单
-  const isCollapsible = !!item.items && item.items.length > 0
+  const isCollapsible = 'items' in item && !!item.items && item.items.length > 0
 
   // 创建导航项
   const navItem = await tx.navItem.create({
     data: {
       title: item.title,
-      url: !isCollapsible ? String(item.url || '') : null, // 如果是可折叠菜单，URL为null
-      icon: item.icon ? (typeof item.icon === 'string' ? item.icon : 'IconPackages') : null, // 简化处理为字符串
+      url: !isCollapsible ? String((item as NavLink).url || '') : null,
+      icon: item.icon ? (typeof item.icon === 'string' ? item.icon : 'IconPackages') : null,
       badge: item.badge,
       orderIndex,
       isCollapsible,
@@ -210,7 +276,7 @@ async function createNavItem(tx: any, item: any, orderIndex: number, navGroupId:
   })
 
   // 如果有子项，递归创建子项
-  if (isCollapsible && item.items) {
+  if (isCollapsible && 'items' in item && item.items) {
     for (let i = 0; i < item.items.length; i++) {
       await createNavItem(tx, item.items[i], i, navGroupId, navItem.id)
     }

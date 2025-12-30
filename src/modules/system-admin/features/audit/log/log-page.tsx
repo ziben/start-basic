@@ -1,9 +1,5 @@
-import { ConfigDrawer } from '@/components/config-drawer'
-import { Header } from '@/components/layout/header'
+import { AppHeader } from '@/components/layout/app-header'
 import { Main } from '@/components/layout/main'
-import { ProfileDropdown } from '@/components/profile-dropdown'
-import { Search } from '@/components/search'
-import { ThemeSwitch } from '@/components/theme-switch'
 import { AdminLogProvider, useAdminLogContext } from './components/admin-log-provider'
 import { AdminLogTable } from './components/admin-log-table'
 import { AdminLogTypeSwitcher } from './components/admin-log-type-switcher'
@@ -13,14 +9,7 @@ function AdminLogContent() {
 
   return (
     <>
-      <Header fixed>
-        <Search />
-        <div className='ms-auto flex items-center space-x-4'>
-          <ThemeSwitch />
-          <ConfigDrawer />
-          <ProfileDropdown />
-        </div>
-      </Header>
+      <AppHeader />
 
       <Main fixed>
         <div className='mb-2 flex flex-wrap items-center justify-between space-y-2 gap-x-4'>

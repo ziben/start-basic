@@ -15,6 +15,11 @@ type PrismaUser = {
   banExpires: Date | null
   username: string | null
   displayUsername: string | null
+  systemRoles?: Array<{
+    id: string
+    name: string
+    label: string
+  }>
 }
 
 /**
@@ -56,6 +61,8 @@ export function serializeAdminUser(user: PrismaUser): AdminUser {
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
     role: user.role ?? 'user',
+    roleIds: user.systemRoles?.map(r => r.id) || [],
+    systemRoles: user.systemRoles || [],
     banned: user.banned ?? null,
     banReason: user.banReason ?? null,
     banExpires: user.banExpires ?? null,

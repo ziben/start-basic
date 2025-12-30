@@ -31,7 +31,7 @@ import { DataTableColumnHeader, DataTablePagination, DataTableToolbar } from '@/
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 
-const route = getRouteApi('/admin/member')
+const route = getRouteApi('/admin/organization/member')
 
 export default function AdminMember() {
   const { t } = useTranslation()
@@ -42,8 +42,8 @@ export default function AdminMember() {
   const bulkDelete = useBulkDeleteAdminMembers()
 
   const initialSorting = useMemo<SortingState>(() => {
-    const sortBy = (search as Record<string, unknown>).sortBy
-    const sortDir = (search as Record<string, unknown>).sortDir
+    const sortBy = search.sortBy
+    const sortDir = search.sortDir
     if (typeof sortBy !== 'string' || !sortBy) return []
     return [{ id: sortBy, desc: sortDir === 'desc' }]
   }, [search])
@@ -158,7 +158,7 @@ export default function AdminMember() {
           else if (role === 'manager') color = 'secondary'
 
           return (
-            <Badge variant={color as any} className='capitalize'>
+            <Badge variant={color as 'default' | 'secondary' | 'destructive' | 'outline'} className='capitalize'>
               {t(`admin.member.roles.${role}`, { defaultMessage: role })}
             </Badge>
           )
@@ -186,7 +186,7 @@ export default function AdminMember() {
                 size='sm'
                 onClick={(e) => {
                   e.stopPropagation()
-                  navigate({ to: '/admin/member/$id', params: { id: member.id } })
+                  navigate({ to: '/admin/organization/member/$id', params: { id: member.id } })
                 }}
               >
                 <Edit className='mr-2 h-4 w-4' />
@@ -216,8 +216,8 @@ export default function AdminMember() {
   }, [formatDate, isMutating, navigate, openSingleDelete, t])
 
   const tableUrl = useTableUrlState({
-    search: search as any,
-    navigate: route.useNavigate() as unknown as NavigateFn,
+    search: search,
+    navigate: navigate as unknown as NavigateFn,
     pagination: { defaultPage: 1, defaultPageSize: 10 },
     globalFilter: { enabled: true, key: 'filter' },
   })
@@ -238,8 +238,8 @@ export default function AdminMember() {
     sortDir,
   })
 
-  const members = (pageData as any)?.items ?? []
-  const serverPageCount = (pageData as any)?.pageCount ?? 0
+  const members = pageData?.items ?? []
+  const serverPageCount = pageData?.pageCount ?? 0
 
   const table = useReactTable({
     data: members,
@@ -263,8 +263,8 @@ export default function AdminMember() {
       setSorting(next)
 
       const s = next[0]
-      ;(navigate as any)({
-        search: (prev: any) => ({
+      navigate({
+        search: (prev) => ({
           ...prev,
           page: undefined,
           sortBy: s?.id ? s.id : undefined,
@@ -319,7 +319,7 @@ export default function AdminMember() {
           <span>{t('admin.member.title', { defaultMessage: '成员管理' })}</span>
         </div>
         <div className='ms-auto flex items-center space-x-4'>
-          <Button onClick={() => navigate({ to: '/admin/member/create' })} variant='default' size='sm'>
+          <Button onClick={() => navigate({ to: '/admin/organization/member/create' })} variant='default' size='sm'>
             <UserPlus className='mr-2 h-4 w-4' />
             {t('admin.member.create', { defaultMessage: '添加成员' })}
           </Button>

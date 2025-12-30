@@ -49,7 +49,7 @@ export function getRouter() {
     defaultPreload: 'intent',
     defaultPreloadStaleTime: 30000, // 30 seconds
     scrollRestoration: true,
-    defaultStructuralSharing: true,
+    defaultStructuralSharing: true
   })
   setupRouterSsrQueryIntegration({
     router,

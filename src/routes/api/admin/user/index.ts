@@ -26,7 +26,8 @@ const createBodySchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
   name: z.string().min(1),
-  role: z.enum(['admin', 'user']).optional().default('user'),
+  role: z.string().optional(),
+  roleIds: z.array(z.string()).optional(),
   username: z.string().min(1).optional(),
   banned: z.boolean().optional().default(false),
 })
@@ -76,11 +77,14 @@ export const Route = createFileRoute('/api/admin/user/')({
             orderBy,
             skip,
             take: pageSize,
+            include: {
+              systemRoles: true,
+            },
           }),
         ])
 
         const pageCount = Math.ceil(total / pageSize)
-        const items = serializeAdminUsers(users as any)
+        const items = serializeAdminUsers(users as Parameters<typeof serializeAdminUsers>[0])
 
         return Response.json({
             items,
@@ -122,7 +126,11 @@ export const Route = createFileRoute('/api/admin/user/')({
             return new Response(text || 'Create user failed', { status: res.status })
           }
 
-          const json = (await res.json().catch(() => null)) as any
+          const json = (await res.json().catch(() => null)) as { 
+            newUser?: { id: string }; 
+            user?: { id: string }; 
+            id?: string 
+          } | null
           const newUserId = json?.newUser?.id ?? json?.user?.id ?? json?.id
 
           if (typeof newUserId !== 'string' || !newUserId) {
@@ -134,9 +142,15 @@ export const Route = createFileRoute('/api/admin/user/')({
             where: { id: newUserId },
             data: {
               role: input.role,
+              systemRoles: input.roleIds ? {
+                set: input.roleIds.map(id => ({ id }))
+              } : undefined,
               banned: input.banned,
               username: input.username ?? undefined,
             },
+            include: {
+              systemRoles: true
+            }
           })
 
           void ctx.audit.log({

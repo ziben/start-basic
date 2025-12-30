@@ -22,10 +22,12 @@ import { useNavGroupColumns } from './navgroups-columns'
 
 const route = getRouteApi('/admin/navgroup')
 
+import { type NavigateFn } from '@/shared/hooks/use-table-url-state'
+
 type DataTableProps = {
   data: AdminNavgroup[]
-  search?: any
-  navigate?: any
+  search?: Record<string, unknown>
+  navigate?: NavigateFn
 }
 
 function NavGroupsTableInner({ data, search, navigate }: DataTableProps) {

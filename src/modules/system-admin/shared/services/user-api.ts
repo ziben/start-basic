@@ -28,7 +28,8 @@ export const userApi = {
     email: string
     password: string
     name: string
-    role?: 'admin' | 'user'
+    role?: string
+    roleIds?: string[]
     username?: string
     banned?: boolean
   }) =>
@@ -43,6 +44,7 @@ export const userApi = {
       name: string
       username: string | null
       role: string | null
+      roleIds: string[] | null
       banned: boolean | null
       banReason: string | null
       banExpires: string | null

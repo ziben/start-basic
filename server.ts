@@ -70,28 +70,38 @@ const SERVER_PORT = Number(process.env.PORT ?? 3000)
 const CLIENT_DIRECTORY = './dist/client'
 const SERVER_ENTRY_POINT = './dist/server/server.js'
 
+// Performance monitoring
+const ENABLE_PERF_LOGGING = process.env.ENABLE_PERF_LOGGING === 'true'
+const SLOW_REQUEST_THRESHOLD_MS = Number(process.env.SLOW_REQUEST_THRESHOLD_MS ?? 1000)
+
 // Logging utilities for professional output
 const log = {
   info: (message: string) => {
-    console.log(`[INFO] ${message}`)
+    console.log(`\x1b[36m[INFO]\x1b[0m ${message}`)
   },
   success: (message: string) => {
-    console.log(`[SUCCESS] ${message}`)
+    console.log(`\x1b[32m[SUCCESS]\x1b[0m ${message}`)
   },
   warning: (message: string) => {
-    console.log(`[WARNING] ${message}`)
+    console.log(`\x1b[33m[WARNING]\x1b[0m ${message}`)
   },
   error: (message: string) => {
-    console.log(`[ERROR] ${message}`)
+    console.log(`\x1b[31m[ERROR]\x1b[0m ${message}`)
   },
   header: (message: string) => {
-    console.log(`\n${message}\n`)
+    console.log(`\n\x1b[1m${message}\x1b[0m\n`)
+  },
+  perf: (message: string) => {
+    if (ENABLE_PERF_LOGGING) {
+      console.log(`\x1b[35m[PERF]\x1b[0m ${message}`)
+    }
   },
 }
 
 // Preloading configuration from environment variables
+// 降低默认值从 5MB 到 2MB，减少内存占用
 const MAX_PRELOAD_BYTES = Number(
-  process.env.ASSET_PRELOAD_MAX_SIZE ?? 5 * 1024 * 1024, // 5MB default
+  process.env.ASSET_PRELOAD_MAX_SIZE ?? 2 * 1024 * 1024, // 2MB default (优化)
 )
 
 // Parse comma-separated include patterns (no defaults)
@@ -497,10 +507,35 @@ async function initializeStaticRoutes(
 }
 
 /**
+ * Performance monitoring wrapper
+ */
+function withPerfMonitoring(
+  handler: (req: Request) => Response | Promise<Response>,
+): (req: Request) => Response | Promise<Response> {
+  return async (req: Request) => {
+    const start = performance.now()
+    const response = await handler(req)
+    const duration = performance.now() - start
+
+    if (duration > SLOW_REQUEST_THRESHOLD_MS) {
+      log.warning(
+        `Slow request: ${req.method} ${new URL(req.url).pathname} (${duration.toFixed(2)}ms)`,
+      )
+    }
+
+    log.perf(
+      `${req.method} ${new URL(req.url).pathname} - ${response.status} (${duration.toFixed(2)}ms)`,
+    )
+
+    return response
+  }
+}
+
+/**
  * Initialize the server
  */
 async function initializeServer() {
-  log.header('Starting Production Server')
+  log.header('🚀 Starting Production Server')
 
   // Load TanStack Start server handler
   let handler: { fetch: (request: Request) => Response | Promise<Response> }
@@ -516,18 +551,44 @@ async function initializeServer() {
   }
 
   // Build static routes with intelligent preloading
-  const { routes } = await initializeStaticRoutes(CLIENT_DIRECTORY)
+  const { routes, loaded, skipped } = await initializeStaticRoutes(CLIENT_DIRECTORY)
+
+  // 显示内存使用情况
+  const memUsage = process.memoryUsage()
+  log.info(
+    `Memory usage: ${(memUsage.heapUsed / 1024 / 1024).toFixed(2)} MB / ${(memUsage.heapTotal / 1024 / 1024).toFixed(2)} MB`,
+  )
 
   // Create Bun server
   const server = Bun.serve({
     port: SERVER_PORT,
 
-    routes: {
-      // Serve static assets (preloaded or on-demand)
-      ...routes,
+    fetch: ENABLE_PERF_LOGGING
+      ? withPerfMonitoring((req: Request) => {
+        // Check if it's a static asset
+        const url = new URL(req.url)
+        const staticHandler = routes[url.pathname]
+        if (staticHandler) {
+          return staticHandler(req)
+        }
 
-      // Fallback to TanStack Start handler for all other routes
-      '/*': (req: Request) => {
+        // Fallback to TanStack Start handler
+        try {
+          return handler.fetch(req)
+        } catch (error) {
+          log.error(`Server handler error: ${String(error)}`)
+          return new Response('Internal Server Error', { status: 500 })
+        }
+      })
+      : (req: Request) => {
+        // Check if it's a static asset
+        const url = new URL(req.url)
+        const staticHandler = routes[url.pathname]
+        if (staticHandler) {
+          return staticHandler(req)
+        }
+
+        // Fallback to TanStack Start handler
         try {
           return handler.fetch(req)
         } catch (error) {
@@ -535,7 +596,6 @@ async function initializeServer() {
           return new Response('Internal Server Error', { status: 500 })
         }
       },
-    },
 
     // Global error handler
     error(error) {
@@ -547,6 +607,23 @@ async function initializeServer() {
   })
 
   log.success(`Server listening on http://localhost:${String(server.port)}`)
+  log.info(`Environment: ${process.env.NODE_ENV ?? 'production'}`)
+  log.info(
+    `Assets: ${loaded.length} preloaded, ${skipped.length} on-demand`,
+  )
+
+  // 优雅关闭处理
+  const shutdown = async (signal: string) => {
+    log.warning(`\nReceived ${signal}, shutting down gracefully...`)
+    server.stop()
+    log.success('Server stopped')
+    process.exit(0)
+  }
+
+  process.on('SIGTERM', () => shutdown('SIGTERM'))
+  process.on('SIGINT', () => shutdown('SIGINT'))
+
+  return server
 }
 
 // Initialize the server

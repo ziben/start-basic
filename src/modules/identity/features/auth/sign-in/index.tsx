@@ -1,4 +1,4 @@
-import { useSearch } from '@tanstack/react-router'
+import { Link, useSearch } from '@tanstack/react-router'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { AuthLayout } from '../auth-layout'
 import { UserAuthForm } from './components/user-auth-form'
@@ -15,6 +15,15 @@ export default function SignIn() {
             请在下方输入您的邮箱和密码
             <br />
             登录您的账户
+            <br />
+            没有账号？{' '}
+            <Link
+              to='/sign-up'
+              search={{ redirect }}
+              className='underline underline-offset-4 hover:text-primary'
+            >
+              立即注册
+            </Link>
           </CardDescription>
         </CardHeader>
         <CardContent>

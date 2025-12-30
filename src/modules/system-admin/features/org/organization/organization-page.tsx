@@ -41,8 +41,8 @@ export default function AdminOrganization() {
   const bulkDelete = useBulkDeleteAdminOrganizations()
 
   const initialSorting = useMemo<SortingState>(() => {
-    const sortBy = (search as Record<string, unknown>).sortBy
-    const sortDir = (search as Record<string, unknown>).sortDir
+    const sortBy = search.sortBy
+    const sortDir = search.sortDir
     if (typeof sortBy !== 'string' || !sortBy) return []
     return [{ id: sortBy, desc: sortDir === 'desc' }]
   }, [search])
@@ -197,8 +197,8 @@ export default function AdminOrganization() {
   }, [formatDate, isMutating, navigate, openSingleDelete, t])
 
   const tableUrl = useTableUrlState({
-    search: search as any,
-    navigate: route.useNavigate() as unknown as NavigateFn,
+    search: search,
+    navigate: navigate as unknown as NavigateFn,
     pagination: { defaultPage: 1, defaultPageSize: 10 },
     globalFilter: { enabled: true, key: 'filter' },
   })
@@ -219,8 +219,8 @@ export default function AdminOrganization() {
     sortDir,
   })
 
-  const organizations = (pageData as any)?.items ?? []
-  const serverPageCount = (pageData as any)?.pageCount ?? 0
+  const organizations = pageData?.items ?? []
+  const serverPageCount = pageData?.pageCount ?? 0
 
   const table = useReactTable({
     data: organizations,
@@ -244,8 +244,8 @@ export default function AdminOrganization() {
       setSorting(next)
 
       const s = next[0]
-      ;(navigate as any)({
-        search: (prev: any) => ({
+      navigate({
+        search: (prev) => ({
           ...prev,
           page: undefined,
           sortBy: s?.id ? s.id : undefined,

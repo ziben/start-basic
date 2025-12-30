@@ -4,7 +4,6 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
 import { useCreateNavgroup, useUpdateNavgroup } from '~/modules/system-admin/shared/hooks/use-navgroup-api'
 import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
-import { showSubmittedData } from '@/shared/utils/show-submitted-data'
 import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
@@ -18,8 +17,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet'
-import { SelectDropdown } from '@/components/select-dropdown'
-import { type AdminNavgroup, createNavgroupSchema, updateNavgroupSchema } from '../data/schema'
+import { type AdminNavgroup, createNavgroupSchema } from '../data/schema'
 import type { CreateNavgroupData } from '../data/schema'
 
 type NavGroupsMutateDrawerProps = {
@@ -28,8 +26,8 @@ type NavGroupsMutateDrawerProps = {
   currentRow?: AdminNavgroup
 }
 
-// Use the existing create/update schemas for validation
 const formSchema = createNavgroupSchema
+
 type NavGroupForm = z.infer<typeof formSchema>
 
 export function NavGroupsMutateDrawer({ open, onOpenChange, currentRow }: NavGroupsMutateDrawerProps) {
@@ -43,7 +41,7 @@ export function NavGroupsMutateDrawer({ open, onOpenChange, currentRow }: NavGro
     defaultValues: currentRow
       ? {
           title: currentRow.title,
-          scope: currentRow.scope ?? 'APP',
+          scope: currentRow.scope,
           orderIndex: currentRow.orderIndex,
           roles: currentRow.roleNavGroups ? currentRow.roleNavGroups.map((r) => r.role) : undefined,
         }
@@ -74,7 +72,7 @@ export function NavGroupsMutateDrawer({ open, onOpenChange, currentRow }: NavGro
         }
         onOpenChange(false)
         form.reset()
-      } catch (err: any) {
+      } catch (err) {
         console.error(err)
         toast.error(
           isUpdate ? t('admin.navgroup.toast.updateError.title') : t('admin.navgroup.toast.createError.title')

@@ -1,10 +1,6 @@
 import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
-import { ConfigDrawer } from '@/components/config-drawer'
-import { Header } from '@/components/layout/header'
+import { AppHeader } from '@/components/layout/app-header'
 import { Main } from '@/components/layout/main'
-import { ProfileDropdown } from '@/components/profile-dropdown'
-import { Search } from '@/components/search'
-import { ThemeSwitch } from '@/components/theme-switch'
 import { AdminUsersDialogs } from './components/admin-users-dialogs'
 import { AdminUsersPrimaryButtons } from './components/admin-users-primary-buttons'
 import { AdminUsersProvider } from './components/admin-users-provider'
@@ -15,14 +11,7 @@ export default function AdminUsers() {
 
   return (
     <AdminUsersProvider>
-      <Header fixed>
-        <Search />
-        <div className='ms-auto flex items-center space-x-4'>
-          <ThemeSwitch />
-          <ConfigDrawer />
-          <ProfileDropdown />
-        </div>
-      </Header>
+      <AppHeader />
 
       <Main>
         <div className='mb-2 flex flex-wrap items-center justify-between space-y-2 gap-x-4'>

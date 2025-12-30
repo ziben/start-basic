@@ -9,7 +9,17 @@ export const adminUsersSchema = z.object({
   createdAt: z.string().or(z.date()),
   updatedAt: z.string().or(z.date()),
 
-  role: z.string(),
+  role: z.string().nullable().optional(),
+  roleIds: z.array(z.string()).optional(),
+  systemRoles: z
+    .array(
+      z.object({
+        id: z.string(),
+        name: z.string(),
+        label: z.string(),
+      })
+    )
+    .optional(),
   banned: z.boolean().nullable(),
   banReason: z.string().nullable().optional(),
   banExpires: z.string().or(z.date()).nullable().optional(),

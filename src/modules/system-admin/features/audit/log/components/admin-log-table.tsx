@@ -1,24 +1,18 @@
 import { useEffect, useMemo, useState } from 'react'
 import { getRouteApi } from '@tanstack/react-router'
-import {
-  type VisibilityState,
-  flexRender,
-  getCoreRowModel,
-  getFacetedRowModel,
-  getFacetedUniqueValues,
-  useReactTable,
-} from '@tanstack/react-table'
+import { type ColumnDef, type VisibilityState, flexRender, getCoreRowModel, getFacetedRowModel, getFacetedUniqueValues, useReactTable } from '@tanstack/react-table'
 import { cn } from '@/shared/lib/utils'
 import { type NavigateFn } from '@/shared/hooks/use-table-url-state'
 import { useUrlSyncedSorting } from '@/shared/hooks/use-url-synced-sorting'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
+import { type AdminAuditLog, type AdminSystemLog } from '~/modules/system-admin/shared/hooks/use-admin-log-api'
 import { auditResults, logLevels } from '../data/schema'
 import { useAdminLogsQuery } from '../hooks/use-admin-logs-query'
 import { getSingleBooleanFromArrayFilter, getSingleStringFromArrayFilter } from '../utils/table-filters'
 import { useAuditLogColumns, useSystemLogColumns } from './admin-log-columns'
 
-const route = getRouteApi('/admin/log' as any)
+const route = getRouteApi('/admin/log')
 
 type RouteSearch = {
   type?: 'system' | 'audit'
@@ -59,9 +53,9 @@ export function AdminLogTable({ type }: AdminLogTableProps) {
         columnId: 'level',
         searchKey: 'level',
         type: 'array',
-        serialize: (value) => value,
+        serialize: (value) => value as string[],
         deserialize: (value) => {
-          if (Array.isArray(value)) return value
+          if (Array.isArray(value)) return value as string[]
           if (typeof value === 'string' && value) return [value]
           return []
         },
@@ -70,9 +64,9 @@ export function AdminLogTable({ type }: AdminLogTableProps) {
         columnId: 'success',
         searchKey: 'success',
         type: 'array',
-        serialize: (value) => value,
+        serialize: (value) => value as string[],
         deserialize: (value) => {
-          if (Array.isArray(value)) return value
+          if (Array.isArray(value)) return value as string[]
           if (typeof value === 'string' && value) return [value]
           return []
         },
@@ -109,9 +103,9 @@ export function AdminLogTable({ type }: AdminLogTableProps) {
     success,
   })
 
-  const table = useReactTable({
-    data: data as any,
-    columns: columns as any,
+  const table = useReactTable<AdminSystemLog | AdminAuditLog>({
+    data: (data ?? []) as (AdminSystemLog | AdminAuditLog)[],
+    columns: columns as ColumnDef<AdminSystemLog | AdminAuditLog>[],
     state: {
       sorting,
       columnVisibility,
@@ -151,7 +145,7 @@ export function AdminLogTable({ type }: AdminLogTableProps) {
                 {
                   columnId: 'level',
                   title: '级别',
-                  options: logLevels.map((opt) => ({
+                  options: logLevels.map((opt: { label: string; value: string }) => ({
                     label: opt.label,
                     value: opt.value,
                   })),
@@ -161,7 +155,7 @@ export function AdminLogTable({ type }: AdminLogTableProps) {
                 {
                   columnId: 'success',
                   title: '结果',
-                  options: auditResults.map((opt) => ({
+                  options: auditResults.map((opt: { label: string; value: string }) => ({
                     label: opt.label,
                     value: opt.value,
                   })),

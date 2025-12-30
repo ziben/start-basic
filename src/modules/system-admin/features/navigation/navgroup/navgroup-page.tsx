@@ -36,8 +36,7 @@ export function AdminNavGroups() {
           <NavGroupsPrimaryButtons />
         </div>
         <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-y-0 lg:space-x-12'>
-          {/* Short-term cast: assert shape to AdminNavgroup[] until API shapes are aligned */}
-          <NavGroupsTable data={navgroupList as unknown as any[]} />
+          <NavGroupsTable data={navgroupList} />
         </div>
       </Main>
 

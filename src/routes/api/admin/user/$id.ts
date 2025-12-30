@@ -9,19 +9,22 @@ const bodySchema = z
   .object({
     name: z.string().min(1).optional(),
     username: z.string().min(1).nullable().optional(),
-    role: z.enum(['admin', 'user']).nullable().optional(),
+    role: z.string().nullable().optional(),
+    roleIds: z.array(z.string()).nullable().optional(),
     banned: z.boolean().nullable().optional(),
     banReason: z.string().nullable().optional(),
     banExpires: z.string().datetime().nullable().optional(),
   })
   .strict()
 
-export const Route = createFileRoute('/api/admin/user/$id' as any)({
+export const Route = createFileRoute('/api/admin/user/$id')({
   server: {
     handlers: {
       PATCH: withAdminAuth(async (ctx) => {
-        const { request } = ctx
-        const params = (ctx as any).params as { id: string }
+        const { request, params } = ctx
+        if (!params?.id) {
+          return Response.json({ type: 'bad_request', message: 'Missing user ID' }, { status: 400 })
+        }
         try {
           const body = await request.json()
           const data = bodySchema.parse(body)
@@ -32,12 +35,20 @@ export const Route = createFileRoute('/api/admin/user/$id' as any)({
               ...(data.name !== undefined ? { name: data.name } : {}),
               ...(data.username !== undefined ? { username: data.username } : {}),
               ...(data.role !== undefined ? { role: data.role } : {}),
+              ...(data.roleIds !== undefined ? { 
+                systemRoles: data.roleIds ? {
+                  set: data.roleIds.map(id => ({ id }))
+                } : { set: [] }
+              } : {}),
               ...(data.banned !== undefined ? { banned: data.banned } : {}),
               ...(data.banReason !== undefined ? { banReason: data.banReason } : {}),
               ...(data.banExpires !== undefined
                 ? { banExpires: data.banExpires ? new Date(data.banExpires) : null }
                 : {}),
             },
+            include: {
+              systemRoles: true
+            }
           })
 
           void ctx.audit.log({
@@ -65,7 +76,10 @@ export const Route = createFileRoute('/api/admin/user/$id' as any)({
       }),
 
       DELETE: withAdminAuth(async (ctx) => {
-        const params = (ctx as any).params as { id: string }
+        const { params } = ctx
+        if (!params?.id) {
+          return Response.json({ type: 'bad_request', message: 'Missing user ID' }, { status: 400 })
+        }
         try {
           await prisma.user.delete({
             where: { id: params.id },

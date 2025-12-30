@@ -15,8 +15,6 @@ import {
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 
-type FileListLike = { length: number; [index: number]: { type?: string } | undefined }
-
 const formSchema = z.object({
   file: z
     .any()

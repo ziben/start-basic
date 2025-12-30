@@ -34,7 +34,11 @@ const formSchema = z
     path: ['confirmPassword'],
   })
 
-export function SignUpForm({ className, ...props }: React.HTMLAttributes<HTMLFormElement>) {
+interface SignUpFormProps extends React.HTMLAttributes<HTMLFormElement> {
+  redirectTo?: string
+}
+
+export function SignUpForm({ className, redirectTo, ...props }: SignUpFormProps) {
   const [isLoading, setIsLoading] = useState(false)
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -56,8 +60,12 @@ export function SignUpForm({ className, ...props }: React.HTMLAttributes<HTMLFor
         name: data.email.split('@')[0], // 使用邮箱前缀作为用户名
         password: data.password,
       })
-      // 注册成功后重定向到登录页面或首页
-      navigate({ to: '/sign-in', replace: true })
+      // 注册成功后重定向到登录页面或首页，并透传 redirect 参数
+      navigate({
+        to: '/sign-in',
+        search: { redirect: redirectTo },
+        replace: true,
+      })
     } catch (error) {
       console.error('注册失败:', error)
       // 这里可以添加错误处理逻辑，例如显示错误消息

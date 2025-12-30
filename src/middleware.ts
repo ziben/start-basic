@@ -15,6 +15,7 @@ type SessionUser = NonNullable<Awaited<ReturnType<typeof auth.api.getSession>>>[
 
 interface HandlerContext {
   request: Request
+  params?: Record<string, string>
 }
 
 interface AuthenticatedContext extends HandlerContext {
@@ -49,8 +50,8 @@ function hasAdminRole(role: unknown) {
 
 
 // 普通用户鉴权中间件（登录即可）
-export function withAuth(handler: Handler<AuthenticatedContext>) {
-  return async (ctx: HandlerContext) => {
+export function withAuth<T extends HandlerContext>(handler: Handler<T & AuthenticatedContext>) {
+  return async (ctx: T) => {
     const start = Date.now()
     const request = getRequest() ?? ctx.request
     const requestId = createRequestId()
@@ -159,8 +160,8 @@ export function withAuth(handler: Handler<AuthenticatedContext>) {
 }
 
 // 管理员鉴权中间件
-export function withAdminAuth(handler: Handler<AuthenticatedContext>) {
-  return async (ctx: HandlerContext) => {
+export function withAdminAuth<T extends HandlerContext>(handler: Handler<T & AuthenticatedContext>) {
+  return async (ctx: T) => {
     const start = Date.now()
     const request = getRequest() ?? ctx.request
     const requestId = createRequestId()

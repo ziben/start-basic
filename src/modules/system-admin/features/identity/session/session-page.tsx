@@ -12,7 +12,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import { zhCN } from 'date-fns/locale'
-import { RefreshCw, Trash2 } from 'lucide-react'
+import { Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import {
   useAdminSessions,
@@ -21,7 +21,6 @@ import {
   type AdminSessionInfo,
 } from '~/modules/system-admin/shared/hooks/use-admin-session-api'
 import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
-import { type NavigateFn } from '@/shared/hooks/use-table-url-state'
 import { useUrlSyncedSorting } from '@/shared/hooks/use-url-synced-sorting'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -38,11 +37,8 @@ import {
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { DataTableColumnHeader, DataTablePagination, DataTableToolbar } from '@/components/data-table'
-import { Header } from '@/components/layout/header'
+import { AppHeader } from '@/components/layout/app-header'
 import { Main } from '@/components/layout/main'
-import { ProfileDropdown } from '@/components/profile-dropdown'
-import { Search } from '@/components/search'
-import { ThemeSwitch } from '@/components/theme-switch'
 
 const route = getRouteApi('/admin/session')
 
@@ -58,8 +54,8 @@ export default function AdminSession() {
   const [rowSelection, setRowSelection] = useState({})
 
   const tableUrl = useUrlSyncedSorting({
-    search: search as any,
-    navigate: navigate as unknown as NavigateFn,
+    search: search,
+    navigate: navigate as any,
     pagination: { defaultPage: 1, defaultPageSize: 10 },
     globalFilter: { enabled: true, key: 'filter' },
     columnFilters: [{ columnId: 'isActive', searchKey: 'status', type: 'array' }],
@@ -345,13 +341,7 @@ export default function AdminSession() {
 
   return (
     <>
-      <Header fixed>
-        <Search />
-        <div className='ms-auto flex items-center space-x-4'>
-          <ThemeSwitch />
-          <ProfileDropdown />
-        </div>
-      </Header>
+      <AppHeader />
 
       <Main fixed>
         <div className='mb-2 flex flex-wrap items-center justify-between space-y-2 gap-x-4'>
@@ -363,11 +353,6 @@ export default function AdminSession() {
           </div>
 
           <div className='flex items-center gap-2'>
-            <Button onClick={() => refetch()} disabled={isRefetching} variant='outline' size='sm'>
-              <RefreshCw className={`mr-2 h-4 w-4 ${isRefetching ? 'animate-spin' : ''}`} />
-              {t('common.refresh', { defaultMessage: '刷新' })}
-            </Button>
-
             <Button
               variant='destructive'
               size='sm'
@@ -392,8 +377,8 @@ export default function AdminSession() {
                 <DataTableToolbar
                   table={table}
                   searchPlaceholder={t('admin.session.searchPlaceholder', { defaultMessage: '搜索用户/邮箱/IP/UA...' })}
-                  columnVisibility={columnVisibility}
-                  onColumnVisibilityChange={setColumnVisibility}
+                  onReload={() => void refetch()}
+                  isReloading={isRefetching}
                   filters={[
                     {
                       columnId: 'isActive',

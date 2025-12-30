@@ -368,11 +368,11 @@ pnpm test
 
 ### 长期改进 (P3) - 剩余
 
-| #   | 问题          | 说明                                       |
-| --- | ------------- | ------------------------------------------ |
-| 1   | E2E 测试      | Playwright 已在 devDeps，可开始编写        |
-| 2   | ZenStack 集成 | `zenstack/` 目录已存在，可替代部分手写 API |
-| 3   | 代码分割优化  | React.lazy + Suspense for routes           |
+| #   | 问题         | 说明                             |
+| --- | ------------ | -------------------------------- |
+| 1   | E2E 测试     | Playwright 已在 devDeps，可开始编写 |
+| 2   | 代码分割优化 | React.lazy + Suspense for routes |
+
 
 ---
 
@@ -451,7 +451,8 @@ GET: withAdminAuth(async ({ request, user }) => {
 ### 🎯 立即行动 (本周)
 
 1. **E2E 测试** - Playwright 已在 devDeps，可开始编写关键流程测试
-2. **ZenStack 集成探索** - `zenstack/` 目录已存在
+2. **代码分割优化** - 实现路由级别懒加载提升首屏性能
+
 
 ### 📅 近期规划 (1-2周)
 

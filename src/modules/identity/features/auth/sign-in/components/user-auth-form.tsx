@@ -45,9 +45,7 @@ export function UserAuthForm({ className, redirectTo, ...props }: UserAuthFormPr
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
     setIsLoading(true)
-    // eslint-disable-next-line no-console
-    console.log(data)
-    const result = await authClient.signIn.email(
+    await authClient.signIn.email(
       {
         /**
          * The user email
@@ -62,12 +60,22 @@ export function UserAuthForm({ className, redirectTo, ...props }: UserAuthFormPr
          * @default true
          */
         rememberMe: data.rememberMe,
-        callbackURL: '/dashboard',
+        callbackURL: redirectTo || '/dashboard',
       },
       {
         onSuccess: async () => {
           await queryClient.invalidateQueries({ queryKey: ['user'] })
-          navigate({ to: '/dashboard' })
+          if (redirectTo) {
+            // If it's a full URL, we might want to just use window.location.href
+            // but if it's an internal path, navigate is better.
+            if (redirectTo.startsWith('http')) {
+              window.location.href = redirectTo
+            } else {
+              navigate({ to: redirectTo as any })
+            }
+          } else {
+            navigate({ to: '/dashboard' })
+          }
         },
         onError: (ctx) => {
           setIsLoading(false)

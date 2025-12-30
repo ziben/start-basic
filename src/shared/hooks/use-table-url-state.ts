@@ -3,10 +3,7 @@ import type { ColumnFiltersState, OnChangeFn, PaginationState } from '@tanstack/
 
 type SearchRecord = Record<string, unknown>
 
-export type NavigateFn = (opts: {
-  search: true | SearchRecord | ((prev: SearchRecord) => Partial<SearchRecord> | SearchRecord)
-  replace?: boolean
-}) => void
+export type NavigateFn = (opts: any) => void
 
 export type UseTableUrlStateParams = {
   search: SearchRecord
