@@ -8,7 +8,6 @@ import { NavigationProgress } from '~/components/navigation-progress'
 import { Toaster } from '~/components/ui/sonner'
 import { AuthProvider } from '~/shared/context/auth-context'
 import { DirectionProvider } from '~/shared/context/direction-provider'
-import { FontProvider } from '~/shared/context/font-provider'
 import { LocaleProvider } from '~/shared/context/locale-context'
 import { ThemeProvider } from '~/shared/context/theme-provider'
 import appCss from '~/styles/index.css?url'
@@ -82,18 +81,16 @@ function RootComponent() {
     <React.StrictMode>
       <ThemeProvider defaultTheme='light' storageKey='vite-ui-theme'>
         <DirectionProvider>
-          <FontProvider>
-            <LocaleProvider>
-              <AuthProvider>
-                <RootDocument>
-                  <NavigationProgress />
-                  <Outlet />
-                  <Toaster duration={5000} />
-                  <Devtools />
-                </RootDocument>
-              </AuthProvider>
-            </LocaleProvider>
-          </FontProvider>
+          <LocaleProvider>
+            <AuthProvider>
+              <RootDocument>
+                <NavigationProgress />
+                <Outlet />
+                <Toaster duration={5000} />
+                <Devtools />
+              </RootDocument>
+            </AuthProvider>
+          </LocaleProvider>
         </DirectionProvider>
       </ThemeProvider>
     </React.StrictMode>

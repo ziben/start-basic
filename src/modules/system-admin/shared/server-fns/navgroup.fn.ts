@@ -34,28 +34,7 @@ const UpdateVisibilitySchema = z.object({
 
 // ============ 认证辅助函数 ============
 
-async function requireAdmin() {
-    const { getRequest } = await import('@tanstack/react-start/server')
-    const { auth } = await import('~/modules/identity/shared/lib/auth')
-
-    const request = getRequest()
-    if (!request) {
-        throw new Error('无法获取请求信息')
-    }
-
-    const session = await auth.api.getSession({ headers: request.headers })
-
-    if (!session?.user) {
-        throw new Error('未登录')
-    }
-
-    const adminRoles = ['admin', 'superadmin']
-    if (!adminRoles.includes(session.user.role || '')) {
-        throw new Error('无权限访问')
-    }
-
-    return session.user
-}
+import { requireAdmin } from './auth'
 
 // ============ ServerFn 定义 ============
 
@@ -65,7 +44,7 @@ async function requireAdmin() {
 export const getNavGroupsFn = createServerFn({ method: 'GET' })
     .inputValidator((data?: { scope?: 'APP' | 'ADMIN' }) => data)
     .handler(async ({ data }: { data?: { scope?: 'APP' | 'ADMIN' } }) => {
-        await requireAdmin()
+        await requireAdmin('ListNavGroups')
         const { NavGroupService } = await import('../services/navgroup.service')
         return NavGroupService.getAll(data?.scope)
     })
@@ -79,7 +58,7 @@ export const getNavGroupFn = createServerFn({ method: 'GET' })
         return data
     })
     .handler(async ({ data }: { data: { id: string } }) => {
-        await requireAdmin()
+        await requireAdmin('GetNavGroupDetail')
         const { NavGroupService } = await import('../services/navgroup.service')
         return NavGroupService.getById(data.id)
     })
@@ -90,7 +69,7 @@ export const getNavGroupFn = createServerFn({ method: 'GET' })
 export const createNavGroupFn = createServerFn({ method: 'POST' })
     .inputValidator((data: z.infer<typeof CreateNavGroupSchema>) => CreateNavGroupSchema.parse(data))
     .handler(async ({ data }: { data: z.infer<typeof CreateNavGroupSchema> }) => {
-        await requireAdmin()
+        await requireAdmin('CreateNavGroup')
         const { NavGroupService } = await import('../services/navgroup.service')
         return NavGroupService.create(data)
     })
@@ -101,7 +80,7 @@ export const createNavGroupFn = createServerFn({ method: 'POST' })
 export const updateNavGroupFn = createServerFn({ method: 'POST' })
     .inputValidator((data: z.infer<typeof UpdateNavGroupSchema>) => UpdateNavGroupSchema.parse(data))
     .handler(async ({ data }: { data: z.infer<typeof UpdateNavGroupSchema> }) => {
-        await requireAdmin()
+        await requireAdmin('UpdateNavGroup')
         const { NavGroupService } = await import('../services/navgroup.service')
         const { id, ...updateData } = data
         return NavGroupService.update(id, updateData)
@@ -116,7 +95,7 @@ export const deleteNavGroupFn = createServerFn({ method: 'POST' })
         return data
     })
     .handler(async ({ data }: { data: { id: string } }) => {
-        await requireAdmin()
+        await requireAdmin('DeleteNavGroup')
         const { NavGroupService } = await import('../services/navgroup.service')
         return NavGroupService.delete(data.id)
     })
@@ -127,7 +106,7 @@ export const deleteNavGroupFn = createServerFn({ method: 'POST' })
 export const updateNavGroupOrderFn = createServerFn({ method: 'POST' })
     .inputValidator((data: z.infer<typeof UpdateOrderSchema>) => UpdateOrderSchema.parse(data))
     .handler(async ({ data }: { data: z.infer<typeof UpdateOrderSchema> }) => {
-        await requireAdmin()
+        await requireAdmin('UpdateNavGroupOrder')
         const { NavGroupService } = await import('../services/navgroup.service')
         return NavGroupService.updateOrder(data.groupIds)
     })
@@ -138,7 +117,7 @@ export const updateNavGroupOrderFn = createServerFn({ method: 'POST' })
 export const updateNavGroupVisibilityFn = createServerFn({ method: 'POST' })
     .inputValidator((data: z.infer<typeof UpdateVisibilitySchema>) => UpdateVisibilitySchema.parse(data))
     .handler(async ({ data }: { data: z.infer<typeof UpdateVisibilitySchema> }) => {
-        await requireAdmin()
+        await requireAdmin('UpdateNavGroupVisibility')
         const { NavGroupService } = await import('../services/navgroup.service')
         return NavGroupService.updateVisibility(data)
     })

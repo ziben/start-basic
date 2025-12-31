@@ -32,28 +32,7 @@ const UpdateNavItemSchema = z.object({
 
 // ============ 认证辅助函数 ============
 
-async function requireAdmin() {
-    const { getRequest } = await import('@tanstack/react-start/server')
-    const { auth } = await import('~/modules/identity/shared/lib/auth')
-
-    const request = getRequest()
-    if (!request) {
-        throw new Error('无法获取请求信息')
-    }
-
-    const session = await auth.api.getSession({ headers: request.headers })
-
-    if (!session?.user) {
-        throw new Error('未登录')
-    }
-
-    const adminRoles = ['admin', 'superadmin']
-    if (!adminRoles.includes(session.user.role || '')) {
-        throw new Error('无权限访问')
-    }
-
-    return session.user
-}
+import { requireAdmin } from './auth'
 
 // ============ ServerFn 定义 ============
 
@@ -63,7 +42,7 @@ async function requireAdmin() {
 export const getNavItemsFn = createServerFn({ method: 'GET' })
     .inputValidator((data?: { navGroupId?: string; scope?: 'APP' | 'ADMIN' }) => data)
     .handler(async ({ data }: { data?: { navGroupId?: string; scope?: 'APP' | 'ADMIN' } }) => {
-        await requireAdmin()
+        await requireAdmin('ListNavItems')
         const { NavItemService } = await import('../services/navitem.service')
         return NavItemService.getAll(data?.navGroupId, data?.scope)
     })
@@ -77,7 +56,7 @@ export const getNavItemFn = createServerFn({ method: 'GET' })
         return data
     })
     .handler(async ({ data }: { data: { id: string } }) => {
-        await requireAdmin()
+        await requireAdmin('GetNavItemDetail')
         const { NavItemService } = await import('../services/navitem.service')
         return NavItemService.getById(data.id)
     })
@@ -88,7 +67,7 @@ export const getNavItemFn = createServerFn({ method: 'GET' })
 export const createNavItemFn = createServerFn({ method: 'POST' })
     .inputValidator((data: z.infer<typeof CreateNavItemSchema>) => CreateNavItemSchema.parse(data))
     .handler(async ({ data }: { data: z.infer<typeof CreateNavItemSchema> }) => {
-        await requireAdmin()
+        await requireAdmin('CreateNavItem')
         const { NavItemService } = await import('../services/navitem.service')
         return NavItemService.create(data)
     })
@@ -99,7 +78,7 @@ export const createNavItemFn = createServerFn({ method: 'POST' })
 export const updateNavItemFn = createServerFn({ method: 'POST' })
     .inputValidator((data: z.infer<typeof UpdateNavItemSchema>) => UpdateNavItemSchema.parse(data))
     .handler(async ({ data }: { data: z.infer<typeof UpdateNavItemSchema> }) => {
-        await requireAdmin()
+        await requireAdmin('UpdateNavItem')
         const { NavItemService } = await import('../services/navitem.service')
         const { id, ...updateData } = data
         return NavItemService.update(id, updateData)
@@ -114,7 +93,7 @@ export const deleteNavItemFn = createServerFn({ method: 'POST' })
         return data
     })
     .handler(async ({ data }: { data: { id: string } }) => {
-        await requireAdmin()
+        await requireAdmin('DeleteNavItem')
         const { NavItemService } = await import('../services/navitem.service')
         return NavItemService.delete(data.id)
     })
@@ -130,7 +109,7 @@ export const updateNavItemOrderFn = createServerFn({ method: 'POST' })
         return data
     })
     .handler(async ({ data }: { data: { itemIds: string[] } }) => {
-        await requireAdmin()
+        await requireAdmin('UpdateNavItemOrder')
         const { NavItemService } = await import('../services/navitem.service')
         return NavItemService.updateOrder(data.itemIds)
     })
@@ -145,7 +124,7 @@ export const toggleNavItemVisibilityFn = createServerFn({ method: 'POST' })
         return data
     })
     .handler(async ({ data }: { data: { id: string; isVisible: boolean } }) => {
-        await requireAdmin()
+        await requireAdmin('ToggleNavItemVisibility')
         const { NavItemService } = await import('../services/navitem.service')
         return NavItemService.toggleVisibility(data.id, data.isVisible)
     })

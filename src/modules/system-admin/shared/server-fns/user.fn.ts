@@ -39,28 +39,7 @@ const UpdateUserSchema = z.object({
 
 // ============ 认证辅助函数 ============
 
-async function requireAdmin() {
-    const { getRequest } = await import('@tanstack/react-start/server')
-    const { auth } = await import('~/modules/identity/shared/lib/auth')
-
-    const request = getRequest()
-    if (!request) {
-        throw new Error('无法获取请求信息')
-    }
-
-    const session = await auth.api.getSession({ headers: request.headers })
-
-    if (!session?.user) {
-        throw new Error('未登录')
-    }
-
-    const adminRoles = ['admin', 'superadmin']
-    if (!adminRoles.includes(session.user.role || '')) {
-        throw new Error('无权限访问')
-    }
-
-    return { user: session.user, request }
-}
+import { requireAdmin } from './auth'
 
 // ============ ServerFn 定义 ============
 
@@ -70,7 +49,7 @@ async function requireAdmin() {
 export const getUsersFn = createServerFn({ method: 'GET' })
     .inputValidator((data?: z.infer<typeof ListUsersSchema>) => (data ? ListUsersSchema.parse(data) : {}))
     .handler(async ({ data }: { data: z.infer<typeof ListUsersSchema> }) => {
-        await requireAdmin()
+        await requireAdmin('ListUsers')
         const { UserService } = await import('../services/user.service')
         return UserService.getList(data)
     })
@@ -84,7 +63,7 @@ export const getUserFn = createServerFn({ method: 'GET' })
         return data
     })
     .handler(async ({ data }: { data: { id: string } }) => {
-        await requireAdmin()
+        await requireAdmin('GetUserDetail')
         const { UserService } = await import('../services/user.service')
         return UserService.getById(data.id)
     })
@@ -95,8 +74,10 @@ export const getUserFn = createServerFn({ method: 'GET' })
 export const createUserFn = createServerFn({ method: 'POST' })
     .inputValidator((data: z.infer<typeof CreateUserSchema>) => CreateUserSchema.parse(data))
     .handler(async ({ data }: { data: z.infer<typeof CreateUserSchema> }) => {
-        const { request } = await requireAdmin()
+        const { getRequest } = await import('@tanstack/react-start/server')
+        await requireAdmin('CreateUser')
         const { UserService } = await import('../services/user.service')
+        const request = getRequest()!
         return UserService.create(data, request.headers)
     })
 
@@ -106,7 +87,7 @@ export const createUserFn = createServerFn({ method: 'POST' })
 export const updateUserFn = createServerFn({ method: 'POST' })
     .inputValidator((data: z.infer<typeof UpdateUserSchema>) => UpdateUserSchema.parse(data))
     .handler(async ({ data }: { data: z.infer<typeof UpdateUserSchema> }) => {
-        await requireAdmin()
+        await requireAdmin('UpdateUser')
         const { UserService } = await import('../services/user.service')
         const { id, ...updateData } = data
         return UserService.update(id, updateData)
@@ -121,7 +102,7 @@ export const deleteUserFn = createServerFn({ method: 'POST' })
         return data
     })
     .handler(async ({ data }: { data: { id: string } }) => {
-        await requireAdmin()
+        await requireAdmin('DeleteUser')
         const { UserService } = await import('../services/user.service')
         return UserService.delete(data.id)
     })
@@ -135,7 +116,7 @@ export const bulkDeleteUsersFn = createServerFn({ method: 'POST' })
         return data
     })
     .handler(async ({ data }: { data: { ids: string[] } }) => {
-        await requireAdmin()
+        await requireAdmin('BulkDeleteUsers')
         const { UserService } = await import('../services/user.service')
         return UserService.bulkDelete(data.ids)
     })
@@ -150,7 +131,7 @@ export const bulkBanUsersFn = createServerFn({ method: 'POST' })
         return data
     })
     .handler(async ({ data }: { data: { ids: string[]; banned: boolean; banReason?: string } }) => {
-        await requireAdmin()
+        await requireAdmin('BulkBanUsers')
         const { UserService } = await import('../services/user.service')
         return UserService.bulkBan(data.ids, data.banned, data.banReason)
     })

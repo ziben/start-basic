@@ -22,28 +22,14 @@ const UpdateTranslationSchema = z.object({
 
 // ============ 认证辅助函数 ============
 
-async function requireAdmin() {
-    const { getRequest } = await import('@tanstack/react-start/server')
-    const { auth } = await import('~/modules/identity/shared/lib/auth')
-
-    const request = getRequest()
-    if (!request) throw new Error('无法获取请求信息')
-
-    const session = await auth.api.getSession({ headers: request.headers })
-    if (!session?.user) throw new Error('未登录')
-
-    const adminRoles = ['admin', 'superadmin']
-    if (!adminRoles.includes(session.user.role || '')) throw new Error('无权限访问')
-
-    return session.user
-}
+import { requireAdmin } from './auth'
 
 // ============ ServerFn 定义 ============
 
 export const getTranslationsFn = createServerFn({ method: 'GET' })
     .inputValidator((data?: { locale?: string }) => data)
     .handler(async ({ data }: { data?: { locale?: string } }) => {
-        await requireAdmin()
+        await requireAdmin('ListTranslations')
         const { TranslationService } = await import('../services/translation.service')
         return TranslationService.getList(data?.locale)
     })
@@ -54,7 +40,7 @@ export const getTranslationFn = createServerFn({ method: 'GET' })
         return data
     })
     .handler(async ({ data }: { data: { id: string } }) => {
-        await requireAdmin()
+        await requireAdmin('GetTranslationDetail')
         const { TranslationService } = await import('../services/translation.service')
         return TranslationService.getById(data.id)
     })
@@ -62,7 +48,7 @@ export const getTranslationFn = createServerFn({ method: 'GET' })
 export const createTranslationFn = createServerFn({ method: 'POST' })
     .inputValidator((data: z.infer<typeof CreateTranslationSchema>) => CreateTranslationSchema.parse(data))
     .handler(async ({ data }: { data: z.infer<typeof CreateTranslationSchema> }) => {
-        await requireAdmin()
+        await requireAdmin('CreateTranslation')
         const { TranslationService } = await import('../services/translation.service')
         return TranslationService.create(data)
     })
@@ -70,7 +56,7 @@ export const createTranslationFn = createServerFn({ method: 'POST' })
 export const updateTranslationFn = createServerFn({ method: 'POST' })
     .inputValidator((data: z.infer<typeof UpdateTranslationSchema>) => UpdateTranslationSchema.parse(data))
     .handler(async ({ data }: { data: z.infer<typeof UpdateTranslationSchema> }) => {
-        await requireAdmin()
+        await requireAdmin('UpdateTranslation')
         const { TranslationService } = await import('../services/translation.service')
         const { id, ...updateData } = data
         return TranslationService.update(id, updateData)
@@ -82,7 +68,7 @@ export const deleteTranslationFn = createServerFn({ method: 'POST' })
         return data
     })
     .handler(async ({ data }: { data: { id: string } }) => {
-        await requireAdmin()
+        await requireAdmin('DeleteTranslation')
         const { TranslationService } = await import('../services/translation.service')
         return TranslationService.delete(data.id)
     })
@@ -96,7 +82,7 @@ export const importTranslationsFn = createServerFn({ method: 'POST' })
         return data
     })
     .handler(async ({ data }: { data: Array<{ locale: string; key: string; value: string }> }) => {
-        await requireAdmin()
+        await requireAdmin('ImportTranslations')
         const { TranslationService } = await import('../services/translation.service')
         return TranslationService.import(data)
     })
@@ -108,7 +94,7 @@ export const importTranslationsFn = createServerFn({ method: 'POST' })
 export const exportTranslationsFn = createServerFn({ method: 'GET' })
     .inputValidator((data?: { locale?: string }) => data)
     .handler(async ({ data }: { data?: { locale?: string } }) => {
-        await requireAdmin()
+        await requireAdmin('ExportTranslations')
         const { TranslationService } = await import('../services/translation.service')
         const csv = await TranslationService.exportCsv(data?.locale)
 
