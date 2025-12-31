@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from 'react'
 import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query'
 import { type SortingState } from '@tanstack/react-table'
-import { userApi } from '../../../../shared/services/user-api'
+import { getUsersFn } from '../../../../shared/server-fns/user.fn'
 import { type AdminUser } from '../data/schema'
 
 export const ADMIN_USERS_QUERY_KEY = ['admin-users'] as const
@@ -66,8 +66,9 @@ export function useAdminUsersListQuery(input: UseAdminUsersListQueryInput) {
   } = useQuery<PageData>({
     queryKey,
     placeholderData: keepPreviousData,
-    queryFn: async ({ signal }) => {
-      return await userApi.list({ ...queryParams, signal })
+    queryFn: async () => {
+      const result = await getUsersFn({ data: queryParams })
+      return result as PageData
     },
   })
 
@@ -90,8 +91,9 @@ export function useAdminUsersListQuery(input: UseAdminUsersListQueryInput) {
 
     void queryClient.prefetchQuery({
       queryKey: nextQueryKey,
-      queryFn: async ({ signal }) => {
-        return await userApi.list({ ...nextQueryParams, signal })
+      queryFn: async () => {
+        const result = await getUsersFn({ data: nextQueryParams })
+        return result as PageData
       },
     })
   }, [pageData, queryClient, pageIndex, pageSize, filter, sorting, banned])

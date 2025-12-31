@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { useRoles } from '~/modules/system-admin/shared/hooks/use-role-api'
-import { userApi } from '../../../../shared/services/user-api'
+import { createUserFn, updateUserFn } from '../../../../shared/server-fns/user.fn'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
@@ -92,14 +92,16 @@ export function AdminUsersMutateDialog({ currentRow, open, onOpenChange }: Admin
         throw new Error('Password is required for new users')
       }
 
-      return await userApi.create({
-        email: data.email,
-        password: data.password,
-        name: data.name,
-        role: data.role || undefined,
-        roleIds: data.roleIds,
-        username: data.username ? data.username : undefined,
-        banned: data.banned,
+      return await createUserFn({
+        data: {
+          email: data.email,
+          password: data.password,
+          name: data.name,
+          role: data.role || undefined,
+          roleIds: data.roleIds,
+          username: data.username ? data.username : undefined,
+          banned: data.banned,
+        }
       })
     },
     onSuccess: async () => {
@@ -115,14 +117,17 @@ export function AdminUsersMutateDialog({ currentRow, open, onOpenChange }: Admin
         throw new Error('Missing current user')
       }
 
-      return await userApi.update(currentRow.id, {
-        name: data.name,
-        username: data.username ? data.username : null,
-        role: data.role || null,
-        roleIds: data.roleIds,
-        banned: data.banned,
-        banReason: data.banned ? (data.banReason ? data.banReason : null) : null,
-        banExpires: data.banned ? (data.banExpires ? data.banExpires : null) : null,
+      return await updateUserFn({
+        data: {
+          id: currentRow.id,
+          name: data.name,
+          username: data.username ? data.username : null,
+          role: data.role || null,
+          roleIds: data.roleIds,
+          banned: data.banned,
+          banReason: data.banned ? (data.banReason ? data.banReason : null) : null,
+          banExpires: data.banned ? (data.banExpires ? data.banExpires : null) : null,
+        }
       })
     },
     onSuccess: async () => {
@@ -257,10 +262,10 @@ export function AdminUsersMutateDialog({ currentRow, open, onOpenChange }: Admin
                                       return checked
                                         ? field.onChange([...(field.value || []), role.id])
                                         : field.onChange(
-                                            field.value?.filter(
-                                              (value) => value !== role.id
-                                            )
+                                          field.value?.filter(
+                                            (value) => value !== role.id
                                           )
+                                        )
                                     }}
                                   />
                                 </FormControl>

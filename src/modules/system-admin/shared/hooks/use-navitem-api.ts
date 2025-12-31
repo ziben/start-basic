@@ -1,5 +1,19 @@
+/**
+ * NavItem API Hooks - React Query 封装
+ *
+ * 使用 ServerFn 替代 REST API 调用
+ */
+
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { navitemApi } from '../services/navitem-api'
+import {
+  getNavItemsFn,
+  getNavItemFn,
+  createNavItemFn,
+  updateNavItemFn,
+  deleteNavItemFn,
+  updateNavItemOrderFn,
+  toggleNavItemVisibilityFn,
+} from '../server-fns/navitem.fn'
 import type {
   AdminNavItem,
   AdminNavItemList,
@@ -11,28 +25,50 @@ import { SIDEBAR_QUERY_KEY } from '~/modules/system-admin/shared/sidebar'
 type SuccessIdResponse = { success: true; id: string }
 type NavItemVisibilityResponse = { success: true; id: string; isVisible: boolean }
 
+// ============ Query Keys ============
+
+export const navitemQueryKeys = {
+  all: ['admin', 'navitems'] as const,
+  list: (navGroupId?: string, scope?: 'APP' | 'ADMIN') =>
+    [...navitemQueryKeys.all, navGroupId, scope ?? 'ALL'] as const,
+  detail: (id: string) => ['admin', 'navitem', id] as const,
+}
+
+// ============ Query Hooks ============
+
 export function useNavitems(navGroupId?: string, scope?: 'APP' | 'ADMIN') {
   return useQuery<AdminNavItemList>({
-    queryKey: ['admin', 'navitems', navGroupId, scope ?? 'ALL'],
-    queryFn: () => navitemApi.list(navGroupId, scope),
+    queryKey: navitemQueryKeys.list(navGroupId, scope),
+    queryFn: async () => {
+      const result = await getNavItemsFn({ data: { navGroupId, scope } })
+      return result as AdminNavItemList
+    },
   })
 }
 
 export function useNavitem(id: string) {
   return useQuery<AdminNavItem>({
-    queryKey: ['admin', 'navitem', id],
-    queryFn: () => navitemApi.get(id),
+    queryKey: navitemQueryKeys.detail(id),
+    queryFn: async () => {
+      const result = await getNavItemFn({ data: { id } })
+      return result as AdminNavItem
+    },
     enabled: !!id,
   })
 }
+
+// ============ Mutation Hooks ============
 
 export function useCreateNavitem() {
   const queryClient = useQueryClient()
 
   return useMutation<AdminNavItem, Error, CreateNavItemData>({
-    mutationFn: (data: CreateNavItemData) => navitemApi.create(data),
+    mutationFn: async (data: CreateNavItemData) => {
+      const result = await createNavItemFn({ data })
+      return result as AdminNavItem
+    },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['admin', 'navitems', variables.navGroupId] })
+      queryClient.invalidateQueries({ queryKey: navitemQueryKeys.list(variables.navGroupId) })
       queryClient.invalidateQueries({ queryKey: SIDEBAR_QUERY_KEY })
     },
   })
@@ -47,10 +83,13 @@ export function useUpdateNavitem() {
   const queryClient = useQueryClient()
 
   return useMutation<AdminNavItem, Error, UpdateNavItemData>({
-    mutationFn: ({ id, data }: UpdateNavItemData) => navitemApi.update(id, data),
+    mutationFn: async ({ id, data }: UpdateNavItemData) => {
+      const result = await updateNavItemFn({ data: { id, ...data } })
+      return result as AdminNavItem
+    },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['admin', 'navitems'] })
-      queryClient.invalidateQueries({ queryKey: ['admin', 'navitem', variables.id] })
+      queryClient.invalidateQueries({ queryKey: navitemQueryKeys.all })
+      queryClient.invalidateQueries({ queryKey: navitemQueryKeys.detail(variables.id) })
       queryClient.invalidateQueries({ queryKey: SIDEBAR_QUERY_KEY })
     },
   })
@@ -65,10 +104,13 @@ export function useDeleteNavitem() {
   const queryClient = useQueryClient()
 
   return useMutation<SuccessIdResponse, Error, DeleteNavItemData>({
-    mutationFn: (variables: DeleteNavItemData) => navitemApi.remove(variables.id),
+    mutationFn: async (variables: DeleteNavItemData) => {
+      const result = await deleteNavItemFn({ data: { id: variables.id } })
+      return result
+    },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['admin', 'navitems', variables.navGroupId] })
-      queryClient.invalidateQueries({ queryKey: ['admin', 'navitems'] })
+      queryClient.invalidateQueries({ queryKey: navitemQueryKeys.list(variables.navGroupId) })
+      queryClient.invalidateQueries({ queryKey: navitemQueryKeys.all })
       queryClient.invalidateQueries({ queryKey: SIDEBAR_QUERY_KEY })
     },
   })
@@ -78,9 +120,12 @@ export function useUpdateNavitemOrder() {
   const queryClient = useQueryClient()
 
   return useMutation<{ success: true }, Error, string[]>({
-    mutationFn: (itemIds: string[]) => navitemApi.updateOrder(itemIds),
+    mutationFn: async (itemIds: string[]) => {
+      const result = await updateNavItemOrderFn({ data: { itemIds } })
+      return result
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin', 'navitems'] })
+      queryClient.invalidateQueries({ queryKey: navitemQueryKeys.all })
       queryClient.invalidateQueries({ queryKey: SIDEBAR_QUERY_KEY })
     },
   })
@@ -96,18 +141,12 @@ export function useToggleNavItemVisibility() {
 
   return useMutation<NavItemVisibilityResponse, Error, ToggleNavItemVisibilityData>({
     mutationFn: async ({ id, isVisible }: ToggleNavItemVisibilityData) => {
-      return await navitemApi.toggleVisibility({ id, isVisible })
+      const result = await toggleNavItemVisibilityFn({ data: { id, isVisible } })
+      return result
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin', 'navitems'] })
+      queryClient.invalidateQueries({ queryKey: navitemQueryKeys.all })
       queryClient.invalidateQueries({ queryKey: SIDEBAR_QUERY_KEY })
     },
   })
 }
-
-
-
-
-
-
-

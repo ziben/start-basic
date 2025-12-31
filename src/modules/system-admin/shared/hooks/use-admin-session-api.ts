@@ -1,8 +1,30 @@
+/**
+ * Session API Hooks - React Query 封装
+ *
+ * 使用 ServerFn 替代 REST API 调用
+ */
+
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { sessionApi } from '../services/session-api'
-import type { AdminSessionsPage } from '../types/session'
+import { getSessionsFn, deleteSessionFn, bulkDeleteSessionsFn } from '../server-fns/session.fn'
+import type { AdminSessionsPage, AdminSessionInfo } from '../types/session'
 
 export type { AdminSessionInfo } from '../types/session'
+
+// ============ Query Keys ============
+
+export const sessionQueryKeys = {
+  all: ['admin', 'sessions'] as const,
+  list: (params: {
+    page: number
+    pageSize: number
+    filter?: string
+    status?: Array<'active' | 'expired'>
+    sortBy?: string
+    sortDir?: 'asc' | 'desc'
+  }) => [...sessionQueryKeys.all, params] as const,
+}
+
+// ============ Query Hooks ============
 
 export function useAdminSessions(params: {
   page: number
@@ -13,39 +35,37 @@ export function useAdminSessions(params: {
   sortDir?: 'asc' | 'desc'
 }) {
   return useQuery<AdminSessionsPage>({
-    queryKey: ['admin', 'sessions', params],
+    queryKey: sessionQueryKeys.list(params),
     placeholderData: keepPreviousData,
-    queryFn: async ({ signal }) => {
-      return await sessionApi.list({ ...params, signal })
+    queryFn: async () => {
+      const result = await getSessionsFn({ data: params })
+      return result as AdminSessionsPage
     },
   })
 }
+
+// ============ Mutation Hooks ============
 
 export function useDeleteAdminSession() {
   const qc = useQueryClient()
   return useMutation<{ success: true; id: string }, Error, { id: string }>({
     mutationFn: async ({ id }) => {
-      return await sessionApi.remove(id)
+      return await deleteSessionFn({ data: { id } })
     },
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['admin', 'sessions'] })
+      qc.invalidateQueries({ queryKey: sessionQueryKeys.all })
     },
   })
 }
 
 export function useBulkDeleteAdminSessions() {
   const qc = useQueryClient()
-  return useMutation<{ count: number }, Error, { ids: string[] }>({
+  return useMutation<{ success: true; count: number }, Error, { ids: string[] }>({
     mutationFn: async ({ ids }) => {
-      return await sessionApi.bulkDelete({ ids })
+      return await bulkDeleteSessionsFn({ data: { ids } })
     },
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['admin', 'sessions'] })
+      qc.invalidateQueries({ queryKey: sessionQueryKeys.all })
     },
   })
 }
-
-
-
-
-

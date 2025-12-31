@@ -3,7 +3,7 @@ import { useMutation } from '@tanstack/react-query'
 import { type Row } from '@tanstack/react-table'
 import { Trash2, UserPen, Ban } from 'lucide-react'
 import { toast } from 'sonner'
-import { userApi } from '../../../../shared/services/user-api'
+import { bulkBanUsersFn } from '../../../../shared/server-fns/user.fn'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -22,7 +22,7 @@ type DataTableRowActionsProps<TData> = {
   row: Row<TData>
 }
 
-export function DataTableRowActions<TData>({ row }: DataTableRowActionsProps<TData>) {  
+export function DataTableRowActions<TData>({ row }: DataTableRowActionsProps<TData>) {
   const user = row.original as AdminUser
 
   const { setOpen, setCurrentRow } = useAdminUsers()
@@ -30,11 +30,12 @@ export function DataTableRowActions<TData>({ row }: DataTableRowActionsProps<TDa
 
   const banMutation = useMutation({
     mutationFn: async (input: { id: string; banned: boolean }) => {
-      return await userApi.bulkBan({
-        ids: [input.id],
-        banned: input.banned,
-        banReason: null,
-        banExpires: null,
+      return await bulkBanUsersFn({
+        data: {
+          ids: [input.id],
+          banned: input.banned,
+          banReason: undefined,
+        }
       })
     },
     ...getOptimisticMutationOptions({

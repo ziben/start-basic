@@ -1,9 +1,7 @@
-'use client'
-
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { type Table } from '@tanstack/react-table'
 import { toast } from 'sonner'
-import { userApi } from '../../../../shared/services/user-api'
+import { bulkDeleteUsersFn } from '../../../../shared/server-fns/user.fn'
 import { ConfirmDeleteDialog } from '@/components/confirm-delete-dialog'
 import { type AdminUser } from '../data/schema'
 import { ADMIN_USERS_QUERY_KEY } from '../hooks/use-admin-users-list-query'
@@ -25,7 +23,7 @@ export function AdminUsersMultiDeleteDialog<TData>({
 
   const bulkDeleteMutation = useMutation({
     mutationFn: async (input: { ids: string[] }) => {
-      return await userApi.bulkDelete(input)
+      return await bulkDeleteUsersFn({ data: input })
     },
     onMutate: async (input) => {
       await queryClient.cancelQueries({ queryKey: ADMIN_USERS_QUERY_KEY })

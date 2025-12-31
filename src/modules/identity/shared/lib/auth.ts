@@ -8,7 +8,7 @@ const ADMIN_ROLES = ['admin', 'superadmin'] as const
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
-    provider: 'sqlite', // or "mysql", "postgresql", ...etc
+    provider: 'sqlite',
   }),
   emailAndPassword: {
     enabled: true,
@@ -27,7 +27,11 @@ export const auth = betterAuth({
   ],
   user: {
     additionalFields: {
+      role: { type: 'string', required: false },
+      banned: { type: 'boolean', required: false },
+      banReason: { type: 'string', required: false },
+      banExpires: { type: 'date', required: false },
+      displayUsername: { type: 'string', required: false },
     },
   },
 })
-

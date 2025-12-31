@@ -1,0 +1,141 @@
+/**
+ * Role ServerFn - 服务器函数层
+ */
+
+import { createServerFn } from '@tanstack/react-start'
+import { z } from 'zod'
+
+// ============ Schema 定义 ============
+
+const ListRolesSchema = z.object({
+    page: z.number().optional(),
+    pageSize: z.number().optional(),
+    filter: z.string().optional(),
+})
+
+const CreateRoleSchema = z.object({
+    name: z.string().min(1, '名称不能为空'),
+    label: z.string().min(1, '显示名称不能为空'),
+    description: z.string().optional(),
+})
+
+const UpdateRoleSchema = z.object({
+    id: z.string().min(1),
+    name: z.string().optional(),
+    label: z.string().optional(),
+    description: z.string().nullable().optional(),
+})
+
+// ============ 认证辅助函数 ============
+
+async function requireAdmin() {
+    const { getRequest } = await import('@tanstack/react-start/server')
+    const { auth } = await import('~/modules/identity/shared/lib/auth')
+
+    const request = getRequest()
+    if (!request) {
+        throw new Error('无法获取请求信息')
+    }
+
+    const session = await auth.api.getSession({ headers: request.headers })
+
+    if (!session?.user) {
+        throw new Error('未登录')
+    }
+
+    const adminRoles = ['admin', 'superadmin']
+    if (!adminRoles.includes(session.user.role || '')) {
+        throw new Error('无权限访问')
+    }
+
+    return session.user
+}
+
+// ============ ServerFn 定义 ============
+
+/**
+ * 获取角色列表（分页）
+ */
+export const getRolesFn = createServerFn({ method: 'GET' })
+    .inputValidator((data?: z.infer<typeof ListRolesSchema>) => data ? ListRolesSchema.parse(data) : {})
+    .handler(async ({ data }: { data: z.infer<typeof ListRolesSchema> }) => {
+        await requireAdmin()
+        const { RoleService } = await import('../services/role.service')
+        return RoleService.getList(data)
+    })
+
+/**
+ * 获取所有角色（不分页）
+ */
+export const getAllRolesFn = createServerFn({ method: 'GET' })
+    .handler(async () => {
+        await requireAdmin()
+        const { RoleService } = await import('../services/role.service')
+        return RoleService.getAll()
+    })
+
+/**
+ * 获取单个角色
+ */
+export const getRoleFn = createServerFn({ method: 'GET' })
+    .inputValidator((data: { id: string }) => {
+        if (!data?.id) throw new Error('ID 不能为空')
+        return data
+    })
+    .handler(async ({ data }: { data: { id: string } }) => {
+        await requireAdmin()
+        const { RoleService } = await import('../services/role.service')
+        return RoleService.getById(data.id)
+    })
+
+/**
+ * 创建角色
+ */
+export const createRoleFn = createServerFn({ method: 'POST' })
+    .inputValidator((data: z.infer<typeof CreateRoleSchema>) => CreateRoleSchema.parse(data))
+    .handler(async ({ data }: { data: z.infer<typeof CreateRoleSchema> }) => {
+        await requireAdmin()
+        const { RoleService } = await import('../services/role.service')
+        return RoleService.create(data)
+    })
+
+/**
+ * 更新角色
+ */
+export const updateRoleFn = createServerFn({ method: 'POST' })
+    .inputValidator((data: z.infer<typeof UpdateRoleSchema>) => UpdateRoleSchema.parse(data))
+    .handler(async ({ data }: { data: z.infer<typeof UpdateRoleSchema> }) => {
+        await requireAdmin()
+        const { RoleService } = await import('../services/role.service')
+        const { id, ...updateData } = data
+        return RoleService.update(id, updateData)
+    })
+
+/**
+ * 删除角色
+ */
+export const deleteRoleFn = createServerFn({ method: 'POST' })
+    .inputValidator((data: { id: string }) => {
+        if (!data?.id) throw new Error('ID 不能为空')
+        return data
+    })
+    .handler(async ({ data }: { data: { id: string } }) => {
+        await requireAdmin()
+        const { RoleService } = await import('../services/role.service')
+        return RoleService.delete(data.id)
+    })
+
+/**
+ * 为角色分配导航组
+ */
+export const assignRoleNavGroupsFn = createServerFn({ method: 'POST' })
+    .inputValidator((data: { id: string; navGroupIds: string[] }) => {
+        if (!data?.id) throw new Error('ID 不能为空')
+        if (!Array.isArray(data.navGroupIds)) throw new Error('navGroupIds 必须是数组')
+        return data
+    })
+    .handler(async ({ data }: { data: { id: string; navGroupIds: string[] } }) => {
+        await requireAdmin()
+        const { RoleService } = await import('../services/role.service')
+        return RoleService.assignNavGroups(data.id, data.navGroupIds)
+    })

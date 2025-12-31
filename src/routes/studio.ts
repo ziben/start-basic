@@ -3,7 +3,7 @@ import { createClient } from '@libsql/client'
 import { serializeError } from '@prisma/studio-core/data/bff'
 
 const db = createClient({
-  url: process.env.DATABASE_URL ?? 'file:./prisma/dev.db',
+  url: process.env.DATABASE_URL ?? 'file:./db/dev.db',
 })
 
 async function executeQuery(query: { sql: string; parameters: unknown[] }): Promise<[Error] | [null, unknown[]]> {

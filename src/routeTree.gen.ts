@@ -66,16 +66,6 @@ import { Route as ApiQuestionBankTagsIndexRouteImport } from './routes/api/quest
 import { Route as ApiQuestionBankQuestionsIndexRouteImport } from './routes/api/question-bank/questions/index'
 import { Route as ApiQuestionBankCategoriesIndexRouteImport } from './routes/api/question-bank/categories/index'
 import { Route as ApiDemoTasksIndexRouteImport } from './routes/api/demo/tasks/index'
-import { Route as ApiAdminUserIndexRouteImport } from './routes/api/admin/user/index'
-import { Route as ApiAdminTranslationIndexRouteImport } from './routes/api/admin/translation/index'
-import { Route as ApiAdminSessionIndexRouteImport } from './routes/api/admin/session/index'
-import { Route as ApiAdminRoleIndexRouteImport } from './routes/api/admin/role/index'
-import { Route as ApiAdminOrganizationIndexRouteImport } from './routes/api/admin/organization/index'
-import { Route as ApiAdminNavitemIndexRouteImport } from './routes/api/admin/navitem/index'
-import { Route as ApiAdminNavgroupIndexRouteImport } from './routes/api/admin/navgroup/index'
-import { Route as ApiAdminMemberIndexRouteImport } from './routes/api/admin/member/index'
-import { Route as ApiAdminLogIndexRouteImport } from './routes/api/admin/log/index'
-import { Route as ApiAdminInvitationIndexRouteImport } from './routes/api/admin/invitation/index'
 import { Route as AuthenticatedDemoUsersIndexRouteImport } from './routes/_authenticated/demo/users/index'
 import { Route as AuthenticatedDemoTasksIndexRouteImport } from './routes/_authenticated/demo/tasks/index'
 import { Route as AuthenticatedDemoSettingsIndexRouteImport } from './routes/_authenticated/demo/settings/index'
@@ -84,33 +74,12 @@ import { Route as AuthenticatedDemoAppsIndexRouteImport } from './routes/_authen
 import { Route as ApiQuestionBankTagsIdRouteImport } from './routes/api/question-bank/tags/$id'
 import { Route as ApiQuestionBankQuestionsIdRouteImport } from './routes/api/question-bank/questions/$id'
 import { Route as ApiQuestionBankCategoriesIdRouteImport } from './routes/api/question-bank/categories/$id'
-import { Route as ApiAdminUserBulkDeleteRouteImport } from './routes/api/admin/user/bulk-delete'
-import { Route as ApiAdminUserBulkBanRouteImport } from './routes/api/admin/user/bulk-ban'
-import { Route as ApiAdminUserIdRouteImport } from './routes/api/admin/user/$id'
-import { Route as ApiAdminTranslationImportRouteImport } from './routes/api/admin/translation/import'
-import { Route as ApiAdminTranslationExportRouteImport } from './routes/api/admin/translation/export'
-import { Route as ApiAdminTranslationIdRouteImport } from './routes/api/admin/translation/$id'
-import { Route as ApiAdminSessionIdRouteImport } from './routes/api/admin/session/$id'
-import { Route as ApiAdminRoleIdRouteImport } from './routes/api/admin/role/$id'
-import { Route as ApiAdminOrganizationBatchRouteImport } from './routes/api/admin/organization/batch'
-import { Route as ApiAdminOrganizationIdRouteImport } from './routes/api/admin/organization/$id'
-import { Route as ApiAdminNavitemVisibilityRouteImport } from './routes/api/admin/navitem/visibility'
-import { Route as ApiAdminNavitemOrderRouteImport } from './routes/api/admin/navitem/order'
-import { Route as ApiAdminNavitemIdRouteImport } from './routes/api/admin/navitem/$id'
-import { Route as ApiAdminNavgroupVisibilityRouteImport } from './routes/api/admin/navgroup/visibility'
-import { Route as ApiAdminNavgroupOrderRouteImport } from './routes/api/admin/navgroup/order'
-import { Route as ApiAdminNavgroupIdRouteImport } from './routes/api/admin/navgroup/$id'
-import { Route as ApiAdminMemberBatchRouteImport } from './routes/api/admin/member/batch'
-import { Route as ApiAdminMemberIdRouteImport } from './routes/api/admin/member/$id'
-import { Route as ApiAdminInvitationBatchRouteImport } from './routes/api/admin/invitation/batch'
-import { Route as ApiAdminInvitationIdRouteImport } from './routes/api/admin/invitation/$id'
 import { Route as AdminOrganizationMemberCreateRouteImport } from './routes/admin/organization/member/create'
 import { Route as AdminOrganizationMemberIdRouteImport } from './routes/admin/organization/member/$id'
 import { Route as AuthenticatedDemoSettingsNotificationsRouteImport } from './routes/_authenticated/demo/settings/notifications'
 import { Route as AuthenticatedDemoSettingsDisplayRouteImport } from './routes/_authenticated/demo/settings/display'
 import { Route as AuthenticatedDemoSettingsAppearanceRouteImport } from './routes/_authenticated/demo/settings/appearance'
 import { Route as AuthenticatedDemoSettingsAccountRouteImport } from './routes/_authenticated/demo/settings/account'
-import { Route as ApiAdminRoleIdNavGroupsRouteImport } from './routes/api/admin/role/$id.nav-groups'
 
 const StudioRoute = StudioRouteImport.update({
   id: '/studio',
@@ -404,58 +373,6 @@ const ApiDemoTasksIndexRoute = ApiDemoTasksIndexRouteImport.update({
   path: '/api/demo/tasks/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiAdminUserIndexRoute = ApiAdminUserIndexRouteImport.update({
-  id: '/api/admin/user/',
-  path: '/api/admin/user/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminTranslationIndexRoute =
-  ApiAdminTranslationIndexRouteImport.update({
-    id: '/api/admin/translation/',
-    path: '/api/admin/translation/',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiAdminSessionIndexRoute = ApiAdminSessionIndexRouteImport.update({
-  id: '/api/admin/session/',
-  path: '/api/admin/session/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminRoleIndexRoute = ApiAdminRoleIndexRouteImport.update({
-  id: '/api/admin/role/',
-  path: '/api/admin/role/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminOrganizationIndexRoute =
-  ApiAdminOrganizationIndexRouteImport.update({
-    id: '/api/admin/organization/',
-    path: '/api/admin/organization/',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiAdminNavitemIndexRoute = ApiAdminNavitemIndexRouteImport.update({
-  id: '/api/admin/navitem/',
-  path: '/api/admin/navitem/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminNavgroupIndexRoute = ApiAdminNavgroupIndexRouteImport.update({
-  id: '/api/admin/navgroup/',
-  path: '/api/admin/navgroup/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminMemberIndexRoute = ApiAdminMemberIndexRouteImport.update({
-  id: '/api/admin/member/',
-  path: '/api/admin/member/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminLogIndexRoute = ApiAdminLogIndexRouteImport.update({
-  id: '/api/admin/log/',
-  path: '/api/admin/log/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminInvitationIndexRoute = ApiAdminInvitationIndexRouteImport.update({
-  id: '/api/admin/invitation/',
-  path: '/api/admin/invitation/',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AuthenticatedDemoUsersIndexRoute =
   AuthenticatedDemoUsersIndexRouteImport.update({
     id: '/demo/users/',
@@ -503,111 +420,6 @@ const ApiQuestionBankCategoriesIdRoute =
     path: '/api/question-bank/categories/$id',
     getParentRoute: () => rootRouteImport,
   } as any)
-const ApiAdminUserBulkDeleteRoute = ApiAdminUserBulkDeleteRouteImport.update({
-  id: '/api/admin/user/bulk-delete',
-  path: '/api/admin/user/bulk-delete',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminUserBulkBanRoute = ApiAdminUserBulkBanRouteImport.update({
-  id: '/api/admin/user/bulk-ban',
-  path: '/api/admin/user/bulk-ban',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminUserIdRoute = ApiAdminUserIdRouteImport.update({
-  id: '/api/admin/user/$id',
-  path: '/api/admin/user/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminTranslationImportRoute =
-  ApiAdminTranslationImportRouteImport.update({
-    id: '/api/admin/translation/import',
-    path: '/api/admin/translation/import',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiAdminTranslationExportRoute =
-  ApiAdminTranslationExportRouteImport.update({
-    id: '/api/admin/translation/export',
-    path: '/api/admin/translation/export',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiAdminTranslationIdRoute = ApiAdminTranslationIdRouteImport.update({
-  id: '/api/admin/translation/$id',
-  path: '/api/admin/translation/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminSessionIdRoute = ApiAdminSessionIdRouteImport.update({
-  id: '/api/admin/session/$id',
-  path: '/api/admin/session/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminRoleIdRoute = ApiAdminRoleIdRouteImport.update({
-  id: '/api/admin/role/$id',
-  path: '/api/admin/role/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminOrganizationBatchRoute =
-  ApiAdminOrganizationBatchRouteImport.update({
-    id: '/api/admin/organization/batch',
-    path: '/api/admin/organization/batch',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiAdminOrganizationIdRoute = ApiAdminOrganizationIdRouteImport.update({
-  id: '/api/admin/organization/$id',
-  path: '/api/admin/organization/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminNavitemVisibilityRoute =
-  ApiAdminNavitemVisibilityRouteImport.update({
-    id: '/api/admin/navitem/visibility',
-    path: '/api/admin/navitem/visibility',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiAdminNavitemOrderRoute = ApiAdminNavitemOrderRouteImport.update({
-  id: '/api/admin/navitem/order',
-  path: '/api/admin/navitem/order',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminNavitemIdRoute = ApiAdminNavitemIdRouteImport.update({
-  id: '/api/admin/navitem/$id',
-  path: '/api/admin/navitem/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminNavgroupVisibilityRoute =
-  ApiAdminNavgroupVisibilityRouteImport.update({
-    id: '/api/admin/navgroup/visibility',
-    path: '/api/admin/navgroup/visibility',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiAdminNavgroupOrderRoute = ApiAdminNavgroupOrderRouteImport.update({
-  id: '/api/admin/navgroup/order',
-  path: '/api/admin/navgroup/order',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminNavgroupIdRoute = ApiAdminNavgroupIdRouteImport.update({
-  id: '/api/admin/navgroup/$id',
-  path: '/api/admin/navgroup/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminMemberBatchRoute = ApiAdminMemberBatchRouteImport.update({
-  id: '/api/admin/member/batch',
-  path: '/api/admin/member/batch',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminMemberIdRoute = ApiAdminMemberIdRouteImport.update({
-  id: '/api/admin/member/$id',
-  path: '/api/admin/member/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminInvitationBatchRoute = ApiAdminInvitationBatchRouteImport.update({
-  id: '/api/admin/invitation/batch',
-  path: '/api/admin/invitation/batch',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminInvitationIdRoute = ApiAdminInvitationIdRouteImport.update({
-  id: '/api/admin/invitation/$id',
-  path: '/api/admin/invitation/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AdminOrganizationMemberCreateRoute =
   AdminOrganizationMemberCreateRouteImport.update({
     id: '/create',
@@ -644,11 +456,6 @@ const AuthenticatedDemoSettingsAccountRoute =
     path: '/account',
     getParentRoute: () => AuthenticatedDemoSettingsRouteRoute,
   } as any)
-const ApiAdminRoleIdNavGroupsRoute = ApiAdminRoleIdNavGroupsRouteImport.update({
-  id: '/nav-groups',
-  path: '/nav-groups',
-  getParentRoute: () => ApiAdminRoleIdRoute,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteRouteWithChildren
@@ -708,26 +515,6 @@ export interface FileRoutesByFullPath {
   '/demo/settings/notifications': typeof AuthenticatedDemoSettingsNotificationsRoute
   '/admin/organization/member/$id': typeof AdminOrganizationMemberIdRoute
   '/admin/organization/member/create': typeof AdminOrganizationMemberCreateRoute
-  '/api/admin/invitation/$id': typeof ApiAdminInvitationIdRoute
-  '/api/admin/invitation/batch': typeof ApiAdminInvitationBatchRoute
-  '/api/admin/member/$id': typeof ApiAdminMemberIdRoute
-  '/api/admin/member/batch': typeof ApiAdminMemberBatchRoute
-  '/api/admin/navgroup/$id': typeof ApiAdminNavgroupIdRoute
-  '/api/admin/navgroup/order': typeof ApiAdminNavgroupOrderRoute
-  '/api/admin/navgroup/visibility': typeof ApiAdminNavgroupVisibilityRoute
-  '/api/admin/navitem/$id': typeof ApiAdminNavitemIdRoute
-  '/api/admin/navitem/order': typeof ApiAdminNavitemOrderRoute
-  '/api/admin/navitem/visibility': typeof ApiAdminNavitemVisibilityRoute
-  '/api/admin/organization/$id': typeof ApiAdminOrganizationIdRoute
-  '/api/admin/organization/batch': typeof ApiAdminOrganizationBatchRoute
-  '/api/admin/role/$id': typeof ApiAdminRoleIdRouteWithChildren
-  '/api/admin/session/$id': typeof ApiAdminSessionIdRoute
-  '/api/admin/translation/$id': typeof ApiAdminTranslationIdRoute
-  '/api/admin/translation/export': typeof ApiAdminTranslationExportRoute
-  '/api/admin/translation/import': typeof ApiAdminTranslationImportRoute
-  '/api/admin/user/$id': typeof ApiAdminUserIdRoute
-  '/api/admin/user/bulk-ban': typeof ApiAdminUserBulkBanRoute
-  '/api/admin/user/bulk-delete': typeof ApiAdminUserBulkDeleteRoute
   '/api/question-bank/categories/$id': typeof ApiQuestionBankCategoriesIdRoute
   '/api/question-bank/questions/$id': typeof ApiQuestionBankQuestionsIdRoute
   '/api/question-bank/tags/$id': typeof ApiQuestionBankTagsIdRoute
@@ -736,21 +523,10 @@ export interface FileRoutesByFullPath {
   '/demo/settings/': typeof AuthenticatedDemoSettingsIndexRoute
   '/demo/tasks': typeof AuthenticatedDemoTasksIndexRoute
   '/demo/users': typeof AuthenticatedDemoUsersIndexRoute
-  '/api/admin/invitation': typeof ApiAdminInvitationIndexRoute
-  '/api/admin/log': typeof ApiAdminLogIndexRoute
-  '/api/admin/member': typeof ApiAdminMemberIndexRoute
-  '/api/admin/navgroup': typeof ApiAdminNavgroupIndexRoute
-  '/api/admin/navitem': typeof ApiAdminNavitemIndexRoute
-  '/api/admin/organization': typeof ApiAdminOrganizationIndexRoute
-  '/api/admin/role': typeof ApiAdminRoleIndexRoute
-  '/api/admin/session': typeof ApiAdminSessionIndexRoute
-  '/api/admin/translation': typeof ApiAdminTranslationIndexRoute
-  '/api/admin/user': typeof ApiAdminUserIndexRoute
   '/api/demo/tasks': typeof ApiDemoTasksIndexRoute
   '/api/question-bank/categories': typeof ApiQuestionBankCategoriesIndexRoute
   '/api/question-bank/questions': typeof ApiQuestionBankQuestionsIndexRoute
   '/api/question-bank/tags': typeof ApiQuestionBankTagsIndexRoute
-  '/api/admin/role/$id/nav-groups': typeof ApiAdminRoleIdNavGroupsRoute
 }
 export interface FileRoutesByTo {
   '/studio': typeof StudioRoute
@@ -807,26 +583,6 @@ export interface FileRoutesByTo {
   '/demo/settings/notifications': typeof AuthenticatedDemoSettingsNotificationsRoute
   '/admin/organization/member/$id': typeof AdminOrganizationMemberIdRoute
   '/admin/organization/member/create': typeof AdminOrganizationMemberCreateRoute
-  '/api/admin/invitation/$id': typeof ApiAdminInvitationIdRoute
-  '/api/admin/invitation/batch': typeof ApiAdminInvitationBatchRoute
-  '/api/admin/member/$id': typeof ApiAdminMemberIdRoute
-  '/api/admin/member/batch': typeof ApiAdminMemberBatchRoute
-  '/api/admin/navgroup/$id': typeof ApiAdminNavgroupIdRoute
-  '/api/admin/navgroup/order': typeof ApiAdminNavgroupOrderRoute
-  '/api/admin/navgroup/visibility': typeof ApiAdminNavgroupVisibilityRoute
-  '/api/admin/navitem/$id': typeof ApiAdminNavitemIdRoute
-  '/api/admin/navitem/order': typeof ApiAdminNavitemOrderRoute
-  '/api/admin/navitem/visibility': typeof ApiAdminNavitemVisibilityRoute
-  '/api/admin/organization/$id': typeof ApiAdminOrganizationIdRoute
-  '/api/admin/organization/batch': typeof ApiAdminOrganizationBatchRoute
-  '/api/admin/role/$id': typeof ApiAdminRoleIdRouteWithChildren
-  '/api/admin/session/$id': typeof ApiAdminSessionIdRoute
-  '/api/admin/translation/$id': typeof ApiAdminTranslationIdRoute
-  '/api/admin/translation/export': typeof ApiAdminTranslationExportRoute
-  '/api/admin/translation/import': typeof ApiAdminTranslationImportRoute
-  '/api/admin/user/$id': typeof ApiAdminUserIdRoute
-  '/api/admin/user/bulk-ban': typeof ApiAdminUserBulkBanRoute
-  '/api/admin/user/bulk-delete': typeof ApiAdminUserBulkDeleteRoute
   '/api/question-bank/categories/$id': typeof ApiQuestionBankCategoriesIdRoute
   '/api/question-bank/questions/$id': typeof ApiQuestionBankQuestionsIdRoute
   '/api/question-bank/tags/$id': typeof ApiQuestionBankTagsIdRoute
@@ -835,21 +591,10 @@ export interface FileRoutesByTo {
   '/demo/settings': typeof AuthenticatedDemoSettingsIndexRoute
   '/demo/tasks': typeof AuthenticatedDemoTasksIndexRoute
   '/demo/users': typeof AuthenticatedDemoUsersIndexRoute
-  '/api/admin/invitation': typeof ApiAdminInvitationIndexRoute
-  '/api/admin/log': typeof ApiAdminLogIndexRoute
-  '/api/admin/member': typeof ApiAdminMemberIndexRoute
-  '/api/admin/navgroup': typeof ApiAdminNavgroupIndexRoute
-  '/api/admin/navitem': typeof ApiAdminNavitemIndexRoute
-  '/api/admin/organization': typeof ApiAdminOrganizationIndexRoute
-  '/api/admin/role': typeof ApiAdminRoleIndexRoute
-  '/api/admin/session': typeof ApiAdminSessionIndexRoute
-  '/api/admin/translation': typeof ApiAdminTranslationIndexRoute
-  '/api/admin/user': typeof ApiAdminUserIndexRoute
   '/api/demo/tasks': typeof ApiDemoTasksIndexRoute
   '/api/question-bank/categories': typeof ApiQuestionBankCategoriesIndexRoute
   '/api/question-bank/questions': typeof ApiQuestionBankQuestionsIndexRoute
   '/api/question-bank/tags': typeof ApiQuestionBankTagsIndexRoute
-  '/api/admin/role/$id/nav-groups': typeof ApiAdminRoleIdNavGroupsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -912,26 +657,6 @@ export interface FileRoutesById {
   '/_authenticated/demo/settings/notifications': typeof AuthenticatedDemoSettingsNotificationsRoute
   '/admin/organization/member/$id': typeof AdminOrganizationMemberIdRoute
   '/admin/organization/member/create': typeof AdminOrganizationMemberCreateRoute
-  '/api/admin/invitation/$id': typeof ApiAdminInvitationIdRoute
-  '/api/admin/invitation/batch': typeof ApiAdminInvitationBatchRoute
-  '/api/admin/member/$id': typeof ApiAdminMemberIdRoute
-  '/api/admin/member/batch': typeof ApiAdminMemberBatchRoute
-  '/api/admin/navgroup/$id': typeof ApiAdminNavgroupIdRoute
-  '/api/admin/navgroup/order': typeof ApiAdminNavgroupOrderRoute
-  '/api/admin/navgroup/visibility': typeof ApiAdminNavgroupVisibilityRoute
-  '/api/admin/navitem/$id': typeof ApiAdminNavitemIdRoute
-  '/api/admin/navitem/order': typeof ApiAdminNavitemOrderRoute
-  '/api/admin/navitem/visibility': typeof ApiAdminNavitemVisibilityRoute
-  '/api/admin/organization/$id': typeof ApiAdminOrganizationIdRoute
-  '/api/admin/organization/batch': typeof ApiAdminOrganizationBatchRoute
-  '/api/admin/role/$id': typeof ApiAdminRoleIdRouteWithChildren
-  '/api/admin/session/$id': typeof ApiAdminSessionIdRoute
-  '/api/admin/translation/$id': typeof ApiAdminTranslationIdRoute
-  '/api/admin/translation/export': typeof ApiAdminTranslationExportRoute
-  '/api/admin/translation/import': typeof ApiAdminTranslationImportRoute
-  '/api/admin/user/$id': typeof ApiAdminUserIdRoute
-  '/api/admin/user/bulk-ban': typeof ApiAdminUserBulkBanRoute
-  '/api/admin/user/bulk-delete': typeof ApiAdminUserBulkDeleteRoute
   '/api/question-bank/categories/$id': typeof ApiQuestionBankCategoriesIdRoute
   '/api/question-bank/questions/$id': typeof ApiQuestionBankQuestionsIdRoute
   '/api/question-bank/tags/$id': typeof ApiQuestionBankTagsIdRoute
@@ -940,21 +665,10 @@ export interface FileRoutesById {
   '/_authenticated/demo/settings/': typeof AuthenticatedDemoSettingsIndexRoute
   '/_authenticated/demo/tasks/': typeof AuthenticatedDemoTasksIndexRoute
   '/_authenticated/demo/users/': typeof AuthenticatedDemoUsersIndexRoute
-  '/api/admin/invitation/': typeof ApiAdminInvitationIndexRoute
-  '/api/admin/log/': typeof ApiAdminLogIndexRoute
-  '/api/admin/member/': typeof ApiAdminMemberIndexRoute
-  '/api/admin/navgroup/': typeof ApiAdminNavgroupIndexRoute
-  '/api/admin/navitem/': typeof ApiAdminNavitemIndexRoute
-  '/api/admin/organization/': typeof ApiAdminOrganizationIndexRoute
-  '/api/admin/role/': typeof ApiAdminRoleIndexRoute
-  '/api/admin/session/': typeof ApiAdminSessionIndexRoute
-  '/api/admin/translation/': typeof ApiAdminTranslationIndexRoute
-  '/api/admin/user/': typeof ApiAdminUserIndexRoute
   '/api/demo/tasks/': typeof ApiDemoTasksIndexRoute
   '/api/question-bank/categories/': typeof ApiQuestionBankCategoriesIndexRoute
   '/api/question-bank/questions/': typeof ApiQuestionBankQuestionsIndexRoute
   '/api/question-bank/tags/': typeof ApiQuestionBankTagsIndexRoute
-  '/api/admin/role/$id/nav-groups': typeof ApiAdminRoleIdNavGroupsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -1016,26 +730,6 @@ export interface FileRouteTypes {
     | '/demo/settings/notifications'
     | '/admin/organization/member/$id'
     | '/admin/organization/member/create'
-    | '/api/admin/invitation/$id'
-    | '/api/admin/invitation/batch'
-    | '/api/admin/member/$id'
-    | '/api/admin/member/batch'
-    | '/api/admin/navgroup/$id'
-    | '/api/admin/navgroup/order'
-    | '/api/admin/navgroup/visibility'
-    | '/api/admin/navitem/$id'
-    | '/api/admin/navitem/order'
-    | '/api/admin/navitem/visibility'
-    | '/api/admin/organization/$id'
-    | '/api/admin/organization/batch'
-    | '/api/admin/role/$id'
-    | '/api/admin/session/$id'
-    | '/api/admin/translation/$id'
-    | '/api/admin/translation/export'
-    | '/api/admin/translation/import'
-    | '/api/admin/user/$id'
-    | '/api/admin/user/bulk-ban'
-    | '/api/admin/user/bulk-delete'
     | '/api/question-bank/categories/$id'
     | '/api/question-bank/questions/$id'
     | '/api/question-bank/tags/$id'
@@ -1044,21 +738,10 @@ export interface FileRouteTypes {
     | '/demo/settings/'
     | '/demo/tasks'
     | '/demo/users'
-    | '/api/admin/invitation'
-    | '/api/admin/log'
-    | '/api/admin/member'
-    | '/api/admin/navgroup'
-    | '/api/admin/navitem'
-    | '/api/admin/organization'
-    | '/api/admin/role'
-    | '/api/admin/session'
-    | '/api/admin/translation'
-    | '/api/admin/user'
     | '/api/demo/tasks'
     | '/api/question-bank/categories'
     | '/api/question-bank/questions'
     | '/api/question-bank/tags'
-    | '/api/admin/role/$id/nav-groups'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/studio'
@@ -1115,26 +798,6 @@ export interface FileRouteTypes {
     | '/demo/settings/notifications'
     | '/admin/organization/member/$id'
     | '/admin/organization/member/create'
-    | '/api/admin/invitation/$id'
-    | '/api/admin/invitation/batch'
-    | '/api/admin/member/$id'
-    | '/api/admin/member/batch'
-    | '/api/admin/navgroup/$id'
-    | '/api/admin/navgroup/order'
-    | '/api/admin/navgroup/visibility'
-    | '/api/admin/navitem/$id'
-    | '/api/admin/navitem/order'
-    | '/api/admin/navitem/visibility'
-    | '/api/admin/organization/$id'
-    | '/api/admin/organization/batch'
-    | '/api/admin/role/$id'
-    | '/api/admin/session/$id'
-    | '/api/admin/translation/$id'
-    | '/api/admin/translation/export'
-    | '/api/admin/translation/import'
-    | '/api/admin/user/$id'
-    | '/api/admin/user/bulk-ban'
-    | '/api/admin/user/bulk-delete'
     | '/api/question-bank/categories/$id'
     | '/api/question-bank/questions/$id'
     | '/api/question-bank/tags/$id'
@@ -1143,21 +806,10 @@ export interface FileRouteTypes {
     | '/demo/settings'
     | '/demo/tasks'
     | '/demo/users'
-    | '/api/admin/invitation'
-    | '/api/admin/log'
-    | '/api/admin/member'
-    | '/api/admin/navgroup'
-    | '/api/admin/navitem'
-    | '/api/admin/organization'
-    | '/api/admin/role'
-    | '/api/admin/session'
-    | '/api/admin/translation'
-    | '/api/admin/user'
     | '/api/demo/tasks'
     | '/api/question-bank/categories'
     | '/api/question-bank/questions'
     | '/api/question-bank/tags'
-    | '/api/admin/role/$id/nav-groups'
   id:
     | '__root__'
     | '/(public)'
@@ -1219,26 +871,6 @@ export interface FileRouteTypes {
     | '/_authenticated/demo/settings/notifications'
     | '/admin/organization/member/$id'
     | '/admin/organization/member/create'
-    | '/api/admin/invitation/$id'
-    | '/api/admin/invitation/batch'
-    | '/api/admin/member/$id'
-    | '/api/admin/member/batch'
-    | '/api/admin/navgroup/$id'
-    | '/api/admin/navgroup/order'
-    | '/api/admin/navgroup/visibility'
-    | '/api/admin/navitem/$id'
-    | '/api/admin/navitem/order'
-    | '/api/admin/navitem/visibility'
-    | '/api/admin/organization/$id'
-    | '/api/admin/organization/batch'
-    | '/api/admin/role/$id'
-    | '/api/admin/session/$id'
-    | '/api/admin/translation/$id'
-    | '/api/admin/translation/export'
-    | '/api/admin/translation/import'
-    | '/api/admin/user/$id'
-    | '/api/admin/user/bulk-ban'
-    | '/api/admin/user/bulk-delete'
     | '/api/question-bank/categories/$id'
     | '/api/question-bank/questions/$id'
     | '/api/question-bank/tags/$id'
@@ -1247,21 +879,10 @@ export interface FileRouteTypes {
     | '/_authenticated/demo/settings/'
     | '/_authenticated/demo/tasks/'
     | '/_authenticated/demo/users/'
-    | '/api/admin/invitation/'
-    | '/api/admin/log/'
-    | '/api/admin/member/'
-    | '/api/admin/navgroup/'
-    | '/api/admin/navitem/'
-    | '/api/admin/organization/'
-    | '/api/admin/role/'
-    | '/api/admin/session/'
-    | '/api/admin/translation/'
-    | '/api/admin/user/'
     | '/api/demo/tasks/'
     | '/api/question-bank/categories/'
     | '/api/question-bank/questions/'
     | '/api/question-bank/tags/'
-    | '/api/admin/role/$id/nav-groups'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -1283,39 +904,9 @@ export interface RootRouteChildren {
   ApiUsersRoute: typeof ApiUsersRouteWithChildren
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiI18nLngRoute: typeof ApiI18nLngRoute
-  ApiAdminInvitationIdRoute: typeof ApiAdminInvitationIdRoute
-  ApiAdminInvitationBatchRoute: typeof ApiAdminInvitationBatchRoute
-  ApiAdminMemberIdRoute: typeof ApiAdminMemberIdRoute
-  ApiAdminMemberBatchRoute: typeof ApiAdminMemberBatchRoute
-  ApiAdminNavgroupIdRoute: typeof ApiAdminNavgroupIdRoute
-  ApiAdminNavgroupOrderRoute: typeof ApiAdminNavgroupOrderRoute
-  ApiAdminNavgroupVisibilityRoute: typeof ApiAdminNavgroupVisibilityRoute
-  ApiAdminNavitemIdRoute: typeof ApiAdminNavitemIdRoute
-  ApiAdminNavitemOrderRoute: typeof ApiAdminNavitemOrderRoute
-  ApiAdminNavitemVisibilityRoute: typeof ApiAdminNavitemVisibilityRoute
-  ApiAdminOrganizationIdRoute: typeof ApiAdminOrganizationIdRoute
-  ApiAdminOrganizationBatchRoute: typeof ApiAdminOrganizationBatchRoute
-  ApiAdminRoleIdRoute: typeof ApiAdminRoleIdRouteWithChildren
-  ApiAdminSessionIdRoute: typeof ApiAdminSessionIdRoute
-  ApiAdminTranslationIdRoute: typeof ApiAdminTranslationIdRoute
-  ApiAdminTranslationExportRoute: typeof ApiAdminTranslationExportRoute
-  ApiAdminTranslationImportRoute: typeof ApiAdminTranslationImportRoute
-  ApiAdminUserIdRoute: typeof ApiAdminUserIdRoute
-  ApiAdminUserBulkBanRoute: typeof ApiAdminUserBulkBanRoute
-  ApiAdminUserBulkDeleteRoute: typeof ApiAdminUserBulkDeleteRoute
   ApiQuestionBankCategoriesIdRoute: typeof ApiQuestionBankCategoriesIdRoute
   ApiQuestionBankQuestionsIdRoute: typeof ApiQuestionBankQuestionsIdRoute
   ApiQuestionBankTagsIdRoute: typeof ApiQuestionBankTagsIdRoute
-  ApiAdminInvitationIndexRoute: typeof ApiAdminInvitationIndexRoute
-  ApiAdminLogIndexRoute: typeof ApiAdminLogIndexRoute
-  ApiAdminMemberIndexRoute: typeof ApiAdminMemberIndexRoute
-  ApiAdminNavgroupIndexRoute: typeof ApiAdminNavgroupIndexRoute
-  ApiAdminNavitemIndexRoute: typeof ApiAdminNavitemIndexRoute
-  ApiAdminOrganizationIndexRoute: typeof ApiAdminOrganizationIndexRoute
-  ApiAdminRoleIndexRoute: typeof ApiAdminRoleIndexRoute
-  ApiAdminSessionIndexRoute: typeof ApiAdminSessionIndexRoute
-  ApiAdminTranslationIndexRoute: typeof ApiAdminTranslationIndexRoute
-  ApiAdminUserIndexRoute: typeof ApiAdminUserIndexRoute
   ApiDemoTasksIndexRoute: typeof ApiDemoTasksIndexRoute
   ApiQuestionBankCategoriesIndexRoute: typeof ApiQuestionBankCategoriesIndexRoute
   ApiQuestionBankQuestionsIndexRoute: typeof ApiQuestionBankQuestionsIndexRoute
@@ -1723,76 +1314,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiDemoTasksIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/admin/user/': {
-      id: '/api/admin/user/'
-      path: '/api/admin/user'
-      fullPath: '/api/admin/user'
-      preLoaderRoute: typeof ApiAdminUserIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/translation/': {
-      id: '/api/admin/translation/'
-      path: '/api/admin/translation'
-      fullPath: '/api/admin/translation'
-      preLoaderRoute: typeof ApiAdminTranslationIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/session/': {
-      id: '/api/admin/session/'
-      path: '/api/admin/session'
-      fullPath: '/api/admin/session'
-      preLoaderRoute: typeof ApiAdminSessionIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/role/': {
-      id: '/api/admin/role/'
-      path: '/api/admin/role'
-      fullPath: '/api/admin/role'
-      preLoaderRoute: typeof ApiAdminRoleIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/organization/': {
-      id: '/api/admin/organization/'
-      path: '/api/admin/organization'
-      fullPath: '/api/admin/organization'
-      preLoaderRoute: typeof ApiAdminOrganizationIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/navitem/': {
-      id: '/api/admin/navitem/'
-      path: '/api/admin/navitem'
-      fullPath: '/api/admin/navitem'
-      preLoaderRoute: typeof ApiAdminNavitemIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/navgroup/': {
-      id: '/api/admin/navgroup/'
-      path: '/api/admin/navgroup'
-      fullPath: '/api/admin/navgroup'
-      preLoaderRoute: typeof ApiAdminNavgroupIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/member/': {
-      id: '/api/admin/member/'
-      path: '/api/admin/member'
-      fullPath: '/api/admin/member'
-      preLoaderRoute: typeof ApiAdminMemberIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/log/': {
-      id: '/api/admin/log/'
-      path: '/api/admin/log'
-      fullPath: '/api/admin/log'
-      preLoaderRoute: typeof ApiAdminLogIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/invitation/': {
-      id: '/api/admin/invitation/'
-      path: '/api/admin/invitation'
-      fullPath: '/api/admin/invitation'
-      preLoaderRoute: typeof ApiAdminInvitationIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/_authenticated/demo/users/': {
       id: '/_authenticated/demo/users/'
       path: '/demo/users'
@@ -1849,146 +1370,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiQuestionBankCategoriesIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/admin/user/bulk-delete': {
-      id: '/api/admin/user/bulk-delete'
-      path: '/api/admin/user/bulk-delete'
-      fullPath: '/api/admin/user/bulk-delete'
-      preLoaderRoute: typeof ApiAdminUserBulkDeleteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/user/bulk-ban': {
-      id: '/api/admin/user/bulk-ban'
-      path: '/api/admin/user/bulk-ban'
-      fullPath: '/api/admin/user/bulk-ban'
-      preLoaderRoute: typeof ApiAdminUserBulkBanRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/user/$id': {
-      id: '/api/admin/user/$id'
-      path: '/api/admin/user/$id'
-      fullPath: '/api/admin/user/$id'
-      preLoaderRoute: typeof ApiAdminUserIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/translation/import': {
-      id: '/api/admin/translation/import'
-      path: '/api/admin/translation/import'
-      fullPath: '/api/admin/translation/import'
-      preLoaderRoute: typeof ApiAdminTranslationImportRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/translation/export': {
-      id: '/api/admin/translation/export'
-      path: '/api/admin/translation/export'
-      fullPath: '/api/admin/translation/export'
-      preLoaderRoute: typeof ApiAdminTranslationExportRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/translation/$id': {
-      id: '/api/admin/translation/$id'
-      path: '/api/admin/translation/$id'
-      fullPath: '/api/admin/translation/$id'
-      preLoaderRoute: typeof ApiAdminTranslationIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/session/$id': {
-      id: '/api/admin/session/$id'
-      path: '/api/admin/session/$id'
-      fullPath: '/api/admin/session/$id'
-      preLoaderRoute: typeof ApiAdminSessionIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/role/$id': {
-      id: '/api/admin/role/$id'
-      path: '/api/admin/role/$id'
-      fullPath: '/api/admin/role/$id'
-      preLoaderRoute: typeof ApiAdminRoleIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/organization/batch': {
-      id: '/api/admin/organization/batch'
-      path: '/api/admin/organization/batch'
-      fullPath: '/api/admin/organization/batch'
-      preLoaderRoute: typeof ApiAdminOrganizationBatchRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/organization/$id': {
-      id: '/api/admin/organization/$id'
-      path: '/api/admin/organization/$id'
-      fullPath: '/api/admin/organization/$id'
-      preLoaderRoute: typeof ApiAdminOrganizationIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/navitem/visibility': {
-      id: '/api/admin/navitem/visibility'
-      path: '/api/admin/navitem/visibility'
-      fullPath: '/api/admin/navitem/visibility'
-      preLoaderRoute: typeof ApiAdminNavitemVisibilityRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/navitem/order': {
-      id: '/api/admin/navitem/order'
-      path: '/api/admin/navitem/order'
-      fullPath: '/api/admin/navitem/order'
-      preLoaderRoute: typeof ApiAdminNavitemOrderRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/navitem/$id': {
-      id: '/api/admin/navitem/$id'
-      path: '/api/admin/navitem/$id'
-      fullPath: '/api/admin/navitem/$id'
-      preLoaderRoute: typeof ApiAdminNavitemIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/navgroup/visibility': {
-      id: '/api/admin/navgroup/visibility'
-      path: '/api/admin/navgroup/visibility'
-      fullPath: '/api/admin/navgroup/visibility'
-      preLoaderRoute: typeof ApiAdminNavgroupVisibilityRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/navgroup/order': {
-      id: '/api/admin/navgroup/order'
-      path: '/api/admin/navgroup/order'
-      fullPath: '/api/admin/navgroup/order'
-      preLoaderRoute: typeof ApiAdminNavgroupOrderRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/navgroup/$id': {
-      id: '/api/admin/navgroup/$id'
-      path: '/api/admin/navgroup/$id'
-      fullPath: '/api/admin/navgroup/$id'
-      preLoaderRoute: typeof ApiAdminNavgroupIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/member/batch': {
-      id: '/api/admin/member/batch'
-      path: '/api/admin/member/batch'
-      fullPath: '/api/admin/member/batch'
-      preLoaderRoute: typeof ApiAdminMemberBatchRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/member/$id': {
-      id: '/api/admin/member/$id'
-      path: '/api/admin/member/$id'
-      fullPath: '/api/admin/member/$id'
-      preLoaderRoute: typeof ApiAdminMemberIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/invitation/batch': {
-      id: '/api/admin/invitation/batch'
-      path: '/api/admin/invitation/batch'
-      fullPath: '/api/admin/invitation/batch'
-      preLoaderRoute: typeof ApiAdminInvitationBatchRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/invitation/$id': {
-      id: '/api/admin/invitation/$id'
-      path: '/api/admin/invitation/$id'
-      fullPath: '/api/admin/invitation/$id'
-      preLoaderRoute: typeof ApiAdminInvitationIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/admin/organization/member/create': {
       id: '/admin/organization/member/create'
       path: '/create'
@@ -2030,13 +1411,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/demo/settings/account'
       preLoaderRoute: typeof AuthenticatedDemoSettingsAccountRouteImport
       parentRoute: typeof AuthenticatedDemoSettingsRouteRoute
-    }
-    '/api/admin/role/$id/nav-groups': {
-      id: '/api/admin/role/$id/nav-groups'
-      path: '/nav-groups'
-      fullPath: '/api/admin/role/$id/nav-groups'
-      preLoaderRoute: typeof ApiAdminRoleIdNavGroupsRouteImport
-      parentRoute: typeof ApiAdminRoleIdRoute
     }
   }
 }
@@ -2210,18 +1584,6 @@ const ApiUsersRouteWithChildren = ApiUsersRoute._addFileChildren(
   ApiUsersRouteChildren,
 )
 
-interface ApiAdminRoleIdRouteChildren {
-  ApiAdminRoleIdNavGroupsRoute: typeof ApiAdminRoleIdNavGroupsRoute
-}
-
-const ApiAdminRoleIdRouteChildren: ApiAdminRoleIdRouteChildren = {
-  ApiAdminRoleIdNavGroupsRoute: ApiAdminRoleIdNavGroupsRoute,
-}
-
-const ApiAdminRoleIdRouteWithChildren = ApiAdminRoleIdRoute._addFileChildren(
-  ApiAdminRoleIdRouteChildren,
-)
-
 const rootRouteChildren: RootRouteChildren = {
   publicRouteRoute: publicRouteRouteWithChildren,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
@@ -2241,39 +1603,9 @@ const rootRouteChildren: RootRouteChildren = {
   ApiUsersRoute: ApiUsersRouteWithChildren,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiI18nLngRoute: ApiI18nLngRoute,
-  ApiAdminInvitationIdRoute: ApiAdminInvitationIdRoute,
-  ApiAdminInvitationBatchRoute: ApiAdminInvitationBatchRoute,
-  ApiAdminMemberIdRoute: ApiAdminMemberIdRoute,
-  ApiAdminMemberBatchRoute: ApiAdminMemberBatchRoute,
-  ApiAdminNavgroupIdRoute: ApiAdminNavgroupIdRoute,
-  ApiAdminNavgroupOrderRoute: ApiAdminNavgroupOrderRoute,
-  ApiAdminNavgroupVisibilityRoute: ApiAdminNavgroupVisibilityRoute,
-  ApiAdminNavitemIdRoute: ApiAdminNavitemIdRoute,
-  ApiAdminNavitemOrderRoute: ApiAdminNavitemOrderRoute,
-  ApiAdminNavitemVisibilityRoute: ApiAdminNavitemVisibilityRoute,
-  ApiAdminOrganizationIdRoute: ApiAdminOrganizationIdRoute,
-  ApiAdminOrganizationBatchRoute: ApiAdminOrganizationBatchRoute,
-  ApiAdminRoleIdRoute: ApiAdminRoleIdRouteWithChildren,
-  ApiAdminSessionIdRoute: ApiAdminSessionIdRoute,
-  ApiAdminTranslationIdRoute: ApiAdminTranslationIdRoute,
-  ApiAdminTranslationExportRoute: ApiAdminTranslationExportRoute,
-  ApiAdminTranslationImportRoute: ApiAdminTranslationImportRoute,
-  ApiAdminUserIdRoute: ApiAdminUserIdRoute,
-  ApiAdminUserBulkBanRoute: ApiAdminUserBulkBanRoute,
-  ApiAdminUserBulkDeleteRoute: ApiAdminUserBulkDeleteRoute,
   ApiQuestionBankCategoriesIdRoute: ApiQuestionBankCategoriesIdRoute,
   ApiQuestionBankQuestionsIdRoute: ApiQuestionBankQuestionsIdRoute,
   ApiQuestionBankTagsIdRoute: ApiQuestionBankTagsIdRoute,
-  ApiAdminInvitationIndexRoute: ApiAdminInvitationIndexRoute,
-  ApiAdminLogIndexRoute: ApiAdminLogIndexRoute,
-  ApiAdminMemberIndexRoute: ApiAdminMemberIndexRoute,
-  ApiAdminNavgroupIndexRoute: ApiAdminNavgroupIndexRoute,
-  ApiAdminNavitemIndexRoute: ApiAdminNavitemIndexRoute,
-  ApiAdminOrganizationIndexRoute: ApiAdminOrganizationIndexRoute,
-  ApiAdminRoleIndexRoute: ApiAdminRoleIndexRoute,
-  ApiAdminSessionIndexRoute: ApiAdminSessionIndexRoute,
-  ApiAdminTranslationIndexRoute: ApiAdminTranslationIndexRoute,
-  ApiAdminUserIndexRoute: ApiAdminUserIndexRoute,
   ApiDemoTasksIndexRoute: ApiDemoTasksIndexRoute,
   ApiQuestionBankCategoriesIndexRoute: ApiQuestionBankCategoriesIndexRoute,
   ApiQuestionBankQuestionsIndexRoute: ApiQuestionBankQuestionsIndexRoute,

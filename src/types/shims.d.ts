@@ -17,7 +17,12 @@ declare module '@tanstack/start-client-core' {
 // Minimal shims for @tanstack/react-start to satisfy TypeScript until
 // upstream types are aligned with the project's usage.
 declare module '@tanstack/react-start' {
-  export function createServerFn(opts?: any): any
+  export function createServerFn(opts?: any): {
+    inputValidator: (fn: any) => any;
+    validator: (fn: any) => any;
+    handler: (fn: any) => any;
+    middleware: (fn: any) => any;
+  }
   export function createStart(opts?: any): any
   export function registerGlobalMiddleware(...args: any[]): any
   export function createMiddleware(...args: any[]): any
