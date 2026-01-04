@@ -36,6 +36,7 @@ import { Route as AdminNavitemRouteImport } from './routes/admin/navitem'
 import { Route as AdminNavigationRouteImport } from './routes/admin/navigation'
 import { Route as AdminNavgroupRouteImport } from './routes/admin/navgroup'
 import { Route as AdminLogRouteImport } from './routes/admin/log'
+import { Route as AdminDepartmentRouteImport } from './routes/admin/department'
 import { Route as AdminAccountRouteImport } from './routes/admin/account'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as publicTermsRouteImport } from './routes/(public)/terms'
@@ -213,6 +214,11 @@ const AdminNavgroupRoute = AdminNavgroupRouteImport.update({
 const AdminLogRoute = AdminLogRouteImport.update({
   id: '/log',
   path: '/log',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminDepartmentRoute = AdminDepartmentRouteImport.update({
+  id: '/department',
+  path: '/department',
   getParentRoute: () => AdminRouteRoute,
 } as any)
 const AdminAccountRoute = AdminAccountRouteImport.update({
@@ -475,6 +481,7 @@ export interface FileRoutesByFullPath {
   '/terms': typeof publicTermsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/admin/account': typeof AdminAccountRoute
+  '/admin/department': typeof AdminDepartmentRoute
   '/admin/log': typeof AdminLogRoute
   '/admin/navgroup': typeof AdminNavgroupRoute
   '/admin/navigation': typeof AdminNavigationRoute
@@ -544,6 +551,7 @@ export interface FileRoutesByTo {
   '/terms': typeof publicTermsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/admin/account': typeof AdminAccountRoute
+  '/admin/department': typeof AdminDepartmentRoute
   '/admin/log': typeof AdminLogRoute
   '/admin/navgroup': typeof AdminNavgroupRoute
   '/admin/navigation': typeof AdminNavigationRoute
@@ -617,6 +625,7 @@ export interface FileRoutesById {
   '/(public)/terms': typeof publicTermsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/admin/account': typeof AdminAccountRoute
+  '/admin/department': typeof AdminDepartmentRoute
   '/admin/log': typeof AdminLogRoute
   '/admin/navgroup': typeof AdminNavgroupRoute
   '/admin/navigation': typeof AdminNavigationRoute
@@ -690,6 +699,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/dashboard'
     | '/admin/account'
+    | '/admin/department'
     | '/admin/log'
     | '/admin/navgroup'
     | '/admin/navigation'
@@ -759,6 +769,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/dashboard'
     | '/admin/account'
+    | '/admin/department'
     | '/admin/log'
     | '/admin/navgroup'
     | '/admin/navigation'
@@ -831,6 +842,7 @@ export interface FileRouteTypes {
     | '/(public)/terms'
     | '/_authenticated/dashboard'
     | '/admin/account'
+    | '/admin/department'
     | '/admin/log'
     | '/admin/navgroup'
     | '/admin/navigation'
@@ -1102,6 +1114,13 @@ declare module '@tanstack/react-router' {
       path: '/log'
       fullPath: '/admin/log'
       preLoaderRoute: typeof AdminLogRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/department': {
+      id: '/admin/department'
+      path: '/department'
+      fullPath: '/admin/department'
+      preLoaderRoute: typeof AdminDepartmentRouteImport
       parentRoute: typeof AdminRouteRoute
     }
     '/admin/account': {
@@ -1505,6 +1524,7 @@ const AdminOrganizationMemberRouteWithChildren =
 
 interface AdminRouteRouteChildren {
   AdminAccountRoute: typeof AdminAccountRoute
+  AdminDepartmentRoute: typeof AdminDepartmentRoute
   AdminLogRoute: typeof AdminLogRoute
   AdminNavgroupRoute: typeof AdminNavgroupRoute
   AdminNavigationRoute: typeof AdminNavigationRoute
@@ -1526,6 +1546,7 @@ interface AdminRouteRouteChildren {
 
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminAccountRoute: AdminAccountRoute,
+  AdminDepartmentRoute: AdminDepartmentRoute,
   AdminLogRoute: AdminLogRoute,
   AdminNavgroupRoute: AdminNavgroupRoute,
   AdminNavigationRoute: AdminNavigationRoute,

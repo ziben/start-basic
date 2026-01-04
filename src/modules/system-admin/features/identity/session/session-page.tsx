@@ -12,7 +12,6 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import { zhCN } from 'date-fns/locale'
-import { Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import {
   useAdminSessions,
@@ -25,21 +24,11 @@ import { useUrlSyncedSorting } from '@/shared/hooks/use-url-synced-sorting'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { ConfirmDialog } from '@/components/confirm-dialog'
 import { DataTableColumnHeader, DataTablePagination, DataTableToolbar } from '@/components/data-table'
-import { AppHeader } from '@/components/layout/app-header'
-import { Main } from '@/components/layout/main'
 import { AppHeaderMain } from '~/components/layout/app-header-main'
+import { AdminSessionPrimaryButtons } from './components/admin-session-primary-buttons'
+import { AdminSessionDialogs } from './components/admin-session-dialogs'
 
 const route = getRouteApi('/admin/session')
 
@@ -351,20 +340,11 @@ export default function AdminSession() {
             <p className='text-muted-foreground'>{t('admin.session.desc', { defaultMessage: '查看与撤销活跃会话' })}</p>
           </div>
 
-          <div className='flex items-center gap-2'>
-            <Button
-              variant='destructive'
-              size='sm'
-              disabled={selectedCount === 0 || isMutating}
-              onClick={openBulkDelete}
-            >
-              <Trash2 className='mr-2 h-4 w-4' />
-              {t('admin.session.bulkRevoke', { defaultMessage: '批量撤销' })}
-              {selectedCount > 0 ? (
-                <span className='ml-2 rounded bg-white/20 px-1.5 py-0.5 text-xs'>{selectedCount}</span>
-              ) : null}
-            </Button>
-          </div>
+          <AdminSessionPrimaryButtons
+            selectedCount={selectedCount}
+            isMutating={isMutating}
+            onBulkDelete={openBulkDelete}
+          />
         </div>
 
         <div className='-mx-4 flex-1 overflow-hidden px-4 py-1 lg:flex-row lg:space-y-0 lg:space-x-12'>
@@ -443,93 +423,24 @@ export default function AdminSession() {
         </div>
       </AppHeaderMain>
 
-      <ConfirmDialog
-        destructive
-        open={confirmOpen}
-        onOpenChange={(open) => {
+      <AdminSessionDialogs
+        confirmOpen={confirmOpen}
+        confirmMode={confirmMode}
+        selectedCount={selectedCount}
+        isMutating={isMutating}
+        pendingSingleId={pendingSingleId}
+        onConfirmOpenChange={(open) => {
           setConfirmOpen(open)
           if (!open) setPendingSingleId(null)
         }}
-        title={
-          confirmMode === 'single'
-            ? t('admin.session.confirm.single.title', { defaultMessage: '撤销会话' })
-            : t('admin.session.confirm.bulk.title', { defaultMessage: '批量撤销会话' })
-        }
-        desc={
-          confirmMode === 'single'
-            ? t('admin.session.confirm.single.desc', { defaultMessage: '确定要撤销该会话吗？' })
-            : t('admin.session.confirm.bulk.desc', { defaultMessage: '确定要撤销选中的会话吗？' })
-        }
-        confirmText={t('common.delete', { defaultMessage: '确认' })}
-        cancelBtnText={t('common.buttons.cancel', { defaultMessage: '取消' })}
-        handleConfirm={handleConfirm}
-        isLoading={isMutating}
-        disabled={confirmMode === 'single' ? !pendingSingleId : selectedCount === 0}
-      />
-
-      <Dialog
-        open={viewOpen}
-        onOpenChange={(open) => {
+        onConfirm={handleConfirm}
+        viewOpen={viewOpen}
+        viewSession={viewSession}
+        onViewOpenChange={(open) => {
           setViewOpen(open)
           if (!open) setViewSession(null)
         }}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('admin.session.view.title', { defaultMessage: '会话详情' })}</DialogTitle>
-            <DialogDescription>
-              {t('admin.session.view.desc', { defaultMessage: '查看该会话的详细信息' })}
-            </DialogDescription>
-          </DialogHeader>
-
-          {viewSession ? (
-            <div className='space-y-2 text-sm'>
-              <div>
-                <span className='text-muted-foreground'>ID：</span>
-                <span className='font-mono'>{viewSession.id}</span>
-              </div>
-              <div>
-                <span className='text-muted-foreground'>UserId：</span>
-                <span className='font-mono'>{viewSession.userId}</span>
-              </div>
-              <div>
-                <span className='text-muted-foreground'>用户名：</span>
-                <span>{viewSession.username || '-'}</span>
-              </div>
-              <div>
-                <span className='text-muted-foreground'>邮箱：</span>
-                <span>{viewSession.email || '-'}</span>
-              </div>
-              <div>
-                <span className='text-muted-foreground'>状态：</span>
-                <span>{viewSession.isActive ? 'active' : 'expired'}</span>
-              </div>
-              <div>
-                <span className='text-muted-foreground'>登录时间：</span>
-                <span>{formatDate(viewSession.loginTime)}</span>
-              </div>
-              <div>
-                <span className='text-muted-foreground'>过期时间：</span>
-                <span>{formatDate(viewSession.expiresAt)}</span>
-              </div>
-              <div>
-                <span className='text-muted-foreground'>IP：</span>
-                <span>{viewSession.ipAddress || '-'}</span>
-              </div>
-              <div>
-                <span className='text-muted-foreground'>UA：</span>
-                <span className='break-words'>{viewSession.userAgent || '-'}</span>
-              </div>
-            </div>
-          ) : null}
-
-          <DialogFooter>
-            <DialogClose asChild>
-              <Button variant='outline'>{t('common.buttons.close', { defaultMessage: '关闭' })}</Button>
-            </DialogClose>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      />
     </>
   )
 }

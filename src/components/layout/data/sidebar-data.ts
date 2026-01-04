@@ -230,27 +230,32 @@ export const createSidebarData = (t: (key: string) => string): SidebarData => ({
           icon: Users,
         },
         {
+          title: t('sidebar.Department'),
+          url: '/admin/department',
+          icon: Building,
+        },
+        {
           title: t('sidebar.Invitation'),
           url: '/admin/invitation',
           icon: Mail,
         },
         {
-          title: t('sidebar.NavGroup'),
+          title: t('sidebar.MenuGroup'),
           url: '/admin/navigation',
           icon: List,
         },
         {
-          title: t('sidebar.NavItem'),
+          title: t('sidebar.MenuItem'),
           url: '/admin/navigation',
           icon: Menu,
         },
         {
-          title: t('sidebar.RoleNavGroup'),
+          title: t('sidebar.RoleMenu'),
           url: '/admin/rolenavgroup',
           icon: Key,
         },
         {
-          title: t('sidebar.UserRoleNavGroup'),
+          title: t('sidebar.UserRoleMenu'),
           url: '/admin/userrolenavgroup',
           icon: UserCheck,
         },

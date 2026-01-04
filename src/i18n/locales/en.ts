@@ -145,11 +145,12 @@ export default {
     Verification: 'Verification',
     Organization: 'Organization',
     Member: 'Member',
+    Department: 'Department',
     Invitation: 'Invitation',
-    NavGroup: 'Nav Group',
-    NavItem: 'Nav Item',
-    RoleNavGroup: 'Role Nav Group',
-    UserRoleNavGroup: 'User Role Nav Group',
+    MenuGroup: 'Menu Group',
+    MenuItem: 'Menu Item',
+    RoleMenu: 'Role Menu',
+    UserRoleMenu: 'User Role Menu',
   },
   'admin.user.title': 'User Management',
   'admin.user.desc': 'Manage user data.',
@@ -451,5 +452,13 @@ export default {
 
   'admin.verification.title': 'Verification',
   'admin.verification.desc': 'Manage verification records.',
+
+  // Menu management page
+  'admin.navigation.title': 'Menu Management',
+  'admin.navigation.desc': 'Manage menu groups and menu items.',
+  'admin.navigation.tabs.groups': 'Menu Groups',
+  'admin.navigation.tabs.items': 'Menu Items',
+  'admin.navigation.errors.navgroups': 'Failed to load menu groups',
+  'admin.navigation.errors.navitems': 'Failed to load menu items',
 }
 

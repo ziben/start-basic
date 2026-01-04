@@ -42,7 +42,7 @@ export const navgroupQueryKeys = {
 // ============ Query Hooks ============
 
 /**
- * 获取所有导航组
+ * 获取所有菜单组
  */
 export function useNavgroups(scope?: 'APP' | 'ADMIN') {
   return useQuery<AdminNavgroup[]>({
@@ -55,7 +55,7 @@ export function useNavgroups(scope?: 'APP' | 'ADMIN') {
 }
 
 /**
- * 获取单个导航组信息
+ * 获取单个菜单组信息
  */
 export function useNavgroup(id?: string) {
   return useQuery<AdminNavgroup | null>({
@@ -72,7 +72,7 @@ export function useNavgroup(id?: string) {
 // ============ Mutation Hooks ============
 
 /**
- * 创建导航组
+ * 创建菜单组
  */
 export function useCreateNavgroup() {
   const queryClient = useQueryClient()
@@ -90,7 +90,7 @@ export function useCreateNavgroup() {
 }
 
 /**
- * 更新导航组
+ * 更新菜单组
  */
 export function useUpdateNavgroup() {
   const queryClient = useQueryClient()
@@ -109,7 +109,7 @@ export function useUpdateNavgroup() {
 }
 
 /**
- * 删除导航组
+ * 删除菜单组
  */
 export function useDeleteNavgroup() {
   const queryClient = useQueryClient()
@@ -127,7 +127,7 @@ export function useDeleteNavgroup() {
 }
 
 /**
- * 更新导航组顺序
+ * 更新菜单组顺序
  */
 export function useUpdateNavgroupOrder() {
   const queryClient = useQueryClient()
@@ -145,7 +145,7 @@ export function useUpdateNavgroupOrder() {
 }
 
 /**
- * 更新导航组可见性
+ * 更新菜单组可见性
  */
 export function useUpdateNavgroupVisibility() {
   const queryClient = useQueryClient()

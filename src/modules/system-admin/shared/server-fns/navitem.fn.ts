@@ -13,7 +13,7 @@ const CreateNavItemSchema = z.object({
     icon: z.string().optional(),
     badge: z.string().optional(),
     isCollapsible: z.boolean().optional(),
-    navGroupId: z.string().min(1, '导航组ID不能为空'),
+    navGroupId: z.string().min(1, '菜单组ID不能为空'),
     parentId: z.string().optional(),
     orderIndex: z.number().optional(),
 })

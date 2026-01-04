@@ -1,46 +1,29 @@
 import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
 import { AppHeaderMain } from '~/components/layout/app-header-main'
-import { RolesProvider, useRolesContext } from './context/roles-context'
+import { AdminRolesProvider } from './components/admin-roles-provider'
 import { AdminRolesTable } from './components/admin-roles-table'
-import { AdminRolesMutateDialog } from './components/admin-roles-mutate-dialog'
-import { AdminRolesDeleteDialog } from './components/admin-roles-delete-dialog'
-import { AdminRolesAssignDialog } from './components/admin-roles-assign-dialog'
-import { Button } from '@/components/ui/button'
-import { Plus } from 'lucide-react'
+import { AdminRolesPrimaryButtons } from './components/admin-roles-primary-buttons'
+import { AdminRolesDialogs } from './components/admin-roles-dialogs'
 
-function AdminRolesContent() {
+export default function AdminRoles() {
   const { t } = useTranslation()
-  const { setOpen } = useRolesContext()
 
   return (
-    <>
+    <AdminRolesProvider>
       <AppHeaderMain>
         <div className='mb-2 flex flex-wrap items-center justify-between space-y-2 gap-x-4'>
           <div>
             <h2 className='text-2xl font-bold tracking-tight'>角色管理</h2>
-            <p className='text-muted-foreground'>管理系统角色及其关联的导航权限</p>
+            <p className='text-muted-foreground'>管理系统角色及其关联的菜单权限</p>
           </div>
-          <Button onClick={() => setOpen('create')}>
-            <Plus className='mr-2 h-4 w-4' />
-            创建角色
-          </Button>
+          <AdminRolesPrimaryButtons />
         </div>
         <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-y-0 lg:space-x-12'>
           <AdminRolesTable />
         </div>
       </AppHeaderMain>
 
-      <AdminRolesMutateDialog />
-      <AdminRolesDeleteDialog />
-      <AdminRolesAssignDialog />
-    </>
-  )
-}
-
-export default function AdminRoles() {
-  return (
-    <RolesProvider>
-      <AdminRolesContent />
-    </RolesProvider>
+      <AdminRolesDialogs />
+    </AdminRolesProvider>
   )
 }

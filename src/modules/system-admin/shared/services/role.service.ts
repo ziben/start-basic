@@ -210,7 +210,7 @@ export const RoleService = {
     },
 
     /**
-     * 为角色分配导航组
+     * 为角色分配菜单组
      */
     async assignNavGroups(roleId: string, navGroupIds: string[]) {
         try {
@@ -242,8 +242,8 @@ export const RoleService = {
                 return { success: true as const }
             })
         } catch (error) {
-            console.error('分配导航组失败:', error)
-            throw error instanceof Error ? error : new Error('分配导航组失败')
+            console.error('分配菜单组失败:', error)
+            throw error instanceof Error ? error : new Error('分配菜单组失败')
         }
     },
 }

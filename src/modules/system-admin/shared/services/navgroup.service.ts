@@ -48,7 +48,7 @@ export interface UpdateVisibilityInput {
 
 export const NavGroupService = {
     /**
-     * 获取所有导航组
+     * 获取所有菜单组
      */
     async getAll(scope?: 'APP' | 'ADMIN') {
         try {
@@ -58,13 +58,13 @@ export const NavGroupService = {
                 include: navGroupInclude,
             })
         } catch (error) {
-            console.error('获取导航组失败:', error)
-            throw new Error('获取导航组失败')
+            console.error('获取菜单组失败:', error)
+            throw new Error('获取菜单组失败')
         }
     },
 
     /**
-     * 获取单个导航组
+     * 获取单个菜单组
      */
     async getById(id: string) {
         try {
@@ -74,18 +74,18 @@ export const NavGroupService = {
             })
 
             if (!navGroup) {
-                throw new Error('导航组不存在')
+                throw new Error('菜单组不存在')
             }
 
             return navGroup
         } catch (error) {
-            console.error('获取导航组失败:', error)
-            throw new Error('获取导航组失败')
+            console.error('获取菜单组失败:', error)
+            throw new Error('获取菜单组失败')
         }
     },
 
     /**
-     * 创建导航组
+     * 创建菜单组
      */
     async create(data: CreateNavGroupInput) {
         try {
@@ -99,7 +99,7 @@ export const NavGroupService = {
             }
 
             return await prisma.$transaction(async (tx: TransactionClient) => {
-                // 创建导航组
+                // 创建菜单组
                 const group = await tx.navGroup.create({
                     data: {
                         title: data.title,
@@ -145,13 +145,13 @@ export const NavGroupService = {
                 })
             })
         } catch (error) {
-            console.error('创建导航组失败:', error)
-            throw new Error('创建导航组失败')
+            console.error('创建菜单组失败:', error)
+            throw new Error('创建菜单组失败')
         }
     },
 
     /**
-     * 更新导航组
+     * 更新菜单组
      */
     async update(id: string, data: UpdateNavGroupInput) {
         try {
@@ -198,13 +198,13 @@ export const NavGroupService = {
                 })
             })
         } catch (error) {
-            console.error('更新导航组失败:', error)
-            throw new Error('更新导航组失败')
+            console.error('更新菜单组失败:', error)
+            throw new Error('更新菜单组失败')
         }
     },
 
     /**
-     * 删除导航组
+     * 删除菜单组
      */
     async delete(id: string) {
         try {
@@ -213,7 +213,7 @@ export const NavGroupService = {
             })
 
             if (!navGroup) {
-                throw new Error('导航组不存在')
+                throw new Error('菜单组不存在')
             }
 
             await prisma.$transaction(async (tx: TransactionClient) => {
@@ -224,8 +224,8 @@ export const NavGroupService = {
 
             return { success: true as const, id }
         } catch (error) {
-            console.error('删除导航组失败:', error)
-            throw new Error('删除导航组失败')
+            console.error('删除菜单组失败:', error)
+            throw new Error('删除菜单组失败')
         }
     },
 
@@ -244,13 +244,13 @@ export const NavGroupService = {
             )
             return { success: true as const }
         } catch (error) {
-            console.error('更新导航组顺序失败:', error)
-            throw new Error('更新导航组顺序失败')
+            console.error('更新菜单组顺序失败:', error)
+            throw new Error('更新菜单组顺序失败')
         }
     },
 
     /**
-     * 更新用户个性化导航组可见性
+     * 更新用户个性化菜单组可见性
      */
     async updateVisibility(data: UpdateVisibilityInput) {
         try {
@@ -276,8 +276,8 @@ export const NavGroupService = {
                 })
             }
         } catch (error) {
-            console.error('更新用户导航组可见性失败:', error)
-            throw new Error('更新用户导航组可见性失败')
+            console.error('更新用户菜单组可见性失败:', error)
+            throw new Error('更新用户菜单组可见性失败')
         }
     },
 }

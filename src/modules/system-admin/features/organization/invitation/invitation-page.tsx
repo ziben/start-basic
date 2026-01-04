@@ -1,6 +1,6 @@
 import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
 
-export function AdminInvitation() {
+export default function AdminInvitation() {
   const { t } = useTranslation()
   return (
     <div>

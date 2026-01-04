@@ -105,7 +105,7 @@ export const deleteRoleFn = createServerFn({ method: 'POST' })
     })
 
 /**
- * 为角色分配导航组
+ * 为角色分配菜单组
  */
 export const assignRoleNavGroupsFn = createServerFn({ method: 'POST' })
     .inputValidator((data: { id: string; navGroupIds: string[] }) => {

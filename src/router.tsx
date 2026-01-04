@@ -30,7 +30,7 @@ export function getRouter() {
 
   // 为不同类型的数据设置不同的缓存策略
   queryClient.setQueryDefaults(['admin', 'navgroups'], {
-    staleTime: CACHE_TIME.LONG, // 导航组数据变化较少
+    staleTime: CACHE_TIME.LONG, // 菜单组数据变化较少
   })
   queryClient.setQueryDefaults(['admin', 'translations'], {
     staleTime: CACHE_TIME.LONG, // 翻译数据变化较少

@@ -4,7 +4,7 @@ datasource db {
 
 generator client {
   provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  output   = "../../src/generated/prisma"
   engineType = "client"
 }
 
@@ -53,11 +53,15 @@ model SystemRole {
   label       String   // 角色显示名称，如 '管理员', '普通用户'
   description String?
   isSystem    Boolean  @default(false) // 是否为系统内置角色
+  scope       String   @default("GLOBAL") // GLOBAL, ORG, DEPT - 角色作用域
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   users       User[] @relation("UserToSystemRole")
+  members     Member[] // 新增：Member 关联
   navGroups   RoleNavGroup[]
+  permissions RolePermission[] // 新增：权限关联
+  crossOrgAccess CrossOrgAccess[] // 新增：跨组织访问
 
   @@map("system_role")
 }
@@ -188,6 +192,7 @@ model Organization {
   metadata    String?
   members     Member[]
   invitations Invitation[]
+  departments Department[] // 新增：部门关联
 
   @@unique([slug])
   @@map("organization")
@@ -199,7 +204,14 @@ model Member {
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   userId         String
   user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  role           String
+  role           String       // 保留：向后兼容
+  
+  // 新增：RBAC 支持
+  systemRoleId   String?
+  systemRole     SystemRole?  @relation(fields: [systemRoleId], references: [id])
+  departmentId   String?
+  department     Department?  @relation(fields: [departmentId], references: [id])
+  
   createdAt      DateTime
 
   @@map("member")
@@ -389,4 +401,134 @@ model PracticeAttempt {
   createdAt   DateTime @default(now())
 
   @@map("qb_practice_attempt")
+}
+
+// ==================== RBAC 权限系统 ====================
+
+// 部门表（组织内部层级结构）
+model Department {
+  id             String   @id @default(cuid())
+  name           String   // 部门名称
+  code           String   // 部门编码
+  
+  // 所属组织
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  
+  // 树形结构
+  parentId       String?
+  parent         Department?  @relation("DepartmentTree", fields: [parentId], references: [id])
+  children       Department[] @relation("DepartmentTree")
+  
+  level          Int      @default(1) // 层级
+  sort           Int      @default(0) // 排序
+  leader         String?  // 负责人
+  phone          String?
+  email          String?
+  status         String   @default("ACTIVE") // ACTIVE, INACTIVE
+  
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  
+  // 关联
+  members        Member[]
+  
+  @@unique([organizationId, code])
+  @@index([organizationId])
+  @@index([parentId])
+  @@map("departments")
+}
+
+// 权限表
+model Permission {
+  id          String   @id @default(cuid())
+  name        String   @unique // 例如: user:create
+  label       String   // 显示名称: 创建用户
+  description String?  // 描述
+  resource    String   // 资源: user
+  action      String   // 操作: create
+  category    String?  // 分类: 用户管理
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // 关联
+  rolePermissions  RolePermission[]
+  fieldPermissions FieldPermission[]
+  
+  @@index([resource, action])
+  @@map("permissions")
+}
+
+// 角色-权限关联表
+model RolePermission {
+  id           String   @id @default(cuid())
+  roleId       String
+  permissionId String
+  
+  // 数据范围限制
+  dataScope    String   @default("ALL") // ALL, ORG, DEPT, DEPT_AND_SUB, SELF
+  customScope  Json?    // 自定义范围条件
+  
+  // 时间限制
+  validFrom    DateTime? // 生效时间
+  validUntil   DateTime? // 失效时间
+  timeRanges   Json?     // 时间段限制 [{day: 1-7, start: "09:00", end: "18:00"}]
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  role         SystemRole  @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission  @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  
+  @@unique([roleId, permissionId])
+  @@index([roleId])
+  @@index([permissionId])
+  @@map("role_permissions")
+}
+
+// 字段级权限表
+model FieldPermission {
+  id           String   @id @default(cuid())
+  permissionId String
+  resource     String   // 资源: user
+  field        String   // 字段: salary, phone
+  access       String   // READ, WRITE, HIDDEN
+  condition    Json?    // 条件: {role: 'admin'}
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  
+  @@unique([permissionId, resource, field])
+  @@index([resource, field])
+  @@map("field_permissions")
+}
+
+// 跨组织访问授权表
+model CrossOrgAccess {
+  id              String   @id @default(cuid())
+  roleId          String
+  sourceOrgId     String   // 源组织
+  targetOrgId     String   // 目标组织
+  resource        String   // 资源类型
+  accessLevel     String   // READ, WRITE, FULL
+  
+  // 可选：部门级别限制
+  sourceDeptId    String?
+  targetDeptId    String?
+  
+  // 时间限制
+  validFrom       DateTime?
+  validUntil      DateTime?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  role            SystemRole @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  
+  @@unique([roleId, sourceOrgId, targetOrgId, resource])
+  @@index([roleId])
+  @@map("cross_org_access")
 }

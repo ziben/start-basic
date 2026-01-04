@@ -9,7 +9,7 @@ export async function getSidebarData(
   scope: 'APP' | 'ADMIN' = 'APP'
 ): Promise<SidebarData> {
   try {
-    // 获取导航组
+    // 获取菜单组
     const navGroups = await prisma.navGroup.findMany({
       where: { scope },
       orderBy: { orderIndex: 'asc' },
@@ -35,8 +35,8 @@ export async function getSidebarData(
         },
         userRoleNavGroups: userId
           ? {
-              where: { userId, visible: true },
-            }
+            where: { userId, visible: true },
+          }
           : undefined,
       },
     })
@@ -44,28 +44,28 @@ export async function getSidebarData(
     // 获取当前用户的完整信息
     const currentUser = userId
       ? await prisma.user.findUnique({
-          where: { id: userId },
-          select: { 
-            id: true, 
-            role: true, 
-            systemRoles: {
-              select: {
-                id: true,
-                name: true
-              }
+        where: { id: userId },
+        select: {
+          id: true,
+          role: true,
+          systemRoles: {
+            select: {
+              id: true,
+              name: true
             }
-          },
-        })
+          }
+        },
+      })
       : null
 
-    // 如果有角色或用户ID限制，过滤可见的导航组
+    // 如果有角色或用户ID限制，过滤可见的菜单组
     const filteredNavGroups = navGroups.filter((group) => {
       // 1. 检查用户个性化设置 (隐藏)
       if (userId && group.userRoleNavGroups && group.userRoleNavGroups.length > 0) {
         if (group.userRoleNavGroups.some((urg) => !urg.visible)) return false
       }
 
-      // 2. 如果导航组没有任何角色限制，则所有人可见
+      // 2. 如果菜单组没有任何角色限制，则所有人可见
       if (!group.roleNavGroups || group.roleNavGroups.length === 0) {
         return true
       }
@@ -82,10 +82,10 @@ export async function getSidebarData(
       return group.roleNavGroups.some((rg) => {
         // 匹配新系统的 roleId (用户拥有的任何一个角色 ID 匹配即可)
         if (rg.roleId && userRoleIds.includes(rg.roleId)) return true
-        
+
         // 匹配 roleName (兼容旧数据或动态角色名)
         if (rg.roleName && userRoleNames.has(rg.roleName)) return true
-        
+
         // 匹配关联的 systemRole 的 name
         if (rg.systemRole?.name && userRoleNames.has(rg.systemRole.name)) return true
 
@@ -99,9 +99,9 @@ export async function getSidebarData(
     // 获取用户数据
     const user = userId
       ? await prisma.user.findUnique({
-          where: { id: userId },
-          select: { name: true, email: true, image: true },
-        })
+        where: { id: userId },
+        select: { name: true, email: true, image: true },
+      })
       : null
 
     // 创建空的侧边栏数据
@@ -156,10 +156,10 @@ export async function getSidebarData(
     return {
       user: user
         ? {
-            name: user.name,
-            email: user.email,
-            avatar: user.image || '/avatars/shadcn.jpg',
-          }
+          name: user.name,
+          email: user.email,
+          avatar: user.image || '/avatars/shadcn.jpg',
+        }
         : defaultData.user,
       teams: serializedTeams,
       navGroups: adaptedGroups.length > 0 ? adaptedGroups : serializedNavGroups,
@@ -221,7 +221,7 @@ export async function initSidebarData() {
   try {
     // 事务中处理所有创建操作
     await prisma.$transaction(async (tx) => {
-      // 为每个导航组创建数据
+      // 为每个菜单组创建数据
       for (let i = 0; i < defaultData.navGroups.length; i++) {
         const group = defaultData.navGroups[i]
         const createdGroup = await tx.navGroup.create({

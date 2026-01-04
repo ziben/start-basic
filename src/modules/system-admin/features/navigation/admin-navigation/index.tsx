@@ -34,10 +34,10 @@ export default function AdminNavigationPage() {
       <div className='mb-2 flex flex-wrap items-center justify-between space-y-2 gap-x-4'>
         <div>
           <h2 className='text-2xl font-bold tracking-tight'>
-            {t('admin.navigation.title', { defaultMessage: '导航管理' })}
+            {t('admin.navigation.title', { defaultMessage: '菜单管理' })}
           </h2>
           <p className='text-muted-foreground'>
-            {t('admin.navigation.desc', { defaultMessage: '统一管理导航分组与导航项。' })}
+            {t('admin.navigation.desc', { defaultMessage: '统一管理菜单分组与菜单项。' })}
           </p>
         </div>
       </div>
@@ -49,8 +49,8 @@ export default function AdminNavigationPage() {
         }}
       >
         <TabsList>
-          <TabsTrigger value='groups'>{t('admin.navigation.tabs.groups', { defaultMessage: '导航分组' })}</TabsTrigger>
-          <TabsTrigger value='items'>{t('admin.navigation.tabs.items', { defaultMessage: '导航项' })}</TabsTrigger>
+          <TabsTrigger value='groups'>{t('admin.navigation.tabs.groups', { defaultMessage: '菜单分组' })}</TabsTrigger>
+          <TabsTrigger value='items'>{t('admin.navigation.tabs.items', { defaultMessage: '菜单项' })}</TabsTrigger>
         </TabsList>
 
         <TabsContent value='groups'>
@@ -82,12 +82,12 @@ export default function AdminNavigationPage() {
       {/* keep existing loading/error behaviors minimal */}
       {navgroupsError ? (
         <div className='py-4 text-sm text-red-500'>
-          {t('admin.navigation.errors.navgroups', { defaultMessage: '加载导航分组失败' })}: {String(navgroupsError)}
+          {t('admin.navigation.errors.navgroups', { defaultMessage: '加载菜单分组失败' })}: {String(navgroupsError)}
         </div>
       ) : null}
       {navitemsError ? (
         <div className='py-4 text-sm text-red-500'>
-          {t('admin.navigation.errors.navitems', { defaultMessage: '加载导航项失败' })}: {String(navitemsError)}
+          {t('admin.navigation.errors.navitems', { defaultMessage: '加载菜单项失败' })}: {String(navitemsError)}
         </div>
       ) : null}
     </AppHeaderMain>

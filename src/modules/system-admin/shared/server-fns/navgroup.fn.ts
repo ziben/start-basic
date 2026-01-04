@@ -39,7 +39,7 @@ import { requireAdmin } from './auth'
 // ============ ServerFn 定义 ============
 
 /**
- * 获取导航组列表
+ * 获取菜单组列表
  */
 export const getNavGroupsFn = createServerFn({ method: 'GET' })
     .inputValidator((data?: { scope?: 'APP' | 'ADMIN' }) => data)
@@ -50,7 +50,7 @@ export const getNavGroupsFn = createServerFn({ method: 'GET' })
     })
 
 /**
- * 获取单个导航组
+ * 获取单个菜单组
  */
 export const getNavGroupFn = createServerFn({ method: 'GET' })
     .inputValidator((data: { id: string }) => {
@@ -64,7 +64,7 @@ export const getNavGroupFn = createServerFn({ method: 'GET' })
     })
 
 /**
- * 创建导航组
+ * 创建菜单组
  */
 export const createNavGroupFn = createServerFn({ method: 'POST' })
     .inputValidator((data: z.infer<typeof CreateNavGroupSchema>) => CreateNavGroupSchema.parse(data))
@@ -75,7 +75,7 @@ export const createNavGroupFn = createServerFn({ method: 'POST' })
     })
 
 /**
- * 更新导航组
+ * 更新菜单组
  */
 export const updateNavGroupFn = createServerFn({ method: 'POST' })
     .inputValidator((data: z.infer<typeof UpdateNavGroupSchema>) => UpdateNavGroupSchema.parse(data))
@@ -87,7 +87,7 @@ export const updateNavGroupFn = createServerFn({ method: 'POST' })
     })
 
 /**
- * 删除导航组
+ * 删除菜单组
  */
 export const deleteNavGroupFn = createServerFn({ method: 'POST' })
     .inputValidator((data: { id: string }) => {
@@ -112,7 +112,7 @@ export const updateNavGroupOrderFn = createServerFn({ method: 'POST' })
     })
 
 /**
- * 更新用户导航组可见性
+ * 更新用户菜单组可见性
  */
 export const updateNavGroupVisibilityFn = createServerFn({ method: 'POST' })
     .inputValidator((data: z.infer<typeof UpdateVisibilitySchema>) => UpdateVisibilitySchema.parse(data))
