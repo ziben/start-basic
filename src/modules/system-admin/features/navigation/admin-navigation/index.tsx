@@ -17,6 +17,7 @@ import AdminNavItemPrimaryButtons from '../navitem/components/admin-navitem-prim
 import AdminNavItemTable from '../navitem/components/admin-navitem-table'
 import AdminNavItemProvider from '../navitem/context/admin-navitem-context'
 import { AppHeader } from '~/components/layout/app-header'
+import { AppHeaderMain } from '~/components/layout/app-header-main'
 
 export default function AdminNavigationPage() {
   const { t } = useTranslation()
@@ -29,7 +30,7 @@ export default function AdminNavigationPage() {
   const { data: navItemList = [], isLoading: navitemsLoading, error: navitemsError } = useNavitems(undefined, 'ADMIN')
 
   return (
-    <HeaderAndMain>
+    <AppHeaderMain>
       <div className='mb-2 flex flex-wrap items-center justify-between space-y-2 gap-x-4'>
         <div>
           <h2 className='text-2xl font-bold tracking-tight'>
@@ -89,20 +90,6 @@ export default function AdminNavigationPage() {
           {t('admin.navigation.errors.navitems', { defaultMessage: '加载导航项失败' })}: {String(navitemsError)}
         </div>
       ) : null}
-    </HeaderAndMain>
+    </AppHeaderMain>
   )
 }
-
-function HeaderAndMain({ children }: { children: React.ReactNode }) {
-  return (
-    <>
-      <AppHeader />
-      <Main>{children}</Main>
-    </>
-  )
-}
-
-
-
-
-

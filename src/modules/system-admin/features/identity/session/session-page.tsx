@@ -39,6 +39,7 @@ import { ConfirmDialog } from '@/components/confirm-dialog'
 import { DataTableColumnHeader, DataTablePagination, DataTableToolbar } from '@/components/data-table'
 import { AppHeader } from '@/components/layout/app-header'
 import { Main } from '@/components/layout/main'
+import { AppHeaderMain } from '~/components/layout/app-header-main'
 
 const route = getRouteApi('/admin/session')
 
@@ -341,9 +342,7 @@ export default function AdminSession() {
 
   return (
     <>
-      <AppHeader />
-
-      <Main fixed>
+      <AppHeaderMain>
         <div className='mb-2 flex flex-wrap items-center justify-between space-y-2 gap-x-4'>
           <div>
             <h2 className='text-2xl font-bold tracking-tight'>
@@ -442,7 +441,7 @@ export default function AdminSession() {
             ) : null}
           </div>
         </div>
-      </Main>
+      </AppHeaderMain>
 
       <ConfirmDialog
         destructive

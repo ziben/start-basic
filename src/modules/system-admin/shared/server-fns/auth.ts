@@ -22,7 +22,22 @@ export async function requireAdmin(actionName?: string) {
     const requestId = createRequestId()
     const ip = getIpFromRequest(request)
     const userAgent = getUserAgentFromRequest(request)
-    const path = new URL(request.url).pathname
+    const url = new URL(request.url)
+    let path = url.pathname
+    let query = url.search || null
+
+    // Prettify Server Function path for logs
+    if (path === '/_server' || path === '/api/functions') {
+        const fnId = url.searchParams.get('_serverFunctionId')
+        if (fnId) {
+            path = `[ServerFn] ${fnId}`
+        }
+    }
+
+    // Truncate long query
+    if (query && query.length > 255) {
+        query = query.substring(0, 255) + '...'
+    }
 
     try {
         const session = await auth.api.getSession({ headers: request.headers })
@@ -33,7 +48,7 @@ export async function requireAdmin(actionName?: string) {
                 requestId,
                 method: request.method,
                 path,
-                query: new URL(request.url).search || null,
+                query,
                 status: 401,
                 durationMs: Date.now() - start,
                 ip,
@@ -54,7 +69,7 @@ export async function requireAdmin(actionName?: string) {
                 requestId,
                 method: request.method,
                 path,
-                query: new URL(request.url).search || null,
+                query,
                 status: 403,
                 durationMs: Date.now() - start,
                 ip,
@@ -86,7 +101,7 @@ export async function requireAdmin(actionName?: string) {
             requestId,
             method: request.method,
             path,
-            query: new URL(request.url).search || null,
+            query,
             status: 200,
             durationMs: Date.now() - start,
             ip,
@@ -107,7 +122,7 @@ export async function requireAdmin(actionName?: string) {
             requestId,
             method: request.method,
             path,
-            query: new URL(request.url).search || null,
+            query,
             status: 500,
             durationMs: Date.now() - start,
             ip,

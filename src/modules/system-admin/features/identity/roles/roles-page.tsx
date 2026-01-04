@@ -1,6 +1,5 @@
 import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
-import { AppHeader } from '@/components/layout/app-header'
-import { Main } from '@/components/layout/main'
+import { AppHeaderMain } from '~/components/layout/app-header-main'
 import { RolesProvider, useRolesContext } from './context/roles-context'
 import { AdminRolesTable } from './components/admin-roles-table'
 import { AdminRolesMutateDialog } from './components/admin-roles-mutate-dialog'
@@ -15,8 +14,7 @@ function AdminRolesContent() {
 
   return (
     <>
-      <AppHeader />
-      <Main>
+      <AppHeaderMain>
         <div className='mb-2 flex flex-wrap items-center justify-between space-y-2 gap-x-4'>
           <div>
             <h2 className='text-2xl font-bold tracking-tight'>角色管理</h2>
@@ -30,7 +28,7 @@ function AdminRolesContent() {
         <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-y-0 lg:space-x-12'>
           <AdminRolesTable />
         </div>
-      </Main>
+      </AppHeaderMain>
 
       <AdminRolesMutateDialog />
       <AdminRolesDeleteDialog />

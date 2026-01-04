@@ -1,5 +1,4 @@
-import { AppHeader } from '@/components/layout/app-header'
-import { Main } from '@/components/layout/main'
+import { AppHeaderMain } from '~/components/layout/app-header-main'
 import { AdminLogProvider, useAdminLogContext } from './components/admin-log-provider'
 import { AdminLogTable } from './components/admin-log-table'
 import { AdminLogTypeSwitcher } from './components/admin-log-type-switcher'
@@ -8,22 +7,18 @@ function AdminLogContent() {
   const { type } = useAdminLogContext()
 
   return (
-    <>
-      <AppHeader />
-
-      <Main fixed>
-        <div className='mb-2 flex flex-wrap items-center justify-between space-y-2 gap-x-4'>
-          <div>
-            <h2 className='text-2xl font-bold tracking-tight'>日志管理</h2>
-            <p className='text-muted-foreground'>系统日志与操作日志</p>
-          </div>
-          <AdminLogTypeSwitcher />
+    <AppHeaderMain>
+      <div className='mb-2 flex flex-wrap items-center justify-between space-y-2 gap-x-4'>
+        <div>
+          <h2 className='text-2xl font-bold tracking-tight'>日志管理</h2>
+          <p className='text-muted-foreground'>系统日志与操作日志</p>
         </div>
-        <div className='-mx-4 flex-1 overflow-hidden px-4 py-1 lg:flex-row lg:space-y-0 lg:space-x-12'>
-          <AdminLogTable type={type} />
-        </div>
-      </Main>
-    </>
+        <AdminLogTypeSwitcher />
+      </div>
+      <div className='-mx-4 flex-1 overflow-hidden px-4 py-1 lg:flex-row lg:space-y-0 lg:space-x-12'>
+        <AdminLogTable type={type} />
+      </div>
+    </AppHeaderMain>
   )
 }
 

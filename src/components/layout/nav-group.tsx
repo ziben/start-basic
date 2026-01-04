@@ -24,6 +24,7 @@ import {
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu'
 import { type NavCollapsible, type NavItem, type NavLink, type NavGroup as NavGroupProps } from './types'
+import { useTabs } from '@/shared/context/tab-context'
 
 export function NavGroup({ title, items }: NavGroupProps) {
   const { state, isMobile } = useSidebar()
@@ -55,14 +56,26 @@ function NavBadge({ children }: { children: ReactNode }) {
 
 function SidebarMenuLink({ item, href }: { item: NavLink; href: string }) {
   const { setOpenMobile } = useSidebar()
+  const tabContext = useTabs()
+
+  const handleClick = (e: React.MouseEvent) => {
+    if (!tabContext) {
+      return // Fall back to normal navigation
+    }
+
+    e.preventDefault()
+    tabContext.openTab(item.url, item.title, item.icon)
+    setOpenMobile(false)
+  }
+
   return (
     <SidebarMenuItem>
       <SidebarMenuButton asChild isActive={checkIsActive(href, item)} tooltip={item.title}>
-        <Link to={item.url} onClick={() => setOpenMobile(false)}>
+        <a href={item.url} onClick={handleClick}>
           {item.icon && <item.icon />}
           <span>{item.title}</span>
           {item.badge && <NavBadge>{item.badge}</NavBadge>}
-        </Link>
+        </a>
       </SidebarMenuButton>
     </SidebarMenuItem>
   )
@@ -70,6 +83,18 @@ function SidebarMenuLink({ item, href }: { item: NavLink; href: string }) {
 
 function SidebarMenuCollapsible({ item, href }: { item: NavCollapsible; href: string }) {
   const { setOpenMobile } = useSidebar()
+  const tabContext = useTabs()
+
+  const handleSubItemClick = (subItem: NavLink) => (e: React.MouseEvent) => {
+    if (!tabContext) {
+      return // Fall back to normal navigation
+    }
+
+    e.preventDefault()
+    tabContext.openTab(subItem.url, subItem.title, subItem.icon)
+    setOpenMobile(false)
+  }
+
   return (
     <Collapsible asChild defaultOpen={checkIsActive(href, item, true)} className='group/collapsible'>
       <SidebarMenuItem>
@@ -86,11 +111,11 @@ function SidebarMenuCollapsible({ item, href }: { item: NavCollapsible; href: st
             {item.items.map((subItem) => (
               <SidebarMenuSubItem key={subItem.title}>
                 <SidebarMenuSubButton asChild isActive={checkIsActive(href, subItem)}>
-                  <Link to={subItem.url} onClick={() => setOpenMobile(false)}>
+                  <a href={subItem.url} onClick={handleSubItemClick(subItem)}>
                     {subItem.icon && <subItem.icon />}
                     <span>{subItem.title}</span>
                     {subItem.badge && <NavBadge>{subItem.badge}</NavBadge>}
-                  </Link>
+                  </a>
                 </SidebarMenuSubButton>
               </SidebarMenuSubItem>
             ))}
@@ -102,6 +127,17 @@ function SidebarMenuCollapsible({ item, href }: { item: NavCollapsible; href: st
 }
 
 function SidebarMenuCollapsedDropdown({ item, href }: { item: NavCollapsible; href: string }) {
+  const tabContext = useTabs()
+
+  const handleSubItemClick = (subItem: NavLink) => (e: React.MouseEvent) => {
+    if (!tabContext) {
+      return // Fall back to normal navigation
+    }
+
+    e.preventDefault()
+    tabContext.openTab(subItem.url, subItem.title, subItem.icon)
+  }
+
   return (
     <SidebarMenuItem>
       <DropdownMenu>
@@ -120,11 +156,11 @@ function SidebarMenuCollapsedDropdown({ item, href }: { item: NavCollapsible; hr
           <DropdownMenuSeparator />
           {item.items.map((sub) => (
             <DropdownMenuItem key={`${sub.title}-${sub.url}`} asChild>
-              <Link to={sub.url} className={`${checkIsActive(href, sub) ? 'bg-secondary' : ''}`}>
+              <a href={sub.url} onClick={handleSubItemClick(sub)} className={`${checkIsActive(href, sub) ? 'bg-secondary' : ''}`}>
                 {sub.icon && <sub.icon />}
                 <span className='max-w-52 text-wrap'>{sub.title}</span>
                 {sub.badge && <span className='ms-auto text-xs'>{sub.badge}</span>}
-              </Link>
+              </a>
             </DropdownMenuItem>
           ))}
         </DropdownMenuContent>

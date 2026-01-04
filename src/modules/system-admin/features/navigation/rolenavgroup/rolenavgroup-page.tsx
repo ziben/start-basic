@@ -1,6 +1,5 @@
-import { useState } from 'react'
-import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
-import { useAllRoles } from '@/modules/system-admin/shared/hooks/use-role-api'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Table,
   TableBody,
@@ -9,9 +8,11 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Settings2, Loader2 } from 'lucide-react'
+import { useAllRoles } from '@/modules/system-admin/shared/hooks/use-role-api'
+import { Loader2, Settings2 } from 'lucide-react'
+import { useState } from 'react'
+import { AppHeaderMain } from '~/components/layout/app-header-main'
+import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
 import { RoleNavGroupManageDialog } from './components/role-navgroup-manage-dialog'
 
 export default function AdminRoleNavGroup() {
@@ -26,7 +27,7 @@ export default function AdminRoleNavGroup() {
   }
 
   return (
-    <div className='flex flex-col gap-6 p-4'>
+    <AppHeaderMain>
       <Card>
         <CardHeader>
           <CardTitle>{t('admin.rolenavgroup.title')}</CardTitle>
@@ -76,6 +77,6 @@ export default function AdminRoleNavGroup() {
         open={isDialogOpen}
         onOpenChange={setIsDialogOpen}
       />
-    </div>
+    </AppHeaderMain>
   )
 }
