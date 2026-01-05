@@ -1,4 +1,5 @@
 import { PrismaLibSql } from '@prisma/adapter-libsql'
+
 import { PrismaClient } from '../../src/generated/prisma/client'
 import en from '../../src/i18n/locales/en'
 import zh from '../../src/i18n/locales/zh'

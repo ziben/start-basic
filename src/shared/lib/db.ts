@@ -3,7 +3,6 @@ import { PrismaClient } from '~/generated/prisma/client'
 
 const DATABASE_URL = process.env.DATABASE_URL ?? 'file:./db/dev.db'
 
-// PrismaClient 单例，避免在 SSR/dev 热重载下重复创建连接
 const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient }
 
 function createPrismaClient() {
@@ -21,4 +20,3 @@ export function getDb() {
 
 const prisma = getDb()
 export default prisma
-
