@@ -40,7 +40,11 @@ type Handler<T = HandlerContext> = (ctx: T) => Promise<Response> | Response
 
 const ADMIN_ROLES = new Set(['admin', 'superadmin'])
 
-function hasAdminRole(role: unknown) {
+/**
+ * 检查用户是否有管理员角色
+ * better-auth 支持多角色，用逗号分隔
+ */
+function hasAdminRole(role: unknown): boolean {
   if (typeof role !== 'string') return false
   return role
     .split(',')

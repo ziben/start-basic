@@ -56,7 +56,7 @@ export function useNavGroupColumns(): ColumnDef<AdminNavgroup>[] {
           <div className='flex flex-wrap gap-1'>
             {roleNavGroups.map((rng) => (
               <Badge key={rng.id} variant='outline' className='border-blue-300 bg-blue-50 text-blue-700'>
-                {rng.systemRole.name}
+                {rng.role}
               </Badge>
             ))}
             {roleNavGroups.length === 0 && '-'}

@@ -1,10 +1,8 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { DepartmentPage } from '~/modules/system-admin'
+import { tableSearchSchema } from '@/shared/schemas/search-params.schema'
+import { DepartmentsPage } from '~/modules/system-admin'
 
 export const Route = createFileRoute('/admin/department')({
-  component: RouteComponent,
+  validateSearch: tableSearchSchema,
+  component: DepartmentsPage,
 })
-
-function RouteComponent() {
-  return <DepartmentPage />
-}

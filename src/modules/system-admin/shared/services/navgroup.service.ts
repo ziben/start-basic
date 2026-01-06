@@ -15,11 +15,7 @@ const navGroupInclude = {
     navItems: {
         orderBy: { orderIndex: 'asc' as const },
     },
-    roleNavGroups: {
-        include: {
-            systemRole: true,
-        },
-    },
+    roleNavGroups: true,
 }
 
 // ============ 类型定义 ============
@@ -110,32 +106,20 @@ export const NavGroupService = {
 
                 // 创建角色关联
                 if (data.roles && data.roles.length > 0) {
-                    const systemRoles = await tx.systemRole.findMany({
-                        where: { name: { in: data.roles } },
+                    await tx.roleNavGroup.createMany({
+                        data: data.roles.map((role) => ({
+                            role,
+                            navGroupId: group.id,
+                        })),
                     })
-
-                    if (systemRoles.length > 0) {
-                        await tx.roleNavGroup.createMany({
-                            data: systemRoles.map((role) => ({
-                                roleId: role.id,
-                                navGroupId: group.id,
-                            })),
-                        })
-                    }
                 } else {
                     // 默认所有角色可见
-                    const defaultRoles = await tx.systemRole.findMany({
-                        where: { name: { in: ['user', 'admin'] } },
+                    await tx.roleNavGroup.createMany({
+                        data: ['user', 'admin'].map((role) => ({
+                            role,
+                            navGroupId: group.id,
+                        })),
                     })
-
-                    if (defaultRoles.length > 0) {
-                        await tx.roleNavGroup.createMany({
-                            data: defaultRoles.map((role) => ({
-                                roleId: role.id,
-                                navGroupId: group.id,
-                            })),
-                        })
-                    }
                 }
 
                 // 返回完整对象
@@ -176,18 +160,12 @@ export const NavGroupService = {
                     })
 
                     if (data.roles.length > 0) {
-                        const systemRoles = await tx.systemRole.findMany({
-                            where: { name: { in: data.roles } },
+                        await tx.roleNavGroup.createMany({
+                            data: data.roles.map((role) => ({
+                                role,
+                                navGroupId: id,
+                            })),
                         })
-
-                        if (systemRoles.length > 0) {
-                            await tx.roleNavGroup.createMany({
-                                data: systemRoles.map((role) => ({
-                                    roleId: role.id,
-                                    navGroupId: id,
-                                })),
-                            })
-                        }
                     }
                 }
 

@@ -17,15 +17,15 @@ const ListOrganizationsSchema = z.object({
 })
 
 const CreateOrganizationSchema = z.object({
-    name: z.string().min(1),
+    name: z.string().min(1, '组织名称不能为空'),
     slug: z.string().optional(),
     logo: z.string().optional(),
-    metadata: z.record(z.string(), z.any()).optional(),
+    metadata: z.string().optional(),
 })
 
 const UpdateOrganizationSchema = z.object({
     id: z.string().min(1),
-    name: z.string().optional(),
+    name: z.string().min(1, '组织名称不能为空').optional(),
     slug: z.string().optional(),
     logo: z.string().optional(),
     metadata: z.string().optional(),

@@ -5,7 +5,7 @@ import { Toaster } from '~/components/ui/sonner'
 import { useNavgroup } from '~/modules/system-admin/shared/hooks/use-navgroup-api'
 import { useNavitems } from '~/modules/system-admin/shared/hooks/use-navitem-api'
 import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
-import { Route as NavItemRoute } from '~/routes/admin/navitem'
+import { Route as NavItemRoute } from '~/routes/admin/navigation'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
@@ -40,7 +40,7 @@ export default function AdminNavItemPage() {
         {/* 导航路径 */}
         {navGroupId && (
           <div className='mb-4 flex items-center text-sm text-muted-foreground'>
-            <Link to='/admin/navgroup' className='hover:text-primary'>
+            <Link to='/admin/navigation' search={(prev) => ({ ...prev, tab: 'groups' })} className='hover:text-primary'>
               <Home className='mr-1 inline h-4 w-4' />
               {t('admin.navitem.breadcrumb.navgroups')}
             </Link>

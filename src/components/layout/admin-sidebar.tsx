@@ -7,6 +7,7 @@ import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } fr
 import { NavGroup as NavGroupComponent } from '@/components/layout/nav-group'
 import { NavUser } from '@/components/layout/nav-user'
 import { AdminTitle } from './admin-title'
+import { SidebarSkeleton } from './sidebar-skeleton'
 import type { NavGroup as NavGroupType } from './types'
 
 // 管理后台专用侧边栏数据
@@ -33,7 +34,11 @@ export function AdminSidebar() {
 
   const { data: sidebarData, isLoading } = useDynamicSidebar(iconResolver, 'ADMIN')
 
-  // 加载中时显示骨架屏（用原静态数据兜底）
+  // 加载中时显示骨架屏
+  if (isLoading) {
+    return <SidebarSkeleton collapsible={collapsible} variant={variant} />
+  }
+
   const fallbackData = createAdminSidebarData()
 
   // 用户信息

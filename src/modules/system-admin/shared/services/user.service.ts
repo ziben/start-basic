@@ -73,9 +73,6 @@ export const UserService = {
                             : { createdAt: 'desc' },
                     skip: (page - 1) * pageSize,
                     take: pageSize,
-                    include: {
-                        systemRoles: true,
-                    },
                 }),
             ])
 
@@ -102,9 +99,6 @@ export const UserService = {
         try {
             const user = await prisma.user.findUnique({
                 where: { id },
-                include: {
-                    systemRoles: true,
-                },
             })
 
             if (!user) {
@@ -130,8 +124,7 @@ export const UserService = {
                     email: input.email,
                     password: input.password,
                     name: input.name,
-                    role: input.role,
-                    emailVerified: true,
+                    role: input.role as any,
                     data: {
                         username: input.username,
                     },
@@ -144,21 +137,13 @@ export const UserService = {
 
             const newUserId = result.user.id
 
-            // 2. 更新额外信息（角色关联、封禁状态等）
+            // 2. 更新额外信息（封禁状态等）
             const updated = await prisma.user.update({
                 where: { id: newUserId },
                 data: {
                     role: input.role,
-                    systemRoles: input.roleIds
-                        ? {
-                            set: input.roleIds.map((id) => ({ id })),
-                        }
-                        : undefined,
                     banned: input.banned,
                     username: input.username ?? undefined,
-                },
-                include: {
-                    systemRoles: true,
                 },
             })
 
@@ -196,17 +181,7 @@ export const UserService = {
             // 更新用户基本信息
             const updatedUser = await prisma.user.update({
                 where: { id },
-                data: {
-                    ...updateData,
-                    systemRoles: data.roleIds
-                        ? {
-                            set: data.roleIds.map((roleId) => ({ id: roleId })),
-                        }
-                        : undefined,
-                },
-                include: {
-                    systemRoles: true,
-                },
+                data: updateData,
             })
 
             return serializeAdminUser(updatedUser as any)

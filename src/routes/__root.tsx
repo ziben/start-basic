@@ -12,8 +12,7 @@ import { LocaleProvider } from '~/shared/context/locale-context'
 import { ThemeProvider } from '~/shared/context/theme-provider'
 import appCss from '~/styles/index.css?url'
 import { seo } from '@/shared/utils/seo'
-import { GeneralError } from '@/modules/demo'
-import { NotFoundError } from '@/modules/demo'
+import { GeneralError, NotFoundError } from '@/shared/components/errors'
 
 const getUser = createServerFn({ method: 'GET' }).handler(async () => {
   const { auth } = await import('~/modules/identity/shared/lib/auth')

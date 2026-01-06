@@ -1,6 +1,5 @@
 export * from './features/tasks'
 export * from './features/users'
 export * from './features/settings'
-export * from './features/errors'
 export * from './features/apps'
 export * from './features/chats'

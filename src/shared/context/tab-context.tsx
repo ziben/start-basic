@@ -1,25 +1,52 @@
-import React, { createContext, useContext, useState, useCallback, useEffect } from 'react'
+import React, { createContext, useContext, useState, useCallback, useEffect, useMemo } from 'react'
 import { useNavigate, useLocation } from '@tanstack/react-router'
 import type { Tab, TabContextValue } from '@/shared/types/tab-types'
 import { MAX_TABS } from '@/shared/types/tab-types'
 
 const TabContext = createContext<TabContextValue | undefined>(undefined)
 
+const STORAGE_KEY = 'admin-tabs'
+
 export function TabProvider({ children }: { children: React.ReactNode }) {
-    const [tabs, setTabs] = useState<Tab[]>([])
-    const [activeTabId, setActiveTabId] = useState<string | null>(null)
     const navigate = useNavigate()
     const location = useLocation()
-
-    // 从 URL 同步激活的标签页
-    useEffect(() => {
-        const currentPath = location.pathname
-        const existingTab = tabs.find((tab) => tab.path === currentPath)
-
-        if (existingTab && activeTabId !== existingTab.id) {
-            setActiveTabId(existingTab.id)
+    
+    // 从 localStorage 初始化 tabs
+    const [tabs, setTabs] = useState<Tab[]>(() => {
+        try {
+            const stored = localStorage.getItem(STORAGE_KEY)
+            return stored ? JSON.parse(stored) : []
+        } catch {
+            return []
         }
-    }, [location.pathname, tabs, activeTabId])
+    })
+    
+    // 手动设置的 activeTabId（用于用户点击切换）
+    const [manualActiveTabId, setManualActiveTabId] = useState<string | null>(null)
+
+    // 根据 URL 自动计算 activeTabId
+    const activeTabId = useMemo(() => {
+        // 如果有手动设置的 ID，优先使用
+        if (manualActiveTabId) {
+            const tab = tabs.find(t => t.id === manualActiveTabId)
+            if (tab && tab.path === location.pathname) {
+                return manualActiveTabId
+            }
+        }
+        
+        // 否则根据当前 URL 查找匹配的 tab
+        const matchingTab = tabs.find((tab) => tab.path === location.pathname)
+        return matchingTab?.id ?? null
+    }, [tabs, location.pathname, manualActiveTabId])
+
+    // 持久化 tabs 到 localStorage
+    useEffect(() => {
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(tabs))
+        } catch (error) {
+            console.error('Failed to save tabs to localStorage:', error)
+        }
+    }, [tabs])
 
     // 打开新标签页或激活已存在的标签页
     const openTab = useCallback(
@@ -35,7 +62,7 @@ export function TabProvider({ children }: { children: React.ReactNode }) {
 
             if (existingTab) {
                 // 激活已存在的标签页
-                setActiveTabId(existingTab.id)
+                setManualActiveTabId(existingTab.id)
                 navigate({ to: path } as any)
                 return true
             }
@@ -57,7 +84,7 @@ export function TabProvider({ children }: { children: React.ReactNode }) {
             }
 
             setTabs((prev) => [...prev, newTab])
-            setActiveTabId(newTab.id)
+            setManualActiveTabId(newTab.id)
             navigate({ to: path } as any)
             return true
         },
@@ -78,11 +105,11 @@ export function TabProvider({ children }: { children: React.ReactNode }) {
                 // 优先激活右侧的标签页，如果没有则激活左侧的
                 const nextTab = newTabs[tabIndex] || newTabs[tabIndex - 1]
                 if (nextTab) {
-                    setActiveTabId(nextTab.id)
+                    setManualActiveTabId(nextTab.id)
                     navigate({ to: nextTab.path } as any)
                 }
             } else if (newTabs.length === 0) {
-                setActiveTabId(null)
+                setManualActiveTabId(null)
             }
         },
         [tabs, activeTabId, navigate]
@@ -93,7 +120,7 @@ export function TabProvider({ children }: { children: React.ReactNode }) {
         (tabId: string) => {
             const tab = tabs.find((t) => t.id === tabId)
             if (tab) {
-                setActiveTabId(tabId)
+                setManualActiveTabId(tabId)
                 // 只在当前路径不匹配时才导航，避免不必要的路由变化
                 if (location.pathname !== tab.path) {
                     navigate({ to: tab.path } as any)
@@ -109,7 +136,7 @@ export function TabProvider({ children }: { children: React.ReactNode }) {
             const tab = tabs.find((t) => t.id === tabId)
             if (tab) {
                 setTabs([{ ...tab, order: 0 }])
-                setActiveTabId(tabId)
+                setManualActiveTabId(tabId)
             }
         },
         [tabs]
@@ -118,7 +145,7 @@ export function TabProvider({ children }: { children: React.ReactNode }) {
     // 关闭所有标签页
     const closeAllTabs = useCallback(() => {
         setTabs([])
-        setActiveTabId(null)
+        setManualActiveTabId(null)
     }, [])
 
     // 重新排序标签页（用于拖拽）

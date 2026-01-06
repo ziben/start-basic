@@ -12,7 +12,7 @@ export const navItemSimpleSchema = z.object({
 // 角色关联schema
 export const roleNavGroupSchema = z.object({
   id: z.string(),
-  roleId: z.string(),
+  role: z.string(),
   navGroupId: z.string(),
   createdAt: z.string().or(z.date()),
 })

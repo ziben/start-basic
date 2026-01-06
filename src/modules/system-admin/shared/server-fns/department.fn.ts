@@ -2,7 +2,7 @@
  * Department Server Functions
  */
 
-import { createServerFn } from '@tanstack/start'
+import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
 import DepartmentService from '../services/department.service'
 

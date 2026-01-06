@@ -69,24 +69,27 @@ export function useAdminUsersColumns(): ColumnDef<AdminUser>[] {
         accessorKey: 'role',
         header: ({ column }) => <DataTableColumnHeader column={column} title={t('admin.user.table.role')} />,
         cell: ({ row }) => {
-          const user = row.original
+          const role = row.getValue('role') as string
+          const roleLabels: Record<string, string> = {
+            superadmin: '超级管理员',
+            admin: '管理员',
+            user: '普通用户',
+          }
           
-          // 获取所有角色标签
-          const roleLabels = user.systemRoles && user.systemRoles.length > 0 
-            ? user.systemRoles.map(r => ({ label: r.label, name: r.name }))
-            : [{ label: user.role || '-', name: user.role || '' }]
+          // 支持多角色（逗号分隔）
+          const roles = role ? role.split(',').map(r => r.trim()) : []
 
           return (
             <div className='flex flex-wrap gap-1'>
-              {roleLabels.map((role, index) => {
-                const isSystemAdmin = role.name === 'admin' || role.name === 'superadmin'
+              {roles.map((r, index) => {
+                const isSystemAdmin = r === 'admin' || r === 'superadmin'
                 return (
                   <Badge
                     key={index}
                     variant='outline'
                     className={cn('capitalize', isSystemAdmin && 'border-primary bg-primary/10 text-primary')}
                   >
-                    {role.label}
+                    {roleLabels[r] || r}
                   </Badge>
                 )
               })}

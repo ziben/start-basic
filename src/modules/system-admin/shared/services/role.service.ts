@@ -1,31 +1,55 @@
 /**
- * Role Service - 纯业务逻辑层 (Prisma 实现)
+ * Role Service - 基于 better-auth 的角色管理
+ * 角色在 auth.ts 中定义，这里提供查询和管理接口
  */
 
 import prisma from '@/shared/lib/db'
 
 // ============ 类型定义 ============
 
+export interface Role {
+    name: string
+    label: string
+    description: string
+    isSystem: boolean
+    permissions: string[]
+}
+
 export interface ListRolesInput {
     page?: number
     pageSize?: number
     filter?: string
-    sortBy?: string
-    sortDir?: 'asc' | 'desc'
 }
 
-export interface CreateRoleInput {
-    name: string
-    label: string
-    description?: string
-    isSystem?: boolean
-}
+// ============ 角色定义（从 auth.ts 同步）============
 
-export interface UpdateRoleInput {
-    name?: string
-    label?: string
-    description?: string | null
-}
+const ROLES: Role[] = [
+    {
+        name: 'superadmin',
+        label: '超级管理员',
+        description: '拥有所有权限',
+        isSystem: true,
+        permissions: ['*']
+    },
+    {
+        name: 'admin',
+        label: '管理员',
+        description: '可以管理用户、组织、角色、权限',
+        isSystem: true,
+        permissions: [
+            'user:create', 'user:read', 'user:update', 'user:delete', 'user:ban',
+            'org:create', 'org:read', 'org:update', 'org:delete',
+            'role:manage', 'permission:manage', 'nav:manage', 'member:manage'
+        ]
+    },
+    {
+        name: 'user',
+        label: '普通用户',
+        description: '只能管理自己的资料',
+        isSystem: true,
+        permissions: ['profile:read', 'profile:update']
+    }
+]
 
 // ============ Service 实现 ============
 
@@ -35,32 +59,27 @@ export const RoleService = {
      */
     async getList(input: ListRolesInput = {}) {
         try {
-            const { page = 1, pageSize = 10, filter = '', sortBy, sortDir } = input
+            const { page = 1, pageSize = 10, filter = '' } = input
 
-            const whereClause = filter
-                ? {
-                    OR: [
-                        { name: { contains: filter } },
-                        { label: { contains: filter } },
-                        { description: { contains: filter } },
-                    ],
-                }
-                : {}
+            let roles = ROLES
 
-            const [total, roles] = await Promise.all([
-                prisma.systemRole.count({ where: whereClause }),
-                prisma.systemRole.findMany({
-                    where: whereClause,
-                    orderBy: sortBy ? { [sortBy]: sortDir ?? 'asc' } : { name: 'asc' },
-                    skip: (page - 1) * pageSize,
-                    take: pageSize,
-                }),
-            ])
+            // 过滤
+            if (filter) {
+                const lowerFilter = filter.toLowerCase()
+                roles = roles.filter(r => 
+                    r.name.toLowerCase().includes(lowerFilter) ||
+                    r.label.toLowerCase().includes(lowerFilter) ||
+                    r.description.toLowerCase().includes(lowerFilter)
+                )
+            }
 
+            const total = roles.length
             const pageCount = Math.ceil(total / pageSize)
+            const start = (page - 1) * pageSize
+            const items = roles.slice(start, start + pageSize)
 
             return {
-                items: roles,
+                items,
                 total,
                 page,
                 pageSize,
@@ -76,37 +95,30 @@ export const RoleService = {
      * 获取所有角色（不分页）
      */
     async getAll() {
-        try {
-            return await prisma.systemRole.findMany({
-                orderBy: { name: 'asc' },
-            })
-        } catch (error) {
-            console.error('获取角色列表失败:', error)
-            throw new Error('获取角色列表失败')
-        }
+        return ROLES
     },
 
     /**
      * 获取单个角色
      */
-    async getById(id: string) {
+    async getById(name: string) {
         try {
-            const role = await prisma.systemRole.findUnique({
-                where: { id },
-                include: {
-                    navGroups: {
-                        include: {
-                            navGroup: true,
-                        },
-                    },
-                },
-            })
+            const role = ROLES.find(r => r.name === name)
 
             if (!role) {
                 throw new Error('角色不存在')
             }
 
-            return role
+            // 获取关联的导航组
+            const navGroups = await prisma.roleNavGroup.findMany({
+                where: { role: name },
+                include: { navGroup: true }
+            })
+
+            return {
+                ...role,
+                navGroups
+            }
         } catch (error) {
             console.error('获取角色失败:', error)
             throw new Error('获取角色失败')
@@ -114,127 +126,50 @@ export const RoleService = {
     },
 
     /**
-     * 创建角色
+     * 设置用户角色（直接更新数据库）
      */
-    async create(data: CreateRoleInput) {
+    async setUserRole(userId: string, role: string) {
         try {
-            const existing = await prisma.systemRole.findUnique({
-                where: { name: data.name },
-            })
-
-            if (existing) {
-                throw new Error('角色标识已存在')
-            }
-
-            return await prisma.systemRole.create({
-                data: {
-                    name: data.name,
-                    label: data.label,
-                    description: data.description,
-                    isSystem: data.isSystem ?? false,
-                },
-            })
-        } catch (error) {
-            console.error('创建角色失败:', error)
-            throw error instanceof Error ? error : new Error('创建角色失败')
-        }
-    },
-
-    /**
-     * 更新角色
-     */
-    async update(id: string, data: UpdateRoleInput) {
-        try {
-            const role = await prisma.systemRole.findUnique({
-                where: { id },
-            })
-
-            if (!role) {
+            // 验证角色是否存在
+            if (!ROLES.find(r => r.name === role)) {
                 throw new Error('角色不存在')
             }
 
-            if (role.isSystem && data.name && data.name !== role.name) {
-                throw new Error('系统角色不能修改标识')
-            }
-
-            if (data.name && data.name !== role.name) {
-                const existing = await prisma.systemRole.findUnique({
-                    where: { name: data.name },
-                })
-
-                if (existing) {
-                    throw new Error('角色标识已存在')
-                }
-            }
-
-            return await prisma.systemRole.update({
-                where: { id },
-                data: {
-                    name: data.name,
-                    label: data.label,
-                    description: data.description,
-                },
+            // 直接更新用户角色
+            await prisma.user.update({
+                where: { id: userId },
+                data: { role }
             })
+
+            return { success: true as const }
         } catch (error) {
-            console.error('更新角色失败:', error)
-            throw error instanceof Error ? error : new Error('更新角色失败')
-        }
-    },
-
-    /**
-     * 删除角色
-     */
-    async delete(id: string) {
-        try {
-            const role = await prisma.systemRole.findUnique({
-                where: { id },
-            })
-
-            if (!role) {
-                throw new Error('角色不存在')
-            }
-
-            if (role.isSystem) {
-                throw new Error('系统角色不能删除')
-            }
-
-            await prisma.systemRole.delete({
-                where: { id },
-            })
-
-            return { success: true as const, id }
-        } catch (error) {
-            console.error('删除角色失败:', error)
-            throw error instanceof Error ? error : new Error('删除角色失败')
+            console.error('设置用户角色失败:', error)
+            throw error instanceof Error ? error : new Error('设置用户角色失败')
         }
     },
 
     /**
      * 为角色分配菜单组
      */
-    async assignNavGroups(roleId: string, navGroupIds: string[]) {
+    async assignNavGroups(roleName: string, navGroupIds: string[]) {
         try {
-            const role = await prisma.systemRole.findUnique({
-                where: { id: roleId },
-            })
-
-            if (!role) {
+            // 验证角色是否存在
+            if (!ROLES.find(r => r.name === roleName)) {
                 throw new Error('角色不存在')
             }
 
             return await prisma.$transaction(async (tx) => {
                 // 1. 删除原有的关联
                 await tx.roleNavGroup.deleteMany({
-                    where: { roleId },
+                    where: { role: roleName },
                 })
 
                 // 2. 创建新的关联
                 if (navGroupIds.length > 0) {
                     await tx.roleNavGroup.createMany({
                         data: navGroupIds.map((navGroupId) => ({
-                            roleId,
+                            role: roleName,
                             navGroupId,
-                            roleName: role.name,
                         })),
                     })
                 }

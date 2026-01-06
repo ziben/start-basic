@@ -116,15 +116,20 @@ export const DepartmentService = {
                 throw new Error('部门编码已存在')
             }
 
-            // 计算层级
+            // 验证并计算层级
             let level = 1
             if (data.parentId) {
                 const parent = await prisma.department.findUnique({
                     where: { id: data.parentId }
                 })
-                if (parent) {
-                    level = parent.level + 1
+                if (!parent) {
+                    throw new Error('父部门不存在')
                 }
+                // 验证父部门是否属于同一组织
+                if (parent.organizationId !== data.organizationId) {
+                    throw new Error('父部门必须属于同一组织')
+                }
+                level = parent.level + 1
             }
 
             return await prisma.department.create({
@@ -170,7 +175,7 @@ export const DepartmentService = {
                 }
             }
 
-            const updateData: any = { ...data }
+            const updateData: UpdateDepartmentInput & { level?: number } = { ...data }
             if (level !== undefined) {
                 updateData.level = level
             }
@@ -230,14 +235,25 @@ export const DepartmentService = {
         try {
             const departments = await this.getByOrganization(organizationId)
 
+            // 定义部门树节点类型
+            interface DepartmentTreeNode {
+                id: string
+                name: string
+                code: string
+                level: number
+                parentId: string | null
+                children: DepartmentTreeNode[]
+                [key: string]: unknown
+            }
+
             // 构建树形结构
-            const buildTree = (parentId: string | null = null): any[] => {
+            const buildTree = (parentId: string | null = null): DepartmentTreeNode[] => {
                 return departments
                     .filter(dept => dept.parentId === parentId)
                     .map(dept => ({
                         ...dept,
                         children: buildTree(dept.id)
-                    }))
+                    }) as DepartmentTreeNode)
             }
 
             return buildTree(null)
@@ -271,10 +287,16 @@ export const DepartmentService = {
                 return []
             }
 
-            const collectIds = (dept: any): string[] => {
+            // 定义嵌套部门类型
+            interface NestedDepartment {
+                id: string
+                children?: NestedDepartment[]
+            }
+
+            const collectIds = (dept: NestedDepartment): string[] => {
                 const ids = [dept.id]
                 if (dept.children) {
-                    dept.children.forEach((child: any) => {
+                    dept.children.forEach((child: NestedDepartment) => {
                         ids.push(...collectIds(child))
                     })
                 }

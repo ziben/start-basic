@@ -4,7 +4,7 @@ import { Header } from '@/components/layout/header'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
-import { ForbiddenError, GeneralError, MaintenanceError, NotFoundError, UnauthorisedError } from '@/modules/demo'
+import { ForbiddenError, GeneralError, MaintenanceError, NotFoundError, UnauthorisedError } from '@/shared/components/errors'
 
 export const Route = createFileRoute('/_authenticated/errors/$error')({
   component: RouteComponent,

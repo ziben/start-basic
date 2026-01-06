@@ -24,11 +24,10 @@ model User {
   sessions      Session[]
   accounts      Account[]
 
-  role            String?
-  systemRoles     SystemRole[] @relation("UserToSystemRole")
-  banned          Boolean?
-  banReason       String?
-  banExpires      DateTime?
+  role            String?  // better-auth admin 插件管理
+  banned          Boolean? // better-auth admin 插件管理
+  banReason       String?  // better-auth admin 插件管理
+  banExpires      DateTime? // better-auth admin 插件管理
   username        String?
   displayUsername String?
 
@@ -46,25 +45,9 @@ model User {
   @@unique([username])
 }
 
-// 系统角色
-model SystemRole {
-  id          String   @id @default(cuid())
-  name        String   @unique // 角色编码，如 'admin', 'user'
-  label       String   // 角色显示名称，如 '管理员', '普通用户'
-  description String?
-  isSystem    Boolean  @default(false) // 是否为系统内置角色
-  scope       String   @default("GLOBAL") // GLOBAL, ORG, DEPT - 角色作用域
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  users       User[] @relation("UserToSystemRole")
-  members     Member[] // 新增：Member 关联
-  navGroups   RoleNavGroup[]
-  permissions RolePermission[] // 新增：权限关联
-  crossOrgAccess CrossOrgAccess[] // 新增：跨组织访问
-
-  @@map("system_role")
-}
+// SystemRole 表已移除，角色由 better-auth 管理
+// User.role: 全局角色 (admin, superadmin, user)
+// Member.role: 组织角色 (owner, admin, member)
 
 // 侧边栏导航组 - 顶层分组
 model NavGroup {
@@ -109,14 +92,12 @@ model NavItem {
 // 角色与导航组关联表
 model RoleNavGroup {
   id         String   @id @default(cuid())
-  roleName   String?  // 兼容旧的字符串角色
-  roleId     String?
-  systemRole SystemRole? @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  role       String   // better-auth 角色名: 'admin', 'superadmin', 'user'
   navGroupId String
   navGroup   NavGroup @relation(fields: [navGroupId], references: [id], onDelete: Cascade)
   createdAt  DateTime @default(now())
 
-  @@unique([roleId, navGroupId])
+  @@unique([role, navGroupId])
   @@map("role_nav_group")
 }
 
@@ -204,14 +185,9 @@ model Member {
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   userId         String
   user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  role           String       // 保留：向后兼容
-  
-  // 新增：RBAC 支持
-  systemRoleId   String?
-  systemRole     SystemRole?  @relation(fields: [systemRoleId], references: [id])
+  role           String       // better-auth organization 插件管理: owner, admin, member
   departmentId   String?
   department     Department?  @relation(fields: [departmentId], references: [id])
-  
   createdAt      DateTime
 
   @@map("member")
@@ -463,7 +439,7 @@ model Permission {
 // 角色-权限关联表
 model RolePermission {
   id           String   @id @default(cuid())
-  roleId       String
+  role         String   // better-auth 角色名: 'admin', 'superadmin', 'user'
   permissionId String
   
   // 数据范围限制
@@ -478,11 +454,10 @@ model RolePermission {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   
-  role         SystemRole  @relation(fields: [roleId], references: [id], onDelete: Cascade)
   permission   Permission  @relation(fields: [permissionId], references: [id], onDelete: Cascade)
   
-  @@unique([roleId, permissionId])
-  @@index([roleId])
+  @@unique([role, permissionId])
+  @@index([role])
   @@index([permissionId])
   @@map("role_permissions")
 }
@@ -509,7 +484,7 @@ model FieldPermission {
 // 跨组织访问授权表
 model CrossOrgAccess {
   id              String   @id @default(cuid())
-  roleId          String
+  role            String   // better-auth 角色名
   sourceOrgId     String   // 源组织
   targetOrgId     String   // 目标组织
   resource        String   // 资源类型
@@ -526,9 +501,7 @@ model CrossOrgAccess {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
   
-  role            SystemRole @relation(fields: [roleId], references: [id], onDelete: Cascade)
-  
-  @@unique([roleId, sourceOrgId, targetOrgId, resource])
-  @@index([roleId])
+  @@unique([role, sourceOrgId, targetOrgId, resource])
+  @@index([role])
   @@map("cross_org_access")
 }

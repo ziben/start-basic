@@ -28,11 +28,7 @@ export async function getSidebarData(
             },
           },
         },
-        roleNavGroups: {
-          include: {
-            systemRole: true,
-          },
-        },
+        roleNavGroups: true,
         userRoleNavGroups: userId
           ? {
             where: { userId, visible: true },
@@ -48,12 +44,6 @@ export async function getSidebarData(
         select: {
           id: true,
           role: true,
-          systemRoles: {
-            select: {
-              id: true,
-              name: true
-            }
-          }
         },
       })
       : null
@@ -71,25 +61,16 @@ export async function getSidebarData(
       }
 
       // 3. 检查角色匹配
-      // 获取用户拥有的所有角色 ID
-      const userRoleIds = currentUser?.systemRoles?.map((r) => r.id) || []
-      // 获取用户拥有的所有角色名称 (包含 systemRoles 的 name, 旧的 role 字符串以及传入的 role)
-      const userRoleNames = new Set<string>()
-      currentUser?.systemRoles?.forEach((r) => userRoleNames.add(r.name))
-      if (currentUser?.role) userRoleNames.add(currentUser.role)
-      if (role) userRoleNames.add(role)
+      // 获取用户角色（支持多角色，逗号分隔）
+      const userRoles = new Set<string>()
+      if (currentUser?.role) {
+        currentUser.role.split(',').forEach(r => userRoles.add(r.trim()))
+      }
+      if (role) userRoles.add(role)
 
       return group.roleNavGroups.some((rg) => {
-        // 匹配新系统的 roleId (用户拥有的任何一个角色 ID 匹配即可)
-        if (rg.roleId && userRoleIds.includes(rg.roleId)) return true
-
-        // 匹配 roleName (兼容旧数据或动态角色名)
-        if (rg.roleName && userRoleNames.has(rg.roleName)) return true
-
-        // 匹配关联的 systemRole 的 name
-        if (rg.systemRole?.name && userRoleNames.has(rg.systemRole.name)) return true
-
-        return false
+        // 匹配角色名
+        return rg.role && userRoles.has(rg.role)
       })
     })
 

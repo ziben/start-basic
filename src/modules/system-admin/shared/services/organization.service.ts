@@ -18,7 +18,7 @@ export interface CreateOrganizationInput {
     name: string
     slug?: string
     logo?: string
-    metadata?: Record<string, unknown>
+    metadata?: string
 }
 
 export interface UpdateOrganizationInput {
