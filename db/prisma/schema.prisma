@@ -3,8 +3,8 @@ datasource db {
 }
 
 generator client {
-  provider = "prisma-client"
-  output   = "../../src/generated/prisma"
+  provider   = "prisma-client"
+  output     = "../../src/generated/prisma"
   engineType = "client"
 }
 
@@ -14,25 +14,27 @@ enum SidebarScope {
 }
 
 model User {
-  id            String    @id
-  name          String
-  email         String
-  emailVerified Boolean
-  image         String?
-  createdAt     DateTime
-  updatedAt     DateTime
-  sessions      Session[]
-  accounts      Account[]
-
-  role            String?  // better-auth admin 插件管理
-  banned          Boolean? // better-auth admin 插件管理
-  banReason       String?  // better-auth admin 插件管理
-  banExpires      DateTime? // better-auth admin 插件管理
+  id              String   @id
+  name            String
+  email           String
+  emailVerified   Boolean  @default(false)
+  image           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
   username        String?
   displayUsername String?
 
+  sessions Session[]
+  accounts Account[]
+
+  role       String? // better-auth admin 插件管理
+  banned     Boolean?  @default(false) // better-auth admin 插件管理
+  banReason  String? // better-auth admin 插件管理
+  banExpires DateTime? // better-auth admin 插件管理
+
   members     Member[]
   invitations Invitation[]
+  teammembers TeamMember[] // better-auth teams 插件
 
   // 角色与侧边栏的关联
   roleNavGroups UserRoleNavGroup[]
@@ -41,8 +43,8 @@ model User {
   auditLogs  AuditLog[]  @relation("UserAuditLogs")
 
   @@unique([email])
-  @@map("user")
   @@unique([username])
+  @@map("user")
 }
 
 // SystemRole 表已移除，角色由 better-auth 管理
@@ -51,16 +53,16 @@ model User {
 
 // 侧边栏导航组 - 顶层分组
 model NavGroup {
-  id          String   @id @default(cuid())
-  title       String   // 分组标题
-  scope       SidebarScope @default(APP) // 导航作用域：APP(用户侧)/ADMIN(管理侧)
-  orderIndex  Int      // 排序索引
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id         String       @id @default(cuid())
+  title      String // 分组标题
+  scope      SidebarScope @default(APP) // 导航作用域：APP(用户侧)/ADMIN(管理侧)
+  orderIndex Int // 排序索引
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
 
   // 关联 
-  navItems    NavItem[]        // 导航项
-  roleNavGroups RoleNavGroup[] // 关联角色
+  navItems          NavItem[] // 导航项
+  roleNavGroups     RoleNavGroup[] // 关联角色
   userRoleNavGroups UserRoleNavGroup[] // 用户角色关联
 
   @@map("nav_group")
@@ -68,23 +70,23 @@ model NavGroup {
 
 // 导航项 - 可以是链接或子菜单
 model NavItem {
-  id          String   @id @default(cuid())
-  title       String   // 菜单项标题
-  url         String?  // 链接地址，如为子菜单则为null
-  icon        String?  // 图标名称
-  badge       String?  // 徽章内容
-  orderIndex  Int      // 排序索引
-  isCollapsible Boolean @default(false) // 是否为可折叠菜单
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id            String   @id @default(cuid())
+  title         String // 菜单项标题
+  url           String? // 链接地址，如为子菜单则为null
+  icon          String? // 图标名称
+  badge         String? // 徽章内容
+  orderIndex    Int // 排序索引
+  isCollapsible Boolean  @default(false) // 是否为可折叠菜单
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   // 关联
-  navGroupId  String?   // 父导航组ID
-  navGroup    NavGroup? @relation(fields: [navGroupId], references: [id], onDelete: Cascade)
-  
-  parentId    String?   // 父级菜单项ID，用于子菜单
-  parent      NavItem?  @relation("NavItemToNavItem", fields: [parentId], references: [id], onDelete: Cascade)
-  children    NavItem[] @relation("NavItemToNavItem")
+  navGroupId String? // 父导航组ID
+  navGroup   NavGroup? @relation(fields: [navGroupId], references: [id], onDelete: Cascade)
+
+  parentId String? // 父级菜单项ID，用于子菜单
+  parent   NavItem?  @relation("NavItemToNavItem", fields: [parentId], references: [id], onDelete: Cascade)
+  children NavItem[] @relation("NavItemToNavItem")
 
   @@map("nav_item")
 }
@@ -92,7 +94,7 @@ model NavItem {
 // 角色与导航组关联表
 model RoleNavGroup {
   id         String   @id @default(cuid())
-  role       String   // better-auth 角色名: 'admin', 'superadmin', 'user'
+  role       String // better-auth 角色名: 'admin', 'superadmin', 'user'
   navGroupId String
   navGroup   NavGroup @relation(fields: [navGroupId], references: [id], onDelete: Cascade)
   createdAt  DateTime @default(now())
@@ -119,8 +121,8 @@ model Session {
   id        String   @id
   expiresAt DateTime
   token     String
-  createdAt DateTime
-  updatedAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   ipAddress String?
   userAgent String?
   userId    String
@@ -129,8 +131,10 @@ model Session {
   impersonatedBy String?
 
   activeOrganizationId String?
+  activeTeamId         String? // better-auth teams 插件
 
   @@unique([token])
+  @@index([userId])
   @@map("session")
 }
 
@@ -147,36 +151,85 @@ model Account {
   refreshTokenExpiresAt DateTime?
   scope                 String?
   password              String?
-  createdAt             DateTime
-  updatedAt             DateTime
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
 
+  @@index([userId])
   @@map("account")
 }
 
 model Verification {
-  id         String    @id
+  id         String   @id
   identifier String
   value      String
   expiresAt  DateTime
-  createdAt  DateTime?
-  updatedAt  DateTime?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
+  @@index([identifier])
   @@map("verification")
 }
 
 model Organization {
-  id          String       @id
-  name        String
-  slug        String?
-  logo        String?
-  createdAt   DateTime
-  metadata    String?
-  members     Member[]
-  invitations Invitation[]
-  departments Department[] // 新增：部门关联
+  id                String             @id
+  name              String
+  slug              String?
+  logo              String?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime?          @updatedAt
+  metadata          String?
+  members           Member[]
+  invitations       Invitation[]
+  departments       Department[] // 新增：部门关联
+  organizationroles OrganizationRole[] // better-auth dynamicAccessControl
+  teams             Team[] // better-auth teams 插件
 
   @@unique([slug])
   @@map("organization")
+}
+
+// better-auth dynamicAccessControl - 组织角色权限
+model OrganizationRole {
+  id             String       @id
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  role           String
+  permission     String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime?    @updatedAt
+
+  @@index([organizationId])
+  @@index([role])
+  @@map("organizationRole")
+}
+
+// better-auth teams 插件 - 团队
+model Team {
+  id             String       @id
+  name           String
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdAt      DateTime
+  updatedAt      DateTime?    @updatedAt
+  teammembers    TeamMember[]
+  invitations    Invitation[]
+
+  @@index([organizationId])
+  @@map("team")
+}
+
+// better-auth teams 插件 - 团队成员
+model TeamMember {
+  id        String    @id
+  teamId    String
+  team      Team      @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime?
+
+  @@index([teamId])
+  @@index([userId])
+  @@map("teamMember")
 }
 
 model Member {
@@ -185,7 +238,7 @@ model Member {
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   userId         String
   user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  role           String       // better-auth organization 插件管理: owner, admin, member
+  role           String // better-auth organization 插件管理: owner, admin, member
   departmentId   String?
   department     Department?  @relation(fields: [departmentId], references: [id])
   createdAt      DateTime
@@ -199,8 +252,11 @@ model Invitation {
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   email          String
   role           String?
+  teamId         String?
+  team           Team?        @relation(fields: [teamId], references: [id], onDelete: Cascade)
   status         String
   expiresAt      DateTime
+  createdAt      DateTime     @default(now())
   inviterId      String
   user           User         @relation(fields: [inviterId], references: [id], onDelete: Cascade)
 
@@ -210,9 +266,9 @@ model Invitation {
 // 可选：翻译存储表（用于运行时从数据库加载本地化文本）
 model Translation {
   id        String   @id @default(cuid())
-  locale    String   // e.g. 'en' or 'zh'
-  key       String   // message key, e.g. 'admin.navgroup.table.title'
-  value     String   // translated text
+  locale    String // e.g. 'en' or 'zh'
+  key       String // message key, e.g. 'admin.navgroup.table.title'
+  value     String // translated text
   createdAt DateTime @default(now())
 
   @@unique([locale, key])
@@ -220,27 +276,27 @@ model Translation {
 }
 
 model SystemLog {
-  id          String   @id @default(cuid())
-  createdAt   DateTime @default(now())
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
 
-  level       String   @default("info")
-  requestId   String?
+  level     String  @default("info")
+  requestId String?
 
-  method      String
-  path        String
-  query       String?
-  status      Int
-  durationMs  Int
+  method     String
+  path       String
+  query      String?
+  status     Int
+  durationMs Int
 
-  ip          String?
-  userAgent   String?
+  ip        String?
+  userAgent String?
 
-  userId      String?
-  user        User?    @relation("UserSystemLogs", fields: [userId], references: [id], onDelete: SetNull)
-  userRole    String?
+  userId   String?
+  user     User?   @relation("UserSystemLogs", fields: [userId], references: [id], onDelete: SetNull)
+  userRole String?
 
-  error       String?
-  meta        Json?
+  error String?
+  meta  Json?
 
   @@index([createdAt])
   @@index([method, path])
@@ -249,22 +305,22 @@ model SystemLog {
 }
 
 model AuditLog {
-  id          String   @id @default(cuid())
-  createdAt   DateTime @default(now())
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
 
   actorUserId String?
-  actorUser   User?    @relation("UserAuditLogs", fields: [actorUserId], references: [id], onDelete: SetNull)
+  actorUser   User?   @relation("UserAuditLogs", fields: [actorUserId], references: [id], onDelete: SetNull)
   actorRole   String?
 
-  action      String
-  targetType  String
-  targetId    String?
+  action     String
+  targetType String
+  targetId   String?
 
-  ip          String?
-  userAgent   String?
-  success     Boolean  @default(true)
-  message     String?
-  meta        Json?
+  ip        String?
+  userAgent String?
+  success   Boolean @default(true)
+  message   String?
+  meta      Json?
 
   @@index([createdAt])
   @@index([actorUserId])
@@ -276,56 +332,56 @@ model AuditLog {
 
 // 题目分类 - 树形结构
 model Category {
-  id          String   @id @default(cuid())
+  id          String  @id @default(cuid())
   name        String
   description String?
-  orderIndex  Int      @default(0)
-  depth       Int      @default(0)
-  
-  parentId    String?
-  parent      Category?  @relation("CategoryToCategory", fields: [parentId], references: [id], onDelete: SetNull)
-  children    Category[] @relation("CategoryToCategory")
+  orderIndex  Int     @default(0)
+  depth       Int     @default(0)
 
-  questions   Question[]
+  parentId String?
+  parent   Category?  @relation("CategoryToCategory", fields: [parentId], references: [id], onDelete: SetNull)
+  children Category[] @relation("CategoryToCategory")
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  questions Question[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("qb_category")
 }
 
 // 标签
 model Tag {
-  id          String   @id @default(cuid())
-  name        String   @unique
-  color       String?  // 标签颜色
-  
-  questions   QuestionTag[]
+  id    String  @id @default(cuid())
+  name  String  @unique
+  color String? // 标签颜色
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  questions QuestionTag[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("qb_tag")
 }
 
 // 题目
 model Question {
-  id          String   @id @default(cuid())
-  type        String   // single, multiple, true_false, fill_in, essay
-  content     String   // 题目内容 (Markdown)
-  options     Json?    // 选项 (数组或对象)
-  answer      Json     // 答案
-  explanation String?  // 解析 (Markdown)
-  difficulty  Int      @default(1) // 1-5 难度
-  
-  categoryId  String?
-  category    Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
-  
-  tags        QuestionTag[]
-  attempts    PracticeAttempt[]
+  id          String  @id @default(cuid())
+  type        String // single, multiple, true_false, fill_in, essay
+  content     String // 题目内容 (Markdown)
+  options     Json? // 选项 (数组或对象)
+  answer      Json // 答案
+  explanation String? // 解析 (Markdown)
+  difficulty  Int     @default(1) // 1-5 难度
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  categoryId String?
+  category   Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  tags     QuestionTag[]
+  attempts PracticeAttempt[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("qb_question")
 }
@@ -343,38 +399,38 @@ model QuestionTag {
 
 // 练习会话
 model PracticeSession {
-  id          String   @id @default(cuid())
-  userId      String
-  type        String   // random, category, daily
-  status      String   @default("active") // active, finished
-  
-  startTime   DateTime @default(now())
-  endTime     DateTime?
-  
-  totalCount  Int      @default(0)
-  correctCount Int     @default(0)
-  
-  attempts    PracticeAttempt[]
+  id     String @id @default(cuid())
+  userId String
+  type   String // random, category, daily
+  status String @default("active") // active, finished
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  startTime DateTime  @default(now())
+  endTime   DateTime?
+
+  totalCount   Int @default(0)
+  correctCount Int @default(0)
+
+  attempts PracticeAttempt[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("qb_practice_session")
 }
 
 // 练习答题记录
 model PracticeAttempt {
-  id          String   @id @default(cuid())
-  sessionId   String
-  session     PracticeSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-  questionId  String
-  question    Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
-  
-  userAnswer  Json
-  isCorrect   Boolean
-  durationMs  Int?     // 答题耗时
-  
-  createdAt   DateTime @default(now())
+  id         String          @id @default(cuid())
+  sessionId  String
+  session    PracticeSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  questionId String
+  question   Question        @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  userAnswer Json
+  isCorrect  Boolean
+  durationMs Int? // 答题耗时
+
+  createdAt DateTime @default(now())
 
   @@map("qb_practice_attempt")
 }
@@ -383,32 +439,32 @@ model PracticeAttempt {
 
 // 部门表（组织内部层级结构）
 model Department {
-  id             String   @id @default(cuid())
-  name           String   // 部门名称
-  code           String   // 部门编码
-  
+  id   String @id @default(cuid())
+  name String // 部门名称
+  code String // 部门编码
+
   // 所属组织
   organizationId String
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  
+
   // 树形结构
-  parentId       String?
-  parent         Department?  @relation("DepartmentTree", fields: [parentId], references: [id])
-  children       Department[] @relation("DepartmentTree")
-  
-  level          Int      @default(1) // 层级
-  sort           Int      @default(0) // 排序
-  leader         String?  // 负责人
-  phone          String?
-  email          String?
-  status         String   @default("ACTIVE") // ACTIVE, INACTIVE
-  
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  
+  parentId String?
+  parent   Department?  @relation("DepartmentTree", fields: [parentId], references: [id])
+  children Department[] @relation("DepartmentTree")
+
+  level  Int     @default(1) // 层级
+  sort   Int     @default(0) // 排序
+  leader String? // 负责人
+  phone  String?
+  email  String?
+  status String  @default("ACTIVE") // ACTIVE, INACTIVE
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   // 关联
-  members        Member[]
-  
+  members Member[]
+
   @@unique([organizationId, code])
   @@index([organizationId])
   @@index([parentId])
@@ -417,45 +473,45 @@ model Department {
 
 // 权限表
 model Permission {
-  id          String   @id @default(cuid())
-  name        String   @unique // 例如: user:create
-  label       String   // 显示名称: 创建用户
-  description String?  // 描述
-  resource    String   // 资源: user
-  action      String   // 操作: create
-  category    String?  // 分类: 用户管理
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
+  id          String  @id @default(cuid())
+  name        String  @unique // 例如: user:create
+  label       String // 显示名称: 创建用户
+  description String? // 描述
+  resource    String // 资源: user
+  action      String // 操作: create
+  category    String? // 分类: 用户管理
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   // 关联
   rolePermissions  RolePermission[]
   fieldPermissions FieldPermission[]
-  
+
   @@index([resource, action])
   @@map("permissions")
 }
 
 // 角色-权限关联表
 model RolePermission {
-  id           String   @id @default(cuid())
-  role         String   // better-auth 角色名: 'admin', 'superadmin', 'user'
+  id           String @id @default(cuid())
+  role         String // better-auth 角色名: 'admin', 'superadmin', 'user'
   permissionId String
-  
+
   // 数据范围限制
-  dataScope    String   @default("ALL") // ALL, ORG, DEPT, DEPT_AND_SUB, SELF
-  customScope  Json?    // 自定义范围条件
-  
+  dataScope   String @default("ALL") // ALL, ORG, DEPT, DEPT_AND_SUB, SELF
+  customScope Json? // 自定义范围条件
+
   // 时间限制
-  validFrom    DateTime? // 生效时间
-  validUntil   DateTime? // 失效时间
-  timeRanges   Json?     // 时间段限制 [{day: 1-7, start: "09:00", end: "18:00"}]
-  
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  
-  permission   Permission  @relation(fields: [permissionId], references: [id], onDelete: Cascade)
-  
+  validFrom  DateTime? // 生效时间
+  validUntil DateTime? // 失效时间
+  timeRanges Json? // 时间段限制 [{day: 1-7, start: "09:00", end: "18:00"}]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
   @@unique([role, permissionId])
   @@index([role])
   @@index([permissionId])
@@ -464,18 +520,18 @@ model RolePermission {
 
 // 字段级权限表
 model FieldPermission {
-  id           String   @id @default(cuid())
+  id           String @id @default(cuid())
   permissionId String
-  resource     String   // 资源: user
-  field        String   // 字段: salary, phone
-  access       String   // READ, WRITE, HIDDEN
-  condition    Json?    // 条件: {role: 'admin'}
-  
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  
-  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
-  
+  resource     String // 资源: user
+  field        String // 字段: salary, phone
+  access       String // READ, WRITE, HIDDEN
+  condition    Json? // 条件: {role: 'admin'}
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
   @@unique([permissionId, resource, field])
   @@index([resource, field])
   @@map("field_permissions")
@@ -483,24 +539,24 @@ model FieldPermission {
 
 // 跨组织访问授权表
 model CrossOrgAccess {
-  id              String   @id @default(cuid())
-  role            String   // better-auth 角色名
-  sourceOrgId     String   // 源组织
-  targetOrgId     String   // 目标组织
-  resource        String   // 资源类型
-  accessLevel     String   // READ, WRITE, FULL
-  
+  id          String @id @default(cuid())
+  role        String // better-auth 角色名
+  sourceOrgId String // 源组织
+  targetOrgId String // 目标组织
+  resource    String // 资源类型
+  accessLevel String // READ, WRITE, FULL
+
   // 可选：部门级别限制
-  sourceDeptId    String?
-  targetDeptId    String?
-  
+  sourceDeptId String?
+  targetDeptId String?
+
   // 时间限制
-  validFrom       DateTime?
-  validUntil      DateTime?
-  
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  
+  validFrom  DateTime?
+  validUntil DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@unique([role, sourceOrgId, targetOrgId, resource])
   @@index([role])
   @@map("cross_org_access")

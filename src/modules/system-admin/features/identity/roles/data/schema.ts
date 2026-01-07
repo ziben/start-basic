@@ -23,6 +23,15 @@ export type Role = z.infer<typeof roleSchema>
 export type RoleList = z.infer<typeof roleListSchema>
 export type RolePageData = z.infer<typeof rolePageSchema>
 
+// 创建/更新角色的schema
+export const createRoleSchema = z.object({
+  name: z.string().min(1, '角色编码不能为空'),
+  label: z.string().min(1, '显示名称不能为空'),
+  description: z.string().optional().default(''),
+})
+
+export type CreateRoleData = z.infer<typeof createRoleSchema>
+
 // 保留兼容性
 export type SystemRole = Role
 export type SystemRoleList = RoleList

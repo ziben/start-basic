@@ -26,9 +26,12 @@ const UpdateRoleSchema = z.object({
     description: z.string().nullable().optional(),
 })
 
-// ============ 认证辅助函数 ============
+// ============ 认证辅助函数 - 使用动态导入避免客户端打包问题 ============
 
-import { requireAdmin } from './auth'
+async function getRequireAdmin() {
+    const { requireAdmin } = await import('./auth')
+    return requireAdmin
+}
 
 // ============ ServerFn 定义 ============
 
@@ -38,6 +41,7 @@ import { requireAdmin } from './auth'
 export const getRolesFn = createServerFn({ method: 'GET' })
     .inputValidator((data?: z.infer<typeof ListRolesSchema>) => data ? ListRolesSchema.parse(data) : {})
     .handler(async ({ data }: { data: z.infer<typeof ListRolesSchema> }) => {
+        const requireAdmin = await getRequireAdmin()
         await requireAdmin('ListRoles')
         const { RoleService } = await import('../services/role.service')
         return RoleService.getList(data)
@@ -48,6 +52,7 @@ export const getRolesFn = createServerFn({ method: 'GET' })
  */
 export const getAllRolesFn = createServerFn({ method: 'GET' })
     .handler(async () => {
+        const requireAdmin = await getRequireAdmin()
         await requireAdmin('ListAllRoles')
         const { RoleService } = await import('../services/role.service')
         return RoleService.getAll()
@@ -62,6 +67,7 @@ export const getRoleFn = createServerFn({ method: 'GET' })
         return data
     })
     .handler(async ({ data }: { data: { id: string } }) => {
+        const requireAdmin = await getRequireAdmin()
         await requireAdmin('GetRoleDetail')
         const { RoleService } = await import('../services/role.service')
         return RoleService.getById(data.id)
@@ -73,6 +79,7 @@ export const getRoleFn = createServerFn({ method: 'GET' })
 export const createRoleFn = createServerFn({ method: 'POST' })
     .inputValidator((data: z.infer<typeof CreateRoleSchema>) => CreateRoleSchema.parse(data))
     .handler(async ({ data }: { data: z.infer<typeof CreateRoleSchema> }) => {
+        const requireAdmin = await getRequireAdmin()
         await requireAdmin('CreateRole')
         const { RoleService } = await import('../services/role.service')
         return RoleService.create(data)
@@ -84,6 +91,7 @@ export const createRoleFn = createServerFn({ method: 'POST' })
 export const updateRoleFn = createServerFn({ method: 'POST' })
     .inputValidator((data: z.infer<typeof UpdateRoleSchema>) => UpdateRoleSchema.parse(data))
     .handler(async ({ data }: { data: z.infer<typeof UpdateRoleSchema> }) => {
+        const requireAdmin = await getRequireAdmin()
         await requireAdmin('UpdateRole')
         const { RoleService } = await import('../services/role.service')
         const { id, ...updateData } = data
@@ -99,6 +107,7 @@ export const deleteRoleFn = createServerFn({ method: 'POST' })
         return data
     })
     .handler(async ({ data }: { data: { id: string } }) => {
+        const requireAdmin = await getRequireAdmin()
         await requireAdmin('DeleteRole')
         const { RoleService } = await import('../services/role.service')
         return RoleService.delete(data.id)
@@ -114,6 +123,7 @@ export const assignRoleNavGroupsFn = createServerFn({ method: 'POST' })
         return data
     })
     .handler(async ({ data }: { data: { id: string; navGroupIds: string[] } }) => {
+        const requireAdmin = await getRequireAdmin()
         await requireAdmin('AssignRoleNavGroups')
         const { RoleService } = await import('../services/role.service')
         return RoleService.assignNavGroups(data.id, data.navGroupIds)

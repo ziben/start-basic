@@ -27,9 +27,6 @@ export default defineConfig({
     tailwindcss(),
     tanstackStart({
       customViteReactPlugin: true,
-      server: {
-        preset: 'node-server',
-      },
     }),
     viteReact(),
   ],
@@ -44,17 +41,6 @@ export default defineConfig({
         replacement: SRC_DIR,
       },
     ],
-  },
-  ssr: {
-    noExternal: ['@tanstack/react-start'],
-  },
-  optimizeDeps: {
-    exclude: ['@prisma/client', '.prisma/client'],
-  },
-  build: {
-    rollupOptions: {
-      external: ['@prisma/client', '.prisma/client'],
-    },
   },
   test: {
     environment: 'jsdom',
