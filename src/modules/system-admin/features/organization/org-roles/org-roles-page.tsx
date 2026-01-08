@@ -3,7 +3,7 @@
  */
 
 import { useOrgRoles } from '~/modules/system-admin/shared/hooks/use-org-role-api'
-import { useSession } from '~/modules/identity/shared/hooks/use-session'
+import { useAuth } from '~/modules/identity/shared/hooks/use-auth'
 import { OrgRolesTable } from './components/org-roles-table'
 import { OrgRolesDialogs } from './components/org-roles-dialogs'
 import { OrgRolesProvider } from './components/org-roles-provider'
@@ -12,8 +12,8 @@ import { Button } from '@/components/ui/button'
 import { Plus, Shield } from 'lucide-react'
 
 export function OrgRolesPage() {
-    const { session } = useSession()
-    const organizationId = session?.session?.activeOrganizationId
+    const { data: sessionData } = useAuth()
+    const organizationId = sessionData?.session?.activeOrganizationId
 
     const { data: roles, isLoading } = useOrgRoles(organizationId || '')
 

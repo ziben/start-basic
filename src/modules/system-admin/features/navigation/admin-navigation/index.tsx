@@ -1,7 +1,7 @@
 import { useNavgroups } from '~/modules/system-admin/shared/hooks/use-navgroup-api'
 import { useNavitems } from '~/modules/system-admin/shared/hooks/use-navitem-api'
 import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
-import { Route as NavigationRoute } from '~/routes/admin/navigation'
+import { Route as NavigationRoute } from '~/routes/_authenticated/admin/navigation'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
