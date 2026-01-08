@@ -471,16 +471,102 @@ model Department {
   @@map("departments")
 }
 
-// 权限表
-model Permission {
-  id          String  @id @default(cuid())
-  name        String  @unique // 例如: user:create
-  label       String // 显示名称: 创建用户
-  description String? // 描述
-  resource    String // 资源: user
-  action      String // 操作: create
-  category    String? // 分类: 用户管理
+// ============================================
+// 统一权限管理系统
+// ============================================
 
+// 角色作用域枚举
+enum RoleScope {
+  GLOBAL       // 全局角色（superadmin, admin, user）
+  ORGANIZATION // 组织角色（owner, admin, member, viewer）
+  CUSTOM       // 自定义扩展角色
+}
+
+// 资源作用域枚举
+enum ResourceScope {
+  GLOBAL       // 全局资源
+  ORGANIZATION // 组织资源
+  BOTH         // 两者都支持
+}
+
+// 角色表（统一管理全局角色、组织角色模板、自定义角色）
+model Role {
+  id          String    @id @default(cuid())
+  name        String    @unique // 角色名称：superadmin, admin, user, owner, content-editor
+  displayName String // 显示名称：超级管理员、管理员、内容编辑
+  description String? // 角色描述
+  scope       RoleScope // 角色作用域
+  isSystem    Boolean   @default(false) // 是否系统内置（不可删除）
+  isActive    Boolean   @default(true) // 是否启用
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // 关联
+  rolePermissions RolePermission[]
+
+  @@index([scope])
+  @@index([isSystem])
+  @@index([isActive])
+  @@map("roles")
+}
+
+// 资源表（定义系统中的所有资源）
+model Resource {
+  id          String        @id @default(cuid())
+  name        String        @unique // 资源名称：user, org, project, document
+  displayName String // 显示名称：用户、组织、项目、文档
+  description String? // 资源描述
+  scope       ResourceScope // 资源作用域
+  isSystem    Boolean       @default(false) // 是否系统内置
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // 关联
+  actions     Action[]
+  permissions Permission[]
+
+  @@index([scope])
+  @@index([isSystem])
+  @@map("resources")
+}
+
+// 操作表（定义资源上的操作）
+model Action {
+  id          String   @id @default(cuid())
+  resourceId  String // 所属资源
+  resource    Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  name        String // 操作名称：create, read, update, delete, manage
+  displayName String // 显示名称：创建、查看、更新、删除、管理
+  description String? // 操作描述
+  isSystem    Boolean  @default(false) // 是否系统内置
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // 关联
+  permissions Permission[]
+
+  @@unique([resourceId, name])
+  @@index([resourceId])
+  @@index([isSystem])
+  @@map("actions")
+}
+
+// 权限表（资源-操作组合，合并细粒度权限）
+model Permission {
+  id          String   @id @default(cuid())
+  resourceId  String // 资源
+  resource    Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  actionId    String // 操作
+  action      Action   @relation(fields: [actionId], references: [id], onDelete: Cascade)
+  code        String   @unique // 权限代码：user:create, org:read, project:update
+  displayName String // 显示名称：创建用户、查看组织
+  description String? // 权限描述
+  category    String? // 分类：用户管理、组织管理
+  isSystem    Boolean  @default(false) // 是否系统内置
+  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -488,18 +574,24 @@ model Permission {
   rolePermissions  RolePermission[]
   fieldPermissions FieldPermission[]
 
-  @@index([resource, action])
+  @@unique([resourceId, actionId])
+  @@index([code])
+  @@index([resourceId])
+  @@index([actionId])
+  @@index([isSystem])
   @@map("permissions")
 }
 
-// 角色-权限关联表
+// 角色-权限关联表（持久化角色和权限的关系）
 model RolePermission {
-  id           String @id @default(cuid())
-  role         String // better-auth 角色名: 'admin', 'superadmin', 'user'
-  permissionId String
+  id           String     @id @default(cuid())
+  roleId       String // 角色 ID
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permissionId String // 权限 ID
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
 
   // 数据范围限制
-  dataScope   String @default("ALL") // ALL, ORG, DEPT, DEPT_AND_SUB, SELF
+  dataScope   String    @default("ALL") // ALL, ORG, DEPT, DEPT_AND_SUB, SELF
   customScope Json? // 自定义范围条件
 
   // 时间限制
@@ -510,10 +602,8 @@ model RolePermission {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
-
-  @@unique([role, permissionId])
-  @@index([role])
+  @@unique([roleId, permissionId])
+  @@index([roleId])
   @@index([permissionId])
   @@map("role_permissions")
 }

@@ -4,7 +4,7 @@ import { PrismaClient } from '../../src/generated/prisma/client'
 import en from '../../src/i18n/locales/en'
 import zh from '../../src/i18n/locales/zh'
 
-const DATABASE_URL = process.env.DATABASE_URL ?? 'file:./prisma/dev.db'
+const DATABASE_URL = process.env.DATABASE_URL ?? 'file:./db/dev.db'
 const adapter = new PrismaLibSql({ url: DATABASE_URL })
 const prisma = new PrismaClient({ adapter })
 
@@ -26,22 +26,7 @@ async function seed() {
   try {
     console.log('Starting seed...')
 
-    // 1. Seed Roles
-    console.log('Seeding roles...')
-    const roles = [
-      { name: 'admin', label: '管理员', isSystem: true, description: '系统超级管理员' },
-      { name: 'user', label: '普通用户', isSystem: true, description: '普通注册用户' },
-    ]
-
-    for (const role of roles) {
-      await prisma.systemRole.upsert({
-        where: { name: role.name },
-        update: { label: role.label, isSystem: role.isSystem, description: role.description },
-        create: role,
-      })
-    }
-
-    // 2. Seed Translations
+    // 1. Seed Translations
     console.log('Seeding translations...')
     const enFlat = flatten(en)
     const zhFlat = flatten(zh)
@@ -87,74 +72,92 @@ async function seed() {
 
     console.log(`Translations complete. inserted=${inserted}, updated=${updated}`)
 
-    // 3. Initialize Admin User
+    // 2. Initialize Admin User
     console.log('Seeding admin user...')
     const adminEmail = 'admin@example.com'
-    const adminRole = await prisma.systemRole.findUnique({ where: { name: 'admin' } })
-
-    if (adminRole) {
-      const adminUser = await prisma.user.upsert({
-        where: { email: adminEmail },
-        update: {
-          systemRoles: {
-            set: [{ id: adminRole.id }]
-          },
-          role: 'admin'
-        },
-        create: {
-          id: 'admin-user-id',
-          name: 'Admin',
-          email: adminEmail,
-          emailVerified: true,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          role: 'admin',
-          systemRoles: {
-            connect: [{ id: adminRole.id }]
-          }
+    const adminPassword = 'admin123' // 默认密码
+    
+    // 使用 better-auth 的密码哈希
+    const { hashPassword } = await import('better-auth/crypto')
+    const hashedPassword = await hashPassword(adminPassword)
+    
+    const adminUser = await prisma.user.upsert({
+      where: { email: adminEmail },
+      update: {
+        role: 'admin'
+      },
+      create: {
+        id: 'admin-user-id',
+        name: 'Admin',
+        email: adminEmail,
+        emailVerified: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        role: 'admin',
+      }
+    })
+    
+    // 创建密码凭证账户
+    const existingAccount = await prisma.account.findFirst({
+      where: {
+        userId: adminUser.id,
+        providerId: 'credential',
+      }
+    })
+    
+    if (existingAccount) {
+      await prisma.account.update({
+        where: { id: existingAccount.id },
+        data: { password: hashedPassword }
+      })
+    } else {
+      await prisma.account.create({
+        data: {
+          id: 'admin-account-id',
+          userId: adminUser.id,
+          accountId: adminEmail,
+          providerId: 'credential',
+          password: hashedPassword,
         }
       })
-      console.log(`Admin user ${adminEmail} initialized and linked to admin role.`)
     }
+    
+    console.log(`Admin user ${adminEmail} initialized with password: ${adminPassword}`)
 
-    // 4. Initialize Sidebar Data (Simplified version for seed)
+    // 3. Initialize Sidebar Data
     console.log('Seeding sidebar data...')
     const navGroupCount = await prisma.navGroup.count()
     if (navGroupCount === 0) {
-      // Create a default admin group
-      const adminRole = await prisma.systemRole.findUnique({ where: { name: 'admin' } })
-      if (adminRole) {
-        const dashboardGroup = await prisma.navGroup.create({
-          data: {
-            title: 'Dashboard',
-            scope: 'ADMIN',
-            orderIndex: 0,
-            roleNavGroups: {
-              create: [{ roleId: adminRole.id }],
-            },
-            navItems: {
-              create: [
-                {
-                  title: 'Overview',
-                  url: '/admin',
-                  orderIndex: 0,
-                },
-                {
-                  title: 'Users',
-                  url: '/admin/users',
-                  orderIndex: 1,
-                },
-                {
-                  title: 'Roles',
-                  url: '/admin/roles',
-                  orderIndex: 2,
-                },
-              ],
-            },
+      await prisma.navGroup.create({
+        data: {
+          title: 'Dashboard',
+          scope: 'ADMIN',
+          orderIndex: 0,
+          roleNavGroups: {
+            create: [{ role: 'admin' }],
           },
-        })
-        console.log('Default admin sidebar group created.')
-      }
+          navItems: {
+            create: [
+              {
+                title: 'Overview',
+                url: '/admin',
+                orderIndex: 0,
+              },
+              {
+                title: 'Users',
+                url: '/admin/users',
+                orderIndex: 1,
+              },
+              {
+                title: 'Roles',
+                url: '/admin/roles',
+                orderIndex: 2,
+              },
+            ],
+          },
+        },
+      })
+      console.log('Default admin sidebar group created.')
     }
 
     console.log('Seed complete successfully.')

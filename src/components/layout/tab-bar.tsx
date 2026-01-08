@@ -45,7 +45,7 @@ function SortableTab({ tab, isActive, onActivate, onClose, onCloseOthers }: Sort
         opacity: isDragging ? 0.5 : 1,
     }
 
-    const Icon = tab.icon
+    const Icon = typeof tab.icon === 'string' ? null : tab.icon
 
     return (
         <DropdownMenu>

@@ -1,6 +1,5 @@
 import { z } from 'zod'
 import { createFileRoute } from '@tanstack/react-router'
-import prisma from '@/shared/lib/db'
 import { withAdminAuth } from '~/middleware'
 
 const createTagSchema = z.object({
@@ -12,6 +11,7 @@ export const Route = createFileRoute('/api/question-bank/tags/' as any)({
   server: {
     handlers: {
       GET: withAdminAuth(async () => {
+        const prisma = (await import('@/shared/lib/db')).default
         const tags = await prisma.tag.findMany({
           orderBy: { name: 'asc' },
         })
@@ -19,6 +19,7 @@ export const Route = createFileRoute('/api/question-bank/tags/' as any)({
       }),
 
       POST: withAdminAuth(async ({ request }) => {
+        const prisma = (await import('@/shared/lib/db')).default
         const body = await request.json()
         const parsed = createTagSchema.parse(body)
 

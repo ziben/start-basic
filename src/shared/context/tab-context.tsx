@@ -15,7 +15,15 @@ export function TabProvider({ children }: { children: React.ReactNode }) {
     const [tabs, setTabs] = useState<Tab[]>(() => {
         try {
             const stored = localStorage.getItem(STORAGE_KEY)
-            return stored ? JSON.parse(stored) : []
+            if (stored) {
+                const parsed = JSON.parse(stored)
+                // 移除序列化后的 icon，因为 React 组件无法序列化
+                return parsed.map((tab: Tab) => ({
+                    ...tab,
+                    icon: undefined,
+                }))
+            }
+            return []
         } catch {
             return []
         }
@@ -42,7 +50,9 @@ export function TabProvider({ children }: { children: React.ReactNode }) {
     // 持久化 tabs 到 localStorage
     useEffect(() => {
         try {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(tabs))
+            // 移除 icon 属性再保存，因为 React 组件无法序列化
+            const tabsToSave = tabs.map(({ icon: _icon, ...rest }) => rest)
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(tabsToSave))
         } catch (error) {
             console.error('Failed to save tabs to localStorage:', error)
         }

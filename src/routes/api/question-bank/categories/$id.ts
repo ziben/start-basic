@@ -1,6 +1,5 @@
 import { z } from 'zod'
 import { createFileRoute } from '@tanstack/react-router'
-import prisma from '@/shared/lib/db'
 import { withAdminAuth } from '~/middleware'
 
 const updateCategorySchema = z.object({
@@ -14,6 +13,7 @@ export const Route = createFileRoute('/api/question-bank/categories/$id' as any)
   server: {
     handlers: {
       GET: withAdminAuth(async (ctx) => {
+        const prisma = (await import('@/shared/lib/db')).default
         const params = (ctx as any).params as { id: string }
         const category = await prisma.category.findUnique({
           where: { id: params.id },
@@ -30,6 +30,7 @@ export const Route = createFileRoute('/api/question-bank/categories/$id' as any)
       }),
 
       PUT: withAdminAuth(async (ctx) => {
+        const prisma = (await import('@/shared/lib/db')).default
         const { request } = ctx
         const params = (ctx as any).params as { id: string }
         const body = await request.json()
@@ -73,6 +74,7 @@ export const Route = createFileRoute('/api/question-bank/categories/$id' as any)
       }),
 
       DELETE: withAdminAuth(async (ctx) => {
+        const prisma = (await import('@/shared/lib/db')).default
         const params = (ctx as any).params as { id: string }
         
         // Check if has children

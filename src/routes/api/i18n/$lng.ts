@@ -1,6 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { messages } from '~/i18n'
-import prisma from '@/shared/lib/db'
 
 export const Route = createFileRoute('/api/i18n/$lng')({
   server: {
@@ -12,6 +11,7 @@ export const Route = createFileRoute('/api/i18n/$lng')({
         try {
           // Try to read from database first using typed Prisma client
           try {
+            const prisma = (await import('@/shared/lib/db')).default
             const rows = await prisma.translation.findMany({
               where: { locale: lng as string },
               select: { key: true, value: true },

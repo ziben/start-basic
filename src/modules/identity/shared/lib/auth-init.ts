@@ -1,0 +1,85 @@
+/**
+ * Better-Auth 初始化
+ * 使用动态加载的权限配置
+ */
+
+import { betterAuth } from 'better-auth'
+import { prismaAdapter } from 'better-auth/adapters/prisma'
+import { admin, username, organization } from 'better-auth/plugins'
+import { getDb } from '@/shared/lib/db'
+import { getAccessControl } from './auth-dynamic'
+
+let authInstance: ReturnType<typeof betterAuth> | null = null
+
+/**
+ * 初始化 better-auth 实例
+ */
+export async function initAuth() {
+  if (authInstance) {
+    return authInstance
+  }
+
+  console.log('🔐 初始化 Better-Auth...')
+
+  // 获取数据库实例
+  const prisma = await getDb()
+
+  // 加载权限配置
+  const { globalAc, orgAc, globalRoles, orgRoles } = await getAccessControl(prisma)
+
+  // 创建 better-auth 实例
+  authInstance = betterAuth({
+    database: prismaAdapter(prisma, {
+      provider: 'sqlite',
+    }),
+    emailAndPassword: {
+      enabled: true,
+      requireEmailVerification: false,
+    },
+    plugins: [
+      username(),
+      organization({
+        teams: { enabled: false }, // 禁用 teams，使用 OrganizationRole
+        allowUserToCreateOrganization: true,
+        organizationLimit: 10,
+        dynamicAccessControl: {
+          enabled: true,
+          ac: orgAc,
+          roles: orgRoles,
+        },
+      }),
+      admin({
+        defaultRole: 'user',
+        ac: globalAc,
+        roles: globalRoles,
+      }),
+    ],
+    user: {
+      additionalFields: {
+        displayUsername: { type: 'string', required: false },
+      },
+    },
+  })
+
+  console.log('✅ Better-Auth 初始化完成')
+
+  return authInstance
+}
+
+/**
+ * 获取 auth 实例（懒加载）
+ */
+export async function getAuth() {
+  if (!authInstance) {
+    await initAuth()
+  }
+  return authInstance!
+}
+
+/**
+ * 重新初始化 auth（权限更新后调用）
+ */
+export async function reinitAuth() {
+  authInstance = null
+  return initAuth()
+}

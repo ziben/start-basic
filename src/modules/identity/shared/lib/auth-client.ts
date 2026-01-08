@@ -1,21 +1,19 @@
 import { createAuthClient } from 'better-auth/client'
 import { adminClient, usernameClient, organizationClient } from 'better-auth/client/plugins'
-import { ac, superadmin, adminRole, userRole } from './auth'
 
+/**
+ * Better-Auth 客户端配置
+ * 
+ * 注意：客户端不需要完整的 access control 配置
+ * 权限检查在服务端进行
+ */
 export const authClient = createAuthClient({
   plugins: [
     usernameClient(),
-    adminClient({
-      ac,
-      roles: {
-        superadmin,
-        admin: adminRole,
-        user: userRole,
-      },
-    }),
+    adminClient(),
     organizationClient({
       teams: {
-        enabled: true,
+        enabled: false, // 禁用 teams，使用 OrganizationRole
       },
       dynamicAccessControl: {
         enabled: true,

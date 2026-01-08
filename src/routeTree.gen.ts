@@ -54,10 +54,12 @@ import { Route as authSignInRouteImport } from './routes/(auth)/sign-in'
 import { Route as authForgotPasswordRouteImport } from './routes/(auth)/forgot-password'
 import { Route as AuthenticatedSessionsIndexRouteImport } from './routes/_authenticated/sessions/index'
 import { Route as AuthenticatedHelpCenterIndexRouteImport } from './routes/_authenticated/help-center/index'
+import { Route as AuthenticatedDemoIndexRouteImport } from './routes/_authenticated/demo/index'
 import { Route as ApiUsersIdRouteImport } from './routes/api/users.$id'
 import { Route as ApiI18nLngRouteImport } from './routes/api/i18n/$lng'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as AuthenticatedErrorsErrorRouteImport } from './routes/_authenticated/errors/$error'
+import { Route as AuthenticatedDemoProfileRouteImport } from './routes/_authenticated/demo/profile'
 import { Route as AuthenticatedDemoSettingsRouteRouteImport } from './routes/_authenticated/demo/settings/route'
 import { Route as ApiQuestionBankTagsIndexRouteImport } from './routes/api/question-bank/tags/index'
 import { Route as ApiQuestionBankQuestionsIndexRouteImport } from './routes/api/question-bank/questions/index'
@@ -302,6 +304,11 @@ const AuthenticatedHelpCenterIndexRoute =
     path: '/help-center/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedDemoIndexRoute = AuthenticatedDemoIndexRouteImport.update({
+  id: '/demo/',
+  path: '/demo/',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const ApiUsersIdRoute = ApiUsersIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -321,6 +328,12 @@ const AuthenticatedErrorsErrorRoute =
   AuthenticatedErrorsErrorRouteImport.update({
     id: '/errors/$error',
     path: '/errors/$error',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedDemoProfileRoute =
+  AuthenticatedDemoProfileRouteImport.update({
+    id: '/demo/profile',
+    path: '/demo/profile',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedDemoSettingsRouteRoute =
@@ -467,10 +480,12 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AdminIndexRoute
   '/question-bank/': typeof QuestionBankIndexRoute
   '/demo/settings': typeof AuthenticatedDemoSettingsRouteRouteWithChildren
+  '/demo/profile': typeof AuthenticatedDemoProfileRoute
   '/errors/$error': typeof AuthenticatedErrorsErrorRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/i18n/$lng': typeof ApiI18nLngRoute
   '/api/users/$id': typeof ApiUsersIdRoute
+  '/demo': typeof AuthenticatedDemoIndexRoute
   '/help-center': typeof AuthenticatedHelpCenterIndexRoute
   '/sessions': typeof AuthenticatedSessionsIndexRoute
   '/demo/settings/account': typeof AuthenticatedDemoSettingsAccountRoute
@@ -530,10 +545,12 @@ export interface FileRoutesByTo {
   '/': typeof publicIndexRoute
   '/admin': typeof AdminIndexRoute
   '/question-bank': typeof QuestionBankIndexRoute
+  '/demo/profile': typeof AuthenticatedDemoProfileRoute
   '/errors/$error': typeof AuthenticatedErrorsErrorRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/i18n/$lng': typeof ApiI18nLngRoute
   '/api/users/$id': typeof ApiUsersIdRoute
+  '/demo': typeof AuthenticatedDemoIndexRoute
   '/help-center': typeof AuthenticatedHelpCenterIndexRoute
   '/sessions': typeof AuthenticatedSessionsIndexRoute
   '/demo/settings/account': typeof AuthenticatedDemoSettingsAccountRoute
@@ -599,10 +616,12 @@ export interface FileRoutesById {
   '/admin/': typeof AdminIndexRoute
   '/question-bank/': typeof QuestionBankIndexRoute
   '/_authenticated/demo/settings': typeof AuthenticatedDemoSettingsRouteRouteWithChildren
+  '/_authenticated/demo/profile': typeof AuthenticatedDemoProfileRoute
   '/_authenticated/errors/$error': typeof AuthenticatedErrorsErrorRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/i18n/$lng': typeof ApiI18nLngRoute
   '/api/users/$id': typeof ApiUsersIdRoute
+  '/_authenticated/demo/': typeof AuthenticatedDemoIndexRoute
   '/_authenticated/help-center/': typeof AuthenticatedHelpCenterIndexRoute
   '/_authenticated/sessions/': typeof AuthenticatedSessionsIndexRoute
   '/_authenticated/demo/settings/account': typeof AuthenticatedDemoSettingsAccountRoute
@@ -667,10 +686,12 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/question-bank/'
     | '/demo/settings'
+    | '/demo/profile'
     | '/errors/$error'
     | '/api/auth/$'
     | '/api/i18n/$lng'
     | '/api/users/$id'
+    | '/demo'
     | '/help-center'
     | '/sessions'
     | '/demo/settings/account'
@@ -730,10 +751,12 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/question-bank'
+    | '/demo/profile'
     | '/errors/$error'
     | '/api/auth/$'
     | '/api/i18n/$lng'
     | '/api/users/$id'
+    | '/demo'
     | '/help-center'
     | '/sessions'
     | '/demo/settings/account'
@@ -798,10 +821,12 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/question-bank/'
     | '/_authenticated/demo/settings'
+    | '/_authenticated/demo/profile'
     | '/_authenticated/errors/$error'
     | '/api/auth/$'
     | '/api/i18n/$lng'
     | '/api/users/$id'
+    | '/_authenticated/demo/'
     | '/_authenticated/help-center/'
     | '/_authenticated/sessions/'
     | '/_authenticated/demo/settings/account'
@@ -1167,6 +1192,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedHelpCenterIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/demo/': {
+      id: '/_authenticated/demo/'
+      path: '/demo'
+      fullPath: '/demo'
+      preLoaderRoute: typeof AuthenticatedDemoIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/api/users/$id': {
       id: '/api/users/$id'
       path: '/$id'
@@ -1193,6 +1225,13 @@ declare module '@tanstack/react-router' {
       path: '/errors/$error'
       fullPath: '/errors/$error'
       preLoaderRoute: typeof AuthenticatedErrorsErrorRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/demo/profile': {
+      id: '/_authenticated/demo/profile'
+      path: '/demo/profile'
+      fullPath: '/demo/profile'
+      preLoaderRoute: typeof AuthenticatedDemoProfileRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/demo/settings': {
@@ -1364,7 +1403,9 @@ const AuthenticatedDemoSettingsRouteRouteWithChildren =
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedDemoSettingsRouteRoute: typeof AuthenticatedDemoSettingsRouteRouteWithChildren
+  AuthenticatedDemoProfileRoute: typeof AuthenticatedDemoProfileRoute
   AuthenticatedErrorsErrorRoute: typeof AuthenticatedErrorsErrorRoute
+  AuthenticatedDemoIndexRoute: typeof AuthenticatedDemoIndexRoute
   AuthenticatedHelpCenterIndexRoute: typeof AuthenticatedHelpCenterIndexRoute
   AuthenticatedSessionsIndexRoute: typeof AuthenticatedSessionsIndexRoute
   AuthenticatedDemoAppsIndexRoute: typeof AuthenticatedDemoAppsIndexRoute
@@ -1377,7 +1418,9 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedDemoSettingsRouteRoute:
     AuthenticatedDemoSettingsRouteRouteWithChildren,
+  AuthenticatedDemoProfileRoute: AuthenticatedDemoProfileRoute,
   AuthenticatedErrorsErrorRoute: AuthenticatedErrorsErrorRoute,
+  AuthenticatedDemoIndexRoute: AuthenticatedDemoIndexRoute,
   AuthenticatedHelpCenterIndexRoute: AuthenticatedHelpCenterIndexRoute,
   AuthenticatedSessionsIndexRoute: AuthenticatedSessionsIndexRoute,
   AuthenticatedDemoAppsIndexRoute: AuthenticatedDemoAppsIndexRoute,

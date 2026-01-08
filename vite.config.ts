@@ -30,6 +30,9 @@ export default defineConfig({
     }),
     viteReact(),
   ],
+  define: {
+    'process.env.PRISMA_SKIP_POSTINSTALL_GENERATE': JSON.stringify('true'),
+  },
   resolve: {
     alias: [
       {
@@ -41,6 +44,34 @@ export default defineConfig({
         replacement: SRC_DIR,
       },
     ],
+  },
+  ssr: {
+    noExternal: ['@tanstack/react-router'],
+    external: [
+      '@prisma/client',
+      '.prisma/client',
+      '@prisma/adapter-libsql',
+      '~/generated/prisma/client',
+    ],
+  },
+  optimizeDeps: {
+    exclude: [
+      '@prisma/client',
+      '.prisma/client',
+      '@prisma/adapter-libsql',
+      '~/generated/prisma/client',
+    ],
+  },
+  build: {
+    rollupOptions: {
+      external: (id) => {
+        // 确保 Prisma 相关模块在客户端构建时被排除
+        if (id.includes('@prisma') || id.includes('.prisma') || id.includes('generated/prisma')) {
+          return true
+        }
+        return false
+      },
+    },
   },
   test: {
     environment: 'jsdom',

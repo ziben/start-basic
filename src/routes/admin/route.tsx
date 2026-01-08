@@ -15,9 +15,9 @@ export const Route = createFileRoute('/admin')({
 
     // 检查用户是否有管理员权限
     const role = context.user.role
-    const systemRoleName = (context.user as any).systemRole?.name
+    const systemRoleName = (context.user as any)?.systemRole?.name
 
-    if (role !== 'admin' && systemRoleName !== 'admin') {
+    if (role !== 'admin' && role !== 'superadmin' && systemRoleName !== 'admin') {
       throw redirect({ to: '/403' })
     }
   },

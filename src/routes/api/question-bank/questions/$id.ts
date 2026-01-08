@@ -1,6 +1,5 @@
 import { z } from 'zod'
 import { createFileRoute } from '@tanstack/react-router'
-import prisma from '@/shared/lib/db'
 import { withAdminAuth } from '~/middleware'
 
 const updateQuestionSchema = z.object({
@@ -18,6 +17,7 @@ export const Route = createFileRoute('/api/question-bank/questions/$id' as any)(
   server: {
     handlers: {
       GET: withAdminAuth(async (ctx) => {
+        const prisma = (await import('@/shared/lib/db')).default
         const params = (ctx as any).params as { id: string }
         const { id } = params
         const question = await prisma.question.findUnique({
@@ -40,6 +40,7 @@ export const Route = createFileRoute('/api/question-bank/questions/$id' as any)(
       }),
 
       PUT: withAdminAuth(async (ctx) => {
+        const prisma = (await import('@/shared/lib/db')).default
         const { request } = ctx
         const params = (ctx as any).params as { id: string }
         const { id } = params
@@ -83,6 +84,7 @@ export const Route = createFileRoute('/api/question-bank/questions/$id' as any)(
       }),
 
       DELETE: withAdminAuth(async (ctx) => {
+        const prisma = (await import('@/shared/lib/db')).default
         const params = (ctx as any).params as { id: string }
         const { id } = params
         await prisma.question.delete({

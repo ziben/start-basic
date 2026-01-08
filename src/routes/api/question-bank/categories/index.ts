@@ -1,6 +1,5 @@
 import { z } from 'zod'
 import { createFileRoute } from '@tanstack/react-router'
-import prisma from '@/shared/lib/db'
 import { withAdminAuth } from '~/middleware'
 
 const createCategorySchema = z.object({
@@ -14,6 +13,7 @@ export const Route = createFileRoute('/api/question-bank/categories/' as any)({
   server: {
     handlers: {
       GET: withAdminAuth(async ({ request }) => {
+        const prisma = (await import('@/shared/lib/db')).default
         const url = new URL(request.url)
         const isTree = url.searchParams.get('tree') === '1'
 
@@ -46,6 +46,7 @@ export const Route = createFileRoute('/api/question-bank/categories/' as any)({
       }),
 
       POST: withAdminAuth(async ({ request }) => {
+        const prisma = (await import('@/shared/lib/db')).default
         const body = await request.json()
         const parsed = createCategorySchema.parse(body)
 

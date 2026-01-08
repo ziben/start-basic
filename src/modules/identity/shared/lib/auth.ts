@@ -1,93 +1,71 @@
-import prisma from '@/shared/lib/db'
-import { betterAuth } from 'better-auth'
-import { prismaAdapter } from 'better-auth/adapters/prisma'
-import { admin, username, organization } from 'better-auth/plugins'
-import { createAccessControl } from 'better-auth/plugins/access'
+/**
+ * Better-Auth 配置
+ * 
+ * ⚠️ 注意：此文件已迁移到动态加载模式
+ * 权限配置现在从数据库加载，而不是硬编码在代码中
+ * 
+ * 使用方式：
+ * ```typescript
+ * import { auth } from './auth'
+ * // auth 会在首次访问时自动初始化
+ * const session = await auth.api.getSession({ headers })
+ * ```
+ */
+
+import { getAuth as getAuthInstance, initAuth, reinitAuth } from './auth-init'
+import { clearAccessControlCache } from './auth-dynamic'
+
+// 导出工具函数
+export { initAuth, reinitAuth, clearAccessControlCache }
+
+// 缓存的 auth 实例
+let authInstance: Awaited<ReturnType<typeof getAuthInstance>> | null = null
 
 /**
- * 权限声明
- * 定义系统中所有资源和可执行的操作
+ * 获取 auth 实例（自动初始化）
  */
-export const statement = {
-  user: ['create', 'read', 'update', 'delete', 'ban'],
-  org: ['create', 'read', 'update', 'delete'],
-  role: ['manage'],
-  permission: ['manage'],
-  nav: ['manage'],
-  member: ['manage'],
-  profile: ['read', 'update'],
-} as const
+async function ensureAuth() {
+  if (!authInstance) {
+    authInstance = await getAuthInstance()
+  }
+  return authInstance
+}
 
 /**
- * 创建访问控制器
+ * 导出 auth 对象，自动处理异步初始化
+ * 使用 Proxy 拦截所有属性访问
  */
-export const ac = createAccessControl(statement)
-
-/**
- * 角色定义
- *
- * 全局角色（User.role）：
- * - superadmin: 超级管理员，拥有所有权限
- * - admin: 管理员，可以管理用户、组织、角色、权限
- * - user: 普通用户，只能管理自己的资料
- */
-export const superadmin = ac.newRole({
-  user: ['create', 'read', 'update', 'delete', 'ban'],
-  org: ['create', 'read', 'update', 'delete'],
-  role: ['manage'],
-  permission: ['manage'],
-  nav: ['manage'],
-  member: ['manage'],
-  profile: ['read', 'update'],
-})
-
-export const adminRole = ac.newRole({
-  user: ['create', 'read', 'update', 'delete', 'ban'],
-  org: ['create', 'read', 'update', 'delete'],
-  role: ['manage'],
-  permission: ['manage'],
-  nav: ['manage'],
-  member: ['manage'],
-  profile: ['read', 'update'],
-})
-
-export const userRole = ac.newRole({
-  profile: ['read', 'update'],
-})
-
-export const auth = betterAuth({
-  database: prismaAdapter(prisma, {
-    provider: 'sqlite',
-  }),
-  emailAndPassword: {
-    enabled: true,
-    requireEmailVerification: false,
-  },
-  plugins: [
-    username(),
-    organization({
-      teams: { enabled: true },
-      allowUserToCreateOrganization: true,
-      organizationLimit: 10,
-      dynamicAccessControl: {
-        enabled: true,
-      },
-    }),
-    admin({
-      defaultRole: 'user',
-      ac,
-      roles: {
-        superadmin,
-        admin: adminRole,
-        user: userRole,
-      },
-    }),
-  ],
-  user: {
-    additionalFields: {
-      // role 字段由 admin 插件自动添加，不需要在这里定义
-      // banned, banReason, banExpires 也由 admin 插件自动添加
-      displayUsername: { type: 'string', required: false },
-    },
+export const auth = new Proxy({} as any, {
+  get(_target, prop) {
+    // 特殊处理 api 属性
+    if (prop === 'api') {
+      return new Proxy({} as any, {
+        get(_apiTarget, apiProp) {
+          return async (...args: any[]) => {
+            const instance = await ensureAuth()
+            const method = (instance.api as any)[apiProp]
+            if (typeof method === 'function') {
+              return method.apply(instance.api, args)
+            }
+            return method
+          }
+        },
+      })
+    }
+    
+    // 其他属性直接返回异步函数
+    return async (...args: any[]) => {
+      const instance = await ensureAuth()
+      const value = (instance as any)[prop]
+      if (typeof value === 'function') {
+        return value.apply(instance, args)
+      }
+      return value
+    }
   },
 })
+
+// 导出 getAuth 供需要完整实例的地方使用
+export async function getAuth() {
+  return ensureAuth()
+}
