@@ -5,7 +5,7 @@ import { useSidebar as useDynamicSidebar } from '~/modules/system-admin/shared/s
 import { iconResolver } from '@/shared/utils/icon-resolver'
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from '@/components/ui/sidebar'
 import { NavGroup as NavGroupComponent } from '@/components/layout/nav-group'
-import { NavUser } from '@/components/layout/nav-user'
+import { AdminNavUser } from '~/modules/system-admin/components/admin-nav-user'
 import { AdminTitle } from './admin-title'
 import { SidebarSkeleton } from './sidebar-skeleton'
 import type { NavGroup as NavGroupType } from './types'
@@ -74,7 +74,7 @@ export function AdminSidebar() {
         ))}
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={userData} />
+        <AdminNavUser user={userData} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

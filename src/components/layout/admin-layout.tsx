@@ -9,7 +9,7 @@ import { AdminSidebar } from '@/components/layout/admin-sidebar'
 import { TabBar } from '@/components/layout/tab-bar'
 import { TabContent } from '@/components/layout/tab-content'
 import { SkipToMain } from '@/components/skip-to-main'
-import { AppHeader } from './app-header'
+import { AdminHeader } from '~/modules/system-admin/components/admin-header'
 
 type AdminLayoutProps = {
   children?: React.ReactNode
@@ -41,7 +41,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                 'flex flex-col'
               )}
             >
-              <AppHeader />
+              <AdminHeader />
               <TabBar />
               <div className="flex-1 overflow-auto">
                 <TabContent />
