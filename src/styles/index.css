@@ -1,8 +1,8 @@
 @import '@ibm/plex-sans-sc/css/ibm-plex-sans-sc-all.css';
 @import 'tailwindcss';
 @import 'tw-animate-css';
-@import './theme.css';
 @custom-variant dark (&:is(.dark *));
+@import './theme.css';
 
 @theme {
   --font-sans: 'IBM Plex Sans SC', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
