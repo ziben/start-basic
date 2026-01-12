@@ -2,47 +2,6 @@ import { defineRelations } from "drizzle-orm";
 import * as schema from "./schema";
 
 export const relations = defineRelations(schema, (r) => ({
-	session: {
-		user: r.one.user({
-			from: r.session.userId,
-			to: r.user.id
-		}),
-	},
-	user: {
-		sessions: r.many.session(),
-		accounts: r.many.account(),
-		organizationsViaMember: r.many.organization({
-			from: r.user.id.through(r.member.userId),
-			to: r.organization.id.through(r.member.organizationId),
-			alias: "user_id_organization_id_via_member"
-		}),
-		organizationsViaInvitation: r.many.organization({
-			from: r.user.id.through(r.invitation.inviterId),
-			to: r.organization.id.through(r.invitation.organizationId),
-			alias: "user_id_organization_id_via_invitation"
-		}),
-		navGroups: r.many.navGroup(),
-		systemLogs: r.many.systemLog(),
-		auditLogs: r.many.auditLog(),
-		systemRoles: r.many.systemRole({
-			from: r.user.id.through(r.userToSystemRole.b),
-			to: r.systemRole.id.through(r.userToSystemRole.a)
-		}),
-	},
-	account: {
-		user: r.one.user({
-			from: r.account.userId,
-			to: r.user.id
-		}),
-	},
-	organization: {
-		usersViaMember: r.many.user({
-			alias: "user_id_organization_id_via_member"
-		}),
-		usersViaInvitation: r.many.user({
-			alias: "user_id_organization_id_via_invitation"
-		}),
-	},
 	navItem: {
 		navGroups: r.many.navGroup({
 			from: r.navItem.id.through(r.navItem.parentId),
@@ -55,10 +14,20 @@ export const relations = defineRelations(schema, (r) => ({
 			from: r.navGroup.id.through(r.userRoleNavGroup.navGroupId),
 			to: r.user.id.through(r.userRoleNavGroup.userId)
 		}),
-		systemRoles: r.many.systemRole({
-			from: r.navGroup.id.through(r.roleNavGroup.navGroupId),
-			to: r.systemRole.id.through(r.roleNavGroup.roleId)
+		roleNavGroups: r.many.roleNavGroup(),
+	},
+	user: {
+		navGroups: r.many.navGroup(),
+		systemLogs: r.many.systemLog(),
+		auditLogs: r.many.auditLog(),
+		teams: r.many.team({
+			from: r.user.id.through(r.teamMember.userId),
+			to: r.team.id.through(r.teamMember.teamId)
 		}),
+		accounts: r.many.account(),
+		invitations: r.many.invitation(),
+		sessions: r.many.session(),
+		members: r.many.member(),
 	},
 	systemLog: {
 		user: r.one.user({
@@ -103,8 +72,124 @@ export const relations = defineRelations(schema, (r) => ({
 	qbPracticeSession: {
 		qbQuestions: r.many.qbQuestion(),
 	},
-	systemRole: {
+	departments: {
+		organizations: r.many.organization({
+			from: r.departments.id.through(r.departments.parentId),
+			to: r.organization.id.through(r.departments.organizationId)
+		}),
+		members: r.many.member(),
+	},
+	organization: {
+		departments: r.many.departments(),
+		teams: r.many.team(),
+		invitations: r.many.invitation(),
+		members: r.many.member(),
+		roles: r.many.roles(),
+	},
+	fieldPermissions: {
+		permission: r.one.permissions({
+			from: r.fieldPermissions.permissionId,
+			to: r.permissions.id
+		}),
+	},
+	permissions: {
+		fieldPermissions: r.many.fieldPermissions(),
+		roles: r.many.roles({
+			from: r.permissions.id.through(r.rolePermissions.permissionId),
+			to: r.roles.id.through(r.rolePermissions.roleId)
+		}),
+		organizationRoles: r.many.organizationRole({
+			from: r.permissions.id.through(r.organizationRolePermissions.permissionId),
+			to: r.organizationRole.id.through(r.organizationRolePermissions.organizationRoleId)
+		}),
+	},
+	roleNavGroup: {
+		navGroup: r.one.navGroup({
+			from: r.roleNavGroup.navGroupId,
+			to: r.navGroup.id
+		}),
+	},
+	team: {
+		organization: r.one.organization({
+			from: r.team.organizationId,
+			to: r.organization.id
+		}),
 		users: r.many.user(),
-		navGroups: r.many.navGroup(),
+		invitations: r.many.invitation(),
+	},
+	actions: {
+		resource: r.one.resources({
+			from: r.actions.resourceId,
+			to: r.resources.id,
+			alias: "actions_resourceId_resources_id"
+		}),
+		resources: r.many.resources({
+			from: r.actions.id.through(r.permissions.actionId),
+			to: r.resources.id.through(r.permissions.resourceId),
+			alias: "actions_id_resources_id_via_permissions"
+		}),
+	},
+	resources: {
+		actionsResourceId: r.many.actions({
+			alias: "actions_resourceId_resources_id"
+		}),
+		actionsViaPermissions: r.many.actions({
+			alias: "actions_id_resources_id_via_permissions"
+		}),
+	},
+	account: {
+		user: r.one.user({
+			from: r.account.userId,
+			to: r.user.id
+		}),
+	},
+	invitation: {
+		user: r.one.user({
+			from: r.invitation.inviterId,
+			to: r.user.id
+		}),
+		team: r.one.team({
+			from: r.invitation.teamId,
+			to: r.team.id
+		}),
+		organization: r.one.organization({
+			from: r.invitation.organizationId,
+			to: r.organization.id
+		}),
+	},
+	roles: {
+		permissions: r.many.permissions(),
+		organizations: r.many.organization({
+			from: r.roles.id.through(r.organizationRole.templateRoleId),
+			to: r.organization.id.through(r.organizationRole.organizationId)
+		}),
+	},
+	session: {
+		user: r.one.user({
+			from: r.session.userId,
+			to: r.user.id
+		}),
+	},
+	organizationRole: {
+		permissions: r.many.permissions(),
+		members: r.many.member(),
+	},
+	member: {
+		organizationRole: r.one.organizationRole({
+			from: r.member.organizationRoleId,
+			to: r.organizationRole.id
+		}),
+		department: r.one.departments({
+			from: r.member.departmentId,
+			to: r.departments.id
+		}),
+		user: r.one.user({
+			from: r.member.userId,
+			to: r.user.id
+		}),
+		organization: r.one.organization({
+			from: r.member.organizationId,
+			to: r.organization.id
+		}),
 	},
 }))

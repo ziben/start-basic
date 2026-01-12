@@ -70,14 +70,35 @@ export function useAdminUsersColumns(): ColumnDef<AdminUser>[] {
         header: ({ column }) => <DataTableColumnHeader column={column} title={t('admin.user.table.role')} />,
         cell: ({ row }) => {
           const role = row.getValue('role') as string
+          const systemRoles = row.original.systemRoles || []
+          
+          // 如果有详细的 systemRoles 信息，优先使用它
+          if (systemRoles.length > 0) {
+            return (
+              <div className='flex flex-wrap gap-1'>
+                {systemRoles.map((r) => {
+                  const isSystemAdmin = r.name === 'admin' || r.name === 'superadmin'
+                  return (
+                    <Badge
+                      key={r.id}
+                      variant='outline'
+                      className={cn('capitalize', isSystemAdmin && 'border-primary bg-primary/10 text-primary')}
+                    >
+                      {r.label || r.name}
+                    </Badge>
+                  )
+                })}
+              </div>
+            )
+          }
+
+          // 回退到解析逗号分隔的 role 字符串
+          const roles = role ? role.split(',').map((r) => r.trim()) : []
           const roleLabels: Record<string, string> = {
             superadmin: '超级管理员',
             admin: '管理员',
             user: '普通用户',
           }
-          
-          // 支持多角色（逗号分隔）
-          const roles = role ? role.split(',').map(r => r.trim()) : []
 
           return (
             <div className='flex flex-wrap gap-1'>

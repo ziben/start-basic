@@ -35,6 +35,9 @@ export function PermissionStatsCard({ profile }: PermissionStatsCardProps) {
             <span>总计</span>
             <Badge className="text-base px-3 py-1">{stats.totalPermissions} 个权限</Badge>
           </div>
+          <div className="text-xs text-muted-foreground text-right">
+            当前全局角色: {stats.globalRoles}
+          </div>
         </div>
       </CardContent>
     </Card>

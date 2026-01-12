@@ -27,8 +27,8 @@ model User {
   sessions Session[]
   accounts Account[]
 
-  role       String? // better-auth admin 插件管理
-  banned     Boolean?  @default(false) // better-auth admin 插件管理
+  role            String? // 存储角色名称，用逗号分隔，例如 "admin,user"
+  banned          Boolean? @default(false) // better-auth admin 插件管理
   banReason  String? // better-auth admin 插件管理
   banExpires DateTime? // better-auth admin 插件管理
 
@@ -181,26 +181,70 @@ model Organization {
   members           Member[]
   invitations       Invitation[]
   departments       Department[] // 新增：部门关联
-  organizationroles OrganizationRole[] // better-auth dynamicAccessControl
+  organizationroles OrganizationRole[] // 组织角色（增强版）
   teams             Team[] // better-auth teams 插件
 
   @@unique([slug])
   @@map("organization")
 }
 
-// better-auth dynamicAccessControl - 组织角色权限
+// 组织角色表（增强版，支持角色模板和自定义权限）
 model OrganizationRole {
   id             String       @id
   organizationId String
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  role           String
-  permission     String
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime?    @updatedAt
 
+  // 角色信息
+  role        String // 角色名称（在组织内唯一）
+  displayName String? // 显示名称
+  description String? // 角色描述
+
+  // 模板关联（可选）
+  templateRoleId String? // 基于哪个角色模板创建
+  templateRole   Role?   @relation(fields: [templateRoleId], references: [id], onDelete: SetNull)
+
+  // 权限（保留 better-auth 兼容性）
+  permission String? // better-auth 原有字段，可选
+
+  // 状态
+  isActive Boolean @default(true)
+
+  // 元数据
+  metadata Json?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+
+  // 关联
+  members     Member[] // 使用此角色的成员
+  permissions OrganizationRolePermission[] // 角色的权限列表
+
+  @@unique([organizationId, role])
   @@index([organizationId])
   @@index([role])
+  @@index([templateRoleId])
   @@map("organizationRole")
+}
+
+// 组织角色权限表（替代扁平化的 permission 字段）
+model OrganizationRolePermission {
+  id                 String           @id @default(cuid())
+  organizationRoleId String
+  organizationRole   OrganizationRole @relation(fields: [organizationRoleId], references: [id], onDelete: Cascade)
+  permissionId       String
+  permission         Permission       @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  // 数据范围
+  dataScope   String @default("ORG")
+  customScope Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([organizationRoleId, permissionId])
+  @@index([organizationRoleId])
+  @@index([permissionId])
+  @@map("organization_role_permissions")
 }
 
 // better-auth teams 插件 - 团队
@@ -241,8 +285,14 @@ model Member {
   role           String // better-auth organization 插件管理: owner, admin, member
   departmentId   String?
   department     Department?  @relation(fields: [departmentId], references: [id])
-  createdAt      DateTime
 
+  // 组织角色关联（可选，用于新的 RBAC 系统）
+  organizationRoleId String?
+  organizationRole   OrganizationRole? @relation(fields: [organizationRoleId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime
+
+  @@index([organizationRoleId])
   @@map("member")
 }
 
@@ -477,16 +527,16 @@ model Department {
 
 // 角色作用域枚举
 enum RoleScope {
-  GLOBAL       // 全局角色（superadmin, admin, user）
+  GLOBAL // 全局角色（superadmin, admin, user）
   ORGANIZATION // 组织角色（owner, admin, member, viewer）
-  CUSTOM       // 自定义扩展角色
+  CUSTOM // 自定义扩展角色
 }
 
 // 资源作用域枚举
 enum ResourceScope {
-  GLOBAL       // 全局资源
+  GLOBAL // 全局资源
   ORGANIZATION // 组织资源
-  BOTH         // 两者都支持
+  BOTH // 两者都支持
 }
 
 // 角色表（统一管理全局角色、组织角色模板、自定义角色）
@@ -497,17 +547,28 @@ model Role {
   description String? // 角色描述
   scope       RoleScope // 角色作用域
   isSystem    Boolean   @default(false) // 是否系统内置（不可删除）
+  isTemplate  Boolean   @default(false) // 是否为组织角色模板（可被组织实例化）
   isActive    Boolean   @default(true) // 是否启用
-  
+
+  // 排序和分类
+  sortOrder Int     @default(0) // 排序顺序
+  category  String? // 角色分类：系统管理、内容管理、业务管理
+
+  // 元数据
+  metadata Json? // 扩展元数据：图标、颜色等
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   // 关联
-  rolePermissions RolePermission[]
+  rolePermissions   RolePermission[]
+  organizationRoles OrganizationRole[] // 基于此模板创建的组织角色
 
   @@index([scope])
   @@index([isSystem])
+  @@index([isTemplate])
   @@index([isActive])
+  @@index([sortOrder])
   @@map("roles")
 }
 
@@ -519,7 +580,7 @@ model Resource {
   description String? // 资源描述
   scope       ResourceScope // 资源作用域
   isSystem    Boolean       @default(false) // 是否系统内置
-  
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -541,7 +602,7 @@ model Action {
   displayName String // 显示名称：创建、查看、更新、删除、管理
   description String? // 操作描述
   isSystem    Boolean  @default(false) // 是否系统内置
-  
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -566,13 +627,14 @@ model Permission {
   description String? // 权限描述
   category    String? // 分类：用户管理、组织管理
   isSystem    Boolean  @default(false) // 是否系统内置
-  
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   // 关联
-  rolePermissions  RolePermission[]
-  fieldPermissions FieldPermission[]
+  rolePermissions             RolePermission[]
+  fieldPermissions            FieldPermission[]
+  organizationRolePermissions OrganizationRolePermission[]
 
   @@unique([resourceId, actionId])
   @@index([code])
@@ -591,7 +653,7 @@ model RolePermission {
   permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
 
   // 数据范围限制
-  dataScope   String    @default("ALL") // ALL, ORG, DEPT, DEPT_AND_SUB, SELF
+  dataScope   String @default("ALL") // ALL, ORG, DEPT, DEPT_AND_SUB, SELF
   customScope Json? // 自定义范围条件
 
   // 时间限制

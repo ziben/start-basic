@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from 'react'
-import { getRouteApi } from '@tanstack/react-router'
 import {
   type VisibilityState,
   flexRender,
@@ -10,43 +9,27 @@ import {
 } from '@tanstack/react-table'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { cn } from '@/shared/lib/utils'
-import { type NavigateFn } from '@/shared/hooks/use-table-url-state'
-import { useUrlSyncedSorting } from '@/shared/hooks/use-url-synced-sorting'
+import { type NavigateFn, useTableUrlState } from '@/shared/hooks/use-table-url-state'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
 import { useMembersListQuery } from '../hooks/use-members-list-query'
 import { useMembersColumns } from './members-columns'
 import { MembersBulkActions } from './members-bulk-actions'
 
-const route = getRouteApi('/admin/members')
-
-type RouteSearch = {
-  sortBy?: string
-  sortDir?: 'asc' | 'desc'
-  page?: number
-  pageSize?: number
-  filter?: string
-  organizationId?: string
+type MembersTableProps = {
+  search: Record<string, unknown>
+  navigate: NavigateFn
 }
 
-export function MembersTable() {
+export function MembersTable({ search, navigate }: MembersTableProps) {
   const [rowSelection, setRowSelection] = useState({})
-  const search = route.useSearch() as RouteSearch
-  const routeNavigate = route.useNavigate()
 
-  const {
-    sorting,
-    onSortingChange,
-    globalFilter,
-    onGlobalFilterChange,
-    pagination,
-    onPaginationChange,
-    ensurePageInRange,
-  } = useUrlSyncedSorting({
+  const { globalFilter, onGlobalFilterChange, pagination, onPaginationChange, ensurePageInRange } = useTableUrlState({
     search,
-    navigate: routeNavigate as unknown as NavigateFn,
+    navigate,
     pagination: { defaultPage: 1, defaultPageSize: 10 },
     globalFilter: { enabled: true, key: 'filter' },
+    columnFilters: [],
   })
 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
@@ -57,15 +40,14 @@ export function MembersTable() {
     pageIndex: pagination.pageIndex,
     pageSize: pagination.pageSize,
     filter: globalFilter ?? undefined,
-    organizationId: search.organizationId,
-    sorting,
+    organizationId: search.organizationId as string | undefined,
+    sorting: [],
   })
 
   const table = useReactTable({
     data,
     columns,
     state: {
-      sorting,
       columnVisibility,
       rowSelection,
       globalFilter,
@@ -74,10 +56,8 @@ export function MembersTable() {
     pageCount: serverPageCount,
     manualPagination: true,
     manualFiltering: true,
-    manualSorting: true,
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
-    onSortingChange,
     onColumnVisibilityChange: setColumnVisibility,
     globalFilterFn: (row, _columnId, filterValue) => {
       const username = String(row.getValue('username')).toLowerCase()

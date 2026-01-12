@@ -1,12 +1,18 @@
+import { getRouteApi } from '@tanstack/react-router'
 import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
+import { type NavigateFn } from '@/shared/hooks/use-table-url-state'
 import { AppHeaderMain } from '~/components/layout/app-header-main'
 import { OrganizationsDialogs } from './components/organizations-dialogs'
 import { OrganizationsPrimaryButtons } from './components/organizations-primary-buttons'
 import { OrganizationsProvider } from './components/organizations-provider'
 import { OrganizationsTable } from './components/organizations-table'
 
+const route = getRouteApi('/_authenticated/admin/organizations')
+
 export default function OrganizationsPage() {
   const { t } = useTranslation()
+  const search = route.useSearch()
+  const navigate = route.useNavigate()
 
   return (
     <OrganizationsProvider>
@@ -23,7 +29,7 @@ export default function OrganizationsPage() {
           <OrganizationsPrimaryButtons />
         </div>
         <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-y-0 lg:space-x-12'>
-          <OrganizationsTable />
+          <OrganizationsTable search={search} navigate={navigate as unknown as NavigateFn} />
         </div>
       </AppHeaderMain>
 

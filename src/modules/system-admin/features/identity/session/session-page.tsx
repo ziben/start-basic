@@ -30,7 +30,7 @@ import { AppHeaderMain } from '~/components/layout/app-header-main'
 import { AdminSessionPrimaryButtons } from './components/admin-session-primary-buttons'
 import { AdminSessionDialogs } from './components/admin-session-dialogs'
 
-const route = getRouteApi('/admin/session')
+const route = getRouteApi('/_authenticated/admin/session')
 
 export default function AdminSession() {
   const { t } = useTranslation()

@@ -23,7 +23,6 @@ export interface CreateUserInput {
     password: string
     name: string
     role?: string
-    roleIds?: string[]
     username?: string
     banned?: boolean
 }
@@ -32,7 +31,6 @@ export interface UpdateUserInput {
     name?: string
     username?: string | null
     role?: string | null
-    roleIds?: string[] | null
     banned?: boolean | null
     banReason?: string | null
     banExpires?: string | null

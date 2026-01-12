@@ -46,13 +46,13 @@ export type UserProfileData = {
     image: string | null
     createdAt: Date
   }
-  globalRole: RoleInfo | null
+  globalRoles: RoleInfo[]
   globalPermissions: PermissionInfo[]
   organizationRoles: OrganizationRoleInfo[]
   stats: {
     totalPermissions: number
     organizationCount: number
-    globalRole: string
+    globalRoles: string
   }
 }
 
@@ -92,49 +92,64 @@ export const getUserProfileFn = createServerFn({ method: 'GET' }).handler(
     }
 
     // 获取用户的全局角色信息
-    let globalRole: RoleInfo | null = null
+    const globalRoles: RoleInfo[] = []
     let globalPermissions: PermissionInfo[] = []
 
     if (user.role) {
-      const roleRecord = await prisma.role.findFirst({
-        where: {
-          name: {
-            endsWith: `:${user.role}`,
+      const roleNames = user.role.split(',').map((r) => r.trim())
+      
+      for (const roleName of roleNames) {
+        const roleRecord = await prisma.role.findFirst({
+          where: {
+            OR: [
+              { name: roleName },
+              { name: { endsWith: `:${roleName}` } }
+            ],
+            scope: 'GLOBAL',
           },
-          scope: 'GLOBAL',
-        },
-        include: {
-          rolePermissions: {
-            include: {
-              permission: {
-                include: {
-                  resource: true,
-                  action: true,
+          include: {
+            rolePermissions: {
+              include: {
+                permission: {
+                  include: {
+                    resource: true,
+                    action: true,
+                  },
                 },
               },
             },
           },
-        },
-      })
+        })
 
-      if (roleRecord) {
-        globalRole = {
-          id: roleRecord.id,
-          name: user.role,
-          displayName: roleRecord.displayName,
-          description: roleRecord.description,
-          scope: roleRecord.scope,
-          isSystem: roleRecord.isSystem,
+        if (roleRecord) {
+          globalRoles.push({
+            id: roleRecord.id,
+            name: roleName,
+            displayName: roleRecord.displayName,
+            description: roleRecord.description,
+            scope: roleRecord.scope,
+            isSystem: roleRecord.isSystem,
+          })
+
+          const perms = roleRecord.rolePermissions.map((rp) => ({
+            code: rp.permission.code,
+            displayName: rp.permission.displayName,
+            resource: rp.permission.resource.displayName,
+            action: rp.permission.action.displayName,
+            category: rp.permission.category,
+          }))
+          
+          globalPermissions.push(...perms)
         }
-
-        globalPermissions = roleRecord.rolePermissions.map((rp) => ({
-          code: rp.permission.code,
-          displayName: rp.permission.displayName,
-          resource: rp.permission.resource.displayName,
-          action: rp.permission.action.displayName,
-          category: rp.permission.category,
-        }))
       }
+      
+      // 去重权限
+      const seen = new Set()
+      globalPermissions = globalPermissions.filter(p => {
+        if (seen.has(p.code)) return false
+        seen.add(p.code)
+        return true
+      })
     }
 
     // 获取用户所属的组织和组织角色
@@ -156,9 +171,10 @@ export const getUserProfileFn = createServerFn({ method: 'GET' }).handler(
       memberships.map(async (membership) => {
         const roleRecord = await prisma.role.findFirst({
           where: {
-            name: {
-              endsWith: `:${membership.role}`,
-            },
+            OR: [
+              { name: membership.role },
+              { name: { endsWith: `:${membership.role}` } }
+            ],
             scope: 'ORGANIZATION',
           },
           include: {
@@ -207,12 +223,12 @@ export const getUserProfileFn = createServerFn({ method: 'GET' }).handler(
         globalPermissions.length +
         organizationRoles.reduce((sum, org) => sum + org.permissions.length, 0),
       organizationCount: memberships.length,
-      globalRole: user.role || 'user',
+      globalRoles: user.role || 'user',
     }
 
     return {
       user,
-      globalRole,
+      globalRoles,
       globalPermissions,
       organizationRoles,
       stats,

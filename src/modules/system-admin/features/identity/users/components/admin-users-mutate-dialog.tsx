@@ -43,7 +43,6 @@ export function AdminUsersMutateDialog({ currentRow, open, onOpenChange }: Admin
         : z.string().min(8, 'Password must be at least 8 characters.'),
       username: z.string().default(''),
       role: z.string().default(''),
-      roleIds: z.array(z.string()).min(1, 'At least one role is required.'),
       banned: z.boolean().default(false),
       banReason: z.string().default(''),
       banExpires: z.string().default(''),
@@ -59,7 +58,6 @@ export function AdminUsersMutateDialog({ currentRow, open, onOpenChange }: Admin
       password: '',
       username: row?.username ?? '',
       role: row?.role ?? '',
-      roleIds: row?.roleIds ?? [],
       banned: row?.banned ?? false,
       banReason: row?.banReason ?? '',
       banExpires: row?.banExpires ? new Date(String(row.banExpires)).toISOString() : '',
@@ -98,7 +96,6 @@ export function AdminUsersMutateDialog({ currentRow, open, onOpenChange }: Admin
           password: data.password,
           name: data.name,
           role: data.role || undefined,
-          roleIds: data.roleIds,
           username: data.username ? data.username : undefined,
           banned: data.banned,
         }
@@ -123,7 +120,6 @@ export function AdminUsersMutateDialog({ currentRow, open, onOpenChange }: Admin
           name: data.name,
           username: data.username ? data.username : null,
           role: data.role || null,
-          roleIds: data.roleIds,
           banned: data.banned,
           banReason: data.banned ? (data.banReason ? data.banReason : null) : null,
           banExpires: data.banned ? (data.banExpires ? data.banExpires : null) : null,
@@ -192,7 +188,7 @@ export function AdminUsersMutateDialog({ currentRow, open, onOpenChange }: Admin
                 name='email'
                 render={({ field }) => (
                   <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
-                    <FormLabel className='col-span-2 text-end'>Email</FormLabel>
+                    <FormLabel className='col-span-2 text-end'>邮件</FormLabel>
                     <FormControl>
                       <Input placeholder='user@example.com' className='col-span-4' {...field} disabled={isEdit} />
                     </FormControl>
@@ -207,7 +203,7 @@ export function AdminUsersMutateDialog({ currentRow, open, onOpenChange }: Admin
                   name='password'
                   render={({ field }) => (
                     <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
-                      <FormLabel className='col-span-2 text-end'>Password</FormLabel>
+                      <FormLabel className='col-span-2 text-end'>密码</FormLabel>
                       <FormControl>
                         <Input
                           placeholder='Set initial password'
@@ -228,7 +224,7 @@ export function AdminUsersMutateDialog({ currentRow, open, onOpenChange }: Admin
                 name='username'
                 render={({ field }) => (
                   <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
-                    <FormLabel className='col-span-2 text-end'>Username</FormLabel>
+                    <FormLabel className='col-span-2 text-end'>用户名</FormLabel>
                     <FormControl>
                       <Input placeholder='username' className='col-span-4' autoComplete='off' {...field} />
                     </FormControl>
@@ -239,17 +235,18 @@ export function AdminUsersMutateDialog({ currentRow, open, onOpenChange }: Admin
 
               <FormField
                 control={form.control}
-                name='roleIds'
+                name='role'
                 render={() => (
                   <FormItem className='grid grid-cols-6 items-start space-y-0 gap-x-4 gap-y-1'>
-                    <FormLabel className='col-span-2 text-end pt-2'>Roles</FormLabel>
+                    <FormLabel className='col-span-2 text-end pt-2'>角色</FormLabel>
                     <div className='col-span-4 grid grid-cols-2 gap-2'>
                       {roles.map((role) => (
                         <FormField
                           key={role.id}
                           control={form.control}
-                          name='roleIds'
+                          name='role'
                           render={({ field }) => {
+                            const currentRoles = field.value ? field.value.split(',').filter(Boolean) : []
                             return (
                               <FormItem
                                 key={role.id}
@@ -257,20 +254,17 @@ export function AdminUsersMutateDialog({ currentRow, open, onOpenChange }: Admin
                               >
                                 <FormControl>
                                   <Checkbox
-                                    checked={field.value?.includes(role.id)}
+                                    checked={currentRoles.includes(role.name)}
                                     onCheckedChange={(checked) => {
-                                      return checked
-                                        ? field.onChange([...(field.value || []), role.id])
-                                        : field.onChange(
-                                          field.value?.filter(
-                                            (value) => value !== role.id
-                                          )
-                                        )
+                                      const nextRoles = checked
+                                        ? [...currentRoles, role.name]
+                                        : currentRoles.filter((r) => r !== role.name)
+                                      field.onChange(nextRoles.join(','))
                                     }}
                                   />
                                 </FormControl>
                                 <FormLabel className='font-normal cursor-pointer'>
-                                  {role.label}
+                                  {role.displayName}
                                 </FormLabel>
                               </FormItem>
                             )
@@ -288,7 +282,7 @@ export function AdminUsersMutateDialog({ currentRow, open, onOpenChange }: Admin
                 name='banned'
                 render={({ field }) => (
                   <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
-                    <FormLabel className='col-span-2 text-end'>Banned</FormLabel>
+                    <FormLabel className='col-span-2 text-end'>禁用</FormLabel>
                     <FormControl>
                       <RadioGroup
                         onValueChange={(v) => field.onChange(v === 'true')}
@@ -321,7 +315,7 @@ export function AdminUsersMutateDialog({ currentRow, open, onOpenChange }: Admin
                     name='banReason'
                     render={({ field }) => (
                       <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
-                        <FormLabel className='col-span-2 text-end'>Ban Reason</FormLabel>
+                        <FormLabel className='col-span-2 text-end'>禁用原因</FormLabel>
                         <FormControl>
                           <Input placeholder='reason (optional)' className='col-span-4' {...field} />
                         </FormControl>
@@ -335,7 +329,7 @@ export function AdminUsersMutateDialog({ currentRow, open, onOpenChange }: Admin
                     name='banExpires'
                     render={({ field }) => (
                       <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
-                        <FormLabel className='col-span-2 text-end'>Ban Expires</FormLabel>
+                        <FormLabel className='col-span-2 text-end'>禁用到期</FormLabel>
                         <FormControl>
                           <Input placeholder='2025-01-01T00:00:00.000Z' className='col-span-4' {...field} />
                         </FormControl>

@@ -10,7 +10,6 @@ export const adminUsersSchema = z.object({
   updatedAt: z.string().or(z.date()),
 
   role: z.string().nullable().optional(),
-  roleIds: z.array(z.string()).optional(),
   systemRoles: z
     .array(
       z.object({

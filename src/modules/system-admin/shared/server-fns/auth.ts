@@ -63,8 +63,11 @@ export async function requireAdmin(actionName?: string) {
         }
 
         const adminRoles = ['admin', 'superadmin']
-        const role = session.user.role || ''
-        if (!adminRoles.includes(role)) {
+        const userRoleStr = session.user.role || ''
+        const userRoles = userRoleStr.split(',').map((r: string) => r.trim())
+        const hasAdminRole = userRoles.some((r: string) => adminRoles.includes(r))
+
+        if (!hasAdminRole) {
             void writeSystemLog({
                 level: 'warn',
                 requestId,
@@ -76,7 +79,7 @@ export async function requireAdmin(actionName?: string) {
                 ip,
                 userAgent,
                 userId: session.user.id,
-                userRole: role,
+                userRole: userRoleStr,
                 error: '无权限访问',
                 meta: { action: actionName },
             })
@@ -87,7 +90,7 @@ export async function requireAdmin(actionName?: string) {
         if (actionName) {
             void writeAuditLog({
                 actorUserId: session.user.id,
-                actorRole: role,
+                actorRole: userRoleStr,
                 action: actionName,
                 targetType: 'ServerFn',
                 ip,
@@ -108,7 +111,7 @@ export async function requireAdmin(actionName?: string) {
             ip,
             userAgent,
             userId: session.user.id,
-            userRole: role,
+            userRole: userRoleStr,
             meta: { action: actionName },
         })
 

@@ -1,6 +1,8 @@
+import { getRouteApi } from '@tanstack/react-router'
 import { ConfigDrawer } from '~/components/config-drawer'
 import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
 import { useTranslations } from '~/modules/system-admin/shared/hooks/use-translation-api'
+import { type NavigateFn } from '@/shared/hooks/use-table-url-state'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
@@ -11,9 +13,12 @@ import { TranslationsPrimaryButtons } from './components/translations-primary-bu
 import { TranslationsProvider } from './components/translations-provider'
 import { TranslationsTable } from './components/translations-table'
 
+const route = getRouteApi('/admin/translation')
+
 export function AdminTranslations() {
   const { t } = useTranslation()
-  // 使用hooks获取数据
+  const search = route.useSearch()
+  const navigate = route.useNavigate()
   const { data: translationList = [] } = useTranslations()
 
   return (
@@ -39,7 +44,7 @@ export function AdminTranslations() {
         </div>
 
         <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-y-0 lg:space-x-12'>
-          <TranslationsTable data={translationList} />
+          <TranslationsTable data={translationList} search={search} navigate={navigate as unknown as NavigateFn} />
         </div>
       </Main>
 

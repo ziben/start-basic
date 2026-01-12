@@ -21,7 +21,6 @@ const CreateUserSchema = z.object({
     password: z.string().min(8),
     name: z.string().min(1),
     role: z.string().optional(),
-    roleIds: z.array(z.string()).optional(),
     username: z.string().optional(),
     banned: z.boolean().optional(),
 })
@@ -31,7 +30,6 @@ const UpdateUserSchema = z.object({
     name: z.string().optional(),
     username: z.string().nullable().optional(),
     role: z.string().nullable().optional(),
-    roleIds: z.array(z.string()).nullable().optional(),
     banned: z.boolean().nullable().optional(),
     banReason: z.string().nullable().optional(),
     banExpires: z.string().nullable().optional(),

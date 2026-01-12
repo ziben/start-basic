@@ -42,7 +42,7 @@ export function RoleNavGroupTable({ onManage }: RoleNavGroupTableProps) {
                         <TableBody>
                             {roles?.map((role: any) => (
                                 <TableRow key={role.id}>
-                                    <TableCell className='font-medium'>{role.label}</TableCell>
+                                    <TableCell className='font-medium'>{role.displayName}</TableCell>
                                     <TableCell>{role.name}</TableCell>
                                     <TableCell>{role.isSystem ? '是' : '否'}</TableCell>
                                     <TableCell className='text-right'>

@@ -1,7 +1,7 @@
 import { createContext, useContext, type ReactNode, useMemo, useCallback } from 'react'
 import { getRouteApi } from '@tanstack/react-router'
 
-const route = getRouteApi('/admin/log')
+const route = getRouteApi('/_authenticated/admin/log')
 
 type RouteSearch = {
   type?: 'system' | 'audit'

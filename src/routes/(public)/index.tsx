@@ -60,6 +60,12 @@ function HomePage() {
               >
                 登录控制台
               </Link>
+              <Link
+                to='/admin'
+                className='inline-flex h-11 items-center justify-center rounded-md border border-input bg-background/60 px-6 text-sm font-medium shadow-sm backdrop-blur transition-colors hover:bg-accent hover:text-accent-foreground'
+              >
+                管理控制台
+              </Link>              
             </div>
           </div>
         </section>

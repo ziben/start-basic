@@ -13,7 +13,7 @@ import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
 import { apps } from './data/apps'
 
-const route = getRouteApi('/_authenticated/demo/apps/')
+const route = getRouteApi('/demo/apps/')
 
 type AppType = 'all' | 'connected' | 'notConnected'
 

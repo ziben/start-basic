@@ -77,28 +77,65 @@ const AssignPermissionsSchema = z.object({
   permissionIds: z.array(z.string()),
 })
 
+// 角色管理相关的校验
+const ListRolesSchema = z.object({
+  page: z.number().optional(),
+  pageSize: z.number().optional(),
+  filter: z.string().optional(),
+})
+
+// 角色-导航组关联
+const AssignRoleNavGroupsSchema = z.object({
+  id: z.string().min(1, '角色ID不能为空'),
+  navGroupIds: z.array(z.string()),
+})
+
 // ============ 角色管理 ============
 
 export const getRolesFn = createServerFn({ method: 'GET' })
-  .handler(async () => {
+  .inputValidator((data: z.infer<typeof ListRolesSchema>) => ListRolesSchema.parse(data || {}))
+  .handler(async ({ data }) => {
     await requireAdmin('ListRoles')
     const prisma = (await import('@/shared/lib/db')).default
     
-    return prisma.role.findMany({
-      include: {
-        rolePermissions: {
-          include: {
-            permission: {
-              include: {
-                resource: true,
-                action: true,
+    const { page = 1, pageSize = 10, filter } = data
+
+    const where: any = {}
+    if (filter) {
+      where.OR = [
+        { name: { contains: filter } },
+        { displayName: { contains: filter } },
+        { description: { contains: filter } },
+      ]
+    }
+
+    const [total, items] = await Promise.all([
+      prisma.role.count({ where }),
+      prisma.role.findMany({
+        where,
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+        include: {
+          rolePermissions: {
+            include: {
+              permission: {
+                include: {
+                  resource: true,
+                  action: true,
+                },
               },
             },
           },
         },
-      },
-      orderBy: [{ scope: 'asc' }, { name: 'asc' }],
-    })
+        orderBy: [{ scope: 'asc' }, { name: 'asc' }],
+      })
+    ])
+    
+    return {
+      items,
+      total,
+      pageCount: Math.ceil(total / pageSize),
+    }
   })
 
 export const getRoleFn = createServerFn({ method: 'GET' })
@@ -110,6 +147,7 @@ export const getRoleFn = createServerFn({ method: 'GET' })
     return prisma.role.findUnique({
       where: { id: data.id },
       include: {
+        roleNavGroups: true,
         rolePermissions: {
           include: {
             permission: {
@@ -222,6 +260,41 @@ export const deleteRoleFn = createServerFn({ method: 'POST' })
     clearAccessControlCache()
     await reinitAuth()
     
+    return { success: true }
+  })
+
+export const assignRoleNavGroupsFn = createServerFn({ method: 'POST' })
+  .inputValidator((data: z.infer<typeof AssignRoleNavGroupsSchema>) => AssignRoleNavGroupsSchema.parse(data))
+  .handler(async ({ data }) => {
+    await requireAdmin('AssignRoleNavGroups')
+    const prisma = (await import('@/shared/lib/db')).default
+    
+    const role = await prisma.role.findUnique({ where: { id: data.id } })
+    if (!role) throw new Error('角色不存在')
+
+    // 删除旧关联
+    await prisma.roleNavGroup.deleteMany({
+      where: { role: role.name }
+    })
+
+    // 创建新关联
+    if (data.navGroupIds.length > 0) {
+      const navGroups = await prisma.navGroup.findMany({
+        where: { id: { in: data.navGroupIds } }
+      })
+
+      await prisma.roleNavGroup.createMany({
+        data: navGroups.map(ng => ({
+          role: role.name,
+          navGroupId: ng.id
+        }))
+      })
+    }
+
+    // 清除缓存
+    clearAccessControlCache()
+    await reinitAuth()
+
     return { success: true }
   })
 

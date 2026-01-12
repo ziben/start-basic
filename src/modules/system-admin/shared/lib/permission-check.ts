@@ -20,16 +20,18 @@ export async function checkGlobalPermission(
 
         if (!user?.role) return false
 
+        const roles = user.role.split(',').map((r) => r.trim())
+
         // superadmin 拥有所有权限
-        if (user.role === 'superadmin') return true
+        if (roles.includes('superadmin')) return true
         
         // 检查 better-auth 定义的权限
         const [resource, action] = permission.split(':')
         if (!resource || !action) return false
         
         // 根据角色检查权限（从 auth.ts 的定义）
-        const rolePermissions = getRolePermissions(user.role)
-        return rolePermissions.some(p => {
+        const allPermissions = roles.flatMap((role) => getRolePermissions(role))
+        return allPermissions.some(p => {
             if (p === '*') return true
             const [r, a] = p.split(':')
             return (r === resource && (a === action || a === '*'))
@@ -118,8 +120,8 @@ async function checkCustomPermission(
     try {
         const rolePermission = await prisma.rolePermission.findFirst({
             where: {
-                role,
-                permission: { name: permissionName },
+                role: { name: role },
+                permission: { code: permissionName },
                 // 检查时间限制
                 OR: [
                     { validFrom: null },
@@ -196,7 +198,10 @@ export async function getUserPermissions(
         })
         
         if (user?.role) {
-            permissions.push(...getRolePermissions(user.role))
+            const roles = user.role.split(',').map((r) => r.trim())
+            roles.forEach((role) => {
+                permissions.push(...getRolePermissions(role))
+            })
         }
         
         // 2. 如果指定了组织，获取组织角色权限
@@ -211,7 +216,7 @@ export async function getUserPermissions(
                 // 3. 获取自定义细粒度权限
                 const customPermissions = await prisma.rolePermission.findMany({
                     where: {
-                        role: member.role,
+                        role: { name: member.role },
                         OR: [
                             { validFrom: null },
                             { validFrom: { lte: new Date() } }
@@ -228,7 +233,7 @@ export async function getUserPermissions(
                     include: { permission: true }
                 })
                 
-                permissions.push(...customPermissions.map(rp => rp.permission.name))
+                permissions.push(...customPermissions.map(rp => rp.permission.code))
             }
         }
         

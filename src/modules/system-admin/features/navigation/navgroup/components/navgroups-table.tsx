@@ -13,7 +13,7 @@ import {
 } from '@tanstack/react-table'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
-import { useUrlSyncedSorting } from '@/shared/hooks/use-url-synced-sorting'
+import { type NavigateFn, useTableUrlState } from '@/shared/hooks/use-table-url-state'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
 import { type AdminNavgroup } from '../data/schema'
@@ -21,8 +21,6 @@ import { DataTableBulkActions } from './data-table-bulk-actions'
 import { useNavGroupColumns } from './navgroups-columns'
 
 const route = getRouteApi('/admin/navgroup')
-
-import { type NavigateFn } from '@/shared/hooks/use-table-url-state'
 
 type DataTableProps = {
   data: AdminNavgroup[]
@@ -37,8 +35,6 @@ function NavGroupsTableInner({ data, search, navigate }: DataTableProps) {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 
   const {
-    sorting,
-    onSortingChange,
     globalFilter,
     onGlobalFilterChange,
     columnFilters,
@@ -46,7 +42,7 @@ function NavGroupsTableInner({ data, search, navigate }: DataTableProps) {
     pagination,
     onPaginationChange,
     ensurePageInRange,
-  } = useUrlSyncedSorting({
+  } = useTableUrlState({
     search,
     navigate,
     pagination: { defaultPage: 1, defaultPageSize: 10 },
@@ -61,7 +57,6 @@ function NavGroupsTableInner({ data, search, navigate }: DataTableProps) {
     data,
     columns,
     state: {
-      sorting,
       columnVisibility,
       rowSelection,
       columnFilters,
@@ -70,7 +65,6 @@ function NavGroupsTableInner({ data, search, navigate }: DataTableProps) {
     },
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
-    onSortingChange,
     onColumnVisibilityChange: setColumnVisibility,
     globalFilterFn: (row, _columnId, filterValue) => {
       const id = String(row.getValue('id')).toLowerCase()

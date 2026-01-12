@@ -1,9 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
-import { getRouteApi } from '@tanstack/react-router'
 import { type ColumnDef, type VisibilityState, flexRender, getCoreRowModel, getFacetedRowModel, getFacetedUniqueValues, useReactTable } from '@tanstack/react-table'
 import { cn } from '@/shared/lib/utils'
-import { type NavigateFn } from '@/shared/hooks/use-table-url-state'
-import { useUrlSyncedSorting } from '@/shared/hooks/use-url-synced-sorting'
+import { type NavigateFn, useTableUrlState } from '@/shared/hooks/use-table-url-state'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
 import { type AdminAuditLog, type AdminSystemLog } from '~/modules/system-admin/shared/hooks/use-admin-log-api'
@@ -12,30 +10,14 @@ import { useAdminLogsQuery } from '../hooks/use-admin-logs-query'
 import { getSingleBooleanFromArrayFilter, getSingleStringFromArrayFilter } from '../utils/table-filters'
 import { useAuditLogColumns, useSystemLogColumns } from './admin-log-columns'
 
-const route = getRouteApi('/admin/log')
-
-type RouteSearch = {
-  type?: 'system' | 'audit'
-  sortBy?: string
-  sortDir?: 'asc' | 'desc'
-  page?: number
-  pageSize?: number
-  filter?: string
-  level?: string[]
-  success?: string[]
-}
-
 type AdminLogTableProps = {
   type: 'system' | 'audit'
+  search: Record<string, unknown>
+  navigate: NavigateFn
 }
 
-export function AdminLogTable({ type }: AdminLogTableProps) {
-  const search = route.useSearch() as RouteSearch
-  const routeNavigate = route.useNavigate()
-
+export function AdminLogTable({ type, search, navigate }: AdminLogTableProps) {
   const {
-    sorting,
-    onSortingChange,
     globalFilter,
     onGlobalFilterChange,
     columnFilters,
@@ -43,9 +25,9 @@ export function AdminLogTable({ type }: AdminLogTableProps) {
     pagination,
     onPaginationChange,
     ensurePageInRange,
-  } = useUrlSyncedSorting({
+  } = useTableUrlState({
     search,
-    navigate: routeNavigate as unknown as NavigateFn,
+    navigate,
     pagination: { defaultPage: 1, defaultPageSize: 10 },
     globalFilter: { enabled: true, key: 'filter' },
     columnFilters: [
@@ -98,7 +80,7 @@ export function AdminLogTable({ type }: AdminLogTableProps) {
     pageIndex: pagination.pageIndex,
     pageSize: pagination.pageSize,
     filter: globalFilter ?? undefined,
-    sorting,
+    sorting: [],
     level,
     success,
   })
@@ -107,7 +89,6 @@ export function AdminLogTable({ type }: AdminLogTableProps) {
     data: (data ?? []) as (AdminSystemLog | AdminAuditLog)[],
     columns: columns as ColumnDef<AdminSystemLog | AdminAuditLog>[],
     state: {
-      sorting,
       columnVisibility,
       columnFilters,
       globalFilter,
@@ -116,8 +97,6 @@ export function AdminLogTable({ type }: AdminLogTableProps) {
     pageCount: serverPageCount,
     manualPagination: true,
     manualFiltering: true,
-    manualSorting: true,
-    onSortingChange,
     onColumnVisibilityChange: setColumnVisibility,
     onPaginationChange,
     onGlobalFilterChange,

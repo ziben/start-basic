@@ -33,8 +33,8 @@ export function RoleNavGroupManageDialog({
     const [selectedIds, setSelectedIds] = useState<string[]>([])
 
     useEffect(() => {
-        if (role?.navGroups) {
-            const ids = role.navGroups.map((rng: any) => rng.navGroupId)
+        if (role?.roleNavGroups) {
+            const ids = role.roleNavGroups.map((rng: any) => rng.navGroupId)
             setSelectedIds(ids)
         } else {
             setSelectedIds([])

@@ -61,7 +61,6 @@ export function serializeAdminUser(user: PrismaUser): AdminUser {
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
     role: user.role ?? 'user',
-    roleIds: user.systemRoles?.map(r => r.id) || [],
     systemRoles: user.systemRoles || [],
     banned: user.banned ?? null,
     banReason: user.banReason ?? null,

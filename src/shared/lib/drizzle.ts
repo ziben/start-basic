@@ -1,12 +1,6 @@
-import { createClient } from '@libsql/client';
-import { drizzle } from 'drizzle-orm/libsql';
-import * as schema from '~/db/drizzle/schema';
+import { drizzle } from 'drizzle-orm/libsql'
 
-const DATABASE_URL = process.env.DATABASE_URL ?? 'file:./db/dev.db';
+const DATABASE_URL = process.env.DATABASE_PGLITE_URL!
 
-const client = createClient({
-    url: DATABASE_URL,
-});
-
-export const db = drizzle(client, { schema });
-export default db;
+export const db = drizzle({ logger: true, connection: { url: DATABASE_URL } })
+export default db

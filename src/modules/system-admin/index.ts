@@ -3,5 +3,6 @@ export * from './features/identity'
 export * from './features/organization'
 export * from './features/i18n'
 export * from './features/audit'
+export * from './features/rbac'
 export * from './shared/hooks/use-translation'
 

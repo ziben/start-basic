@@ -200,9 +200,25 @@ export const createSidebarData = (t: (key: string) => string): SidebarData => ({
           icon: Users,
         },
         {
-          title: t('sidebar.Role'),
-          url: '/admin/roles',
+          title: '权限管理 (RBAC)',
           icon: Shield,
+          items: [
+            {
+              title: '系统角色',
+              url: '/admin/rbac/roles',
+              icon: Shield,
+            },
+            {
+              title: '组织角色',
+              url: '/admin/rbac/org-roles',
+              icon: Building,
+            },
+            {
+              title: '权限定义',
+              url: '/admin/rbac/permissions',
+              icon: Key,
+            },
+          ],
         },
         {
           title: t('sidebar.Session'),

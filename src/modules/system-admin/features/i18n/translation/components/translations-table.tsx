@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react'
-import { getRouteApi } from '@tanstack/react-router'
 import {
   type VisibilityState,
   flexRender,
@@ -14,27 +13,25 @@ import {
 import { useVirtualizer } from '@tanstack/react-virtual'
 import type { Translation } from '~/modules/system-admin/shared/types/translation'
 import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
-import { useUrlSyncedSorting } from '@/shared/hooks/use-url-synced-sorting'
+import { type NavigateFn, useTableUrlState } from '@/shared/hooks/use-table-url-state'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
 import { DataTableBulkActions } from './data-table-bulk-actions'
 import { useTranslationColumns } from './translations-columns'
 
-const route = getRouteApi('/admin/translation')
-
 type DataTableProps = {
   data: Translation[]
+  search: Record<string, unknown>
+  navigate: NavigateFn
 }
 
-export function TranslationsTable({ data }: DataTableProps) {
+export function TranslationsTable({ data, search, navigate }: DataTableProps) {
   const { t } = useTranslation()
   const columns = useTranslationColumns()
   const [rowSelection, setRowSelection] = useState({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 
   const {
-    sorting,
-    onSortingChange,
     globalFilter,
     onGlobalFilterChange,
     columnFilters,
@@ -42,9 +39,9 @@ export function TranslationsTable({ data }: DataTableProps) {
     pagination,
     onPaginationChange,
     ensurePageInRange,
-  } = useUrlSyncedSorting({
-    search: route.useSearch(),
-    navigate: route.useNavigate(),
+  } = useTableUrlState({
+    search,
+    navigate,
     pagination: { defaultPage: 1, defaultPageSize: 10 },
     globalFilter: { enabled: true, key: 'filter' },
     columnFilters: [
@@ -57,7 +54,6 @@ export function TranslationsTable({ data }: DataTableProps) {
     data,
     columns,
     state: {
-      sorting,
       columnVisibility,
       rowSelection,
       columnFilters,
@@ -66,7 +62,6 @@ export function TranslationsTable({ data }: DataTableProps) {
     },
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
-    onSortingChange,
     onColumnVisibilityChange: setColumnVisibility,
     globalFilterFn: (row, _columnId, filterValue) => {
       const key = String(row.getValue('key')).toLowerCase()

@@ -35,7 +35,7 @@ export function ProfileHeader({ profile }: ProfileHeaderProps) {
             <Shield className="h-8 w-8 text-primary" />
             <div>
               <p className="text-sm text-muted-foreground">全局角色</p>
-              <p className="text-lg font-semibold">{stats.globalRole}</p>
+              <p className="text-lg font-semibold">{stats.globalRoles}</p>
             </div>
           </div>
           <div className="flex items-center gap-3 p-4 bg-muted rounded-lg">

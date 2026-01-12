@@ -39,7 +39,7 @@ function DataTablePaginationInner<TData>({ table, className }: DataTablePaginati
               <SelectValue placeholder={table.getState().pagination.pageSize} />
             </SelectTrigger>
             <SelectContent side='top'>
-              {[10, 20, 30, 40, 50].map((pageSize) => (
+              {[1, 10, 20, 30, 40, 50].map((pageSize) => (
                 <SelectItem key={pageSize} value={`${pageSize}`}>
                   {pageSize}
                 </SelectItem>
@@ -116,7 +116,7 @@ function DataTablePaginationInner<TData>({ table, className }: DataTablePaginati
   )
 }
 
-export const DataTablePagination = memo(DataTablePaginationInner) as typeof DataTablePaginationInner
+export const DataTablePagination = DataTablePaginationInner
 
 
 
