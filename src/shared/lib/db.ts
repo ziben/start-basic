@@ -30,12 +30,23 @@ async function initPrisma() {
 
 const prisma = new Proxy({} as PrismaClient, {
   get(_target, prop) {
+    if (prop === 'then') return undefined
     if (!prismaInstance) {
-      throw new Error('Prisma client not initialized. Call await getDb() first.')
+      throw new Error('Prisma client not initialized. Call await getDb() or getDbSync() first.')
     }
     return (prismaInstance as any)[prop]
-  }
+  },
 })
+
+/**
+ * 获取 Prisma 实例（同步，但必须确保已在入口初始化）
+ */
+export function getDbSync() {
+  if (!prismaInstance) {
+    throw new Error('Prisma client not initialized.')
+  }
+  return prismaInstance
+}
 
 // 只在服务端初始化
 if (typeof window === 'undefined') {

@@ -184,6 +184,11 @@ async function seed() {
       { name: 'member', displayName: '成员', scope: ResourceScope.ORGANIZATION, isSystem: true },
       { name: 'org-role', displayName: '组织角色', scope: ResourceScope.ORGANIZATION, isSystem: true },
       { name: 'navigation', displayName: '导航', scope: ResourceScope.BOTH, isSystem: true },
+      { name: 'audit-log', displayName: '审计日志', scope: ResourceScope.GLOBAL, isSystem: true },
+      { name: 'system-log', displayName: '系统日志', scope: ResourceScope.GLOBAL, isSystem: true },
+      { name: 'question', displayName: '题目', scope: ResourceScope.GLOBAL, isSystem: true },
+      { name: 'category', displayName: '分类', scope: ResourceScope.GLOBAL, isSystem: true },
+      { name: 'tag', displayName: '标签', scope: ResourceScope.GLOBAL, isSystem: true },
     ]
     const resources: Record<string, any> = {}
     for (const res of resourcesData) {
@@ -197,6 +202,10 @@ async function seed() {
       { name: 'delete', displayName: '删除' },
       { name: 'list', displayName: '列表' },
       { name: 'manage', displayName: '管理' },
+      { name: 'export', displayName: '导出' },
+      { name: 'import', displayName: '导入' },
+      { name: 'ban', displayName: '封禁' },
+      { name: 'unban', displayName: '解封' },
     ]
     const actions: Record<string, any> = {}
     for (const resName in resources) {

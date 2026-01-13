@@ -24,18 +24,10 @@ export async function checkGlobalPermission(
 
         // superadmin 拥有所有权限
         if (roles.includes('superadmin')) return true
-        
-        // 检查 better-auth 定义的权限
-        const [resource, action] = permission.split(':')
-        if (!resource || !action) return false
-        
-        // 根据角色检查权限（从 auth.ts 的定义）
-        const allPermissions = roles.flatMap((role) => getRolePermissions(role))
-        return allPermissions.some(p => {
-            if (p === '*') return true
-            const [r, a] = p.split(':')
-            return (r === resource && (a === action || a === '*'))
-        })
+
+        // 统一逻辑：改用更稳健的 getUserPermissions 流程
+        const userPermissions = await getUserPermissions(userId)
+        return userPermissions.includes(permission) || userPermissions.includes('*')
     } catch (error) {
         console.error('全局权限检查失败:', error)
         return false
@@ -43,19 +35,29 @@ export async function checkGlobalPermission(
 }
 
 /**
- * 获取角色的权限列表（从 auth.ts 配置）
+ * 获取角色的权限列表（从数据库动态加载）
  */
-function getRolePermissions(role: string): string[] {
-    const roleMap: Record<string, string[]> = {
-        superadmin: ['*'],
-        admin: [
-            'user:create', 'user:read', 'user:update', 'user:delete', 'user:ban',
-            'org:create', 'org:read', 'org:update', 'org:delete',
-            'role:manage', 'permission:manage', 'nav:manage', 'member:manage'
-        ],
-        user: ['profile:read', 'profile:update']
+async function getRolePermissions(role: string, scope: 'GLOBAL' | 'ORGANIZATION' = 'GLOBAL'): Promise<string[]> {
+    try {
+        const fullRoleName = `${scope}:${role}`
+        const dbRole = await prisma.role.findUnique({
+            where: { name: fullRoleName },
+            include: {
+                rolePermissions: {
+                    include: {
+                        permission: true
+                    }
+                }
+            }
+        })
+
+        if (!dbRole) return []
+
+        return dbRole.rolePermissions.map(rp => rp.permission.code)
+    } catch (error) {
+        console.error(`获取角色 ${role} 权限失败:`, error)
+        return []
     }
-    return roleMap[role] || []
 }
 
 /**
@@ -67,81 +69,10 @@ export async function checkOrgPermission(
     permission: string
 ): Promise<boolean> {
     try {
-        // 1. 先检查全局权限
-        const hasGlobal = await checkGlobalPermission(userId, permission)
-        if (hasGlobal) return true
-
-        // 2. 检查组织成员角色
-        const member = await prisma.member.findFirst({
-            where: { userId, organizationId }
-        })
-
-        if (!member) return false
-
-        // 3. 检查组织角色权限
-        const orgPermissions = getOrgRolePermissions(member.role)
-        const [resource, action] = permission.split(':')
-        
-        const hasOrgPermission = orgPermissions.some(p => {
-            if (p === '*') return true
-            const [r, a] = p.split(':')
-            return (r === resource && (a === action || a === '*'))
-        })
-
-        if (hasOrgPermission) return true
-
-        // 4. 检查自定义细粒度权限
-        return await checkCustomPermission(member.role, permission)
+        const userPermissions = await getUserPermissions(userId, organizationId)
+        return userPermissions.includes(permission) || userPermissions.includes('*')
     } catch (error) {
         console.error('组织权限检查失败:', error)
-        return false
-    }
-}
-
-/**
- * 获取组织角色的权限列表
- */
-function getOrgRolePermissions(role: string): string[] {
-    const roleMap: Record<string, string[]> = {
-        owner: ['org:*', 'member:*'],
-        admin: ['member:read', 'member:update', 'org:read'],
-        member: ['org:read']
-    }
-    return roleMap[role] || []
-}
-
-/**
- * 检查自定义细粒度权限（从 RolePermission 表）
- */
-async function checkCustomPermission(
-    role: string,
-    permissionName: string
-): Promise<boolean> {
-    try {
-        const rolePermission = await prisma.rolePermission.findFirst({
-            where: {
-                role: { name: role },
-                permission: { code: permissionName },
-                // 检查时间限制
-                OR: [
-                    { validFrom: null },
-                    { validFrom: { lte: new Date() } }
-                ],
-                AND: [
-                    {
-                        OR: [
-                            { validUntil: null },
-                            { validUntil: { gte: new Date() } }
-                        ]
-                    }
-                ]
-            },
-            include: { permission: true }
-        })
-
-        return !!rolePermission
-    } catch (error) {
-        console.error('自定义权限检查失败:', error)
         return false
     }
 }
@@ -199,9 +130,10 @@ export async function getUserPermissions(
         
         if (user?.role) {
             const roles = user.role.split(',').map((r) => r.trim())
-            roles.forEach((role) => {
-                permissions.push(...getRolePermissions(role))
-            })
+            for (const role of roles) {
+                const rolePerms = await getRolePermissions(role, 'GLOBAL')
+                permissions.push(...rolePerms)
+            }
         }
         
         // 2. 如果指定了组织，获取组织角色权限
@@ -211,29 +143,8 @@ export async function getUserPermissions(
             })
             
             if (member) {
-                permissions.push(...getOrgRolePermissions(member.role))
-                
-                // 3. 获取自定义细粒度权限
-                const customPermissions = await prisma.rolePermission.findMany({
-                    where: {
-                        role: { name: member.role },
-                        OR: [
-                            { validFrom: null },
-                            { validFrom: { lte: new Date() } }
-                        ],
-                        AND: [
-                            {
-                                OR: [
-                                    { validUntil: null },
-                                    { validUntil: { gte: new Date() } }
-                                ]
-                            }
-                        ]
-                    },
-                    include: { permission: true }
-                })
-                
-                permissions.push(...customPermissions.map(rp => rp.permission.code))
+                const orgRolePerms = await getRolePermissions(member.role, 'ORGANIZATION')
+                permissions.push(...orgRolePerms)
             }
         }
         
