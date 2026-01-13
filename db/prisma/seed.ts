@@ -249,6 +249,19 @@ async function seed() {
     if (navGroupCount === 0) {
       await prisma.navGroup.create({
         data: {
+          title: '仪表盘',
+          scope: 'ADMIN',
+          orderIndex: -1, // 设置为首位
+          roleNavGroups: { create: [{ role: 'admin' }] },
+          navItems: {
+            create: [
+              { title: '控制台', url: '/dashboard', icon: 'LayoutDashboard', orderIndex: 0 },
+            ],
+          },
+        },
+      })
+      await prisma.navGroup.create({
+        data: {
           title: '试验区',
           scope: 'ADMIN',
           orderIndex: 0,
@@ -274,12 +287,13 @@ async function seed() {
           roleNavGroups: { create: [{ role: 'admin' }] },
           navItems: {
             create: [
-              { title: '菜单管理', url: '/admin/navigation', orderIndex: 0 },
-              { title: '用户管理', url: '/admin/users', orderIndex: 1 },
-              { title: '系统角色', url: '/admin/rbac/roles', orderIndex: 2 },
-              { title: '组织角色', url: '/admin/rbac/org-roles', orderIndex: 3 },
-              { title: '权限定义', url: '/admin/rbac/permissions', orderIndex: 4 },
-              { title: '日志管理', url: '/admin/log', orderIndex: 5 },
+              { title: '概览', url: '/admin/dashboard', icon: 'LayoutDashboard', orderIndex: 0 },
+              { title: '菜单管理', url: '/admin/navigation', orderIndex: 1 },
+              { title: '用户管理', url: '/admin/users', orderIndex: 2 },
+              { title: '系统角色', url: '/admin/rbac/roles', orderIndex: 3 },
+              { title: '组织角色', url: '/admin/rbac/org-roles', orderIndex: 4 },
+              { title: '权限定义', url: '/admin/rbac/permissions', orderIndex: 5 },
+              { title: '日志管理', url: '/admin/log', orderIndex: 6 },
             ],
           },
         },

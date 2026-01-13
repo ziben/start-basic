@@ -9,7 +9,6 @@ import {
     type DragEndEvent,
 } from '@dnd-kit/core'
 import {
-    arrayMove,
     SortableContext,
     sortableKeyboardCoordinates,
     useSortable,
@@ -37,6 +36,7 @@ interface SortableTabProps {
 function SortableTab({ tab, isActive, onActivate, onClose, onCloseOthers }: SortableTabProps) {
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
         id: tab.id,
+        disabled: tab.sortable === false,
     })
 
     const style = {
@@ -56,32 +56,39 @@ function SortableTab({ tab, isActive, onActivate, onClose, onCloseOthers }: Sort
                     'group relative flex h-9 min-w-[120px] max-w-[200px] cursor-pointer items-center gap-2 rounded-t-md border-b-2 px-3 transition-all duration-200 ease-in-out',
                     isActive
                         ? 'border-primary bg-background text-foreground shadow-sm'
-                        : 'border-transparent bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground'
+                        : 'border-transparent bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground',
+                    tab.sortable === false && 'cursor-default'
                 )}
-                {...attributes}
-                {...listeners}
+                {...(tab.sortable !== false ? attributes : {})}
+                {...(tab.sortable !== false ? listeners : {})}
             >
-                <div className="flex flex-1 items-center gap-2 min-w-0" onClick={onActivate}>
-                    {Icon && <Icon />}
-                    <span className="flex-1 truncate text-sm font-medium">{tab.title}</span>
+                <div className="flex flex-1 items-center gap-2 min-w-0">
+                    <div className="flex flex-1 items-center gap-2 min-w-0" onClick={onActivate}>
+                        {Icon && <Icon className="h-4 w-4" />}
+                        <span className="flex-1 truncate text-sm font-medium">{tab.title}</span>
+                    </div>
                 </div>
-                <DropdownMenuTrigger asChild>
-                    <button
-                        className={cn(
-                            'shrink-0 rounded-sm p-0.5 opacity-0 transition-all duration-200 hover:bg-accent group-hover:opacity-100',
-                            isActive && 'opacity-100'
-                        )}
-                        onClick={(e) => {
-                            e.stopPropagation()
-                        }}
-                    >
-                        <X className="h-3 w-3" />
-                    </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={onClose}>关闭标签页</DropdownMenuItem>
-                    <DropdownMenuItem onClick={onCloseOthers}>关闭其他标签页</DropdownMenuItem>
-                </DropdownMenuContent>
+                {tab.closable !== false && (
+                    <DropdownMenuTrigger asChild>
+                        <button
+                            className={cn(
+                                'shrink-0 rounded-sm p-0.5 opacity-0 transition-all duration-200 hover:bg-accent group-hover:opacity-100',
+                                isActive && 'opacity-100'
+                            )}
+                            onClick={(e) => {
+                                e.stopPropagation()
+                            }}
+                        >
+                            <X className="h-3 w-3" />
+                        </button>
+                    </DropdownMenuTrigger>
+                )}
+                {tab.closable !== false && (
+                    <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={onClose}>关闭标签页</DropdownMenuItem>
+                        <DropdownMenuItem onClick={onCloseOthers}>关闭其他标签页</DropdownMenuItem>
+                    </DropdownMenuContent>
+                )}
             </div>
         </DropdownMenu>
     )

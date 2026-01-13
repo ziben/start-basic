@@ -56,6 +56,7 @@ import { Route as AuthenticatedAdminMembersRouteImport } from './routes/_authent
 import { Route as AuthenticatedAdminLogRouteImport } from './routes/_authenticated/admin/log'
 import { Route as AuthenticatedAdminInvitationsRouteImport } from './routes/_authenticated/admin/invitations'
 import { Route as AuthenticatedAdminDepartmentRouteImport } from './routes/_authenticated/admin/department'
+import { Route as AuthenticatedAdminDashboardRouteImport } from './routes/_authenticated/admin/dashboard'
 import { Route as AuthenticatedAdminAccountRouteImport } from './routes/_authenticated/admin/account'
 import { Route as AuthenticatedAppDashboardRouteImport } from './routes/_authenticated/_app/dashboard'
 import { Route as AuthenticatedDemoSettingsRouteRouteImport } from './routes/_authenticated/demo/settings/route'
@@ -325,6 +326,12 @@ const AuthenticatedAdminDepartmentRoute =
     path: '/department',
     getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
+const AuthenticatedAdminDashboardRoute =
+  AuthenticatedAdminDashboardRouteImport.update({
+    id: '/dashboard',
+    path: '/dashboard',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
 const AuthenticatedAdminAccountRoute =
   AuthenticatedAdminAccountRouteImport.update({
     id: '/account',
@@ -498,6 +505,7 @@ export interface FileRoutesByFullPath {
   '/demo/settings': typeof AuthenticatedDemoSettingsRouteRouteWithChildren
   '/dashboard': typeof AuthenticatedAppDashboardRoute
   '/admin/account': typeof AuthenticatedAdminAccountRoute
+  '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/admin/department': typeof AuthenticatedAdminDepartmentRoute
   '/admin/invitations': typeof AuthenticatedAdminInvitationsRoute
   '/admin/log': typeof AuthenticatedAdminLogRoute
@@ -564,6 +572,7 @@ export interface FileRoutesByTo {
   '/question-bank': typeof QuestionBankIndexRoute
   '/dashboard': typeof AuthenticatedAppDashboardRoute
   '/admin/account': typeof AuthenticatedAdminAccountRoute
+  '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/admin/department': typeof AuthenticatedAdminDepartmentRoute
   '/admin/invitations': typeof AuthenticatedAdminInvitationsRoute
   '/admin/log': typeof AuthenticatedAdminLogRoute
@@ -638,6 +647,7 @@ export interface FileRoutesById {
   '/_authenticated/demo/settings': typeof AuthenticatedDemoSettingsRouteRouteWithChildren
   '/_authenticated/_app/dashboard': typeof AuthenticatedAppDashboardRoute
   '/_authenticated/admin/account': typeof AuthenticatedAdminAccountRoute
+  '/_authenticated/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/_authenticated/admin/department': typeof AuthenticatedAdminDepartmentRoute
   '/_authenticated/admin/invitations': typeof AuthenticatedAdminInvitationsRoute
   '/_authenticated/admin/log': typeof AuthenticatedAdminLogRoute
@@ -710,6 +720,7 @@ export interface FileRouteTypes {
     | '/demo/settings'
     | '/dashboard'
     | '/admin/account'
+    | '/admin/dashboard'
     | '/admin/department'
     | '/admin/invitations'
     | '/admin/log'
@@ -776,6 +787,7 @@ export interface FileRouteTypes {
     | '/question-bank'
     | '/dashboard'
     | '/admin/account'
+    | '/admin/dashboard'
     | '/admin/department'
     | '/admin/invitations'
     | '/admin/log'
@@ -849,6 +861,7 @@ export interface FileRouteTypes {
     | '/_authenticated/demo/settings'
     | '/_authenticated/_app/dashboard'
     | '/_authenticated/admin/account'
+    | '/_authenticated/admin/dashboard'
     | '/_authenticated/admin/department'
     | '/_authenticated/admin/invitations'
     | '/_authenticated/admin/log'
@@ -1248,6 +1261,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminDepartmentRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/_authenticated/admin/dashboard': {
+      id: '/_authenticated/admin/dashboard'
+      path: '/dashboard'
+      fullPath: '/admin/dashboard'
+      preLoaderRoute: typeof AuthenticatedAdminDashboardRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
     '/_authenticated/admin/account': {
       id: '/_authenticated/admin/account'
       path: '/account'
@@ -1456,6 +1476,7 @@ const AuthenticatedAppRouteRouteWithChildren =
 
 interface AuthenticatedAdminRouteRouteChildren {
   AuthenticatedAdminAccountRoute: typeof AuthenticatedAdminAccountRoute
+  AuthenticatedAdminDashboardRoute: typeof AuthenticatedAdminDashboardRoute
   AuthenticatedAdminDepartmentRoute: typeof AuthenticatedAdminDepartmentRoute
   AuthenticatedAdminInvitationsRoute: typeof AuthenticatedAdminInvitationsRoute
   AuthenticatedAdminLogRoute: typeof AuthenticatedAdminLogRoute
@@ -1477,6 +1498,7 @@ interface AuthenticatedAdminRouteRouteChildren {
 const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren =
   {
     AuthenticatedAdminAccountRoute: AuthenticatedAdminAccountRoute,
+    AuthenticatedAdminDashboardRoute: AuthenticatedAdminDashboardRoute,
     AuthenticatedAdminDepartmentRoute: AuthenticatedAdminDepartmentRoute,
     AuthenticatedAdminInvitationsRoute: AuthenticatedAdminInvitationsRoute,
     AuthenticatedAdminLogRoute: AuthenticatedAdminLogRoute,

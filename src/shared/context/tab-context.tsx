@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useCallback, useEffect, useMemo } from 'react'
 import { useNavigate, useLocation } from '@tanstack/react-router'
-import type { Tab, TabContextValue } from '@/shared/types/tab-types'
+import type { Tab, TabContextValue, TabScope } from '@/shared/types/tab-types'
 import { MAX_TABS } from '@/shared/types/tab-types'
 
 const TabContext = createContext<TabContextValue | undefined>(undefined)
@@ -11,41 +11,71 @@ export function TabProvider({ children }: { children: React.ReactNode }) {
     const navigate = useNavigate()
     const location = useLocation()
     
+    // 根据 URL 自动计算当前的 Scope
+    const currentScope = useMemo((): TabScope => {
+        return location.pathname.startsWith('/admin') ? 'ADMIN' : 'APP'
+    }, [location.pathname])
+
     // 从 localStorage 初始化 tabs
     const [tabs, setTabs] = useState<Tab[]>(() => {
         try {
             const stored = localStorage.getItem(STORAGE_KEY)
+            let initialTabs: Tab[] = []
             if (stored) {
                 const parsed = JSON.parse(stored)
-                // 移除序列化后的 icon，因为 React 组件无法序列化
-                return parsed.map((tab: Tab) => ({
+                initialTabs = parsed.map((tab: Tab) => ({
                     ...tab,
                     icon: undefined,
                 }))
             }
-            return []
+
+            // 确保 APP Dashboard 始终存在
+            if (!initialTabs.find(t => t.path === '/dashboard' && t.scope === 'APP')) {
+                initialTabs.push({
+                    id: 'tab-dashboard-app',
+                    title: '控制台',
+                    path: '/dashboard',
+                    order: -1,
+                    closable: false,
+                    sortable: false,
+                    scope: 'APP'
+                })
+            }
+
+            // 确保 ADMIN Dashboard 始终存在
+            if (!initialTabs.find(t => t.path === '/admin/dashboard' && t.scope === 'ADMIN')) {
+                initialTabs.push({
+                    id: 'tab-dashboard-admin',
+                    title: '系统概览',
+                    path: '/admin/dashboard',
+                    order: -1,
+                    closable: false,
+                    sortable: false,
+                    scope: 'ADMIN'
+                })
+            }
+
+            return initialTabs.sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
         } catch {
-            return []
+            return [
+                { id: 'tab-dashboard-app', title: '控制台', path: '/dashboard', order: -1, closable: false, sortable: false, scope: 'APP' },
+                { id: 'tab-dashboard-admin', title: '系统概览', path: '/admin/dashboard', order: -1, closable: false, sortable: false, scope: 'ADMIN' }
+            ]
         }
     })
-    
-    // 手动设置的 activeTabId（用于用户点击切换）
-    const [manualActiveTabId, setManualActiveTabId] = useState<string | null>(null)
 
-    // 根据 URL 自动计算 activeTabId
+    // 过滤出当前 Scope 下的 tabs
+    const scopedTabs = useMemo(() => {
+        return tabs.filter(t => t.scope === currentScope)
+    }, [tabs, currentScope])
+
     const activeTabId = useMemo(() => {
-        // 如果有手动设置的 ID，优先使用
-        if (manualActiveTabId) {
-            const tab = tabs.find(t => t.id === manualActiveTabId)
-            if (tab && tab.path === location.pathname) {
-                return manualActiveTabId
-            }
-        }
-        
-        // 否则根据当前 URL 查找匹配的 tab
-        const matchingTab = tabs.find((tab) => tab.path === location.pathname)
-        return matchingTab?.id ?? null
-    }, [tabs, location.pathname, manualActiveTabId])
+        // 1. 优先根据当前路径匹配已有的 Tab（考虑 scope）
+        const matchingTab = scopedTabs.find((tab) => tab.path === location.pathname)
+        if (matchingTab) return matchingTab.id
+
+        return null
+    }, [scopedTabs, location.pathname])
 
     // 持久化 tabs 到 localStorage
     useEffect(() => {
@@ -61,40 +91,33 @@ export function TabProvider({ children }: { children: React.ReactNode }) {
     // 打开新标签页或激活已存在的标签页
     const openTab = useCallback(
         (path: string | undefined, title: string, icon?: React.ElementType | string): boolean => {
-            // 验证路径
-            if (!path) {
-                console.warn('Invalid path provided to openTab')
-                return false
-            }
+            if (!path) return false
 
-            // 检查是否已存在
+            const targetScope: TabScope = path.startsWith('/admin') ? 'ADMIN' : 'APP'
             const existingTab = tabs.find((tab) => tab.path === path)
 
             if (existingTab) {
-                // 激活已存在的标签页
-                setManualActiveTabId(existingTab.id)
                 navigate({ to: path } as any)
                 return true
             }
 
-            // 检查数量限制
             if (tabs.length >= MAX_TABS) {
-                // TODO: 显示提示信息
                 console.warn(`已达到最大标签页数量限制 (${MAX_TABS})`)
                 return false
             }
 
-            // 创建新标签页
             const newTab: Tab = {
                 id: `tab-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
                 title,
                 path,
                 icon,
                 order: tabs.length,
+                closable: true,
+                sortable: true,
+                scope: targetScope,
             }
 
             setTabs((prev) => [...prev, newTab])
-            setManualActiveTabId(newTab.id)
             navigate({ to: path } as any)
             return true
         },
@@ -107,34 +130,36 @@ export function TabProvider({ children }: { children: React.ReactNode }) {
             const tabIndex = tabs.findIndex((tab) => tab.id === tabId)
             if (tabIndex === -1) return
 
+            // 不可关闭的标签页直接返回
+            if (tabs[tabIndex].closable === false) return
+
             const newTabs = tabs.filter((tab) => tab.id !== tabId)
             setTabs(newTabs)
 
-            // 如果关闭的是激活的标签页，激活相邻的标签页
-            if (activeTabId === tabId && newTabs.length > 0) {
-                // 优先激活右侧的标签页，如果没有则激活左侧的
-                const nextTab = newTabs[tabIndex] || newTabs[tabIndex - 1]
-                if (nextTab) {
-                    setManualActiveTabId(nextTab.id)
-                    navigate({ to: nextTab.path } as any)
+            // 如果关闭的是当前激活的标签页
+            const closedTab = tabs[tabIndex]
+            if (location.pathname === closedTab.path) {
+                // 过滤出当前作用域下的新标签列表
+                const currentScopedNewTabs = newTabs.filter(t => t.scope === currentScope)
+                if (currentScopedNewTabs.length > 0) {
+                    // 找到原本位置相邻的标签
+                    const scopedTabIndex = scopedTabs.findIndex(t => t.id === tabId)
+                    const nextTab = currentScopedNewTabs[scopedTabIndex] || currentScopedNewTabs[scopedTabIndex - 1]
+                    if (nextTab) {
+                        navigate({ to: nextTab.path } as any)
+                    }
                 }
-            } else if (newTabs.length === 0) {
-                setManualActiveTabId(null)
             }
         },
-        [tabs, activeTabId, navigate]
+        [tabs, currentScope, scopedTabs, navigate, location.pathname]
     )
 
     // 激活标签页
     const activateTab = useCallback(
         (tabId: string) => {
             const tab = tabs.find((t) => t.id === tabId)
-            if (tab) {
-                setManualActiveTabId(tabId)
-                // 只在当前路径不匹配时才导航，避免不必要的路由变化
-                if (location.pathname !== tab.path) {
-                    navigate({ to: tab.path } as any)
-                }
+            if (tab && location.pathname !== tab.path) {
+                navigate({ to: tab.path } as any)
             }
         },
         [tabs, navigate, location.pathname]
@@ -145,8 +170,8 @@ export function TabProvider({ children }: { children: React.ReactNode }) {
         (tabId: string) => {
             const tab = tabs.find((t) => t.id === tabId)
             if (tab) {
-                setTabs([{ ...tab, order: 0 }])
-                setManualActiveTabId(tabId)
+                const protectedTabs = tabs.filter(t => t.closable === false || t.id === tabId)
+                setTabs(protectedTabs.map((t, index) => ({ ...t, order: index })))
             }
         },
         [tabs]
@@ -154,13 +179,22 @@ export function TabProvider({ children }: { children: React.ReactNode }) {
 
     // 关闭所有标签页
     const closeAllTabs = useCallback(() => {
-        setTabs([])
-        setManualActiveTabId(null)
-    }, [])
+        const protectedTabs = tabs.filter(t => t.closable === false)
+        setTabs(protectedTabs)
+        const currentScopedDashboard = protectedTabs.find(t => t.scope === currentScope && t.order === -1)
+        if (currentScopedDashboard) {
+            navigate({ to: currentScopedDashboard.path } as any)
+        }
+    }, [tabs, navigate, currentScope])
 
     // 重新排序标签页（用于拖拽）
     const reorderTabs = useCallback((startIndex: number, endIndex: number) => {
         setTabs((prev) => {
+            // 如果涉及到不可拖拽的标签，不进行排序
+            if (prev[startIndex].sortable === false || prev[endIndex].sortable === false) {
+                return prev
+            }
+            
             const result = Array.from(prev)
             const [removed] = result.splice(startIndex, 1)
             result.splice(endIndex, 0, removed)
@@ -171,7 +205,7 @@ export function TabProvider({ children }: { children: React.ReactNode }) {
     }, [])
 
     const value: TabContextValue = {
-        tabs,
+        tabs: scopedTabs,
         activeTabId,
         maxTabs: MAX_TABS,
         openTab,
