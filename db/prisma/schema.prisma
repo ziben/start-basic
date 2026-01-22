@@ -94,12 +94,13 @@ model NavItem {
 // 角色与导航组关联表
 model RoleNavGroup {
   id         String   @id @default(cuid())
-  role       String // better-auth 角色名: 'admin', 'superadmin', 'user'
+  roleName   String // 关联的角色名称
+  role       Role     @relation(fields: [roleName], references: [name], onDelete: Cascade)
   navGroupId String
   navGroup   NavGroup @relation(fields: [navGroupId], references: [id], onDelete: Cascade)
   createdAt  DateTime @default(now())
 
-  @@unique([role, navGroupId])
+  @@unique([roleName, navGroupId])
   @@map("role_nav_group")
 }
 
@@ -563,6 +564,7 @@ model Role {
   // 关联
   rolePermissions   RolePermission[]
   organizationRoles OrganizationRole[] // 基于此模板创建的组织角色
+  navGroupLinks     RoleNavGroup[]     // 导航组关联
 
   @@index([scope])
   @@index([isSystem])

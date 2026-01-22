@@ -6,6 +6,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { createServerFn } from '@tanstack/react-start'
 import { useAuth } from '~/modules/identity/shared/hooks/use-auth'
+import { orgPermissionQueryKeys } from '~/shared/lib/query-keys'
 
 /**
  * 检查用户在组织中的权限（使用 better-auth dynamic access control）
@@ -16,7 +17,7 @@ const checkOrgPermissionFn = createServerFn({ method: 'GET' })
     resource: string
     action: string 
   }) => data)
-  .handler(async ({ data }) => {
+  .handler(async ({ data }: { data: { organizationId: string; resource: string; action: string } }) => {
     const { getRequest } = await import('@tanstack/react-start/server')
     const { auth } = await import('~/modules/identity/shared/lib/auth')
     
@@ -50,7 +51,7 @@ const checkOrgPermissionFn = createServerFn({ method: 'GET' })
  */
 const getOrgRoleFn = createServerFn({ method: 'GET' })
   .inputValidator((data: { organizationId: string }) => data)
-  .handler(async ({ data }) => {
+  .handler(async ({ data }: { data: { organizationId: string } }) => {
     const { getRequest } = await import('@tanstack/react-start/server')
     const { auth } = await import('~/modules/identity/shared/lib/auth')
     
@@ -85,7 +86,7 @@ export function useOrgPermission(
   const user = session?.user
   
   return useQuery({
-    queryKey: ['org-permission', user?.id, organizationId, resource, action],
+    queryKey: orgPermissionQueryKeys.check(user?.id, organizationId, resource, action),
     queryFn: () => {
       if (!organizationId) return false
       return checkOrgPermissionFn({ 
@@ -105,7 +106,7 @@ export function useOrgRole(organizationId: string | undefined) {
   const user = session?.user
   
   return useQuery({
-    queryKey: ['org-role', user?.id, organizationId],
+    queryKey: orgPermissionQueryKeys.role(user?.id, organizationId),
     queryFn: () => {
       if (!organizationId) return null
       return getOrgRoleFn({ data: { organizationId } })
@@ -142,8 +143,6 @@ export function useAnyOrgPermission(
   organizationId: string | undefined,
   permissions: Array<{ resource: string; action: string }>
 ) {
-  const { data: session } = useAuth()
-  
   // 为每个权限创建查询（最多支持 10 个）
   const query0 = useOrgPermission(organizationId, permissions[0]?.resource || '', permissions[0]?.action || '')
   const query1 = useOrgPermission(organizationId, permissions[1]?.resource || '', permissions[1]?.action || '')
@@ -167,8 +166,6 @@ export function useAllOrgPermissions(
   organizationId: string | undefined,
   permissions: Array<{ resource: string; action: string }>
 ) {
-  const { data: session } = useAuth()
-  
   // 为每个权限创建查询（最多支持 10 个）
   const query0 = useOrgPermission(organizationId, permissions[0]?.resource || '', permissions[0]?.action || '')
   const query1 = useOrgPermission(organizationId, permissions[1]?.resource || '', permissions[1]?.action || '')

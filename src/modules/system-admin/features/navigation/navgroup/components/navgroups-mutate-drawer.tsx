@@ -3,10 +3,12 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
 import { useCreateNavgroup, useUpdateNavgroup } from '~/modules/system-admin/shared/hooks/use-navgroup-api'
+import { useAllRoles } from '~/modules/system-admin/shared/hooks/use-role-api'
 import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
 import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { Checkbox } from '@/components/ui/checkbox'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import {
   Sheet,
@@ -34,6 +36,7 @@ export function NavGroupsMutateDrawer({ open, onOpenChange, currentRow }: NavGro
   const isUpdate = !!currentRow
   const createMutation = useCreateNavgroup()
   const updateMutation = useUpdateNavgroup()
+  const { data: roles = [] } = useAllRoles()
   const { t } = useTranslation()
 
   const form = useForm<NavGroupForm>({
@@ -43,7 +46,7 @@ export function NavGroupsMutateDrawer({ open, onOpenChange, currentRow }: NavGro
           title: currentRow.title,
           scope: currentRow.scope,
           orderIndex: currentRow.orderIndex,
-          roles: currentRow.roleNavGroups ? currentRow.roleNavGroups.map((r) => r.role) : undefined,
+          roles: currentRow.roleNavGroups ? currentRow.roleNavGroups.map((r: any) => r.roleName) : undefined,
         }
       : {
           title: '',
@@ -171,28 +174,33 @@ export function NavGroupsMutateDrawer({ open, onOpenChange, currentRow }: NavGro
 
             <FormField
               control={form.control}
-              name='roles'
+              name='roleName'
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t('admin.navgroup.fields.roles') || 'Roles'}</FormLabel>
                   <FormControl>
-                    <div className='flex flex-wrap gap-2'>
-                      {['admin', 'editor', 'viewer'].map((role) => (
-                        <label key={role} className='inline-flex items-center space-x-2'>
-                          <input
-                            type='checkbox'
-                            checked={(field.value || []).includes(role)}
-                            onChange={(e) => {
+                    <div className='flex flex-wrap gap-4'>
+                      {roles.map((role: any) => (
+                        <div key={role.id} className='flex items-center space-x-2'>
+                          <Checkbox
+                            id={`role-${role.id}`}
+                            checked={(field.value || []).includes(role.name)}
+                            onCheckedChange={(checked) => {
                               const cur = Array.isArray(field.value) ? field.value : []
-                              if (e.target.checked) {
-                                field.onChange([...cur, role])
+                              if (checked) {
+                                field.onChange([...cur, role.name])
                               } else {
-                                field.onChange(cur.filter((r) => r !== role))
+                                field.onChange(cur.filter((r) => r !== role.name))
                               }
                             }}
                           />
-                          <span className='text-sm'>{role}</span>
-                        </label>
+                          <label
+                            htmlFor={`role-${role.id}`}
+                            className='text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
+                          >
+                            {role.displayName || role.name}
+                          </label>
+                        </div>
                       ))}
                     </div>
                   </FormControl>

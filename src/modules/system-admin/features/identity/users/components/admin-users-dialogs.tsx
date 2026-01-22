@@ -3,8 +3,7 @@ import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { bulkDeleteUsersFn } from '../../../../shared/server-fns/user.fn'
 import { ConfirmDialog } from '@/components/confirm-dialog'
-import { type AdminUser } from '../data/schema'
-import { ADMIN_USERS_QUERY_KEY } from '../hooks/use-admin-users-list-query'
+import { adminUsersQueryKeys } from '~/shared/lib/query-keys'
 import { useUsersOptimisticUpdate, createBulkDeleteUpdateFn } from '../hooks/use-users-optimistic-update'
 import { AdminUserImportDialog } from './admin-users-import-dialog'
 import { AdminUsersMutateDialog } from './admin-users-mutate-dialog'
@@ -19,7 +18,7 @@ export function AdminUsersDialogs() {
       return await bulkDeleteUsersFn({ data: { ids: [input.id] } })
     },
     ...getOptimisticMutationOptions({
-      queryKey: ADMIN_USERS_QUERY_KEY,
+      queryKey: adminUsersQueryKeys.all,
       updateFn: (users, variables) => createBulkDeleteUpdateFn(users, [variables.id]),
     }),
   })

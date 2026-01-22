@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { X } from 'lucide-react'
 import {
     DndContext,
@@ -96,6 +97,12 @@ function SortableTab({ tab, isActive, onActivate, onClose, onCloseOthers }: Sort
 
 export function TabBar() {
     const tabContext = useTabs()
+    const [isMounted, setIsMounted] = useState(false)
+
+    useEffect(() => {
+        // eslint-disable-next-line
+        setIsMounted(true)
+    }, [])
 
     const sensors = useSensors(
         useSensor(PointerSensor, {
@@ -120,7 +127,7 @@ export function TabBar() {
         }
     }
 
-    if (!tabContext || tabContext.tabs.length === 0) {
+    if (!isMounted || !tabContext || tabContext.tabs.length === 0) {
         return null
     }
 

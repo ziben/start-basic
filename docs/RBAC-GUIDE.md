@@ -172,6 +172,7 @@ import {
   usePermission,
   useAnyPermission,
   useAllPermissions,
+  usePermissionsMap,
   useIsAdmin 
 } from '~/shared/hooks/use-permissions'
 
@@ -194,6 +195,13 @@ function MyComponent() {
     'user:update',
     'user:delete'
   ])
+
+  // 批量权限映射（单次请求）
+  const { map: permissionMap } = usePermissionsMap([
+    'user:read',
+    'user:update',
+    'user:delete'
+  ])
   
   // 检查是否是管理员
   const { isAdmin, isSuperAdmin } = useIsAdmin()
@@ -201,6 +209,7 @@ function MyComponent() {
   return (
     <div>
       {canDelete && <button>删除用户</button>}
+      {permissionMap['user:update'] && <button>更新用户</button>}
       {isAdmin && <AdminPanel />}
     </div>
   )
@@ -251,6 +260,15 @@ function UserManagement() {
       >
         <button>删除</button>
       </PermissionGuard>
+
+      {/* 自定义 loading fallback */}
+      <PermissionGuard
+        permission="user:delete"
+        loadingFallback={<p>权限加载中...</p>}
+        fallback={<p>您没有删除权限</p>}
+      >
+        <button>删除</button>
+      </PermissionGuard>
       
       {/* 组织上下文 */}
       <PermissionGuard 
@@ -258,6 +276,11 @@ function UserManagement() {
         organizationId={currentOrgId}
       >
         <button>更新组织</button>
+      </PermissionGuard>
+
+      {/* 使用 permissionsMap */}
+      <PermissionGuard permission="user:delete" permissionsMap={permissionMap}>
+        <button>删除</button>
       </PermissionGuard>
     </div>
   )

@@ -12,6 +12,7 @@ import {
     deleteDepartmentFn,
     getSubDepartmentsFn,
 } from '../server-fns/department.fn'
+import { departmentQueryKeys } from '~/shared/lib/query-keys'
 
 // ============ 类型定义 ============
 
@@ -57,16 +58,6 @@ export interface UpdateDepartmentData {
 }
 
 type SuccessIdResponse = { success: true; id: string }
-
-// ============ Query Keys ============
-
-export const departmentQueryKeys = {
-    all: ['departments'] as const,
-    byOrg: (orgId: string) => [...departmentQueryKeys.all, 'org', orgId] as const,
-    tree: (orgId: string) => [...departmentQueryKeys.all, 'tree', orgId] as const,
-    detail: (id: string) => [...departmentQueryKeys.all, 'detail', id] as const,
-    subDepts: (id: string) => [...departmentQueryKeys.all, 'sub', id] as const,
-}
 
 // ============ Query Hooks ============
 

@@ -1,4 +1,6 @@
-import { useEffect, useRef, useState } from 'react'
+import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { type NavigateFn, useTableUrlState } from '@/shared/hooks/use-table-url-state'
 import { getRouteApi } from '@tanstack/react-router'
 import {
   type VisibilityState,
@@ -11,24 +13,23 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-import { useVirtualizer } from '@tanstack/react-virtual'
+import { useEffect, useState } from 'react'
 import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
-import { type NavigateFn, useTableUrlState } from '@/shared/hooks/use-table-url-state'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
 import { type AdminNavgroup } from '../data/schema'
 import { DataTableBulkActions } from './data-table-bulk-actions'
 import { useNavGroupColumns } from './navgroups-columns'
 
-const route = getRouteApi('/admin/navgroup')
+const route = getRouteApi('/_authenticated/admin/navigation')
 
 type DataTableProps = {
   data: AdminNavgroup[]
   search?: Record<string, unknown>
   navigate?: NavigateFn
+  onReload?: () => void
+  isReloading?: boolean
 }
 
-function NavGroupsTableInner({ data, search, navigate }: DataTableProps) {
+function NavGroupsTableInner({ data, search, navigate, onReload, isReloading }: DataTableProps) {
   const { t } = useTranslation()
   const columns = useNavGroupColumns()
   const [rowSelection, setRowSelection] = useState({})
@@ -43,8 +44,8 @@ function NavGroupsTableInner({ data, search, navigate }: DataTableProps) {
     onPaginationChange,
     ensurePageInRange,
   } = useTableUrlState({
-    search,
-    navigate,
+    search: search as any,
+    navigate: navigate as any,
     pagination: { defaultPage: 1, defaultPageSize: 10 },
     globalFilter: { enabled: true, key: 'filter' },
     columnFilters: [
@@ -86,38 +87,28 @@ function NavGroupsTableInner({ data, search, navigate }: DataTableProps) {
 
   const pageCount = table.getPageCount()
   useEffect(() => {
-    ensurePageInRange(pageCount)
+    ensurePageInRange?.(pageCount)
   }, [pageCount, ensurePageInRange])
 
   const rows = table.getRowModel().rows
-  const tableContainerRef = useRef<HTMLDivElement>(null)
-  const rowVirtualizer = useVirtualizer({
-    count: rows.length,
-    getScrollElement: () => tableContainerRef.current,
-    estimateSize: () => 44,
-    overscan: 10,
-  })
-
-  const virtualRows = rowVirtualizer.getVirtualItems()
-  const paddingTop = virtualRows.length > 0 ? virtualRows[0]!.start : 0
-  const paddingBottom =
-    virtualRows.length > 0 ? rowVirtualizer.getTotalSize() - virtualRows[virtualRows.length - 1]!.end : 0
 
   return (
     <div className='space-y-4 max-sm:has-[div[role="toolbar"]]:mb-16'>
       <DataTableToolbar
         table={table}
         searchPlaceholder={t('admin.navgroup.table.searchPlaceholder')}
+        onReload={onReload}
+        isReloading={isReloading}
         filters={[
           {
-            columnId: 'title',
-            title: t('admin.navgroup.table.title'),
-            options: [],
+            columnId: 'scope',
+            title: '范围',
+            options: [{ label: 'APP', value: 'APP' }, { label: 'ADMIN', value: 'ADMIN' }],
           },
         ]}
       />
-      <div className='overflow-hidden rounded-md border'>
-        <div ref={tableContainerRef} className='max-h-[70vh] overflow-auto'>
+      <div className='rounded-md border'>
+        <div>
           <Table>
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
@@ -134,32 +125,15 @@ function NavGroupsTableInner({ data, search, navigate }: DataTableProps) {
             </TableHeader>
             <TableBody>
               {rows?.length ? (
-                <>
-                  {paddingTop > 0 ? (
-                    <TableRow aria-hidden='true' className='border-0 hover:bg-transparent'>
-                      <TableCell colSpan={columns.length} className='p-0' style={{ height: `${paddingTop}px` }} />
-                    </TableRow>
-                  ) : null}
-
-                  {virtualRows.map((virtualRow) => {
-                    const row = rows[virtualRow.index]!
-                    return (
-                      <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
-                        {row.getVisibleCells().map((cell) => (
-                          <TableCell key={cell.id}>
-                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                          </TableCell>
-                        ))}
-                      </TableRow>
-                    )
-                  })}
-
-                  {paddingBottom > 0 ? (
-                    <TableRow aria-hidden='true' className='border-0 hover:bg-transparent'>
-                      <TableCell colSpan={columns.length} className='p-0' style={{ height: `${paddingBottom}px` }} />
-                    </TableRow>
-                  ) : null}
-                </>
+                rows.map((row) => (
+                  <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
               ) : (
                 <TableRow>
                   <TableCell colSpan={columns.length} className='h-24 text-center'>
@@ -177,11 +151,19 @@ function NavGroupsTableInner({ data, search, navigate }: DataTableProps) {
   )
 }
 
-export function NavGroupsTable({ data, search, navigate }: DataTableProps) {
+export function NavGroupsTable({ data, search, navigate, onReload, isReloading }: DataTableProps) {
   const resolvedSearch = search ?? route.useSearch()
   const resolvedNavigate = navigate ?? route.useNavigate()
 
-  return <NavGroupsTableInner data={data} search={resolvedSearch} navigate={resolvedNavigate} />
+  return (
+    <NavGroupsTableInner
+      data={data}
+      search={resolvedSearch}
+      navigate={resolvedNavigate}
+      onReload={onReload}
+      isReloading={isReloading}
+    />
+  )
 }
 
 

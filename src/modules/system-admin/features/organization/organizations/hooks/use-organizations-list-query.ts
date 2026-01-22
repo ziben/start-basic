@@ -1,10 +1,9 @@
 import { useEffect, useMemo } from 'react'
 import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query'
 import { type SortingState } from '@tanstack/react-table'
+import { organizationQueryKeys } from '~/shared/lib/query-keys'
 import { getOrganizationsFn } from '../../../../shared/server-fns/organization.fn'
 import { type Organization } from '../data/schema'
-
-export const ORGANIZATIONS_QUERY_KEY = ['admin-organizations'] as const
 
 type PageData = {
   items: Organization[]
@@ -21,15 +20,14 @@ type UseOrganizationsListQueryInput = {
 }
 
 function buildQueryKey(input: UseOrganizationsListQueryInput) {
-  return [
-    ...ORGANIZATIONS_QUERY_KEY,
-    {
-      pageIndex: input.pageIndex,
-      pageSize: input.pageSize,
-      filter: input.filter ?? '',
-      sorting: input.sorting,
-    },
-  ]
+  const firstSort = input.sorting[0]
+  return organizationQueryKeys.list({
+    page: input.pageIndex + 1,
+    pageSize: input.pageSize,
+    filter: input.filter ?? undefined,
+    sortBy: firstSort?.id,
+    sortDir: firstSort?.id ? (firstSort.desc ? 'desc' : 'asc') : undefined,
+  })
 }
 
 function buildQueryParams(input: UseOrganizationsListQueryInput) {

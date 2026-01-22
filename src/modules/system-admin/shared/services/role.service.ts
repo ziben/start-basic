@@ -111,7 +111,7 @@ export const RoleService = {
 
             // 获取关联的导航组
             const navGroups = await prisma.roleNavGroup.findMany({
-                where: { role: name },
+                where: { roleName: name },
                 include: { navGroup: true }
             })
 
@@ -161,14 +161,14 @@ export const RoleService = {
             return await prisma.$transaction(async (tx) => {
                 // 1. 删除原有的关联
                 await tx.roleNavGroup.deleteMany({
-                    where: { role: roleName },
+                    where: { roleName },
                 })
 
                 // 2. 创建新的关联
                 if (navGroupIds.length > 0) {
                     await tx.roleNavGroup.createMany({
                         data: navGroupIds.map((navGroupId) => ({
-                            role: roleName,
+                            roleName,
                             navGroupId,
                         })),
                     })

@@ -3,9 +3,11 @@
  * 用于前端权限检查和控制
  */
 
+import { useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { createServerFn } from '@tanstack/react-start'
 import { useAuth } from '~/modules/identity/shared/hooks/use-auth'
+import { permissionsQueryKeys } from '../lib/query-keys'
 
 /**
  * 获取当前用户的所有权限
@@ -55,7 +57,7 @@ export function usePermissions(organizationId?: string) {
   const user = session?.user
   
   return useQuery({
-    queryKey: ['permissions', user?.id, organizationId],
+    queryKey: permissionsQueryKeys.list(user?.id, organizationId),
     queryFn: () => getUserPermissionsFn({ data: { organizationId } }),
     enabled: !!user,
     staleTime: 5 * 60 * 1000, // 5分钟缓存
@@ -70,7 +72,7 @@ export function usePermission(permission: string, organizationId?: string) {
   const user = session?.user
   
   return useQuery({
-    queryKey: ['permission', user?.id, permission, organizationId],
+    queryKey: permissionsQueryKeys.check(user?.id, permission, organizationId),
     queryFn: () => checkPermissionFn({ data: { permission, organizationId } }),
     enabled: !!user && !!permission,
     staleTime: 5 * 60 * 1000,
@@ -97,6 +99,21 @@ export function useAllPermissions(permissions: string[], organizationId?: string
   const hasPermission = permissions.every(p => userPermissions?.includes(p))
   
   return { hasPermission, isLoading }
+}
+
+/**
+ * Hook: 批量权限映射（单次请求）
+ */
+export function usePermissionsMap(permissions: string[], organizationId?: string) {
+  const { data: userPermissions, isLoading } = usePermissions(organizationId)
+
+  const permissionSet = useMemo(() => new Set(userPermissions || []), [userPermissions])
+  const map = useMemo(
+    () => Object.fromEntries(permissions.map(permission => [permission, permissionSet.has(permission)])),
+    [permissions, permissionSet]
+  )
+
+  return { map, isLoading }
 }
 
 /**

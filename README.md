@@ -1,72 +1,58 @@
-# Welcome to TanStack.com!
+# Zi Start Basic
 
-This site is built with TanStack Router!
+基于 **TanStack Start** 的全栈应用模板，内置 RBAC、管理后台、国际化、Prisma 数据库等基础能力。
 
-- [TanStack Router Docs](https://tanstack.com/router)
+## 技术栈
 
-It's deployed automagically with Netlify!
+- **框架**：TanStack Start + TanStack Router
+- **UI**：React 19 + Radix UI + Tailwind CSS v4 + shadcn/ui
+- **数据库**：Prisma (LibSQL/SQLite)
+- **认证**：Better Auth + RBAC
+- **状态管理**：TanStack Query
+- **表单/校验**：React Hook Form + Zod
+- **国际化**：i18next（支持数据库动态翻译）
 
-- [Netlify](https://netlify.com/)
+## 目录结构
 
-## Development
+```
+src/
+├── routes/           # 文件路由
+│   ├── __root.tsx    # Provider + beforeLoad
+│   ├── _authenticated/  # 需要登录的页面
+│   ├── (public)/     # 公共页面（登录/注册）
+│   └── admin/        # 管理后台
+├── features/         # 业务模块
+├── components/       # 公共组件
+├── modules/          # 系统模块（auth/admin 等）
+├── shared/           # 共享 hooks/utils/lib
+├── i18n/             # 国际化
+└── styles/           # 全局样式
+```
 
-From your terminal:
+## 快速开始
 
-```sh
+```bash
 pnpm install
 pnpm dev
 ```
 
-This starts your app in development mode, rebuilding assets on file changes.
+## 环境变量
 
-## Editing and previewing the docs of TanStack projects locally
+复制 `.env.example` 为 `.env`，至少配置：
 
-The documentations for all TanStack projects except for `React Charts` are hosted on [https://tanstack.com](https://tanstack.com), powered by this TanStack Router app.
-In production, the markdown doc pages are fetched from the GitHub repos of the projects, but in development they are read from the local file system.
-
-Follow these steps if you want to edit the doc pages of a project (in these steps we'll assume it's [`TanStack/form`](https://github.com/tanstack/form)) and preview them locally :
-
-1. Create a new directory called `tanstack`.
-
-```sh
-mkdir tanstack
+```bash
+BETTER_AUTH_SECRET=your-secret-key-here-min-32-chars
+BETTER_AUTH_URL=http://localhost:3000
+DATABASE_URL=file:./db/dev.db
 ```
 
-2. Enter the directory and clone this repo and the repo of the project there.
+## 常用命令
 
-```sh
-cd tanstack
-git clone git@github.com:TanStack/tanstack.com.git
-git clone git@github.com:TanStack/form.git
-```
-
-> [!NOTE]
-> Your `tanstack` directory should look like this:
->
-> ```
-> tanstack/
->    |
->    +-- form/
->    |
->    +-- tanstack.com/
-> ```
-
-> [!WARNING]
-> Make sure the name of the directory in your local file system matches the name of the project's repo. For example, `tanstack/form` must be cloned into `form` (this is the default) instead of `some-other-name`, because that way, the doc pages won't be found.
-
-3. Enter the `tanstack/tanstack.com` directory, install the dependencies and run the app in dev mode:
-
-```sh
-cd tanstack.com
-pnpm i
-# The app will run on https://localhost:3000 by default
+```bash
 pnpm dev
+pnpm build
+pnpm preview
+pnpm lint
+pnpm check-types
+pnpm test
 ```
-
-4. Now you can visit http://localhost:3000/form/latest/docs/overview in the browser and see the changes you make in `tanstack/form/docs`.
-
-> [!NOTE]
-> The updated pages need to be manually reloaded in the browser.
-
-> [!WARNING]
-> You will need to update the `docs/config.json` file (in the project's repo) if you add a new doc page!

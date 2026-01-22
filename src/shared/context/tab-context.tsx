@@ -10,59 +10,20 @@ const STORAGE_KEY = 'admin-tabs'
 export function TabProvider({ children }: { children: React.ReactNode }) {
     const navigate = useNavigate()
     const location = useLocation()
+    type NavigateTo = Parameters<typeof navigate>[0]['to']
     
     // 根据 URL 自动计算当前的 Scope
     const currentScope = useMemo((): TabScope => {
         return location.pathname.startsWith('/admin') ? 'ADMIN' : 'APP'
     }, [location.pathname])
 
-    // 从 localStorage 初始化 tabs
-    const [tabs, setTabs] = useState<Tab[]>(() => {
-        try {
-            const stored = localStorage.getItem(STORAGE_KEY)
-            let initialTabs: Tab[] = []
-            if (stored) {
-                const parsed = JSON.parse(stored)
-                initialTabs = parsed.map((tab: Tab) => ({
-                    ...tab,
-                    icon: undefined,
-                }))
-            }
+    const getDefaultTabs = (): Tab[] => [
+        { id: 'tab-dashboard-app', title: '控制台', path: '/dashboard', order: -1, closable: false, sortable: false, scope: 'APP', icon: undefined },
+        { id: 'tab-dashboard-admin', title: '系统概览', path: '/admin/dashboard', order: -1, closable: false, sortable: false, scope: 'ADMIN', icon: undefined },
+    ]
 
-            // 确保 APP Dashboard 始终存在
-            if (!initialTabs.find(t => t.path === '/dashboard' && t.scope === 'APP')) {
-                initialTabs.push({
-                    id: 'tab-dashboard-app',
-                    title: '控制台',
-                    path: '/dashboard',
-                    order: -1,
-                    closable: false,
-                    sortable: false,
-                    scope: 'APP'
-                })
-            }
-
-            // 确保 ADMIN Dashboard 始终存在
-            if (!initialTabs.find(t => t.path === '/admin/dashboard' && t.scope === 'ADMIN')) {
-                initialTabs.push({
-                    id: 'tab-dashboard-admin',
-                    title: '系统概览',
-                    path: '/admin/dashboard',
-                    order: -1,
-                    closable: false,
-                    sortable: false,
-                    scope: 'ADMIN'
-                })
-            }
-
-            return initialTabs.sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
-        } catch {
-            return [
-                { id: 'tab-dashboard-app', title: '控制台', path: '/dashboard', order: -1, closable: false, sortable: false, scope: 'APP' },
-                { id: 'tab-dashboard-admin', title: '系统概览', path: '/admin/dashboard', order: -1, closable: false, sortable: false, scope: 'ADMIN' }
-            ]
-        }
-    })
+    // SSR 期间只用默认值，避免 localStorage 导致 hydration mismatch
+    const [tabs, setTabs] = useState<Tab[]>(() => getDefaultTabs())
 
     // 过滤出当前 Scope 下的 tabs
     const scopedTabs = useMemo(() => {
@@ -70,12 +31,60 @@ export function TabProvider({ children }: { children: React.ReactNode }) {
     }, [tabs, currentScope])
 
     const activeTabId = useMemo(() => {
-        // 1. 优先根据当前路径匹配已有的 Tab（考虑 scope）
-        const matchingTab = scopedTabs.find((tab) => tab.path === location.pathname)
+        // 1. 处理 /admin 首页路径，映射到 dashboard
+        const normalizedPath = location.pathname === '/admin' ? '/admin/dashboard' : location.pathname
+
+        // 2. 优先根据当前路径匹配已有的 Tab（考虑 scope）
+        const matchingTab = scopedTabs.find((tab) => tab.path === normalizedPath)
         if (matchingTab) return matchingTab.id
 
         return null
     }, [scopedTabs, location.pathname])
+
+    // 客户端从 localStorage 恢复 tabs
+    useEffect(() => {
+        try {
+            const stored = localStorage.getItem(STORAGE_KEY)
+            if (!stored) return
+
+            const parsed = JSON.parse(stored) as Tab[]
+            const restored = parsed.map((tab) => ({ ...tab, icon: undefined }))
+            const merged = [...restored]
+
+            // 确保 APP Dashboard 始终存在
+            if (!merged.find((t) => t.path === '/dashboard' && t.scope === 'APP')) {
+                merged.push({
+                    id: 'tab-dashboard-app',
+                    title: '控制台',
+                    path: '/dashboard',
+                    order: -1,
+                    closable: false,
+                    sortable: false,
+                    scope: 'APP',
+                    icon: undefined,
+                })
+            }
+
+            // 确保 ADMIN Dashboard 始终存在
+            if (!merged.find((t) => t.path === '/admin/dashboard' && t.scope === 'ADMIN')) {
+                merged.push({
+                    id: 'tab-dashboard-admin',
+                    title: '系统概览',
+                    path: '/admin/dashboard',
+                    order: -1,
+                    closable: false,
+                    sortable: false,
+                    scope: 'ADMIN',
+                    icon: undefined,
+                })
+            }
+
+            // eslint-disable-next-line
+            setTabs(merged.sort((a, b) => (a.order ?? 0) - (b.order ?? 0)))
+        } catch {
+            setTabs(getDefaultTabs())
+        }
+    }, [])
 
     // 持久化 tabs 到 localStorage
     useEffect(() => {
@@ -97,7 +106,7 @@ export function TabProvider({ children }: { children: React.ReactNode }) {
             const existingTab = tabs.find((tab) => tab.path === path)
 
             if (existingTab) {
-                navigate({ to: path } as any)
+                navigate({ to: path as NavigateTo })
                 return true
             }
 
@@ -118,7 +127,7 @@ export function TabProvider({ children }: { children: React.ReactNode }) {
             }
 
             setTabs((prev) => [...prev, newTab])
-            navigate({ to: path } as any)
+            navigate({ to: path as NavigateTo })
             return true
         },
         [tabs, navigate]
@@ -146,7 +155,7 @@ export function TabProvider({ children }: { children: React.ReactNode }) {
                     const scopedTabIndex = scopedTabs.findIndex(t => t.id === tabId)
                     const nextTab = currentScopedNewTabs[scopedTabIndex] || currentScopedNewTabs[scopedTabIndex - 1]
                     if (nextTab) {
-                        navigate({ to: nextTab.path } as any)
+                        navigate({ to: nextTab.path as NavigateTo })
                     }
                 }
             }
@@ -159,7 +168,7 @@ export function TabProvider({ children }: { children: React.ReactNode }) {
         (tabId: string) => {
             const tab = tabs.find((t) => t.id === tabId)
             if (tab && location.pathname !== tab.path) {
-                navigate({ to: tab.path } as any)
+                navigate({ to: tab.path as NavigateTo })
             }
         },
         [tabs, navigate, location.pathname]
@@ -183,7 +192,7 @@ export function TabProvider({ children }: { children: React.ReactNode }) {
         setTabs(protectedTabs)
         const currentScopedDashboard = protectedTabs.find(t => t.scope === currentScope && t.order === -1)
         if (currentScopedDashboard) {
-            navigate({ to: currentScopedDashboard.path } as any)
+            navigate({ to: currentScopedDashboard.path as NavigateTo })
         }
     }, [tabs, navigate, currentScope])
 

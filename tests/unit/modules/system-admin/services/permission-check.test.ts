@@ -5,15 +5,23 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 
 // 使用 vi.hoisted() 解决 mock 提升问题
-const { mockMember } = vi.hoisted(() => ({
+const { mockMember, mockUser, mockRole } = vi.hoisted(() => ({
     mockMember: {
         findFirst: vi.fn(),
+    },
+    mockUser: {
+        findUnique: vi.fn(),
+    },
+    mockRole: {
+        findUnique: vi.fn(),
     },
 }))
 
 vi.mock('@/shared/lib/db', () => ({
     default: {
         member: mockMember,
+        user: mockUser,
+        role: mockRole,
     },
 }))
 
@@ -38,20 +46,23 @@ describe('permission-check', () => {
     const mockMemberWithPermissions = {
         id: 'member1',
         userId: 'user1',
-        systemRole: {
-            id: 'role1',
-            name: 'admin',
-            rolePermissions: [
-                { permission: { name: 'user:create' } },
-                { permission: { name: 'user:read' } },
-                { permission: { name: 'department:create' } },
-            ]
-        }
+        role: 'admin',
+    }
+
+    const mockRoleWithPermissions = {
+        id: 'role1',
+        name: 'GLOBAL:admin',
+        rolePermissions: [
+            { permission: { code: 'user:create' } },
+            { permission: { code: 'user:read' } },
+            { permission: { code: 'department:create' } },
+        ],
     }
 
     describe('checkPermission', () => {
         it('用户有权限时应该返回 true', async () => {
-            mockMember.findFirst.mockResolvedValue(mockMemberWithPermissions)
+            mockUser.findUnique.mockResolvedValue({ role: 'admin' })
+            mockRole.findUnique.mockResolvedValue(mockRoleWithPermissions)
 
             const result = await checkPermission('user1', 'user:create')
 
@@ -59,7 +70,8 @@ describe('permission-check', () => {
         })
 
         it('用户没有权限时应该返回 false', async () => {
-            mockMember.findFirst.mockResolvedValue(mockMemberWithPermissions)
+            mockUser.findUnique.mockResolvedValue({ role: 'admin' })
+            mockRole.findUnique.mockResolvedValue(mockRoleWithPermissions)
 
             const result = await checkPermission('user1', 'user:delete')
 
@@ -67,7 +79,7 @@ describe('permission-check', () => {
         })
 
         it('用户没有成员关系时应该返回 false', async () => {
-            mockMember.findFirst.mockResolvedValue(null)
+            mockUser.findUnique.mockResolvedValue({ role: '' })
 
             const result = await checkPermission('user1', 'user:create')
 
@@ -75,7 +87,7 @@ describe('permission-check', () => {
         })
 
         it('用户没有系统角色时应该返回 false', async () => {
-            mockMember.findFirst.mockResolvedValue({ id: 'member1', systemRole: null })
+            mockUser.findUnique.mockResolvedValue({ role: '' })
 
             const result = await checkPermission('user1', 'user:create')
 
@@ -83,6 +95,8 @@ describe('permission-check', () => {
         })
 
         it('应该支持组织ID筛选', async () => {
+            mockUser.findUnique.mockResolvedValue({ role: 'admin' })
+            mockRole.findUnique.mockResolvedValue(mockRoleWithPermissions)
             mockMember.findFirst.mockResolvedValue(mockMemberWithPermissions)
 
             await checkPermission('user1', 'user:create', { organizationId: 'org1' })
@@ -95,7 +109,7 @@ describe('permission-check', () => {
         })
 
         it('发生错误时应该返回 false', async () => {
-            mockMember.findFirst.mockRejectedValue(new Error('Database error'))
+            mockUser.findUnique.mockRejectedValue(new Error('Database error'))
 
             const result = await checkPermission('user1', 'user:create')
 
@@ -105,13 +119,15 @@ describe('permission-check', () => {
 
     describe('requirePermission', () => {
         it('用户有权限时不应该抛出错误', async () => {
-            mockMember.findFirst.mockResolvedValue(mockMemberWithPermissions)
+            mockUser.findUnique.mockResolvedValue({ role: 'admin' })
+            mockRole.findUnique.mockResolvedValue(mockRoleWithPermissions)
 
             await expect(requirePermission('user1', 'user:create')).resolves.not.toThrow()
         })
 
         it('用户没有权限时应该抛出错误', async () => {
-            mockMember.findFirst.mockResolvedValue(mockMemberWithPermissions)
+            mockUser.findUnique.mockResolvedValue({ role: 'admin' })
+            mockRole.findUnique.mockResolvedValue(mockRoleWithPermissions)
 
             await expect(requirePermission('user1', 'user:delete')).rejects.toThrow('权限不足')
         })
@@ -119,7 +135,8 @@ describe('permission-check', () => {
 
     describe('getUserPermissions', () => {
         it('应该返回用户的所有权限名称', async () => {
-            mockMember.findFirst.mockResolvedValue(mockMemberWithPermissions)
+            mockUser.findUnique.mockResolvedValue({ role: 'admin' })
+            mockRole.findUnique.mockResolvedValue(mockRoleWithPermissions)
 
             const result = await getUserPermissions('user1')
 
@@ -127,7 +144,7 @@ describe('permission-check', () => {
         })
 
         it('用户没有权限时应该返回空数组', async () => {
-            mockMember.findFirst.mockResolvedValue(null)
+            mockUser.findUnique.mockResolvedValue({ role: '' })
 
             const result = await getUserPermissions('user1')
 
@@ -135,7 +152,7 @@ describe('permission-check', () => {
         })
 
         it('发生错误时应该返回空数组', async () => {
-            mockMember.findFirst.mockRejectedValue(new Error('Database error'))
+            mockUser.findUnique.mockRejectedValue(new Error('Database error'))
 
             const result = await getUserPermissions('user1')
 
@@ -145,7 +162,8 @@ describe('permission-check', () => {
 
     describe('checkAnyPermission', () => {
         it('用户有任一权限时应该返回 true', async () => {
-            mockMember.findFirst.mockResolvedValue(mockMemberWithPermissions)
+            mockUser.findUnique.mockResolvedValue({ role: 'admin' })
+            mockRole.findUnique.mockResolvedValue(mockRoleWithPermissions)
 
             const result = await checkAnyPermission('user1', ['user:delete', 'user:create'])
 
@@ -153,7 +171,8 @@ describe('permission-check', () => {
         })
 
         it('用户没有任何权限时应该返回 false', async () => {
-            mockMember.findFirst.mockResolvedValue(mockMemberWithPermissions)
+            mockUser.findUnique.mockResolvedValue({ role: 'admin' })
+            mockRole.findUnique.mockResolvedValue(mockRoleWithPermissions)
 
             const result = await checkAnyPermission('user1', ['user:delete', 'organization:delete'])
 
@@ -163,7 +182,8 @@ describe('permission-check', () => {
 
     describe('checkAllPermissions', () => {
         it('用户有所有权限时应该返回 true', async () => {
-            mockMember.findFirst.mockResolvedValue(mockMemberWithPermissions)
+            mockUser.findUnique.mockResolvedValue({ role: 'admin' })
+            mockRole.findUnique.mockResolvedValue(mockRoleWithPermissions)
 
             const result = await checkAllPermissions('user1', ['user:create', 'user:read'])
 
@@ -171,7 +191,8 @@ describe('permission-check', () => {
         })
 
         it('用户缺少任一权限时应该返回 false', async () => {
-            mockMember.findFirst.mockResolvedValue(mockMemberWithPermissions)
+            mockUser.findUnique.mockResolvedValue({ role: 'admin' })
+            mockRole.findUnique.mockResolvedValue(mockRoleWithPermissions)
 
             const result = await checkAllPermissions('user1', ['user:create', 'user:delete'])
 

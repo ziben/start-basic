@@ -8,6 +8,7 @@ import { toast } from 'sonner'
 import { Route } from '~/routes/(auth)/sign-in'
 import { authClient } from '@/modules/identity/shared/lib/auth-client'
 import { cn } from '@/shared/lib/utils'
+import { userQueryKeys } from '~/shared/lib/query-keys'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
@@ -64,7 +65,7 @@ export function UserAuthForm({ className, redirectTo, ...props }: UserAuthFormPr
       },
       {
         onSuccess: async () => {
-          await queryClient.invalidateQueries({ queryKey: ['user'] })
+          await queryClient.invalidateQueries({ queryKey: userQueryKeys.current })
           if (redirectTo) {
             // If it's a full URL, we might want to just use window.location.href
             // but if it's an internal path, navigate is better.

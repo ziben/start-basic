@@ -6,14 +6,17 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import {
     getPermissionsFn,
-    getAllPermissionsFn,
-    getPermissionFn,
     createPermissionFn,
     updatePermissionFn,
     deletePermissionFn,
-} from '../server-fns/permission.fn'
+} from '../server-fns/rbac.fn'
+import { permissionsQueryKeys, rbacPermissionsQueryKeys } from '~/shared/lib/query-keys'
 
-export const PERMISSIONS_QUERY_KEY = ['permissions']
+type PermissionListItem = {
+    id: string
+    resource?: { name?: string | null } | null
+    action?: { name?: string | null } | null
+}
 
 /**
  * 获取权限列表（分页）
@@ -25,7 +28,7 @@ export function usePermissions(params?: {
     resource?: string
 }) {
     return useQuery({
-        queryKey: [...PERMISSIONS_QUERY_KEY, 'list', params],
+        queryKey: rbacPermissionsQueryKeys.list(params),
         queryFn: async () => {
             return await getPermissionsFn({ data: params })
         }
@@ -40,9 +43,15 @@ export function useAllPermissions(options?: {
     action?: string
 }) {
     return useQuery({
-        queryKey: [...PERMISSIONS_QUERY_KEY, 'all', options],
+        queryKey: rbacPermissionsQueryKeys.allList(options),
         queryFn: async () => {
-            return await getAllPermissionsFn({ data: options })
+            const permissions = (await getPermissionsFn()) as PermissionListItem[]
+            if (!options?.resource && !options?.action) return permissions
+            return permissions.filter((permission: PermissionListItem) => {
+                if (options?.resource && permission.resource?.name !== options.resource) return false
+                if (options?.action && permission.action?.name !== options.action) return false
+                return true
+            })
         }
     })
 }
@@ -52,9 +61,10 @@ export function useAllPermissions(options?: {
  */
 export function usePermission(id: string) {
     return useQuery({
-        queryKey: [...PERMISSIONS_QUERY_KEY, id],
+        queryKey: rbacPermissionsQueryKeys.detail(id),
         queryFn: async () => {
-            return await getPermissionFn({ data: { id } })
+            const permissions = (await getPermissionsFn()) as PermissionListItem[]
+            return permissions.find((permission: PermissionListItem) => permission.id === id) ?? null
         },
         enabled: !!id
     })
@@ -76,7 +86,8 @@ export function useCreatePermission() {
             return await createPermissionFn({ data })
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: PERMISSIONS_QUERY_KEY })
+            queryClient.invalidateQueries({ queryKey: rbacPermissionsQueryKeys.all })
+            queryClient.invalidateQueries({ queryKey: permissionsQueryKeys.checkAll })
             toast.success('权限创建成功')
         },
         onError: (error: Error) => {
@@ -100,7 +111,8 @@ export function useUpdatePermission() {
             return await updatePermissionFn({ data })
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: PERMISSIONS_QUERY_KEY })
+            queryClient.invalidateQueries({ queryKey: rbacPermissionsQueryKeys.all })
+            queryClient.invalidateQueries({ queryKey: permissionsQueryKeys.checkAll })
             toast.success('权限更新成功')
         },
         onError: (error: Error) => {
@@ -120,7 +132,8 @@ export function useDeletePermission() {
             return await deletePermissionFn({ data: { id } })
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: PERMISSIONS_QUERY_KEY })
+            queryClient.invalidateQueries({ queryKey: rbacPermissionsQueryKeys.all })
+            queryClient.invalidateQueries({ queryKey: permissionsQueryKeys.checkAll })
             toast.success('权限删除成功')
         },
         onError: (error: Error) => {

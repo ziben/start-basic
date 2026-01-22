@@ -3,6 +3,7 @@
  */
 
 import prisma from '@/shared/lib/db'
+import type { Prisma } from '~/generated/prisma/client'
 
 // ============ 类型定义 ============
 
@@ -45,6 +46,17 @@ const generateId = (prefix: string) => `${prefix}_${Math.random().toString(36).s
 
 // ============ Service 实现 ============
 
+type OrganizationWithCount = Prisma.OrganizationGetPayload<{
+    include: {
+        _count: {
+            select: {
+                members: true
+                invitations: true
+            }
+        }
+    }
+}>
+
 export const OrganizationService = {
     /**
      * 获取组织列表（分页）
@@ -53,7 +65,7 @@ export const OrganizationService = {
         try {
             const { page = 1, pageSize = 10, filter = '', sortBy, sortDir } = input
 
-            const filterWhere = filter
+            const filterWhere: Prisma.OrganizationWhereInput = filter
                 ? {
                     OR: [
                         { id: { contains: filter } },
@@ -63,11 +75,15 @@ export const OrganizationService = {
                 }
                 : {}
 
+            const orderBy: Prisma.OrganizationOrderByWithRelationInput = sortBy
+                ? { [sortBy]: sortDir ?? 'asc' }
+                : { createdAt: 'desc' }
+
             const [total, organizations] = await Promise.all([
                 prisma.organization.count({ where: filterWhere }),
                 prisma.organization.findMany({
                     where: filterWhere,
-                    orderBy: sortBy ? { [sortBy]: sortDir ?? 'asc' } : { createdAt: 'desc' },
+                    orderBy,
                     skip: (page - 1) * pageSize,
                     take: pageSize,
                     include: {
@@ -81,7 +97,7 @@ export const OrganizationService = {
                 }),
             ])
 
-            const items: OrganizationItem[] = organizations.map((org: any) => ({
+            const items: OrganizationItem[] = (organizations as OrganizationWithCount[]).map((org) => ({
                 id: org.id,
                 name: org.name,
                 slug: org.slug,
@@ -121,6 +137,7 @@ export const OrganizationService = {
                 throw new Error('组织不存在')
             }
 
+            const orgWithCount = organization as OrganizationWithCount
             return {
                 id: organization.id,
                 name: organization.name,
@@ -128,8 +145,8 @@ export const OrganizationService = {
                 logo: organization.logo ?? '',
                 createdAt: organization.createdAt.toISOString(),
                 metadata: organization.metadata ?? '',
-                memberCount: (organization as any)._count.members,
-                invitationCount: (organization as any)._count.invitations,
+                memberCount: orgWithCount._count.members,
+                invitationCount: orgWithCount._count.invitations,
             }
         } catch (error) {
             console.error('获取组织失败:', error)
@@ -175,6 +192,7 @@ export const OrganizationService = {
                 },
             })
 
+            const orgWithCount = organization as OrganizationWithCount
             return {
                 id: organization.id,
                 name: organization.name,
@@ -182,8 +200,8 @@ export const OrganizationService = {
                 logo: organization.logo ?? '',
                 createdAt: organization.createdAt.toISOString(),
                 metadata: organization.metadata ?? '',
-                memberCount: (organization as any)._count.members,
-                invitationCount: (organization as any)._count.invitations,
+                memberCount: orgWithCount._count.members,
+                invitationCount: orgWithCount._count.invitations,
             }
         } catch (error) {
             console.error('创建组织失败:', error)
@@ -214,6 +232,7 @@ export const OrganizationService = {
                 },
             })
 
+            const updatedWithCount = updated as OrganizationWithCount
             return {
                 id: updated.id,
                 name: updated.name,
@@ -221,8 +240,8 @@ export const OrganizationService = {
                 logo: updated.logo ?? '',
                 createdAt: updated.createdAt.toISOString(),
                 metadata: updated.metadata ?? '',
-                memberCount: (updated as any)._count.members,
-                invitationCount: (updated as any)._count.invitations,
+                memberCount: updatedWithCount._count.members,
+                invitationCount: updatedWithCount._count.invitations,
             }
         } catch (error) {
             console.error('更新组织失败:', error)

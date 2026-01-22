@@ -1,10 +1,9 @@
 import { useEffect, useMemo } from 'react'
 import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query'
 import { type SortingState } from '@tanstack/react-table'
+import { adminUsersQueryKeys } from '~/shared/lib/query-keys'
 import { getUsersFn } from '../../../../shared/server-fns/user.fn'
 import { type AdminUser } from '../data/schema'
-
-export const ADMIN_USERS_QUERY_KEY = ['admin-users'] as const
 
 type PageData = {
   items: AdminUser[]
@@ -22,16 +21,15 @@ type UseAdminUsersListQueryInput = {
 }
 
 function buildUsersQueryKey(input: UseAdminUsersListQueryInput) {
-  return [
-    ...ADMIN_USERS_QUERY_KEY,
-    {
-      pageIndex: input.pageIndex,
-      pageSize: input.pageSize,
-      filter: input.filter ?? '',
-      sorting: input.sorting,
-      banned: input.banned,
-    },
-  ]
+  const firstSort = input.sorting[0]
+  return adminUsersQueryKeys.list({
+    page: input.pageIndex + 1,
+    pageSize: input.pageSize,
+    filter: input.filter ?? undefined,
+    sortBy: firstSort?.id,
+    sortDir: firstSort?.id ? (firstSort.desc ? 'desc' : 'asc') : undefined,
+    banned: input.banned,
+  })
 }
 
 function buildQueryParams(input: UseAdminUsersListQueryInput) {

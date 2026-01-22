@@ -44,6 +44,7 @@ export default defineConfig({
         replacement: SRC_DIR,
       },
     ],
+    dedupe: ['react', 'react-dom', 'react/jsx-runtime', 'react/jsx-dev-runtime'],
   },
   ssr: {
     noExternal: ['@tanstack/react-router'],
@@ -77,6 +78,9 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],
     globals: true,
+    deps: {
+      inline: ['react', 'react-dom', 'react/jsx-runtime', 'react/jsx-dev-runtime'],
+    },
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html'],

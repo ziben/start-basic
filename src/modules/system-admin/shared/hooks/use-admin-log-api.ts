@@ -6,6 +6,7 @@
 
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { getLogsFn } from '../server-fns/log.fn'
+import { logQueryKeys } from '~/shared/lib/query-keys'
 
 export type AdminSystemLog = {
   id: string
@@ -47,26 +48,6 @@ export type AdminLogsPage = {
   page: number
   pageSize: number
   pageCount: number
-}
-
-// ============ Query Keys ============
-
-export const logQueryKeys = {
-  all: ['admin', 'logs'] as const,
-  list: (params: {
-    type: 'system' | 'audit'
-    page: number
-    pageSize: number
-    filter?: string
-    level?: 'debug' | 'info' | 'warn' | 'error'
-    success?: boolean
-    action?: string
-    actorUserId?: string
-    targetType?: string
-    targetId?: string
-    from?: string
-    to?: string
-  }) => [...logQueryKeys.all, params] as const,
 }
 
 // ============ Query Hooks ============

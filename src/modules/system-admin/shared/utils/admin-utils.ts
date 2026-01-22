@@ -1,7 +1,7 @@
 import type { AdminUser } from '@/modules/system-admin/features/identity/users'
 
 // 本地类型定义，避免导入 Prisma Client
-type PrismaUser = {
+export type PrismaUser = {
   id: string
   name: string
   email: string

@@ -33,6 +33,7 @@ import {
 } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
 import { toast } from 'sonner'
+import { roleQueryKeys } from '~/shared/lib/query-keys'
 import { useRolesContext } from '../context/roles-context'
 
 const formSchema = z.object({
@@ -41,8 +42,8 @@ const formSchema = z.object({
   description: z.string().optional(),
   scope: z.enum(['GLOBAL', 'ORGANIZATION', 'CUSTOM']),
   category: z.string().optional(),
-  isTemplate: z.boolean().default(false),
-  isActive: z.boolean().default(true),
+  isTemplate: z.boolean(),
+  isActive: z.boolean(),
 })
 
 type FormValues = z.infer<typeof formSchema>
@@ -97,7 +98,7 @@ export function RoleMutateDialog() {
       return await createRoleFn({ data })
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['rbac', 'roles'] })
+      queryClient.invalidateQueries({ queryKey: roleQueryKeys.all })
       toast.success('创建成功')
       closeCreateDialog()
       form.reset()
@@ -120,7 +121,7 @@ export function RoleMutateDialog() {
       })
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['rbac', 'roles'] })
+      queryClient.invalidateQueries({ queryKey: roleQueryKeys.all })
       toast.success('更新成功')
       closeEditDialog()
     },

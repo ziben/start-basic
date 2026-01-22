@@ -3,7 +3,7 @@ import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { bulkDeleteMembersFn } from '../../../../shared/server-fns/member.fn'
 import { ConfirmDialog } from '@/components/confirm-dialog'
-import { MEMBERS_QUERY_KEY } from '../hooks/use-members-list-query'
+import { memberQueryKeys } from '~/shared/lib/query-keys'
 import { useMembersOptimisticUpdate, createBulkDeleteUpdateFn } from '../hooks/use-members-optimistic-update'
 import { MemberMutateDialog } from './member-mutate-dialog'
 import { useMembers } from './members-provider'
@@ -17,7 +17,7 @@ export function MembersDialogs() {
       return await bulkDeleteMembersFn({ data: { ids: [input.id] } })
     },
     ...getOptimisticMutationOptions({
-      queryKey: MEMBERS_QUERY_KEY,
+      queryKey: memberQueryKeys.all,
       updateFn: (members, variables) => createBulkDeleteUpdateFn(members, [variables.id]),
     }),
   })

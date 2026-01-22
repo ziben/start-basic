@@ -4,7 +4,7 @@ import { toast } from 'sonner'
 import { bulkDeleteUsersFn } from '../../../../shared/server-fns/user.fn'
 import { ConfirmDeleteDialog } from '@/components/confirm-delete-dialog'
 import { type AdminUser } from '../data/schema'
-import { ADMIN_USERS_QUERY_KEY } from '../hooks/use-admin-users-list-query'
+import { adminUsersQueryKeys } from '~/shared/lib/query-keys'
 
 type AdminUserMultiDeleteDialogProps<TData> = {
   open: boolean
@@ -26,10 +26,10 @@ export function AdminUsersMultiDeleteDialog<TData>({
       return await bulkDeleteUsersFn({ data: input })
     },
     onMutate: async (input) => {
-      await queryClient.cancelQueries({ queryKey: ADMIN_USERS_QUERY_KEY })
-      const previous = queryClient.getQueriesData({ queryKey: ADMIN_USERS_QUERY_KEY })
+      await queryClient.cancelQueries({ queryKey: adminUsersQueryKeys.all })
+      const previous = queryClient.getQueriesData({ queryKey: adminUsersQueryKeys.all })
 
-      queryClient.setQueriesData({ queryKey: ADMIN_USERS_QUERY_KEY }, (old: any) => {
+      queryClient.setQueriesData({ queryKey: adminUsersQueryKeys.all }, (old: any) => {
         if (!old || !Array.isArray(old.items)) return old
         const nextItems = old.items.filter((u: AdminUser) => !input.ids.includes(u.id))
         const deleted = old.items.length - nextItems.length
@@ -57,7 +57,7 @@ export function AdminUsersMultiDeleteDialog<TData>({
       }
     },
     onSettled: async () => {
-      await queryClient.invalidateQueries({ queryKey: ADMIN_USERS_QUERY_KEY })
+      await queryClient.invalidateQueries({ queryKey: adminUsersQueryKeys.all })
     },
   })
 

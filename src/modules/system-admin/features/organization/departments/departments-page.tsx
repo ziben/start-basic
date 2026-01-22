@@ -3,6 +3,7 @@ import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translat
 import { AppHeaderMain } from '~/components/layout/app-header-main'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useQuery } from '@tanstack/react-query'
+import { organizationQueryKeys } from '~/shared/lib/query-keys'
 import { getOrganizationsFn } from '../../../shared/server-fns/organization.fn'
 import { DepartmentsDialogs } from './components/departments-dialogs'
 import { DepartmentsPrimaryButtons } from './components/departments-primary-buttons'
@@ -15,7 +16,7 @@ export default function DepartmentsPage() {
   const [selectedOrgId, setSelectedOrgId] = useState<string>('')
 
   const { data: orgsData } = useQuery({
-    queryKey: ['organizations'],
+    queryKey: organizationQueryKeys.list({ page: 1, pageSize: 100 }),
     queryFn: async () => {
       const result = await getOrganizationsFn({ data: { page: 1, pageSize: 100 } })
       return result

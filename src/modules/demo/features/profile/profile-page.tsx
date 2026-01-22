@@ -1,4 +1,5 @@
 import { useSuspenseQuery } from '@tanstack/react-query'
+import { userQueryKeys } from '~/shared/lib/query-keys'
 import { getUserProfileFn } from '~/modules/demo/shared/server-fns/profile.fn'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -12,7 +13,7 @@ import {
 
 export function Profile() {
   const { data: profile } = useSuspenseQuery({
-    queryKey: ['user-profile'],
+    queryKey: userQueryKeys.profile,
     queryFn: () => getUserProfileFn(),
   })
 

@@ -3,7 +3,7 @@ import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { deleteDepartmentFn } from '../../../../shared/server-fns/department.fn'
 import { ConfirmDialog } from '@/components/confirm-dialog'
-import { DEPARTMENTS_QUERY_KEY } from '../hooks/use-departments-query'
+import { departmentQueryKeys } from '~/shared/lib/query-keys'
 import { useDepartmentsOptimisticUpdate } from '../hooks/use-departments-optimistic-update'
 import { DepartmentMutateDialog } from './department-mutate-dialog'
 import { useDepartments } from './departments-provider'
@@ -23,7 +23,7 @@ export function DepartmentsDialogs({ organizationId, departments }: DepartmentsD
       return await deleteDepartmentFn({ data: { id: input.id } })
     },
     ...getOptimisticMutationOptions({
-      queryKey: DEPARTMENTS_QUERY_KEY,
+      queryKey: departmentQueryKeys.byOrg(organizationId),
       updateFn: (depts, variables) => depts.filter((d) => d.id !== variables.id),
     }),
   })

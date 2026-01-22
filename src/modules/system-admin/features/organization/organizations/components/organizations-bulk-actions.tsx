@@ -1,15 +1,11 @@
 import { useState } from 'react'
-import { useMutation } from '@tanstack/react-query'
 import { type Table } from '@tanstack/react-table'
 import { Trash2, Download } from 'lucide-react'
 import { toast } from 'sonner'
-import { bulkDeleteOrganizationsFn } from '../../../../shared/server-fns/organization.fn'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { DataTableBulkActions as BulkActionsToolbar } from '@/components/data-table'
 import { type Organization } from '../data/schema'
-import { ORGANIZATIONS_QUERY_KEY } from '../hooks/use-organizations-list-query'
-import { useOrganizationsOptimisticUpdate, createBulkDeleteUpdateFn } from '../hooks/use-organizations-optimistic-update'
 import { OrganizationsMultiDeleteDialog } from './organizations-multi-delete-dialog'
 
 type OrganizationsBulkActionsProps<TData> = {

@@ -1,9 +1,10 @@
 import { useQuery } from '@tanstack/react-query'
+import { authQueryKeys } from '~/shared/lib/query-keys'
 import { authClient } from '@/modules/identity/shared/lib/auth-client'
 
 export function useAuth() {
   return useQuery({
-    queryKey: ['auth-session'],
+    queryKey: authQueryKeys.session,
     queryFn: async () => {
       try {
         const sessionResponse = await authClient.getSession()

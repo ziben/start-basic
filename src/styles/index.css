@@ -16,16 +16,17 @@
   }
 
   html {
-    @apply overflow-x-hidden;
+    @apply overflow-hidden;
   }
 
   body {
-    @apply min-h-svh w-full bg-background text-foreground has-[div[data-variant='inset']]:bg-sidebar;
+    @apply h-svh w-full overflow-hidden bg-background text-foreground has-[div[data-variant='inset']]:bg-sidebar;
   }
 
-  /* Override Radix scroll locking for sticky headers */
+  /* Override Radix scroll locking to prevent layout shift and scrollbars */
   body[data-scroll-locked] {
-    overflow: unset !important;
+    overflow: hidden !important;
+    padding-right: 0 !important;
   }
 
   /* Cursor pointer for buttons */

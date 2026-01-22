@@ -94,7 +94,7 @@ const AssignRoleNavGroupsSchema = z.object({
 
 export const getRolesFn = createServerFn({ method: 'GET' })
   .inputValidator((data: z.infer<typeof ListRolesSchema>) => ListRolesSchema.parse(data || {}))
-  .handler(async ({ data }) => {
+  .handler(async ({ data }: { data: z.infer<typeof ListRolesSchema> }) => {
     await requireAdmin('ListRoles')
     const prisma = (await import('@/shared/lib/db')).default
     
@@ -140,14 +140,14 @@ export const getRolesFn = createServerFn({ method: 'GET' })
 
 export const getRoleFn = createServerFn({ method: 'GET' })
   .inputValidator((data: { id: string }) => data)
-  .handler(async ({ data }) => {
+  .handler(async ({ data }: { data: { id: string } }) => {
     await requireAdmin('GetRoleDetail')
     const prisma = (await import('@/shared/lib/db')).default
     
     return prisma.role.findUnique({
       where: { id: data.id },
       include: {
-        roleNavGroups: true,
+        navGroupLinks: true,
         rolePermissions: {
           include: {
             permission: {
@@ -164,7 +164,7 @@ export const getRoleFn = createServerFn({ method: 'GET' })
 
 export const createRoleFn = createServerFn({ method: 'POST' })
   .inputValidator((data: z.infer<typeof CreateRoleSchema>) => CreateRoleSchema.parse(data))
-  .handler(async ({ data }) => {
+  .handler(async ({ data }: { data: z.infer<typeof CreateRoleSchema> }) => {
     await requireAdmin('CreateRole')
     const prisma = (await import('@/shared/lib/db')).default
     
@@ -176,7 +176,7 @@ export const createRoleFn = createServerFn({ method: 'POST' })
         name: `${data.scope}:${data.name}`,
         isSystem: false,
         rolePermissions: permissionIds ? {
-          create: permissionIds.map(permissionId => ({
+          create: permissionIds.map((permissionId: string) => ({
             permissionId,
           })),
         } : undefined,
@@ -199,7 +199,7 @@ export const createRoleFn = createServerFn({ method: 'POST' })
 
 export const updateRoleFn = createServerFn({ method: 'POST' })
   .inputValidator((data: z.infer<typeof UpdateRoleSchema>) => UpdateRoleSchema.parse(data))
-  .handler(async ({ data }) => {
+  .handler(async ({ data }: { data: z.infer<typeof UpdateRoleSchema> }) => {
     await requireAdmin('UpdateRole')
     const prisma = (await import('@/shared/lib/db')).default
     
@@ -226,7 +226,7 @@ export const updateRoleFn = createServerFn({ method: 'POST' })
       
       // 创建新的权限关联
       await prisma.rolePermission.createMany({
-        data: permissionIds.map(permissionId => ({
+        data: permissionIds.map((permissionId: string) => ({
           roleId: id,
           permissionId,
         })),
@@ -242,7 +242,7 @@ export const updateRoleFn = createServerFn({ method: 'POST' })
 
 export const deleteRoleFn = createServerFn({ method: 'POST' })
   .inputValidator((data: { id: string }) => data)
-  .handler(async ({ data }) => {
+  .handler(async ({ data }: { data: { id: string } }) => {
     await requireAdmin('DeleteRole')
     const prisma = (await import('@/shared/lib/db')).default
     
@@ -265,7 +265,7 @@ export const deleteRoleFn = createServerFn({ method: 'POST' })
 
 export const assignRoleNavGroupsFn = createServerFn({ method: 'POST' })
   .inputValidator((data: z.infer<typeof AssignRoleNavGroupsSchema>) => AssignRoleNavGroupsSchema.parse(data))
-  .handler(async ({ data }) => {
+  .handler(async ({ data }: { data: z.infer<typeof AssignRoleNavGroupsSchema> }) => {
     await requireAdmin('AssignRoleNavGroups')
     const prisma = (await import('@/shared/lib/db')).default
     
@@ -274,7 +274,7 @@ export const assignRoleNavGroupsFn = createServerFn({ method: 'POST' })
 
     // 删除旧关联
     await prisma.roleNavGroup.deleteMany({
-      where: { role: role.name }
+      where: { roleName: role.name }
     })
 
     // 创建新关联
@@ -285,7 +285,7 @@ export const assignRoleNavGroupsFn = createServerFn({ method: 'POST' })
 
       await prisma.roleNavGroup.createMany({
         data: navGroups.map(ng => ({
-          role: role.name,
+          roleName: role.name,
           navGroupId: ng.id
         }))
       })
@@ -303,67 +303,33 @@ export const assignRoleNavGroupsFn = createServerFn({ method: 'POST' })
 export const getResourcesFn = createServerFn({ method: 'GET' })
   .handler(async () => {
     await requireAdmin('ListResources')
-    const prisma = (await import('@/shared/lib/db')).default
-    
-    return prisma.resource.findMany({
-      include: {
-        actions: true,
-        permissions: true,
-      },
-      orderBy: { name: 'asc' },
-    })
+    const { ResourceService } = await import('../services/rbac-resource.service')
+    return ResourceService.getResources()
   })
 
 export const createResourceFn = createServerFn({ method: 'POST' })
   .inputValidator((data: z.infer<typeof CreateResourceSchema>) => CreateResourceSchema.parse(data))
-  .handler(async ({ data }) => {
+  .handler(async ({ data }: { data: z.infer<typeof CreateResourceSchema> }) => {
     await requireAdmin('CreateResource')
-    const prisma = (await import('@/shared/lib/db')).default
-    
-    return prisma.resource.create({
-      data: {
-        ...data,
-        isSystem: false,
-      },
-    })
+    const { ResourceService } = await import('../services/rbac-resource.service')
+    return ResourceService.createResource(data)
   })
 
 export const updateResourceFn = createServerFn({ method: 'POST' })
   .inputValidator((data: z.infer<typeof UpdateResourceSchema>) => UpdateResourceSchema.parse(data))
-  .handler(async ({ data }) => {
+  .handler(async ({ data }: { data: z.infer<typeof UpdateResourceSchema> }) => {
     await requireAdmin('UpdateResource')
-    const prisma = (await import('@/shared/lib/db')).default
-    
+    const { ResourceService } = await import('../services/rbac-resource.service')
     const { id, ...updateData } = data
-    
-    // 检查是否是系统资源
-    const resource = await prisma.resource.findUnique({ where: { id } })
-    if (resource?.isSystem) {
-      throw new Error('系统资源不允许修改')
-    }
-    
-    return prisma.resource.update({
-      where: { id },
-      data: updateData,
-    })
+    return ResourceService.updateResource(id, updateData)
   })
 
 export const deleteResourceFn = createServerFn({ method: 'POST' })
   .inputValidator((data: { id: string }) => data)
-  .handler(async ({ data }) => {
+  .handler(async ({ data }: { data: { id: string } }) => {
     await requireAdmin('DeleteResource')
-    const prisma = (await import('@/shared/lib/db')).default
-    
-    // 检查是否是系统资源
-    const resource = await prisma.resource.findUnique({ where: { id: data.id } })
-    if (resource?.isSystem) {
-      throw new Error('系统资源不允许删除')
-    }
-    
-    await prisma.resource.delete({
-      where: { id: data.id },
-    })
-    
+    const { ResourceService } = await import('../services/rbac-resource.service')
+    await ResourceService.deleteResource(data.id)
     return { success: true }
   })
 
@@ -371,72 +337,35 @@ export const deleteResourceFn = createServerFn({ method: 'POST' })
 
 export const getActionsFn = createServerFn({ method: 'GET' })
   .inputValidator((data?: { resourceId?: string }) => data || {})
-  .handler(async ({ data }) => {
+  .handler(async ({ data }: { data: { resourceId?: string } }) => {
     await requireAdmin('ListActions')
-    const prisma = (await import('@/shared/lib/db')).default
-    
-    return prisma.action.findMany({
-      where: data.resourceId ? { resourceId: data.resourceId } : undefined,
-      include: {
-        resource: true,
-      },
-      orderBy: { name: 'asc' },
-    })
+    const { ResourceService } = await import('../services/rbac-resource.service')
+    return ResourceService.getActions(data.resourceId)
   })
 
 export const createActionFn = createServerFn({ method: 'POST' })
   .inputValidator((data: z.infer<typeof CreateActionSchema>) => CreateActionSchema.parse(data))
-  .handler(async ({ data }) => {
+  .handler(async ({ data }: { data: z.infer<typeof CreateActionSchema> }) => {
     await requireAdmin('CreateAction')
-    const prisma = (await import('@/shared/lib/db')).default
-    
-    return prisma.action.create({
-      data: {
-        ...data,
-        isSystem: false,
-      },
-      include: {
-        resource: true,
-      },
-    })
+    const { ResourceService } = await import('../services/rbac-resource.service')
+    return ResourceService.createAction(data)
   })
 
 export const updateActionFn = createServerFn({ method: 'POST' })
   .inputValidator((data: z.infer<typeof UpdateActionSchema>) => UpdateActionSchema.parse(data))
-  .handler(async ({ data }) => {
+  .handler(async ({ data }: { data: z.infer<typeof UpdateActionSchema> }) => {
     await requireAdmin('UpdateAction')
-    const prisma = (await import('@/shared/lib/db')).default
-    
+    const { ResourceService } = await import('../services/rbac-resource.service')
     const { id, ...updateData } = data
-    
-    // 检查是否是系统操作
-    const action = await prisma.action.findUnique({ where: { id } })
-    if (action?.isSystem) {
-      throw new Error('系统操作不允许修改')
-    }
-    
-    return prisma.action.update({
-      where: { id },
-      data: updateData,
-    })
+    return ResourceService.updateAction(id, updateData)
   })
 
 export const deleteActionFn = createServerFn({ method: 'POST' })
   .inputValidator((data: { id: string }) => data)
-  .handler(async ({ data }) => {
+  .handler(async ({ data }: { data: { id: string } }) => {
     await requireAdmin('DeleteAction')
-    const prisma = (await import('@/shared/lib/db')).default
-    
-    // 检查是否是系统操作
-    const action = await prisma.action.findUnique({ where: { id: data.id } })
-    if (action?.isSystem) {
-      throw new Error('系统操作不允许删除')
-    }
-    
-    await prisma.action.delete({
-      where: { id: data.id },
-    })
-    
+    const { ResourceService } = await import('../services/rbac-resource.service')
+    await ResourceService.deleteAction(data.id)
     return { success: true }
   })
 
@@ -445,82 +374,33 @@ export const deleteActionFn = createServerFn({ method: 'POST' })
 export const getPermissionsFn = createServerFn({ method: 'GET' })
   .handler(async () => {
     await requireAdmin('ListPermissions')
-    const prisma = (await import('@/shared/lib/db')).default
-    
-    return prisma.permission.findMany({
-      include: {
-        resource: true,
-        action: true,
-      },
-      orderBy: { code: 'asc' },
-    })
+    const { ResourceService } = await import('../services/rbac-resource.service')
+    return ResourceService.getPermissions()
   })
 
 export const createPermissionFn = createServerFn({ method: 'POST' })
   .inputValidator((data: z.infer<typeof CreatePermissionSchema>) => CreatePermissionSchema.parse(data))
-  .handler(async ({ data }) => {
+  .handler(async ({ data }: { data: z.infer<typeof CreatePermissionSchema> }) => {
     await requireAdmin('CreatePermission')
-    const prisma = (await import('@/shared/lib/db')).default
-    
-    // 获取资源和操作信息
-    const resource = await prisma.resource.findUnique({ where: { id: data.resourceId } })
-    const action = await prisma.action.findUnique({ where: { id: data.actionId } })
-    
-    if (!resource || !action) {
-      throw new Error('资源或操作不存在')
-    }
-    
-    const code = `${resource.name}:${action.name}`
-    
-    return prisma.permission.create({
-      data: {
-        ...data,
-        code,
-        isSystem: false,
-      },
-      include: {
-        resource: true,
-        action: true,
-      },
-    })
+    const { ResourceService } = await import('../services/rbac-resource.service')
+    return ResourceService.createPermission(data)
   })
 
 export const updatePermissionFn = createServerFn({ method: 'POST' })
   .inputValidator((data: z.infer<typeof UpdatePermissionSchema>) => UpdatePermissionSchema.parse(data))
-  .handler(async ({ data }) => {
+  .handler(async ({ data }: { data: z.infer<typeof UpdatePermissionSchema> }) => {
     await requireAdmin('UpdatePermission')
-    const prisma = (await import('@/shared/lib/db')).default
-    
+    const { ResourceService } = await import('../services/rbac-resource.service')
     const { id, ...updateData } = data
-    
-    // 检查是否是系统权限
-    const permission = await prisma.permission.findUnique({ where: { id } })
-    if (permission?.isSystem) {
-      throw new Error('系统权限不允许修改')
-    }
-    
-    return prisma.permission.update({
-      where: { id },
-      data: updateData,
-    })
+    return ResourceService.updatePermission(id, updateData)
   })
 
 export const deletePermissionFn = createServerFn({ method: 'POST' })
   .inputValidator((data: { id: string }) => data)
-  .handler(async ({ data }) => {
+  .handler(async ({ data }: { data: { id: string } }) => {
     await requireAdmin('DeletePermission')
-    const prisma = (await import('@/shared/lib/db')).default
-    
-    // 检查是否是系统权限
-    const permission = await prisma.permission.findUnique({ where: { id: data.id } })
-    if (permission?.isSystem) {
-      throw new Error('系统权限不允许删除')
-    }
-    
-    await prisma.permission.delete({
-      where: { id: data.id },
-    })
-    
+    const { ResourceService } = await import('../services/rbac-resource.service')
+    await ResourceService.deletePermission(data.id)
     return { success: true }
   })
 
@@ -528,7 +408,7 @@ export const deletePermissionFn = createServerFn({ method: 'POST' })
 
 export const assignPermissionsFn = createServerFn({ method: 'POST' })
   .inputValidator((data: z.infer<typeof AssignPermissionsSchema>) => AssignPermissionsSchema.parse(data))
-  .handler(async ({ data }) => {
+  .handler(async ({ data }: { data: z.infer<typeof AssignPermissionsSchema> }) => {
     await requireAdmin('AssignPermissions')
     const prisma = (await import('@/shared/lib/db')).default
     
@@ -545,7 +425,7 @@ export const assignPermissionsFn = createServerFn({ method: 'POST' })
     
     // 创建新的权限关联
     await prisma.rolePermission.createMany({
-      data: data.permissionIds.map(permissionId => ({
+      data: data.permissionIds.map((permissionId: string) => ({
         roleId: data.roleId,
         permissionId,
       })),

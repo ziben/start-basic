@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo } from 'react'
 import { z } from 'zod'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
@@ -27,8 +27,8 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { getErrorMessage } from '@/shared/lib/error-handler'
+import { memberQueryKeys, organizationQueryKeys, userQueryKeys } from '~/shared/lib/query-keys'
 import { type Member } from '../data/schema'
-import { MEMBERS_QUERY_KEY } from '../hooks/use-members-list-query'
 
 type MemberMutateDialogProps = {
   currentRow?: Member
@@ -40,7 +40,7 @@ export function MemberMutateDialog({ currentRow, open, onOpenChange }: MemberMut
   const isEdit = !!currentRow
 
   const { data: usersData } = useQuery({
-    queryKey: ['users'],
+    queryKey: userQueryKeys.list({ page: 1, pageSize: 50 }),
     queryFn: async () => {
       const result = await getUsersFn({ data: { page: 1, pageSize: 50 } })
       return result
@@ -49,7 +49,7 @@ export function MemberMutateDialog({ currentRow, open, onOpenChange }: MemberMut
   })
 
   const { data: orgsData } = useQuery({
-    queryKey: ['organizations'],
+    queryKey: organizationQueryKeys.list({ page: 1, pageSize: 50 }),
     queryFn: async () => {
       const result = await getOrganizationsFn({ data: { page: 1, pageSize: 50 } })
       return result
@@ -104,6 +104,11 @@ export function MemberMutateDialog({ currentRow, open, onOpenChange }: MemberMut
     defaultValues: useMemo(() => toFormValues(currentRow), [currentRow, toFormValues]),
   })
 
+  const selectedOrganizationId = useWatch({
+    control: form.control,
+    name: 'organizationId',
+  })
+
   useEffect(() => {
     if (open) {
       form.reset(toFormValues(currentRow))
@@ -117,7 +122,7 @@ export function MemberMutateDialog({ currentRow, open, onOpenChange }: MemberMut
       return await createMemberFn({ data: data as any })
     },
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: MEMBERS_QUERY_KEY })
+      await queryClient.invalidateQueries({ queryKey: memberQueryKeys.all })
       onOpenChange(false)
       form.reset()
     },
@@ -137,7 +142,7 @@ export function MemberMutateDialog({ currentRow, open, onOpenChange }: MemberMut
       })
     },
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: MEMBERS_QUERY_KEY })
+      await queryClient.invalidateQueries({ queryKey: memberQueryKeys.all })
       onOpenChange(false)
       form.reset()
     },
@@ -254,7 +259,7 @@ export function MemberMutateDialog({ currentRow, open, onOpenChange }: MemberMut
                     <FormLabel className='col-span-2 text-end'>部门</FormLabel>
                     <div className='col-span-4'>
                       <DepartmentSelector
-                        organizationId={isEdit ? currentRow?.organizationId! : (form.watch('organizationId') || '')}
+                        organizationId={isEdit ? currentRow?.organizationId ?? '' : selectedOrganizationId || ''}
                         value={field.value}
                         onValueChange={field.onChange}
                       />

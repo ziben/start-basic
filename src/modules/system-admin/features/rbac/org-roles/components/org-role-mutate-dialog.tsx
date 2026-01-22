@@ -33,6 +33,7 @@ import {
 } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 import { toast } from "sonner"
+import { rbacOrgRolesQueryKeys } from '~/shared/lib/query-keys'
 import { useOrgRolesContext } from "../context/org-roles-context"
 import { useOrgRoleTemplatesQuery } from "../hooks/use-org-roles-queries"
 
@@ -97,7 +98,7 @@ export function OrgRoleMutateDialog() {
       data: { ...data, organizationId } 
     }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["rbac", "org-roles"] })
+      queryClient.invalidateQueries({ queryKey: rbacOrgRolesQueryKeys.all })
       toast.success("组织角色创建成功")
       closeMutateDialog()
     },
@@ -119,7 +120,7 @@ export function OrgRoleMutateDialog() {
       })
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["rbac", "org-roles"] })
+      queryClient.invalidateQueries({ queryKey: rbacOrgRolesQueryKeys.all })
       toast.success("组织角色更新成功")
       closeMutateDialog()
     },

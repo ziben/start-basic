@@ -1,10 +1,10 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { type Table } from '@tanstack/react-table'
 import { toast } from 'sonner'
+import { organizationQueryKeys } from '~/shared/lib/query-keys'
 import { bulkDeleteOrganizationsFn } from '../../../../shared/server-fns/organization.fn'
 import { ConfirmDeleteDialog } from '@/components/confirm-delete-dialog'
 import { type Organization } from '../data/schema'
-import { ORGANIZATIONS_QUERY_KEY } from '../hooks/use-organizations-list-query'
 
 type OrganizationsMultiDeleteDialogProps<TData> = {
   open: boolean
@@ -26,10 +26,10 @@ export function OrganizationsMultiDeleteDialog<TData>({
       return await bulkDeleteOrganizationsFn({ data: input })
     },
     onMutate: async (input) => {
-      await queryClient.cancelQueries({ queryKey: ORGANIZATIONS_QUERY_KEY })
-      const previous = queryClient.getQueriesData({ queryKey: ORGANIZATIONS_QUERY_KEY })
+      await queryClient.cancelQueries({ queryKey: organizationQueryKeys.all })
+      const previous = queryClient.getQueriesData({ queryKey: organizationQueryKeys.all })
 
-      queryClient.setQueriesData({ queryKey: ORGANIZATIONS_QUERY_KEY }, (old: any) => {
+      queryClient.setQueriesData({ queryKey: organizationQueryKeys.all }, (old: any) => {
         if (!old || !Array.isArray(old.items)) return old
         const nextItems = old.items.filter((org: Organization) => !input.ids.includes(org.id))
         const deleted = old.items.length - nextItems.length
@@ -57,7 +57,7 @@ export function OrganizationsMultiDeleteDialog<TData>({
       }
     },
     onSettled: async () => {
-      await queryClient.invalidateQueries({ queryKey: ORGANIZATIONS_QUERY_KEY })
+      await queryClient.invalidateQueries({ queryKey: organizationQueryKeys.all })
     },
   })
 

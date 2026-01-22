@@ -6,8 +6,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { authClient } from '~/modules/identity/shared/lib/auth-client'
-
-export const ORG_ROLES_QUERY_KEY = ['org-roles']
+import { orgPermissionQueryKeys, orgRolesQueryKeys } from '~/shared/lib/query-keys'
 
 // 角色类型定义
 export interface OrgRole {
@@ -24,7 +23,7 @@ export interface OrgRole {
  */
 export function useOrgRoles(organizationId: string) {
     return useQuery({
-        queryKey: [...ORG_ROLES_QUERY_KEY, organizationId],
+        queryKey: orgRolesQueryKeys.list(organizationId),
         queryFn: async () => {
             const { data, error } = await authClient.organization.listRoles({
                 query: { organizationId }
@@ -42,7 +41,7 @@ export function useOrgRoles(organizationId: string) {
 export function useOrgRole(params: { roleId?: string; roleName?: string; organizationId: string }) {
     const { roleId, roleName, organizationId } = params
     return useQuery({
-        queryKey: [...ORG_ROLES_QUERY_KEY, organizationId, roleId || roleName],
+        queryKey: orgRolesQueryKeys.detail(organizationId, roleId || roleName),
         queryFn: async () => {
             const { data, error } = await authClient.organization.getRole({
                 query: {
@@ -80,7 +79,7 @@ export function useCreateOrgRole() {
         },
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({
-                queryKey: [...ORG_ROLES_QUERY_KEY, variables.organizationId]
+                queryKey: orgRolesQueryKeys.list(variables.organizationId)
             })
             toast.success('角色创建成功')
         },
@@ -117,7 +116,7 @@ export function useUpdateOrgRole() {
         },
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({
-                queryKey: [...ORG_ROLES_QUERY_KEY, variables.organizationId]
+                queryKey: orgRolesQueryKeys.list(variables.organizationId)
             })
             toast.success('角色更新成功')
         },
@@ -149,7 +148,7 @@ export function useDeleteOrgRole() {
         },
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({
-                queryKey: [...ORG_ROLES_QUERY_KEY, variables.organizationId]
+                queryKey: orgRolesQueryKeys.list(variables.organizationId)
             })
             toast.success('角色删除成功')
         },
@@ -164,7 +163,7 @@ export function useDeleteOrgRole() {
  */
 export function useHasPermission(permission: [string, string]) {
     return useQuery({
-        queryKey: ['has-permission', permission],
+        queryKey: orgPermissionQueryKeys.has(permission),
         queryFn: async () => {
             const { data, error } = await authClient.organization.hasPermission({
                 permission: { [permission[0]]: [permission[1]] }

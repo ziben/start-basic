@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
 import { IconPicker } from '~/components/icon-picker'
 import { useNavgroups } from '~/modules/system-admin/shared/hooks/use-navgroup-api'
-import { useCreateNavitem, useUpdateNavitem, useDeleteNavitem } from '~/modules/system-admin/shared/hooks/use-navitem-api'
+import { useCreateNavitem, useUpdateNavitem, useDeleteNavitem, useNavitems } from '~/modules/system-admin/shared/hooks/use-navitem-api'
 import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
 import {
   AlertDialog,
@@ -35,17 +35,13 @@ import { CreateNavItemData, UpdateNavItemData, createNavItemSchema, updateNavIte
 // 创建导航项对话框组件
 const CreateNavItemDialog = () => {
   const { t } = useTranslation()
-  // 直接使用sonner的toast
 
   const { isCreateDialogOpen, setCreateDialogOpen, navGroupId } = useAdminNavItemContext()
 
   // 获取导航组列表
   const { data: navgroups = [] } = useNavgroups('ADMIN')
 
-  // 创建导航项的mutation
-  const createNavitemMutation = useCreateNavitem()
-
-  // 创建表单
+  // 创建表单默认值函数
   const toCreateFormValues = (navGroupId?: string): CreateNavItemData => ({
     title: '',
     url: '',
@@ -53,13 +49,22 @@ const CreateNavItemDialog = () => {
     badge: '',
     isCollapsible: false,
     navGroupId: navGroupId ?? '',
+    parentId: '',
     orderIndex: 0,
   })
 
+  // 创建表单
   const createForm = useForm<CreateNavItemData>({
     resolver: zodResolver(createNavItemSchema),
     defaultValues: toCreateFormValues(navGroupId),
   })
+
+  const createNavGroupId = useWatch({ control: createForm.control, name: 'navGroupId' })
+  // 获取当前导航组下的所有导航项，用于选择父级
+  const { data: navitems = [] } = useNavitems(createNavGroupId || undefined, 'ADMIN')
+
+  // 创建导航项的mutation
+  const createNavitemMutation = useCreateNavitem()
 
   // 重置表单并关闭对话框
   const handleClose = () => {
@@ -133,7 +138,10 @@ const CreateNavItemDialog = () => {
               </Label>
               <Select
                 defaultValue={navGroupId ?? ''}
-                onValueChange={(value) => createForm.setValue('navGroupId', value)}
+                onValueChange={(value) => {
+                  createForm.setValue('navGroupId', value)
+                  createForm.setValue('parentId', '') // 切换组时重置父级
+                }}
               >
                 <SelectTrigger className='col-span-3'>
                   <SelectValue placeholder={t('admin.navitem.fields.navGroupIdPlaceholder')} />
@@ -151,6 +159,30 @@ const CreateNavItemDialog = () => {
                   {createForm.formState.errors.navGroupId.message}
                 </p>
               )}
+            </div>
+
+            <div className='grid grid-cols-4 items-center gap-4'>
+              <Label htmlFor='parentId' className='text-right'>
+                父级菜单
+              </Label>
+              <Select
+                value={createForm.watch('parentId') || 'root'}
+                onValueChange={(value) => createForm.setValue('parentId', value === 'root' ? '' : value)}
+              >
+                <SelectTrigger className='col-span-3'>
+                  <SelectValue placeholder="选择父级菜单 (可选)" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="root">无 (作为一级菜单)</SelectItem>
+                  {navitems
+                    .filter((item: any) => !item.parentId && item.isCollapsible) // 仅显示顶级且可折叠菜单
+                    .map((item: any) => (
+                      <SelectItem key={item.id} value={item.id}>
+                        {item.title}
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div className='grid grid-cols-4 items-center gap-4'>
@@ -199,44 +231,50 @@ const CreateNavItemDialog = () => {
 // 编辑导航项对话框组件
 const EditNavItemDialog = () => {
   const { t } = useTranslation()
-  // 直接使用sonner的toast
 
   const { isEditDialogOpen, setEditDialogOpen, selectedNavItem, setSelectedNavItem } = useAdminNavItemContext()
 
   // 获取导航组列表
   const { data: navgroups = [] } = useNavgroups()
 
-  // 更新导航项的mutation
-  const updateNavitemMutation = useUpdateNavitem()
+  // 编辑表单默认值
+  const toEditFormValues = (row: any): UpdateNavItemData => ({
+    title: row.title,
+    url: row.url ?? '',
+    icon: row.icon ?? '',
+    badge: row.badge ?? '',
+    isCollapsible: row.isCollapsible ?? false,
+    navGroupId: row.navGroupId,
+    orderIndex: row.orderIndex ?? 0,
+    parentId: row.parentId ?? undefined,
+  })
 
-  // 编辑表单
+  const emptyEditFormValues: UpdateNavItemData = {
+    title: '',
+    url: '',
+    icon: '',
+    badge: '',
+    isCollapsible: false,
+    navGroupId: '',
+    orderIndex: 0,
+    parentId: '',
+  }
+
   const editForm = useForm<UpdateNavItemData>({
     resolver: zodResolver(updateNavItemSchema),
-    defaultValues: {
-      title: '',
-      url: '',
-      icon: '',
-      badge: '',
-      isCollapsible: false,
-      navGroupId: '',
-      orderIndex: 0,
-    },
+    defaultValues: selectedNavItem ? toEditFormValues(selectedNavItem) : emptyEditFormValues,
   })
+
+  // 获取当前选中的组下的所有导航项，用于选择父级
+  const currentNavGroupId = useWatch({ control: editForm.control, name: 'navGroupId' })
+  const { data: navitems = [] } = useNavitems(currentNavGroupId || undefined, 'ADMIN')
+
+  // 更新导航项的mutation
+  const updateNavitemMutation = useUpdateNavitem()
 
   // 当选中的导航项变更时，重置表单
   useEffect(() => {
     if (selectedNavItem) {
-      const toEditFormValues = (row: typeof selectedNavItem): UpdateNavItemData => ({
-        title: row.title,
-        url: row.url ?? '',
-        icon: row.icon ?? '',
-        badge: row.badge ?? '',
-        isCollapsible: row.isCollapsible ?? false,
-        navGroupId: row.navGroupId,
-        orderIndex: row.orderIndex ?? 0,
-        parentId: row.parentId ?? undefined,
-      })
-
       editForm.reset(toEditFormValues(selectedNavItem))
     }
   }, [selectedNavItem, editForm])
@@ -319,8 +357,14 @@ const EditNavItemDialog = () => {
                 {t('admin.navitem.fields.navGroupId')}
               </Label>
               <Select
-                defaultValue={selectedNavItem?.navGroupId ?? ''}
-                onValueChange={(value) => editForm.setValue('navGroupId', value)}
+                value={editForm.watch('navGroupId') || ''}
+                onValueChange={(value) => {
+                  editForm.setValue('navGroupId', value)
+                  // 如果切换了组，通常需要重置父级，除非父级也属于新组
+                  if (value !== selectedNavItem?.navGroupId) {
+                    editForm.setValue('parentId', '')
+                  }
+                }}
               >
                 <SelectTrigger className='col-span-3'>
                   <SelectValue placeholder={t('admin.navitem.fields.navGroupIdPlaceholder')} />
@@ -338,6 +382,32 @@ const EditNavItemDialog = () => {
                   {editForm.formState.errors.navGroupId.message}
                 </p>
               )}
+            </div>
+
+            <div className='grid grid-cols-4 items-center gap-4'>
+              <Label htmlFor='parentId' className='text-right'>
+                父级菜单
+              </Label>
+              <Select
+                value={editForm.watch('parentId') || 'root'}
+                onValueChange={(value) => editForm.setValue('parentId', value === 'root' ? '' : value)}
+              >
+                <SelectTrigger className='col-span-3'>
+                  <SelectValue placeholder="选择父级菜单 (可选)" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="root">无 (作为一级菜单)</SelectItem>
+                  {navitems
+                    .filter(
+                      (item: any) => item.id !== selectedNavItem?.id && !item.parentId && item.isCollapsible
+                    ) // 排除自身，且仅显示顶级可折叠菜单
+                    .map((item: any) => (
+                      <SelectItem key={item.id} value={item.id}>
+                        {item.title}
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div className='grid grid-cols-4 items-center gap-4'>
@@ -386,7 +456,6 @@ const EditNavItemDialog = () => {
 // 删除导航项对话框组件
 const DeleteNavItemDialog = () => {
   const { t } = useTranslation()
-  // 直接使用sonner的toast
 
   const { isDeleteDialogOpen, setDeleteDialogOpen, selectedNavItem, setSelectedNavItem } = useAdminNavItemContext()
 

@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { toast } from 'sonner'
+import { rbacOrgRolesQueryKeys } from '~/shared/lib/query-keys'
 import { useOrgRolesContext } from '../context/org-roles-context'
 import { usePermissionsQuery } from '../../permissions/hooks/use-permissions-queries'
 
@@ -30,7 +31,7 @@ export function OrgRolePermissionsDialog() {
         try {
           const res = await getOrganizationRolePermissionsFn({ data: { organizationRoleId: role.id } })
           setSelectedPermissions(res.map((p: any) => p.permissionId))
-        } catch (error) {
+        } catch (_error) {
           toast.error('加载权限失败')
         }
       }
@@ -50,7 +51,7 @@ export function OrgRolePermissionsDialog() {
       })
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['rbac', 'org-roles'] })
+      queryClient.invalidateQueries({ queryKey: rbacOrgRolesQueryKeys.all })
       toast.success('权限分配成功')
       closePermissionsDialog()
     },

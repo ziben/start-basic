@@ -14,6 +14,7 @@ import {
   bulkDeleteOrganizationsFn,
 } from '../server-fns/organization.fn'
 import type { AdminOrganizationInfo } from '../types/organization'
+import { organizationQueryKeys } from '~/shared/lib/query-keys'
 
 export type { AdminOrganizationInfo }
 
@@ -21,20 +22,6 @@ export type AdminOrganizationsPage = {
   items: AdminOrganizationInfo[]
   total: number
   pageCount: number
-}
-
-// ============ Query Keys ============
-
-export const organizationQueryKeys = {
-  all: ['admin-organizations'] as const,
-  list: (params?: {
-    page?: number
-    pageSize?: number
-    filter?: string
-    sortBy?: string
-    sortDir?: string
-  }) => [...organizationQueryKeys.all, params] as const,
-  detail: (id: string) => ['admin-organization', id] as const,
 }
 
 // ============ Query Hooks ============

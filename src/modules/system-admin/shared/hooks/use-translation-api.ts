@@ -14,13 +14,7 @@ import {
   exportTranslationsFn,
 } from '../server-fns/translation.fn'
 import type { Translation, TranslationImportResult } from '../types/translation'
-
-// ============ Query Keys ============
-
-export const translationQueryKeys = {
-  all: ['admin', 'translations'] as const,
-  list: (locale?: string) => [...translationQueryKeys.all, locale || 'all'] as const,
-}
+import { translationQueryKeys } from '~/shared/lib/query-keys'
 
 // ============ Query Hooks ============
 

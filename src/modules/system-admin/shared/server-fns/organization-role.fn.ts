@@ -6,6 +6,7 @@
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
 import { requireAdmin } from './auth'
+import type { Prisma } from '~/generated/prisma/client'
 
 // ============ Schema 定义 ============
 
@@ -55,7 +56,7 @@ export const getOrganizationRolesFn = createServerFn({ method: 'GET' })
 
     const { organizationId, page = 1, pageSize = 10, search, isActive } = data
 
-    const where: any = { organizationId }
+    const where: Prisma.OrganizationRoleWhereInput = { organizationId }
 
     if (isActive !== undefined) {
       where.isActive = isActive
@@ -174,7 +175,10 @@ export const createOrganizationRoleFn = createServerFn({ method: 'POST' })
 
     // 创建组织角色
     const orgRole = await prisma.organizationRole.create({
-      data: roleData,
+      data: {
+        id: crypto.randomUUID(),
+        ...roleData,
+      },
       include: {
         templateRole: true,
       },
@@ -192,7 +196,7 @@ export const createOrganizationRoleFn = createServerFn({ method: 'POST' })
             organizationRoleId: orgRole.id,
             permissionId: tp.permissionId,
             dataScope: tp.dataScope,
-            customScope: tp.customScope as any,
+            customScope: tp.customScope as Prisma.InputJsonValue,
           })),
         })
       }

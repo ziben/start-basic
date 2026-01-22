@@ -14,15 +14,8 @@ import {
   assignPermissionsFn,
   assignRoleNavGroupsFn,
 } from "@/modules/system-admin/shared/server-fns/rbac.fn"
+import { permissionsQueryKeys, roleQueryKeys } from '~/shared/lib/query-keys'
 
-// ============ Query Keys ============
-
-export const roleQueryKeys = {
-  all: ["rbac", "roles"] as const,
-  list: (params: { page?: number; pageSize?: number; filter?: string }) =>
-    [...roleQueryKeys.all, params] as const,
-  detail: (id: string) => ["rbac", "role", id] as const,
-}
 
 // ============ Query Hooks ============
 
@@ -44,7 +37,7 @@ export function useRoles(params: { page?: number; pageSize?: number; filter?: st
  */
 export function useAllRoles() {
   return useQuery({
-    queryKey: [...roleQueryKeys.all, "all"] as const,
+    queryKey: roleQueryKeys.allList(),
     queryFn: async () => {
       // 传递一个较大的 pageSize 来模拟获取所有角色，或者根据后端实现调整
       const result = await getRolesFn({ data: { page: 1, pageSize: 1000 } })
@@ -148,6 +141,8 @@ export function useAssignRolePermissions() {
       queryClient.invalidateQueries({ queryKey: roleQueryKeys.detail(variables.roleId) })
       // 同时也失效角色列表，因为权限数量等可能在列表中显示
       queryClient.invalidateQueries({ queryKey: roleQueryKeys.all })
+      queryClient.invalidateQueries({ queryKey: permissionsQueryKeys.all })
+      queryClient.invalidateQueries({ queryKey: permissionsQueryKeys.checkAll })
     },
   })
 }

@@ -21,7 +21,7 @@ import type {
   UpdateNavgroupData,
   UserRoleNavGroup,
 } from '@/modules/system-admin/features/navigation/navgroup'
-import { SIDEBAR_QUERY_KEY } from '~/modules/system-admin/shared/sidebar'
+import { navgroupQueryKeys, sidebarQueryKeys } from '~/shared/lib/query-keys'
 
 type SuccessIdResponse = { success: true; id: string }
 
@@ -32,12 +32,6 @@ export type UpdateNavgroupVisibilityData = {
 }
 
 // ============ Query Keys ============
-
-export const navgroupQueryKeys = {
-  all: ['admin', 'navgroups'] as const,
-  list: (scope?: 'APP' | 'ADMIN') => [...navgroupQueryKeys.all, scope ?? 'ALL'] as const,
-  detail: (id: string) => ['admin', 'navgroup', id] as const,
-}
 
 // ============ Query Hooks ============
 
@@ -84,7 +78,7 @@ export function useCreateNavgroup() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: navgroupQueryKeys.all })
-      queryClient.invalidateQueries({ queryKey: SIDEBAR_QUERY_KEY })
+      queryClient.invalidateQueries({ queryKey: sidebarQueryKeys.all })
     },
   })
 }
@@ -103,7 +97,7 @@ export function useUpdateNavgroup() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: navgroupQueryKeys.all })
       queryClient.invalidateQueries({ queryKey: navgroupQueryKeys.detail(variables.id) })
-      queryClient.invalidateQueries({ queryKey: SIDEBAR_QUERY_KEY })
+      queryClient.invalidateQueries({ queryKey: sidebarQueryKeys.all })
     },
   })
 }
@@ -121,7 +115,7 @@ export function useDeleteNavgroup() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: navgroupQueryKeys.all })
-      queryClient.invalidateQueries({ queryKey: SIDEBAR_QUERY_KEY })
+      queryClient.invalidateQueries({ queryKey: sidebarQueryKeys.all })
     },
   })
 }
@@ -139,7 +133,7 @@ export function useUpdateNavgroupOrder() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: navgroupQueryKeys.all })
-      queryClient.invalidateQueries({ queryKey: SIDEBAR_QUERY_KEY })
+      queryClient.invalidateQueries({ queryKey: sidebarQueryKeys.all })
     },
   })
 }
@@ -163,7 +157,7 @@ export function useUpdateNavgroupVisibility() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: navgroupQueryKeys.all })
-      queryClient.invalidateQueries({ queryKey: SIDEBAR_QUERY_KEY })
+      queryClient.invalidateQueries({ queryKey: sidebarQueryKeys.all })
     },
   })
 }

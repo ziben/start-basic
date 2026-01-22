@@ -1,5 +1,6 @@
-import { useQuery } from "@tanstack/react-query"
-import { getRolesFn } from "@/modules/system-admin/shared/server-fns/rbac.fn"
+import { useQuery } from '@tanstack/react-query'
+import { getRolesFn } from '@/modules/system-admin/shared/server-fns/rbac.fn'
+import { roleQueryKeys } from '~/shared/lib/query-keys'
 
 interface UseRolesQueryProps {
   page?: number
@@ -9,7 +10,7 @@ interface UseRolesQueryProps {
 
 export function useRolesQuery({ page, pageSize, filter }: UseRolesQueryProps = {}) {
   return useQuery({
-    queryKey: ["rbac", "roles", { page, pageSize, filter }],
+    queryKey: roleQueryKeys.list({ page, pageSize, filter }),
     queryFn: async () => {
       return await getRolesFn({
         data: {

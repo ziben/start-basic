@@ -107,19 +107,24 @@ export const NavGroupService = {
                 // 创建角色关联
                 if (data.roles && data.roles.length > 0) {
                     await tx.roleNavGroup.createMany({
-                        data: data.roles.map((role) => ({
-                            role,
+                        data: data.roles.map((roleName) => ({
+                            roleName,
                             navGroupId: group.id,
                         })),
                     })
                 } else {
-                    // 默认所有角色可见
-                    await tx.roleNavGroup.createMany({
-                        data: ['user', 'admin'].map((role) => ({
-                            role,
-                            navGroupId: group.id,
-                        })),
+                    // 默认所有内置角色可见
+                    const roles = await tx.role.findMany({
+                        where: { name: { in: ['user', 'admin'] } }
                     })
+                    if (roles.length > 0) {
+                        await tx.roleNavGroup.createMany({
+                            data: roles.map((r) => ({
+                                roleName: r.name,
+                                navGroupId: group.id,
+                            })),
+                        })
+                    }
                 }
 
                 // 返回完整对象
@@ -161,8 +166,8 @@ export const NavGroupService = {
 
                     if (data.roles.length > 0) {
                         await tx.roleNavGroup.createMany({
-                            data: data.roles.map((role) => ({
-                                role,
+                            data: data.roles.map((roleName) => ({
+                                roleName,
                                 navGroupId: id,
                             })),
                         })

@@ -13,6 +13,7 @@ import {
   bulkDeleteMembersFn,
 } from '../server-fns/member.fn'
 import type { AdminMemberInfo } from '../types/member'
+import { memberQueryKeys } from '~/shared/lib/query-keys'
 
 export type { AdminMemberInfo }
 
@@ -20,21 +21,6 @@ export type AdminMembersPage = {
   items: AdminMemberInfo[]
   total: number
   pageCount: number
-}
-
-// ============ Query Keys ============
-
-export const memberQueryKeys = {
-  all: ['admin-members'] as const,
-  list: (params?: {
-    page?: number
-    pageSize?: number
-    filter?: string
-    organizationId?: string
-    sortBy?: string
-    sortDir?: string
-  }) => [...memberQueryKeys.all, params] as const,
-  detail: (id: string) => ['admin-member', id] as const,
 }
 
 // ============ Query Hooks ============

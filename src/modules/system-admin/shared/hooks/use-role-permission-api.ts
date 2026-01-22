@@ -10,15 +10,14 @@ import {
     updateRolePermissionDataScopeFn,
     removeRolePermissionFn,
 } from '../server-fns/role-permission.fn'
-
-export const ROLE_PERMISSIONS_QUERY_KEY = ['role-permissions']
+import { permissionsQueryKeys, rolePermissionsQueryKeys } from '~/shared/lib/query-keys'
 
 /**
  * 获取角色的权限列表
  */
 export function useRolePermissions(roleId: string) {
     return useQuery({
-        queryKey: [...ROLE_PERMISSIONS_QUERY_KEY, roleId],
+        queryKey: rolePermissionsQueryKeys.list(roleId),
         queryFn: async () => {
             return await getRolePermissionsFn({ data: { roleId } })
         },
@@ -45,7 +44,9 @@ export function useAssignRolePermissions() {
             return await assignRolePermissionsFn({ data })
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ROLE_PERMISSIONS_QUERY_KEY })
+            queryClient.invalidateQueries({ queryKey: rolePermissionsQueryKeys.all })
+            queryClient.invalidateQueries({ queryKey: permissionsQueryKeys.all })
+            queryClient.invalidateQueries({ queryKey: permissionsQueryKeys.checkAll })
             toast.success('权限分配成功')
         },
         onError: (error: Error) => {
@@ -68,7 +69,9 @@ export function useUpdateRolePermissionDataScope() {
             return await updateRolePermissionDataScopeFn({ data })
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ROLE_PERMISSIONS_QUERY_KEY })
+            queryClient.invalidateQueries({ queryKey: rolePermissionsQueryKeys.all })
+            queryClient.invalidateQueries({ queryKey: permissionsQueryKeys.all })
+            queryClient.invalidateQueries({ queryKey: permissionsQueryKeys.checkAll })
             toast.success('数据范围更新成功')
         },
         onError: (error: Error) => {
@@ -88,7 +91,9 @@ export function useRemoveRolePermission() {
             return await removeRolePermissionFn({ data: { rolePermissionId } })
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ROLE_PERMISSIONS_QUERY_KEY })
+            queryClient.invalidateQueries({ queryKey: rolePermissionsQueryKeys.all })
+            queryClient.invalidateQueries({ queryKey: permissionsQueryKeys.all })
+            queryClient.invalidateQueries({ queryKey: permissionsQueryKeys.checkAll })
             toast.success('权限删除成功')
         },
         onError: (error: Error) => {

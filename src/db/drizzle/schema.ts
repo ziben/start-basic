@@ -528,6 +528,16 @@ export const user = sqliteTable(
   (table) => [uniqueIndex('user_username_key').on(table.username), uniqueIndex('user_email_key').on(table.email)]
 )
 
+export const drizzleTasks = sqliteTable('drizzle_tasks', {
+  id: text().primaryKey(),
+  title: text().notNull(),
+  status: text().default('pending').notNull(),
+  label: text().default('documentation').notNull(),
+  priority: text().default('medium').notNull(),
+  createdAt: numeric().default(`CURRENT_TIMESTAMP`).notNull(),
+  updatedAt: numeric().notNull(),
+})
+
 export const verification = sqliteTable(
   'verification',
   {

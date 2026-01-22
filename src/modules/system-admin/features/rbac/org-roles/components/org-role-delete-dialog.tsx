@@ -11,6 +11,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { toast } from 'sonner'
+import { rbacOrgRolesQueryKeys } from '~/shared/lib/query-keys'
 import { useOrgRolesContext } from '../context/org-roles-context'
 
 export function OrgRoleDeleteDialog() {
@@ -22,7 +23,7 @@ export function OrgRoleDeleteDialog() {
   const deleteMutation = useMutation({
     mutationFn: (id: string) => deleteOrganizationRoleFn({ data: { id } }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['rbac', 'org-roles'] })
+      queryClient.invalidateQueries({ queryKey: rbacOrgRolesQueryKeys.all })
       toast.success('删除成功')
       closeDeleteDialog()
     },

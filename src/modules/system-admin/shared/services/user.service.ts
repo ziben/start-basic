@@ -3,9 +3,9 @@
  */
 
 import prisma from '@/shared/lib/db'
-import { serializeAdminUser, serializeAdminUsers, isValidUserSortField } from '../utils/admin-utils'
+import type { Prisma } from '~/generated/prisma/client'
+import { serializeAdminUser, serializeAdminUsers, isValidUserSortField, type PrismaUser } from '../utils/admin-utils'
 import { auth } from '~/modules/identity/shared/lib/auth'
-import { nanoid } from 'nanoid'
 
 // ============ 类型定义 ============
 
@@ -47,7 +47,7 @@ export const UserService = {
             const { page = 1, pageSize = 10, filter = '', banned, sortBy, sortDir } = input
 
             const q = filter.trim()
-            const whereClause: any = {
+            const whereClause: Prisma.UserWhereInput = {
                 ...(q
                     ? {
                         OR: [
@@ -61,20 +61,22 @@ export const UserService = {
                 ...(typeof banned === 'boolean' ? { banned } : {}),
             }
 
+            const orderBy: Prisma.UserOrderByWithRelationInput =
+                sortBy && isValidUserSortField(sortBy)
+                    ? { [sortBy]: sortDir ?? 'asc' }
+                    : { createdAt: 'desc' }
+
             const [total, users] = await Promise.all([
                 prisma.user.count({ where: whereClause }),
                 prisma.user.findMany({
                     where: whereClause,
-                    orderBy:
-                        sortBy && isValidUserSortField(sortBy)
-                            ? { [sortBy]: sortDir ?? 'asc' }
-                            : { createdAt: 'desc' },
+                    orderBy,
                     skip: (page - 1) * pageSize,
                     take: pageSize,
                 }),
             ])
 
-            const items = serializeAdminUsers(users as any)
+            const items = serializeAdminUsers(users as PrismaUser[])
             const pageCount = Math.ceil(total / pageSize)
 
             return {
@@ -103,7 +105,7 @@ export const UserService = {
                 throw new Error('用户不存在')
             }
 
-            return serializeAdminUser(user as any)
+            return serializeAdminUser(user as PrismaUser)
         } catch (error) {
             console.error('获取用户失败:', error)
             throw new Error('获取用户失败')
@@ -145,7 +147,7 @@ export const UserService = {
                 },
             })
 
-            return serializeAdminUser(updated as any)
+            return serializeAdminUser(updated as PrismaUser)
         } catch (error) {
             console.error('创建用户失败:', error)
             throw error instanceof Error ? error : new Error('创建用户失败')
@@ -166,7 +168,7 @@ export const UserService = {
             }
 
             // 准备更新数据
-            const updateData: any = {}
+            const updateData: Prisma.UserUpdateInput = {}
             if (data.name !== undefined) updateData.name = data.name
             if (data.username !== undefined) updateData.username = data.username
             if (data.role !== undefined) updateData.role = data.role
@@ -182,7 +184,7 @@ export const UserService = {
                 data: updateData,
             })
 
-            return serializeAdminUser(updatedUser as any)
+            return serializeAdminUser(updatedUser as PrismaUser)
         } catch (error) {
             console.error('更新用户失败:', error)
             throw error instanceof Error ? error : new Error('更新用户失败')

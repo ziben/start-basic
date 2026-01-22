@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { assignPermissionsFn } from '@/modules/system-admin/shared/server-fns/rbac.fn'
 import {
@@ -13,29 +13,48 @@ import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { toast } from 'sonner'
+import { roleQueryKeys } from '~/shared/lib/query-keys'
 import { useRolesContext } from '../context/roles-context'
 import { usePermissionsQuery } from '../hooks/use-permissions-query'
 
 export function RolePermissionsDialog() {
   const { permissionsDialog, closePermissionsDialog } = useRolesContext()
-  const queryClient = useQueryClient()
   const { data: allPermissions = [] } = usePermissionsQuery()
 
   const role = permissionsDialog.role
 
+  return (
+    <Dialog open={permissionsDialog.isOpen} onOpenChange={closePermissionsDialog}>
+      <DialogContent className="max-w-3xl">
+        <RolePermissionsDialogContent
+          key={role?.id ?? 'empty'}
+          role={role}
+          allPermissions={allPermissions}
+          closePermissionsDialog={closePermissionsDialog}
+        />
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+type RolePermissionsDialogContentProps = {
+  role: any
+  allPermissions: any[]
+  closePermissionsDialog: () => void
+}
+
+function RolePermissionsDialogContent({
+  role,
+  allPermissions,
+  closePermissionsDialog,
+}: RolePermissionsDialogContentProps) {
+  const queryClient = useQueryClient()
   const [selectedPermissions, setSelectedPermissions] = useState<string[]>(() => {
     if (role && 'rolePermissions' in role) {
       return (role.rolePermissions as any[])?.map((rp: any) => rp.permission.id) || []
     }
     return []
   })
-
-  useEffect(() => {
-    if (role && 'rolePermissions' in role) {
-      const permissionIds = (role.rolePermissions as any[])?.map((rp: any) => rp.permission.id) || []
-      setSelectedPermissions(permissionIds)
-    }
-  }, [role?.id])
 
   const assignMutation = useMutation({
     mutationFn: async (permissionIds: string[]) => {
@@ -48,7 +67,7 @@ export function RolePermissionsDialog() {
       })
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['rbac', 'roles'] })
+      queryClient.invalidateQueries({ queryKey: roleQueryKeys.all })
       toast.success('权限分配成功')
       closePermissionsDialog()
     },
@@ -69,7 +88,6 @@ export function RolePermissionsDialog() {
     )
   }
 
-  // 按资源分组
   const groupedPermissions = allPermissions.reduce(
     (acc: Record<string, typeof allPermissions>, permission: any) => {
       const resourceName = permission.resource.displayName
@@ -83,52 +101,50 @@ export function RolePermissionsDialog() {
   )
 
   return (
-    <Dialog open={permissionsDialog.isOpen} onOpenChange={closePermissionsDialog}>
-      <DialogContent className="max-w-3xl">
-        <DialogHeader>
-          <DialogTitle>管理权限 - {role?.displayName}</DialogTitle>
-          <DialogDescription>为角色分配权限</DialogDescription>
-        </DialogHeader>
+    <>
+      <DialogHeader>
+        <DialogTitle>管理权限 - {role?.displayName}</DialogTitle>
+        <DialogDescription>为角色分配权限</DialogDescription>
+      </DialogHeader>
 
-        <ScrollArea className="h-[500px] pr-4">
-          <div className="space-y-6">
-            {Object.entries(groupedPermissions).map(([resourceName, permissions]) => (
-              <div key={resourceName} className="space-y-2">
-                <h4 className="font-medium text-sm">{resourceName}</h4>
-                <div className="grid grid-cols-2 gap-2">
-                  {permissions.map((permission: any) => (
-                    <div key={permission.id} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={permission.id}
-                        checked={selectedPermissions.includes(permission.id)}
-                        onCheckedChange={() => togglePermission(permission.id)}
-                      />
-                      <label
-                        htmlFor={permission.id}
-                        className="text-sm font-normal leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-                      >
-                        {permission.displayName}
-                        <span className="text-xs text-muted-foreground ml-1">
-                          ({permission.code})
-                        </span>
-                      </label>
-                    </div>
-                  ))}
-                </div>
+      <ScrollArea className="h-[500px] pr-4">
+        <div className="space-y-6">
+          {Object.entries(groupedPermissions).map(([resourceName, permissions]) => (
+            <div key={resourceName} className="space-y-2">
+              <h4 className="font-medium text-sm">{resourceName}</h4>
+              <div className="grid grid-cols-2 gap-2">
+                {permissions.map((permission: any) => (
+                  <div key={permission.id} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={permission.id}
+                      checked={selectedPermissions.includes(permission.id)}
+                      onCheckedChange={() => togglePermission(permission.id)}
+                    />
+                    <label
+                      htmlFor={permission.id}
+                      className="text-sm font-normal leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                    >
+                      {permission.displayName}
+                      <span className="text-xs text-muted-foreground ml-1">
+                        ({permission.code})
+                      </span>
+                    </label>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        </ScrollArea>
+            </div>
+          ))}
+        </div>
+      </ScrollArea>
 
-        <DialogFooter>
-          <Button variant="outline" onClick={closePermissionsDialog}>
-            取消
-          </Button>
-          <Button onClick={handleSubmit} disabled={assignMutation.isPending}>
-            保存
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+      <DialogFooter>
+        <Button variant="outline" onClick={closePermissionsDialog}>
+          取消
+        </Button>
+        <Button onClick={handleSubmit} disabled={assignMutation.isPending}>
+          保存
+        </Button>
+      </DialogFooter>
+    </>
   )
 }

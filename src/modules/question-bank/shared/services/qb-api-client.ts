@@ -1,5 +1,7 @@
 import { fetchJson, fetchText } from '@/shared/lib/fetch-utils'
 
+export type JsonValue = string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue }
+
 export interface Category {
   id: string
   name: string
@@ -30,8 +32,8 @@ export interface Question {
   id: string
   type: string
   content: string
-  options: any
-  answer: any
+  options: JsonValue
+  answer: JsonValue
   explanation: string | null
   difficulty: number
   categoryId: string | null
@@ -43,8 +45,8 @@ export interface Question {
 export interface CreateQuestionData {
   type: string
   content: string
-  options?: any
-  answer: any
+  options?: JsonValue
+  answer: JsonValue
   explanation?: string
   difficulty?: number
   categoryId?: string | null
@@ -54,8 +56,8 @@ export interface CreateQuestionData {
 export interface UpdateQuestionData {
   type?: string
   content?: string
-  options?: any
-  answer?: any
+  options?: JsonValue
+  answer?: JsonValue
   explanation?: string | null
   difficulty?: number
   categoryId?: string | null

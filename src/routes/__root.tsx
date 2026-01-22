@@ -10,6 +10,7 @@ import { AuthProvider } from '~/shared/context/auth-context'
 import { DirectionProvider } from '~/shared/context/direction-provider'
 import { LocaleProvider } from '~/shared/context/locale-context'
 import { ThemeProvider } from '~/shared/context/theme-provider'
+import { userQueryKeys } from '~/shared/lib/query-keys'
 import appCss from '~/styles/index.css?url'
 import { seo } from '@/shared/utils/seo'
 import { GeneralError, NotFoundError } from '@/shared/components/errors'
@@ -28,7 +29,7 @@ export const Route = createRootRouteWithContext<{
 }>()({
   beforeLoad: async ({ context }) => {
     const user = await context.queryClient.fetchQuery({
-      queryKey: ['user'],
+      queryKey: userQueryKeys.current,
       queryFn: ({ signal }) => getUser({ signal }),
     }) // we're using react-query for caching, see router.tsx
     return { user }

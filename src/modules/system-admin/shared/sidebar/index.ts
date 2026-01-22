@@ -5,10 +5,8 @@ import { createSidebarData } from '~/components/layout/data/sidebar-data'
 import type { SidebarData, NavItem, NavCollapsible, NavLink } from '~/components/layout/types'
 import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
 import { iconResolver as defaultIconResolver, type IconResolver } from '@/shared/utils/icon-resolver'
+import { sidebarQueryKeys } from '~/shared/lib/query-keys'
 import { getSidebarDataFn } from './api'
-
-// 用于获取侧边栏数据的React Query键
-export const SIDEBAR_QUERY_KEY = ['sidebar']
 
 /**
  * 处理侧边栏数据的React Hook，包括数据获取、翻译和处理
@@ -20,7 +18,7 @@ export function useSidebar(iconResolver?: IconResolver, scope: 'APP' | 'ADMIN' =
 
   // 从API获取侧边栏数据
   const { data, isLoading, error } = useQuery({
-    queryKey: [...SIDEBAR_QUERY_KEY, scope],
+    queryKey: sidebarQueryKeys.list(scope),
     queryFn: ({ signal }) => getSidebarDataFn({ data: scope, signal }),
     staleTime: 10 * 1000, // 10秒内视为新鲜数据
     refetchOnWindowFocus: true,

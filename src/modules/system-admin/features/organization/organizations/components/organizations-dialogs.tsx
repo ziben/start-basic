@@ -3,7 +3,7 @@ import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { bulkDeleteOrganizationsFn } from '../../../../shared/server-fns/organization.fn'
 import { ConfirmDialog } from '@/components/confirm-dialog'
-import { ORGANIZATIONS_QUERY_KEY } from '../hooks/use-organizations-list-query'
+import { organizationQueryKeys } from '~/shared/lib/query-keys'
 import { useOrganizationsOptimisticUpdate, createBulkDeleteUpdateFn } from '../hooks/use-organizations-optimistic-update'
 import { OrganizationMutateDialog } from './organization-mutate-dialog'
 import { useOrganizations } from './organizations-provider'
@@ -17,7 +17,7 @@ export function OrganizationsDialogs() {
       return await bulkDeleteOrganizationsFn({ data: { ids: [input.id] } })
     },
     ...getOptimisticMutationOptions({
-      queryKey: ORGANIZATIONS_QUERY_KEY,
+      queryKey: organizationQueryKeys.all,
       updateFn: (organizations, variables) => createBulkDeleteUpdateFn(organizations, [variables.id]),
     }),
   })

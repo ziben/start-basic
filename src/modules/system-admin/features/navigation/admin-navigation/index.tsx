@@ -3,11 +3,6 @@ import { useNavitems } from '~/modules/system-admin/shared/hooks/use-navitem-api
 import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
 import { Route as NavigationRoute } from '~/routes/_authenticated/admin/navigation'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Header } from '@/components/layout/header'
-import { Main } from '@/components/layout/main'
-import { ProfileDropdown } from '@/components/profile-dropdown'
-import { Search } from '@/components/search'
-import { ThemeSwitch } from '@/components/theme-switch'
 import { NavGroupsDialogs } from '../navgroup/components/navgroups-dialogs'
 import { NavGroupsPrimaryButtons } from '../navgroup/components/navgroups-primary-buttons'
 import { NavGroupsProvider } from '../navgroup/components/navgroups-provider'
@@ -16,8 +11,8 @@ import AdminNavItemDialogs from '../navitem/components/admin-navitem-dialogs'
 import AdminNavItemPrimaryButtons from '../navitem/components/admin-navitem-primary-buttons'
 import AdminNavItemTable from '../navitem/components/admin-navitem-table'
 import AdminNavItemProvider from '../navitem/context/admin-navitem-context'
-import { AppHeader } from '~/components/layout/app-header'
 import { AppHeaderMain } from '~/components/layout/app-header-main'
+import { PageHeader } from '@/components/layout/page-header'
 
 export default function AdminNavigationPage() {
   const { t } = useTranslation()
@@ -25,22 +20,16 @@ export default function AdminNavigationPage() {
   const navigate = NavigationRoute.useNavigate()
   const search = NavigationRoute.useSearch()
 
-  const { data: navgroupList = [], error: navgroupsError } = useNavgroups()
+  const { data: navgroupList = [], error: navgroupsError, refetch: refetchGroups, isRefetching: isRefetchingGroups } = useNavgroups()
 
-  const { data: navItemList = [], isLoading: navitemsLoading, error: navitemsError } = useNavitems(undefined, 'ADMIN')
+  const { data: navItemList = [], isLoading: navitemsLoading, error: navitemsError, refetch: refetchItems, isRefetching: isRefetchingItems } = useNavitems(undefined, 'ADMIN')
 
   return (
     <AppHeaderMain>
-      <div className='mb-2 flex flex-wrap items-center justify-between space-y-2 gap-x-4'>
-        <div>
-          <h2 className='text-2xl font-bold tracking-tight'>
-            {t('admin.navigation.title', { defaultMessage: '菜单管理' })}
-          </h2>
-          <p className='text-muted-foreground'>
-            {t('admin.navigation.desc', { defaultMessage: '统一管理菜单分组与菜单项。' })}
-          </p>
-        </div>
-      </div>
+      <PageHeader
+        title={t('admin.navigation.title', { defaultMessage: '菜单管理' })}
+        description={t('admin.navigation.desc', { defaultMessage: '统一管理菜单分组与菜单项。' })}
+      />
 
       <Tabs
         value={tab}
@@ -58,7 +47,13 @@ export default function AdminNavigationPage() {
             <div className='mb-2 flex items-center justify-end'>
               <NavGroupsPrimaryButtons />
             </div>
-            <NavGroupsTable data={navgroupList} search={search as Record<string, unknown>} navigate={navigate} />
+            <NavGroupsTable 
+              data={navgroupList} 
+              search={search as Record<string, unknown>} 
+              navigate={navigate}
+              onReload={() => void refetchGroups()}
+              isReloading={isRefetchingGroups}
+            />
             <NavGroupsDialogs />
           </NavGroupsProvider>
         </TabsContent>
@@ -73,6 +68,8 @@ export default function AdminNavigationPage() {
               isLoading={navitemsLoading}
               error={navitemsError}
               navGroupId={navGroupId}
+              onReload={() => void refetchItems()}
+              isReloading={isRefetchingItems}
             />
             <AdminNavItemDialogs />
           </AdminNavItemProvider>

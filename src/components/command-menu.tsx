@@ -14,7 +14,7 @@ import {
   CommandList,
   CommandSeparator,
 } from '@/components/ui/command'
-import type { SidebarData, NavGroup, NavItem } from '@/components/layout/types'
+import type { NavCollapsible, NavGroup, NavLink, NavItem } from '@/components/layout/types'
 import { ScrollArea } from './ui/scroll-area'
 
 export function CommandMenu() {
@@ -30,7 +30,9 @@ export function CommandMenu() {
     [setOpen]
   )
 
-  const { data: sidebarData, isLoading } = useSidebar(iconResolver)
+  const { data: sidebarData } = useSidebar(iconResolver)
+
+  const isNavLink = (item: NavItem): item is NavLink => 'url' in item
 
   return (
     <CommandDialog modal open={open} onOpenChange={setOpen}>
@@ -38,16 +40,16 @@ export function CommandMenu() {
       <CommandList>
         <ScrollArea type='hover' className='h-72 pe-1'>
           <CommandEmpty>No results found.</CommandEmpty>
-          {sidebarData.navGroups.map((group: any) => (
+          {sidebarData.navGroups.map((group: NavGroup) => (
             <CommandGroup key={group.title} heading={group.title}>
-              {group.items.map((navItem: any, i: number) => {
-                if ('url' in navItem && navItem.url)
+              {group.items.map((navItem: NavItem, i: number) => {
+                if (isNavLink(navItem) && navItem.url)
                   return (
                     <CommandItem
-                      key={`${(navItem as any).url}-${i}`}
+                      key={`${navItem.url}-${i}`}
                       value={navItem.title}
                       onSelect={() => {
-                        runCommand(() => navigate({ to: (navItem as any).url }))
+                        runCommand(() => navigate({ to: navItem.url }))
                       }}
                     >
                       <div className='flex size-4 items-center justify-center'>
@@ -57,7 +59,7 @@ export function CommandMenu() {
                     </CommandItem>
                   )
 
-                return (navItem as any).items?.map((subItem: any, i: number) => (
+                return (navItem as NavCollapsible).items?.map((subItem, i) => (
                   <CommandItem
                     key={`${navItem.title}-${subItem.url}-${i}`}
                     value={`${navItem.title}-${subItem.url}`}

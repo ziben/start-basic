@@ -20,8 +20,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { getErrorMessage } from '@/shared/lib/error-handler'
+import { adminUsersQueryKeys } from '~/shared/lib/query-keys'
 import { type AdminUser } from '../data/schema'
-import { ADMIN_USERS_QUERY_KEY } from '../hooks/use-admin-users-list-query'
 
 type AdminUserMutateDialogProps = {
   currentRow?: AdminUser
@@ -32,7 +32,7 @@ type AdminUserMutateDialogProps = {
 export function AdminUsersMutateDialog({ currentRow, open, onOpenChange }: AdminUserMutateDialogProps) {
   const isEdit = !!currentRow
   const { data: rolesData } = useRoles({ page: 1, pageSize: 100 })
-  const roles = rolesData?.items ?? []
+  const roles = (rolesData?.items ?? []) as Array<{ id: string; name: string; displayName: string }>
 
   const formSchema = useMemo(() => {
     return z.object({
@@ -102,7 +102,7 @@ export function AdminUsersMutateDialog({ currentRow, open, onOpenChange }: Admin
       })
     },
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ADMIN_USERS_QUERY_KEY })
+      await queryClient.invalidateQueries({ queryKey: adminUsersQueryKeys.all })
       onOpenChange(false)
       form.reset()
     },
@@ -127,7 +127,7 @@ export function AdminUsersMutateDialog({ currentRow, open, onOpenChange }: Admin
       })
     },
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ADMIN_USERS_QUERY_KEY })
+      await queryClient.invalidateQueries({ queryKey: adminUsersQueryKeys.all })
       onOpenChange(false)
       form.reset()
     },

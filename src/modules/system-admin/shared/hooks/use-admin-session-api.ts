@@ -6,23 +6,10 @@
 
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { getSessionsFn, deleteSessionFn, bulkDeleteSessionsFn } from '../server-fns/session.fn'
-import type { AdminSessionsPage, AdminSessionInfo } from '../types/session'
+import type { AdminSessionsPage } from '../types/session'
+import { sessionQueryKeys } from '~/shared/lib/query-keys'
 
 export type { AdminSessionInfo } from '../types/session'
-
-// ============ Query Keys ============
-
-export const sessionQueryKeys = {
-  all: ['admin', 'sessions'] as const,
-  list: (params: {
-    page: number
-    pageSize: number
-    filter?: string
-    status?: Array<'active' | 'expired'>
-    sortBy?: string
-    sortDir?: 'asc' | 'desc'
-  }) => [...sessionQueryKeys.all, params] as const,
-}
 
 // ============ Query Hooks ============
 

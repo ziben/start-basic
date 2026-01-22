@@ -55,8 +55,12 @@ export async function getSidebarData(
         if (group.userRoleNavGroups.some((urg) => !urg.visible)) return false
       }
 
-      // 2. 如果菜单组没有任何角色限制，则所有人可见
-      if (!group.roleNavGroups || group.roleNavGroups.length === 0) {
+      // 2. 如果菜单组没有任何角色限制（或角色为空），则所有人可见
+      const validRoleRestrictions = (group.roleNavGroups || [])
+        .map((rg) => rg.roleName)
+        .filter((r): r is string => !!r)
+
+      if (validRoleRestrictions.length === 0) {
         return true
       }
 
@@ -68,10 +72,7 @@ export async function getSidebarData(
       }
       if (role) userRoles.add(role)
 
-      return group.roleNavGroups.some((rg) => {
-        // 匹配角色名
-        return rg.role && userRoles.has(rg.role)
-      })
+      return validRoleRestrictions.some((roleName) => userRoles.has(roleName))
     })
 
     // 转换为前端需要的格式

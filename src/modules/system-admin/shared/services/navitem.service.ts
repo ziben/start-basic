@@ -156,12 +156,22 @@ export const NavItemService = {
      */
     async create(data: CreateNavItemInput) {
         try {
+            const normalized = {
+                ...data,
+                navGroupId: data.navGroupId?.trim() || '',
+                parentId: data.parentId?.trim() || undefined,
+            }
+
+            if (!normalized.navGroupId) {
+                throw new Error('菜单组ID不能为空')
+            }
+
             // 获取最大 orderIndex
-            let orderIndex = data.orderIndex
+            let orderIndex = normalized.orderIndex
             if (orderIndex === undefined) {
-                const whereClause: any = data.parentId
-                    ? { parentId: data.parentId }
-                    : { navGroupId: data.navGroupId, parentId: null }
+                const whereClause: any = normalized.parentId
+                    ? { parentId: normalized.parentId }
+                    : { navGroupId: normalized.navGroupId, parentId: null }
 
                 const lastNavItem = await prisma.navItem.findFirst({
                     where: whereClause,
@@ -171,18 +181,22 @@ export const NavItemService = {
             }
 
             // 验证父级导航项
-            if (data.parentId) {
+            if (normalized.parentId) {
                 const parentItem = await prisma.navItem.findUnique({
-                    where: { id: data.parentId },
+                    where: { id: normalized.parentId },
                 })
 
                 if (!parentItem) {
                     throw new Error('父级导航项不存在')
                 }
 
+                if (!parentItem.isCollapsible) {
+                    throw new Error('父级必须是可折叠菜单')
+                }
+
                 // 更新父项为可折叠
                 await prisma.navItem.update({
-                    where: { id: data.parentId },
+                    where: { id: normalized.parentId },
                     data: { isCollapsible: true },
                 })
             }
@@ -190,14 +204,14 @@ export const NavItemService = {
             // 创建导航项
             return await prisma.navItem.create({
                 data: {
-                    title: data.title,
-                    url: data.isCollapsible ? null : data.url,
-                    icon: data.icon,
-                    badge: data.badge,
-                    isCollapsible: !!data.isCollapsible,
+                    title: normalized.title,
+                    url: normalized.isCollapsible ? null : normalized.url,
+                    icon: normalized.icon,
+                    badge: normalized.badge,
+                    isCollapsible: !!normalized.isCollapsible,
                     orderIndex: orderIndex ?? 0,
-                    navGroupId: data.navGroupId,
-                    parentId: data.parentId,
+                    navGroupId: normalized.navGroupId,
+                    parentId: normalized.parentId,
                 },
             })
         } catch (error) {

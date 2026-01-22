@@ -24,8 +24,8 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { getErrorMessage } from '@/shared/lib/error-handler'
+import { departmentQueryKeys } from '~/shared/lib/query-keys'
 import { type Department } from '../data/schema'
-import { DEPARTMENTS_QUERY_KEY } from '../hooks/use-departments-query'
 
 type DepartmentMutateDialogProps = {
   currentRow?: Department
@@ -45,18 +45,6 @@ export function DepartmentMutateDialog({
   const isEdit = !!currentRow
 
   const formSchema = useMemo(() => {
-    if (isEdit) {
-      return z.object({
-        name: z.string().min(1, '部门名称不能为空'),
-        code: z.string().min(1, '部门编码不能为空'),
-        parentId: z.string().optional(),
-        leader: z.string().optional(),
-        phone: z.string().optional(),
-        email: z.string().email('邮箱格式不正确').optional().or(z.literal('')),
-        sort: z.number().optional(),
-        status: z.enum(['ACTIVE', 'INACTIVE']).optional(),
-      })
-    }
     return z.object({
       name: z.string().min(1, '部门名称不能为空'),
       code: z.string().min(1, '部门编码不能为空'),
@@ -65,8 +53,9 @@ export function DepartmentMutateDialog({
       phone: z.string().optional(),
       email: z.string().email('邮箱格式不正确').optional().or(z.literal('')),
       sort: z.number().optional(),
+      status: z.enum(['ACTIVE', 'INACTIVE']).optional(),
     })
-  }, [isEdit])
+  }, [])
 
   type DepartmentForm = z.infer<typeof formSchema>
 
@@ -118,7 +107,7 @@ export function DepartmentMutateDialog({
       })
     },
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: DEPARTMENTS_QUERY_KEY })
+      await queryClient.invalidateQueries({ queryKey: departmentQueryKeys.byOrg(organizationId) })
       onOpenChange(false)
       form.reset()
     },
@@ -140,7 +129,7 @@ export function DepartmentMutateDialog({
       })
     },
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: DEPARTMENTS_QUERY_KEY })
+      await queryClient.invalidateQueries({ queryKey: departmentQueryKeys.byOrg(organizationId) })
       onOpenChange(false)
       form.reset()
     },

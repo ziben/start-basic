@@ -1,4 +1,9 @@
-import { useState, useMemo, useEffect, useRef } from 'react'
+import { useMemo, useEffect, useState } from 'react'
+import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
+import { AdminNavItem } from '../data/schema'
+import { useAdminNavItemColumns } from './admin-navitem-columns'
 import {
   ColumnFiltersState,
   SortingState,
@@ -12,21 +17,17 @@ import {
   getExpandedRowModel,
   ExpandedState,
 } from '@tanstack/react-table'
-import { useVirtualizer } from '@tanstack/react-virtual'
-import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
-import { AdminNavItem } from '../data/schema'
-import { useAdminNavItemColumns } from './admin-navitem-columns'
 
 interface Props {
   readonly data: ReadonlyArray<AdminNavItem>
   readonly isLoading?: boolean
   readonly error?: Error | null
   readonly navGroupId?: string
+  readonly onReload?: () => void
+  readonly isReloading?: boolean
 }
 
-export default function AdminNavItemTable({ data, isLoading, error, navGroupId }: Props) {
+export default function AdminNavItemTable({ data, isLoading, error, navGroupId, onReload, isReloading }: Props) {
   const { t } = useTranslation()
   // 获取列配置
   const { columns } = useAdminNavItemColumns({ navGroupId })
@@ -125,19 +126,25 @@ export default function AdminNavItemTable({ data, isLoading, error, navGroupId }
     }
 
     // For react-table, data should be root nodes of the current view
-    const rootNodesForTable = currentVisibleFlatTree.filter((item) => {
-      if (!item.parentId) return true // Global root
-      // Item is a root in the current view if its parent is not in currentVisibleFlatTree
+    const treeData = currentVisibleFlatTree.filter((item) => {
+      // 如果没有父级，它就是根节点
+      if (!item.parentId) return true 
+      // 如果有父级，但父级不在当前可见列表中，它也作为根节点显示
       return !currentVisibleFlatTree.find((parentCandidate) => parentCandidate.id === item.parentId)
     })
 
     const allVisibleItemsMap = new Map(currentVisibleFlatTree.map((item) => [item.id, item]))
 
     const subRowsFunc = (row: AdminNavItem): AdminNavItem[] => {
+      // 返回当前节点在可见列表中的直接子节点
       return currentVisibleFlatTree.filter((item) => item.parentId === row.id)
     }
 
-    return { tableData: rootNodesForTable, getSubRowsFunction: subRowsFunc, allVisibleItemsById: allVisibleItemsMap }
+    return { 
+      tableData: treeData, 
+      getSubRowsFunction: subRowsFunc, 
+      allVisibleItemsById: allVisibleItemsMap 
+    }
   }, [data, titleFilterValue, depthMap])
 
   // Effect for auto-expanding rows when filter is applied
@@ -146,11 +153,11 @@ export default function AdminNavItemTable({ data, isLoading, error, navGroupId }
       return
     }
     // const allItemsById = new Map(data.map(item => [item.id, item])); // Original data map
-    const newExpanded: ExpandedState = {}
+    const newExpanded: any = {}
     const lowercasedFilter = titleFilterValue.toLowerCase()
 
     // Iterate over all visible items (roots and children) to find matches and their ancestors for expansion
-    allVisibleItemsById.forEach((item) => {
+    allVisibleItemsById.forEach((item: any) => {
       if (item.title.toLowerCase().includes(lowercasedFilter)) {
         let currentAncestorId = item.parentId
         while (currentAncestorId) {
@@ -158,7 +165,7 @@ export default function AdminNavItemTable({ data, isLoading, error, navGroupId }
             // Ensure ancestor is in the visible set
             newExpanded[currentAncestorId] = true
           }
-          const ancestorDetails = allVisibleItemsById.get(currentAncestorId) // Get details from visible set
+          const ancestorDetails: any = allVisibleItemsById.get(currentAncestorId) // Get details from visible set
           currentAncestorId = ancestorDetails ? ancestorDetails.parentId : null
         }
       }
@@ -167,7 +174,7 @@ export default function AdminNavItemTable({ data, isLoading, error, navGroupId }
       const baseExpanded = typeof prevExpanded === 'object' ? prevExpanded : {}
       return { ...baseExpanded, ...newExpanded }
     })
-  }, [titleFilterValue, data, allVisibleItemsById, setExpanded])
+  }, [titleFilterValue, data, allVisibleItemsById])
 
   // 创建table实例
   const table = useReactTable({
@@ -196,28 +203,18 @@ export default function AdminNavItemTable({ data, isLoading, error, navGroupId }
   })
 
   const rows = table.getRowModel().rows
-  const tableContainerRef = useRef<HTMLDivElement>(null)
-  const rowVirtualizer = useVirtualizer({
-    count: rows.length,
-    getScrollElement: () => tableContainerRef.current,
-    estimateSize: () => 44,
-    overscan: 10,
-  })
 
   // 处理加载、错误和空数据状态
   if (isLoading) return <div className='py-8 text-center'>加载中...</div>
   if (error) return <div className='py-8 text-center text-red-500'>加载出错: {error.message}</div>
-
-  const virtualRows = rowVirtualizer.getVirtualItems()
-  const paddingTop = virtualRows.length > 0 ? virtualRows[0]!.start : 0
-  const paddingBottom =
-    virtualRows.length > 0 ? rowVirtualizer.getTotalSize() - virtualRows[virtualRows.length - 1]!.end : 0
 
   return (
     <div className='space-y-4'>
       <DataTableToolbar
         table={table}
         searchPlaceholder={t('admin.navgroup.table.searchPlaceholder')}
+        onReload={onReload}
+        isReloading={isReloading}
         filters={[
           {
             columnId: 'title',
@@ -226,8 +223,8 @@ export default function AdminNavItemTable({ data, isLoading, error, navGroupId }
           },
         ]}
       />
-      <div className='overflow-hidden rounded-md border'>
-        <div ref={tableContainerRef} className='max-h-[70vh] overflow-auto'>
+      <div className='rounded-md border'>
+        <div>
           <Table>
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
@@ -246,32 +243,15 @@ export default function AdminNavItemTable({ data, isLoading, error, navGroupId }
             </TableHeader>
             <TableBody>
               {rows?.length ? (
-                <>
-                  {paddingTop > 0 ? (
-                    <TableRow aria-hidden='true' className='border-0 hover:bg-transparent'>
-                      <TableCell colSpan={columns.length} className='p-0' style={{ height: `${paddingTop}px` }} />
-                    </TableRow>
-                  ) : null}
-
-                  {virtualRows.map((virtualRow) => {
-                    const row = rows[virtualRow.index]!
-                    return (
-                      <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'} className='group/row'>
-                        {row.getVisibleCells().map((cell) => (
-                          <TableCell key={cell.id} className={cell.column.columnDef.meta?.className ?? ''}>
-                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                          </TableCell>
-                        ))}
-                      </TableRow>
-                    )
-                  })}
-
-                  {paddingBottom > 0 ? (
-                    <TableRow aria-hidden='true' className='border-0 hover:bg-transparent'>
-                      <TableCell colSpan={columns.length} className='p-0' style={{ height: `${paddingBottom}px` }} />
-                    </TableRow>
-                  ) : null}
-                </>
+                rows.map((row) => (
+                  <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'} className='group/row'>
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id} className={cell.column.columnDef.meta?.className ?? ''}>
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
               ) : (
                 <TableRow>
                   <TableCell colSpan={columns.length} className='h-24 text-center'>

@@ -18,8 +18,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { getErrorMessage } from '@/shared/lib/error-handler'
+import { organizationQueryKeys } from '~/shared/lib/query-keys'
 import { type Organization } from '../data/schema'
-import { ORGANIZATIONS_QUERY_KEY } from '../hooks/use-organizations-list-query'
 
 type OrganizationMutateDialogProps = {
   currentRow?: Organization
@@ -74,7 +74,7 @@ export function OrganizationMutateDialog({ currentRow, open, onOpenChange }: Org
       return await createOrganizationFn({ data })
     },
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ORGANIZATIONS_QUERY_KEY })
+      await queryClient.invalidateQueries({ queryKey: organizationQueryKeys.all })
       onOpenChange(false)
       form.reset()
     },
@@ -97,7 +97,7 @@ export function OrganizationMutateDialog({ currentRow, open, onOpenChange }: Org
       })
     },
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ORGANIZATIONS_QUERY_KEY })
+      await queryClient.invalidateQueries({ queryKey: organizationQueryKeys.all })
       onOpenChange(false)
       form.reset()
     },

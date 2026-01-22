@@ -1,5 +1,6 @@
-import { useQuery } from "@tanstack/react-query"
-import { getOrganizationRolesFn, getRoleTemplatesFn } from "@/modules/system-admin/shared/server-fns/organization-role.fn"
+import { useQuery } from '@tanstack/react-query'
+import { getOrganizationRolesFn, getRoleTemplatesFn } from '@/modules/system-admin/shared/server-fns/organization-role.fn'
+import { rbacOrgRolesQueryKeys } from '~/shared/lib/query-keys'
 
 interface UseOrgRolesQueryProps {
   organizationId: string
@@ -10,7 +11,7 @@ interface UseOrgRolesQueryProps {
 
 export function useOrgRolesQuery({ organizationId, page, pageSize, search }: UseOrgRolesQueryProps) {
   return useQuery({
-    queryKey: ["rbac", "org-roles", { organizationId, page, pageSize, search }],
+    queryKey: rbacOrgRolesQueryKeys.list({ organizationId, page, pageSize, search }),
     queryFn: async () => {
       if (!organizationId) return { data: [], pagination: { total: 0, totalPages: 0, page: 1, pageSize: 10 } }
       return await getOrganizationRolesFn({
@@ -29,7 +30,7 @@ export function useOrgRolesQuery({ organizationId, page, pageSize, search }: Use
 
 export function useOrgRoleTemplatesQuery() {
   return useQuery({
-    queryKey: ["rbac", "role-templates"],
+    queryKey: rbacOrgRolesQueryKeys.templates,
     queryFn: async () => {
       return await getRoleTemplatesFn()
     },

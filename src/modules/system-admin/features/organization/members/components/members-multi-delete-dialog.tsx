@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { type Table, type Row } from '@tanstack/react-table'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation } from '@tanstack/react-query'
 import { Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { bulkDeleteMembersFn } from '../../../../shared/server-fns/member.fn'
@@ -17,7 +17,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 import { type Member } from '../data/schema'
-import { MEMBERS_QUERY_KEY } from '../hooks/use-members-list-query'
+import { memberQueryKeys } from '~/shared/lib/query-keys'
 import { useMembersOptimisticUpdate, createBulkDeleteUpdateFn } from '../hooks/use-members-optimistic-update'
 
 type MembersMultiDeleteDialogProps = {
@@ -34,7 +34,7 @@ export function MembersMultiDeleteDialog({ table, selectedRows }: MembersMultiDe
       return await bulkDeleteMembersFn({ data: { ids } })
     },
     ...getOptimisticMutationOptions({
-      queryKey: MEMBERS_QUERY_KEY,
+      queryKey: memberQueryKeys.all,
       updateFn: (members, ids) => createBulkDeleteUpdateFn(members, ids),
     }),
   })

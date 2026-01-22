@@ -9,7 +9,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { DataTableBulkActions as BulkActionsToolbar } from '@/components/data-table'
 import { type AdminUser } from '../data/schema'
-import { ADMIN_USERS_QUERY_KEY } from '../hooks/use-admin-users-list-query'
+import { adminUsersQueryKeys } from '~/shared/lib/query-keys'
 import { useUsersOptimisticUpdate, createBulkBanUpdateFn } from '../hooks/use-users-optimistic-update'
 import { AdminUsersMultiDeleteDialog } from './admin-users-multi-delete-dialog'
 
@@ -33,7 +33,7 @@ export function DataTableBulkActions<TData>({ table }: DataTableBulkActionsProps
       })
     },
     ...getOptimisticMutationOptions({
-      queryKey: ADMIN_USERS_QUERY_KEY,
+      queryKey: adminUsersQueryKeys.all,
       updateFn: (users, variables) => createBulkBanUpdateFn(users, variables.ids, variables.banned),
     }),
   })

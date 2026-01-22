@@ -20,19 +20,12 @@ import type {
   CreateNavItemData,
   UpdateNavItemData as SchemaUpdateNavItemData,
 } from '@/modules/system-admin/features/navigation/navitem'
-import { SIDEBAR_QUERY_KEY } from '~/modules/system-admin/shared/sidebar'
+import { navitemQueryKeys, sidebarQueryKeys } from '~/shared/lib/query-keys'
 
 type SuccessIdResponse = { success: true; id: string }
 type NavItemVisibilityResponse = { success: true; id: string; isVisible: boolean }
 
 // ============ Query Keys ============
-
-export const navitemQueryKeys = {
-  all: ['admin', 'navitems'] as const,
-  list: (navGroupId?: string, scope?: 'APP' | 'ADMIN') =>
-    [...navitemQueryKeys.all, navGroupId, scope ?? 'ALL'] as const,
-  detail: (id: string) => ['admin', 'navitem', id] as const,
-}
 
 // ============ Query Hooks ============
 
@@ -69,7 +62,7 @@ export function useCreateNavitem() {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: navitemQueryKeys.list(variables.navGroupId) })
-      queryClient.invalidateQueries({ queryKey: SIDEBAR_QUERY_KEY })
+      queryClient.invalidateQueries({ queryKey: sidebarQueryKeys.all })
     },
   })
 }
@@ -90,7 +83,7 @@ export function useUpdateNavitem() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: navitemQueryKeys.all })
       queryClient.invalidateQueries({ queryKey: navitemQueryKeys.detail(variables.id) })
-      queryClient.invalidateQueries({ queryKey: SIDEBAR_QUERY_KEY })
+      queryClient.invalidateQueries({ queryKey: sidebarQueryKeys.all })
     },
   })
 }
@@ -111,7 +104,7 @@ export function useDeleteNavitem() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: navitemQueryKeys.list(variables.navGroupId) })
       queryClient.invalidateQueries({ queryKey: navitemQueryKeys.all })
-      queryClient.invalidateQueries({ queryKey: SIDEBAR_QUERY_KEY })
+      queryClient.invalidateQueries({ queryKey: sidebarQueryKeys.all })
     },
   })
 }
@@ -126,7 +119,7 @@ export function useUpdateNavitemOrder() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: navitemQueryKeys.all })
-      queryClient.invalidateQueries({ queryKey: SIDEBAR_QUERY_KEY })
+      queryClient.invalidateQueries({ queryKey: sidebarQueryKeys.all })
     },
   })
 }
@@ -146,7 +139,7 @@ export function useToggleNavItemVisibility() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: navitemQueryKeys.all })
-      queryClient.invalidateQueries({ queryKey: SIDEBAR_QUERY_KEY })
+      queryClient.invalidateQueries({ queryKey: sidebarQueryKeys.all })
     },
   })
 }

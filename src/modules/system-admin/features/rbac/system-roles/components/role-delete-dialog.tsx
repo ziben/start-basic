@@ -11,6 +11,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { toast } from 'sonner'
+import { roleQueryKeys } from '~/shared/lib/query-keys'
 import { useRolesContext } from '../context/roles-context'
 
 export function RoleDeleteDialog() {
@@ -22,7 +23,7 @@ export function RoleDeleteDialog() {
       return await deleteRoleFn({ data: { id } })
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['rbac', 'roles'] })
+      queryClient.invalidateQueries({ queryKey: roleQueryKeys.all })
       toast.success('删除成功')
       closeDeleteDialog()
     },
