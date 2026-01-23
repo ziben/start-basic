@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { createPermissionFn, updatePermissionFn, deletePermissionFn } from '@/modules/system-admin/shared/server-fns/rbac.fn'
+import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
 import {
   Dialog,
   DialogContent,
@@ -38,21 +39,22 @@ import { useState } from 'react'
 import { Trash2 } from 'lucide-react'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 
-const formSchema = z.object({
-  resourceId: z.string().min(1, '请选择资源'),
-  actionId: z.string().min(1, '请选择操作'),
-  displayName: z.string().min(1, '显示名称不能为空'),
-  category: z.string().optional(),
-  description: z.string().optional(),
-})
-
-type FormValues = z.infer<typeof formSchema>
-
 export function PermissionMutateDialog() {
+  const { t } = useTranslation()
   const { permissionDialog, closePermissionDialog } = usePermissionsContext()
   const queryClient = useQueryClient()
   const { data: resources = [] } = useResourcesQuery()
   const [isConfirmOpen, setIsConfirmOpen] = useState(false)
+
+  const formSchema = z.object({
+    resourceId: z.string().min(1, t('admin.permission.permission.validation.resourceRequired')),
+    actionId: z.string().min(1, t('admin.permission.permission.validation.actionRequired')),
+    displayName: z.string().min(1, t('admin.permission.permission.validation.displayNameRequired')),
+    category: z.string().optional(),
+    description: z.string().optional(),
+  })
+
+  type FormValues = z.infer<typeof formSchema>
 
   const isEdit = !!permissionDialog.data?.id
   const permission = permissionDialog.data
@@ -101,17 +103,17 @@ export function PermissionMutateDialog() {
     mutationFn: (data: FormValues) => createPermissionFn({ data }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: rbacPermissionsQueryKeys.all })
-      toast.success('权限点创建成功')
+      toast.success(t('admin.permission.permission.toast.createSuccess'))
       closePermissionDialog()
     },
     onError: (error: Error) => {
-      toast.error('创建失败', { description: error.message })
+      toast.error(t('admin.permission.permission.toast.createError'), { description: error.message })
     },
   })
 
   const updateMutation = useMutation({
     mutationFn: (data: FormValues) => {
-      if (!permission?.id) throw new Error('权限ID不存在')
+      if (!permission?.id) throw new Error(t('admin.permission.permission.errors.missingId'))
       return updatePermissionFn({
         data: {
           id: permission.id,
@@ -123,27 +125,27 @@ export function PermissionMutateDialog() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: rbacPermissionsQueryKeys.all })
-      toast.success('权限点更新成功')
+      toast.success(t('admin.permission.permission.toast.updateSuccess'))
       closePermissionDialog()
     },
     onError: (error: Error) => {
-      toast.error('更新失败', { description: error.message })
+      toast.error(t('admin.permission.permission.toast.updateError'), { description: error.message })
     },
   })
 
   const deleteMutation = useMutation({
     mutationFn: () => {
-      if (!permission?.id) throw new Error('权限ID不存在')
+      if (!permission?.id) throw new Error(t('admin.permission.permission.errors.missingId'))
       return deletePermissionFn({ data: { id: permission.id } })
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: rbacPermissionsQueryKeys.all })
-      toast.success('权限点删除成功')
+      toast.success(t('admin.permission.permission.toast.deleteSuccess'))
       setIsConfirmOpen(false)
       closePermissionDialog()
     },
     onError: (error: Error) => {
-      toast.error('删除失败', { description: error.message })
+      toast.error(t('admin.permission.permission.toast.deleteError'), { description: error.message })
     },
   })
 
@@ -161,7 +163,11 @@ export function PermissionMutateDialog() {
         <DialogContent className='sm:max-w-[500px]'>
           <DialogHeader>
             <div className='flex items-center justify-between'>
-              <DialogTitle>{isEdit ? '编辑权限点' : '新增权限点'}</DialogTitle>
+              <DialogTitle>
+                {isEdit
+                  ? t('admin.permission.permission.dialog.editTitle')
+                  : t('admin.permission.permission.dialog.createTitle')}
+              </DialogTitle>
               {isEdit && !permission?.isSystem && (
                 <Button
                   type='button'
@@ -174,9 +180,7 @@ export function PermissionMutateDialog() {
                 </Button>
               )}
             </div>
-            <DialogDescription>
-              权限点由“资源”和“操作”组合而成，用于前端和后端的权限校验。
-            </DialogDescription>
+            <DialogDescription>{t('admin.permission.permission.dialog.desc')}</DialogDescription>
           </DialogHeader>
 
           <Form {...form}>
@@ -186,9 +190,9 @@ export function PermissionMutateDialog() {
                 name='displayName'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>显示名称</FormLabel>
+                    <FormLabel>{t('admin.permission.permission.form.displayName')}</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder='例如: 创建用户, 导出订单' />
+                      <Input {...field} placeholder={t('admin.permission.permission.form.displayNamePlaceholder')} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -201,7 +205,7 @@ export function PermissionMutateDialog() {
                   name='resourceId'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>所属资源</FormLabel>
+                      <FormLabel>{t('admin.permission.permission.form.resource')}</FormLabel>
                       <Select
                         onValueChange={(val) => {
                           field.onChange(val)
@@ -212,7 +216,7 @@ export function PermissionMutateDialog() {
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder='选择资源' />
+                            <SelectValue placeholder={t('admin.permission.permission.form.resourcePlaceholder')} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -233,11 +237,11 @@ export function PermissionMutateDialog() {
                   name='actionId'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>执行操作</FormLabel>
+                      <FormLabel>{t('admin.permission.permission.form.action')}</FormLabel>
                       <Select onValueChange={field.onChange} value={field.value} disabled={isEdit || !selectedResourceId}>
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder='选择操作' />
+                            <SelectValue placeholder={t('admin.permission.permission.form.actionPlaceholder')} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -259,11 +263,11 @@ export function PermissionMutateDialog() {
                 name='category'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>分类 (可选)</FormLabel>
+                    <FormLabel>{t('admin.permission.permission.form.category')}</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder='例如: 系统管理, 业务功能' />
+                      <Input {...field} placeholder={t('admin.permission.permission.form.categoryPlaceholder')} />
                     </FormControl>
-                    <FormDescription>用于权限点分组展示</FormDescription>
+                    <FormDescription>{t('admin.permission.permission.form.categoryHelp')}</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -274,9 +278,9 @@ export function PermissionMutateDialog() {
                 name='description'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>描述 (可选)</FormLabel>
+                    <FormLabel>{t('admin.permission.permission.form.description')}</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder='权限用途描述' />
+                      <Input {...field} placeholder={t('admin.permission.permission.form.descriptionPlaceholder')} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -285,10 +289,10 @@ export function PermissionMutateDialog() {
 
               <DialogFooter className='pt-4'>
                 <Button type='button' variant='outline' onClick={closePermissionDialog}>
-                  取消
+                  {t('common.buttons.cancel')}
                 </Button>
                 <Button type='submit' disabled={createMutation.isPending || updateMutation.isPending}>
-                  {isEdit ? '保存' : '创建'}
+                  {isEdit ? t('common.buttons.save') : t('common.buttons.create')}
                 </Button>
               </DialogFooter>
             </form>
@@ -299,12 +303,10 @@ export function PermissionMutateDialog() {
       <ConfirmDialog
         open={isConfirmOpen}
         onOpenChange={setIsConfirmOpen}
-        title='删除权限点'
+        title={t('admin.permission.permission.confirmDelete.title')}
         desc={
           <>
-            确定要删除权限点 <strong>{permission?.displayName}</strong> 吗？
-            <br />
-            这将导致所有关联该权限的角色失去此权限，且不可撤销。
+            {t('admin.permission.permission.confirmDelete.desc', { name: permission?.displayName })}
           </>
         }
         destructive

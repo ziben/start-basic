@@ -8,6 +8,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import { useVirtualizer } from '@tanstack/react-virtual'
+import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
 import { cn } from '@/shared/lib/utils'
 import { type NavigateFn, useTableUrlState } from '@/shared/hooks/use-table-url-state'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
@@ -25,6 +26,7 @@ type AdminUsersTableProps = {
 
 export function AdminUsersTable({ search, navigate }: AdminUsersTableProps) {
   const [rowSelection, setRowSelection] = useState({})
+  const { t } = useTranslation()
 
   const {
     globalFilter,
@@ -122,21 +124,21 @@ export function AdminUsersTable({ search, navigate }: AdminUsersTableProps) {
     <div className={cn('max-sm:has-[div[role="toolbar"]]:mb-16', 'flex flex-1 flex-col gap-4')}>
       <DataTableToolbar
         table={table}
-        searchPlaceholder='根据名称或ID过滤...'
+        searchPlaceholder={t('admin.user.table.searchPlaceholder')}
         onReload={() => void refetch()}
         isReloading={isRefetching}
         filters={[
           {
             columnId: 'banned',
-            title: '封禁',
+            title: t('admin.user.filter.banned'),
             options: banned.map((opt) => ({
-              label: opt.label,
+              label: t(opt.labelKey),
               value: String(opt.value),
             })),
           },
         ]}
       />
-      <div className='overflow-hidden rounded-md border'>
+      <div className='relative overflow-hidden rounded-md border'>
         <div ref={tableContainerRef} className='max-h-[70vh] overflow-auto'>
           <Table>
             <TableHeader>
@@ -198,7 +200,7 @@ export function AdminUsersTable({ search, navigate }: AdminUsersTableProps) {
               ) : (
                 <TableRow>
                   <TableCell colSpan={columns.length} className='h-24 text-center'>
-                    No results.
+                    {t('common.noResults')}
                   </TableCell>
                 </TableRow>
               )}

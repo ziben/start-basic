@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { createActionFn, updateActionFn, deleteActionFn } from '@/modules/system-admin/shared/server-fns/rbac.fn'
+import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
 import {
   Dialog,
   DialogContent,
@@ -30,18 +31,19 @@ import { useState } from 'react'
 import { Trash2 } from 'lucide-react'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 
-const formSchema = z.object({
-  name: z.string().min(1, '操作名称不能为空'),
-  displayName: z.string().min(1, '显示名称不能为空'),
-  description: z.string().optional(),
-})
-
-type FormValues = z.infer<typeof formSchema>
-
 export function ActionMutateDialog() {
+  const { t } = useTranslation()
   const { actionDialog, closeActionDialog } = usePermissionsContext()
   const queryClient = useQueryClient()
   const [isConfirmOpen, setIsConfirmOpen] = useState(false)
+
+  const formSchema = z.object({
+    name: z.string().min(1, t('admin.permission.action.validation.nameRequired')),
+    displayName: z.string().min(1, t('admin.permission.action.validation.displayNameRequired')),
+    description: z.string().optional(),
+  })
+
+  type FormValues = z.infer<typeof formSchema>
 
   const resourceId = actionDialog.data?.resourceId
   const action = actionDialog.data?.action
@@ -76,7 +78,7 @@ export function ActionMutateDialog() {
 
   const createMutation = useMutation({
     mutationFn: (data: FormValues) => {
-      if (!resourceId) throw new Error('资源ID不存在')
+      if (!resourceId) throw new Error(t('admin.permission.action.errors.missingResourceId'))
       return createActionFn({ 
         data: { 
           ...data,
@@ -86,17 +88,17 @@ export function ActionMutateDialog() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: rbacResourcesQueryKeys.all })
-      toast.success('操作创建成功')
+      toast.success(t('admin.permission.action.toast.createSuccess'))
       closeActionDialog()
     },
     onError: (error: Error) => {
-      toast.error('创建失败', { description: error.message })
+      toast.error(t('admin.permission.action.toast.createError'), { description: error.message })
     },
   })
 
   const updateMutation = useMutation({
     mutationFn: (data: FormValues) => {
-      if (!action?.id) throw new Error('操作ID不存在')
+      if (!action?.id) throw new Error(t('admin.permission.action.errors.missingId'))
       return updateActionFn({
         data: {
           id: action.id,
@@ -107,27 +109,27 @@ export function ActionMutateDialog() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: rbacResourcesQueryKeys.all })
-      toast.success('操作更新成功')
+      toast.success(t('admin.permission.action.toast.updateSuccess'))
       closeActionDialog()
     },
     onError: (error: Error) => {
-      toast.error('更新失败', { description: error.message })
+      toast.error(t('admin.permission.action.toast.updateError'), { description: error.message })
     },
   })
 
   const deleteMutation = useMutation({
     mutationFn: () => {
-      if (!action?.id) throw new Error('操作ID不存在')
+      if (!action?.id) throw new Error(t('admin.permission.action.errors.missingId'))
       return deleteActionFn({ data: { id: action.id } })
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: rbacResourcesQueryKeys.all })
-      toast.success('操作删除成功')
+      toast.success(t('admin.permission.action.toast.deleteSuccess'))
       setIsConfirmOpen(false)
       closeActionDialog()
     },
     onError: (error: Error) => {
-      toast.error('删除失败', { description: error.message })
+      toast.error(t('admin.permission.action.toast.deleteError'), { description: error.message })
     },
   })
 
@@ -145,7 +147,9 @@ export function ActionMutateDialog() {
         <DialogContent>
           <DialogHeader>
             <div className='flex items-center justify-between'>
-              <DialogTitle>{isEdit ? '编辑操作' : '新增操作'}</DialogTitle>
+              <DialogTitle>
+                {isEdit ? t('admin.permission.action.dialog.editTitle') : t('admin.permission.action.dialog.createTitle')}
+              </DialogTitle>
               {isEdit && !action?.isSystem && (
                 <Button
                   type='button'
@@ -158,9 +162,7 @@ export function ActionMutateDialog() {
                 </Button>
               )}
             </div>
-            <DialogDescription>
-              定义该资源支持的操作行为
-            </DialogDescription>
+            <DialogDescription>{t('admin.permission.action.dialog.desc')}</DialogDescription>
           </DialogHeader>
 
           <Form {...form}>
@@ -170,11 +172,11 @@ export function ActionMutateDialog() {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>操作标识</FormLabel>
+                    <FormLabel>{t('admin.permission.action.form.name')}</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="例如: create, read, export" disabled={isEdit} />
+                      <Input {...field} placeholder={t('admin.permission.action.form.namePlaceholder')} disabled={isEdit} />
                     </FormControl>
-                    <FormDescription>英文标识符，如 'create'</FormDescription>
+                    <FormDescription>{t('admin.permission.action.form.nameHelp')}</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -185,9 +187,9 @@ export function ActionMutateDialog() {
                 name="displayName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>显示名称</FormLabel>
+                    <FormLabel>{t('admin.permission.action.form.displayName')}</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="例如: 创建, 导出" />
+                      <Input {...field} placeholder={t('admin.permission.action.form.displayNamePlaceholder')} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -199,9 +201,9 @@ export function ActionMutateDialog() {
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>描述</FormLabel>
+                    <FormLabel>{t('admin.permission.action.form.description')}</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="可选描述信息" />
+                      <Input {...field} placeholder={t('admin.permission.action.form.descriptionPlaceholder')} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -210,10 +212,10 @@ export function ActionMutateDialog() {
 
               <DialogFooter>
                 <Button type="button" variant="outline" onClick={closeActionDialog}>
-                  取消
+                  {t('common.buttons.cancel')}
                 </Button>
                 <Button type="submit" disabled={createMutation.isPending || updateMutation.isPending}>
-                  {isEdit ? '保存' : '创建'}
+                  {isEdit ? t('common.buttons.save') : t('common.buttons.create')}
                 </Button>
               </DialogFooter>
             </form>
@@ -224,12 +226,10 @@ export function ActionMutateDialog() {
       <ConfirmDialog
         open={isConfirmOpen}
         onOpenChange={setIsConfirmOpen}
-        title="删除操作"
+        title={t('admin.permission.action.confirmDelete.title')}
         desc={
           <>
-            确定要删除操作 <strong>{action?.displayName}</strong> 吗？
-            <br />
-            这将导致关联的所有权限点失效，且不可撤销。
+            {t('admin.permission.action.confirmDelete.desc', { name: action?.displayName })}
           </>
         }
         destructive

@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { bulkDeleteOrganizationsFn } from '../../../../shared/server-fns/organization.fn'
+import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { organizationQueryKeys } from '~/shared/lib/query-keys'
 import { useOrganizationsOptimisticUpdate, createBulkDeleteUpdateFn } from '../hooks/use-organizations-optimistic-update'
@@ -9,6 +10,7 @@ import { OrganizationMutateDialog } from './organization-mutate-dialog'
 import { useOrganizations } from './organizations-provider'
 
 export function OrganizationsDialogs() {
+  const { t } = useTranslation()
   const { open, setOpen, currentRow, setCurrentRow } = useOrganizations()
   const { getOptimisticMutationOptions } = useOrganizationsOptimisticUpdate()
 
@@ -56,21 +58,19 @@ export function OrganizationsDialogs() {
 
               const promise = deleteOneMutation.mutateAsync({ id })
               toast.promise(promise, {
-                loading: '删除中...',
-                success: () => `已删除组织 ${currentRow.name}`,
+                loading: t('admin.organization.toast.delete.loading'),
+                success: () => t('admin.organization.toast.delete.success', { name: currentRow.name }),
                 error: String,
               })
             }}
             className='max-w-md'
-            title={`删除组织: ${currentRow.name}?`}
+            title={t('admin.organization.delete.title', { name: currentRow.name })}
             desc={
               <>
-                确定要删除组织 <strong>{currentRow.name}</strong> 吗？
-                <br />
-                此操作无法撤销，该组织下的所有数据将被永久删除。
+                {t('admin.organization.delete.desc', { name: currentRow.name })}
               </>
             }
-            confirmText='删除'
+            confirmText={t('common.buttons.delete')}
           />
         </>
       )}

@@ -1,3 +1,4 @@
+import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
 import { AppHeaderMain } from "@/components/layout/app-header-main"
 import { PageHeader } from "@/components/layout/page-header"
 import { OrgRolesProvider, useOrgRolesContext } from "./context/org-roles-context"
@@ -20,6 +21,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { OrganizationSelect } from "./components/organization-select"
 
 function OrgRolesContent() {
+  const { t } = useTranslation()
   const { openMutateDialog, openDeleteDialog, openPermissionsDialog, tableUrl } = useOrgRolesContext()
   const organizationId = tableUrl.columnFilters.find(f => f.id === "organizationId")?.value as string
   
@@ -35,12 +37,9 @@ function OrgRolesContent() {
 
   return (
     <AppHeaderMain>
-      <PageHeader
-        title="组织角色管理"
-        description="管理组织内的角色实例及其权限范围"
-      >
+      <PageHeader title={t('admin.orgRole.title')} description={t('admin.orgRole.desc')}>
         <Button onClick={() => openMutateDialog()} disabled={!organizationId}>
-          <Plus className="mr-2 h-4 w-4" /> 新增组织角色
+          <Plus className="mr-2 h-4 w-4" /> {t('admin.orgRole.button.create')}
         </Button>
       </PageHeader>
 
@@ -51,7 +50,9 @@ function OrgRolesContent() {
             isReloading={isRefetching} 
           />
           <div className="flex items-center gap-2">
-            <span className="text-xs text-muted-foreground whitespace-nowrap">筛选组织:</span>
+            <span className="text-xs text-muted-foreground whitespace-nowrap">
+              {t('admin.orgRole.filter.organization')}
+            </span>
             <OrganizationSelect 
               value={organizationId} 
               onValueChange={(id) => {
@@ -69,9 +70,9 @@ function OrgRolesContent() {
               <div className="rounded-full bg-muted p-4 mb-4">
                 <Building2 className="h-8 w-8 text-muted-foreground" />
               </div>
-              <h3 className="text-lg font-semibold">未选择组织</h3>
+              <h3 className="text-lg font-semibold">{t('admin.orgRole.empty.noOrganization.title')}</h3>
               <p className="text-muted-foreground max-w-sm mx-auto mt-2">
-                组织角色是特定于某个组织的。请先在组织列表中选择一个组织，或在 URL 中指定 organizationId。
+                {t('admin.orgRole.empty.noOrganization.desc')}
               </p>
             </CardContent>
           </Card>
@@ -97,7 +98,7 @@ function OrgRolesContent() {
               ) : roles.length === 0 ? (
                 <div className="col-span-full border rounded-lg border-dashed py-20 flex flex-col items-center justify-center text-muted-foreground">
                   <Search className="h-10 w-10 mb-4 opacity-20" />
-                  <p>没有找到相关组织角色</p>
+                  <p>{t('admin.orgRole.empty.noResults')}</p>
                 </div>
               ) : (
                 roles.map((role: any) => (
@@ -113,7 +114,7 @@ function OrgRolesContent() {
                         </div>
                         <div className="flex items-center gap-1">
                           <Badge variant={role.isActive ? "default" : "secondary"} className="h-5 text-[10px]">
-                            {role.isActive ? "启用" : "禁用"}
+                            {role.isActive ? t('admin.orgRole.status.active') : t('admin.orgRole.status.inactive')}
                           </Badge>
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
@@ -123,17 +124,17 @@ function OrgRolesContent() {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-40">
                               <DropdownMenuItem onClick={() => openMutateDialog(role)}>
-                                <Edit2 className="mr-2 h-4 w-4" /> 编辑信息
+                                <Edit2 className="mr-2 h-4 w-4" /> {t('admin.orgRole.actions.edit')}
                               </DropdownMenuItem>
                               <DropdownMenuItem onClick={() => openPermissionsDialog(role)}>
-                                <Shield className="mr-2 h-4 w-4" /> 分配权限
+                                <Shield className="mr-2 h-4 w-4" /> {t('admin.orgRole.actions.permissions')}
                               </DropdownMenuItem>
                               <DropdownMenuSeparator />
                               <DropdownMenuItem 
                                 onClick={() => openDeleteDialog(role)}
                                 className="text-destructive focus:text-destructive"
                               >
-                                <Trash2 className="mr-2 h-4 w-4" /> 删除角色
+                                <Trash2 className="mr-2 h-4 w-4" /> {t('admin.orgRole.actions.delete')}
                               </DropdownMenuItem>
                             </DropdownMenuContent>
                           </DropdownMenu>
@@ -143,22 +144,24 @@ function OrgRolesContent() {
                     <CardContent className="pb-4">
                       <div className="space-y-4">
                         <p className="text-sm text-muted-foreground line-clamp-2 min-h-[2.5rem] leading-relaxed">
-                          {role.description || "暂无对此角色的描述说明"}
+                          {role.description || t('admin.orgRole.description.empty')}
                         </p>
                         <div className="flex items-center gap-4 pt-2">
                           <div className="flex items-center gap-1.5 text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded-md">
                             <Users className="h-3.5 w-3.5" />
-                            <span className="font-medium text-foreground">{role._count?.members || 0}</span> 成员
+                            <span className="font-medium text-foreground">{role._count?.members || 0}</span>
+                            {t('admin.orgRole.labels.members')}
                           </div>
                           <div className="flex items-center gap-1.5 text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded-md">
                             <ShieldCheck className="h-3.5 w-3.5" />
-                            <span className="font-medium text-foreground">{role._count?.permissions || 0}</span> 权限
+                            <span className="font-medium text-foreground">{role._count?.permissions || 0}</span>
+                            {t('admin.orgRole.labels.permissions')}
                           </div>
                         </div>
                         {role.templateRole && (
                           <div className="pt-3 border-t border-dashed">
                             <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
-                              <span>继承自模板:</span>
+                              <span>{t('admin.orgRole.inherit.template')}</span>
                               <Badge variant="outline" className="px-1.5 py-0 h-4 text-[9px] font-normal bg-primary/5 border-primary/20 text-primary">
                                 {role.templateRole.displayName}
                               </Badge>

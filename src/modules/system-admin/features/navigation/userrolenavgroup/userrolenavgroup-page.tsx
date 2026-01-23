@@ -10,10 +10,10 @@ export default function AdminUserRoleNavGroup() {
       <div className='mb-2 flex flex-wrap items-center justify-between space-y-2 gap-x-4'>
         <div>
           <h2 className='text-2xl font-bold tracking-tight'>
-            {t('admin.userrolenavgroup.title', { defaultMessage: '用户角色菜单管理' })}
+            {t('admin.userrolenavgroup.title')}
           </h2>
           <p className='text-muted-foreground'>
-            {t('admin.userrolenavgroup.desc', { defaultMessage: '管理用户的角色菜单权限' })}
+            {t('admin.userrolenavgroup.desc')}
           </p>
         </div>
       </div>
@@ -21,12 +21,12 @@ export default function AdminUserRoleNavGroup() {
       <div className='-mx-4 flex-1 overflow-auto px-4 py-1'>
         <Card>
           <CardHeader>
-            <CardTitle>用户角色菜单</CardTitle>
-            <CardDescription>为用户分配特定的角色菜单权限</CardDescription>
+            <CardTitle>{t('admin.userrolenavgroup.card.title')}</CardTitle>
+            <CardDescription>{t('admin.userrolenavgroup.card.desc')}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className='flex h-40 items-center justify-center text-muted-foreground'>
-              功能开发中...
+              {t('admin.userrolenavgroup.empty')}
             </div>
           </CardContent>
         </Card>

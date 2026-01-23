@@ -11,6 +11,7 @@ type DataTableBulkActionsProps<TData> = {
   table: Table<TData>
   entityName: string
   children: React.ReactNode
+  placement?: 'viewport' | 'content'
 }
 
 /**
@@ -27,6 +28,7 @@ function DataTableBulkActionsInner<TData>({
   table,
   entityName,
   children,
+  placement = 'viewport',
 }: DataTableBulkActionsProps<TData>): React.ReactNode | null {
   const selectedRows = table.getFilteredSelectedRowModel().rows
   const selectedCount = selectedRows.length  
@@ -130,7 +132,10 @@ function DataTableBulkActionsInner<TData>({
         tabIndex={-1}
         onKeyDown={handleKeyDown}
         className={cn(
-          'fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-xl',
+          placement === 'viewport'
+            ? 'fixed bottom-6 left-1/2 z-50 -translate-x-1/2'
+            : 'absolute bottom-6 left-1/2 z-20 -translate-x-1/2',
+          'rounded-xl',
           'transition-all delay-100 duration-300 ease-out hover:scale-105',
           'focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none'
         )}

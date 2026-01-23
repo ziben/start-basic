@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { type Table } from '@tanstack/react-table'
 import { toast } from 'sonner'
+import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
 import { organizationQueryKeys } from '~/shared/lib/query-keys'
 import { bulkDeleteOrganizationsFn } from '../../../../shared/server-fns/organization.fn'
 import { ConfirmDeleteDialog } from '@/components/confirm-delete-dialog'
@@ -17,6 +18,7 @@ export function OrganizationsMultiDeleteDialog<TData>({
   onOpenChange,
   table,
 }: Readonly<OrganizationsMultiDeleteDialogProps<TData>>) {
+  const { t } = useTranslation()
   const queryClient = useQueryClient()
 
   const selectedRows = table.getFilteredSelectedRowModel().rows
@@ -73,9 +75,9 @@ export function OrganizationsMultiDeleteDialog<TData>({
     })
 
     toast.promise(promise, {
-      loading: '删除中...',
+      loading: t('admin.organization.bulk.delete.loading'),
       success: () => {
-        return `已删除 ${selectedRows.length} 个组织`
+        return t('admin.organization.bulk.delete.success', { count: selectedRows.length })
       },
       error: String,
     })
@@ -88,7 +90,7 @@ export function OrganizationsMultiDeleteDialog<TData>({
       onConfirm={handleDelete}
       confirmWord='DELETE'
       itemCount={selectedRows.length}
-      itemName='组织'
+      itemName={t('admin.organization.entity')}
       isLoading={bulkDeleteMutation.isPending}
     />
   )

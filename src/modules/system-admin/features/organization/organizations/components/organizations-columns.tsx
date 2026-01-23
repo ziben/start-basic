@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { type ColumnDef } from '@tanstack/react-table'
 import { format } from 'date-fns'
 import { Building2, Users, Layers } from 'lucide-react'
+import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import { DataTableColumnHeader } from '@/components/data-table'
@@ -9,6 +10,7 @@ import { DataTableRowActions } from './data-table-row-actions'
 import { type Organization } from '../data/schema'
 
 export function useOrganizationsColumns() {
+  const { t } = useTranslation()
   return useMemo<ColumnDef<Organization>[]>(
     () => [
       {
@@ -17,7 +19,7 @@ export function useOrganizationsColumns() {
           <Checkbox
             checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate')}
             onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-            aria-label='Select all'
+            aria-label={t('admin.table.selectAll')}
             className='translate-y-[2px]'
           />
         ),
@@ -25,7 +27,7 @@ export function useOrganizationsColumns() {
           <Checkbox
             checked={row.getIsSelected()}
             onCheckedChange={(value) => row.toggleSelected(!!value)}
-            aria-label='Select row'
+            aria-label={t('admin.table.selectRow')}
             className='translate-y-[2px]'
           />
         ),
@@ -37,7 +39,7 @@ export function useOrganizationsColumns() {
       },
       {
         accessorKey: 'name',
-        header: ({ column }) => <DataTableColumnHeader column={column} title='组织名称' />,
+        header: ({ column }) => <DataTableColumnHeader column={column} title={t('admin.organization.table.name')} />,
         cell: ({ row }) => {
           return (
             <div className='flex items-center gap-2'>
@@ -52,7 +54,7 @@ export function useOrganizationsColumns() {
       },
       {
         accessorKey: 'slug',
-        header: ({ column }) => <DataTableColumnHeader column={column} title='标识符' />,
+        header: ({ column }) => <DataTableColumnHeader column={column} title={t('admin.organization.table.slug')} />,
         cell: ({ row }) => {
           const slug = row.getValue('slug') as string | null
           return slug ? (
@@ -60,7 +62,7 @@ export function useOrganizationsColumns() {
               {slug}
             </Badge>
           ) : (
-            <span className='text-muted-foreground'>-</span>
+            <span className='text-muted-foreground'>{t('admin.common.empty')}</span>
           )
         },
         meta: {
@@ -70,7 +72,7 @@ export function useOrganizationsColumns() {
       {
         id: 'members',
         accessorFn: (row) => row._count?.members ?? 0,
-        header: ({ column }) => <DataTableColumnHeader column={column} title='成员数' />,
+        header: ({ column }) => <DataTableColumnHeader column={column} title={t('admin.organization.table.members')} />,
         cell: ({ row }) => {
           const count = row.original._count?.members ?? 0
           return (
@@ -87,7 +89,7 @@ export function useOrganizationsColumns() {
       {
         id: 'departments',
         accessorFn: (row) => row._count?.departments ?? 0,
-        header: ({ column }) => <DataTableColumnHeader column={column} title='部门数' />,
+        header: ({ column }) => <DataTableColumnHeader column={column} title={t('admin.organization.table.departments')} />,
         cell: ({ row }) => {
           const count = row.original._count?.departments ?? 0
           return (
@@ -103,7 +105,7 @@ export function useOrganizationsColumns() {
       },
       {
         accessorKey: 'createdAt',
-        header: ({ column }) => <DataTableColumnHeader column={column} title='创建时间' />,
+        header: ({ column }) => <DataTableColumnHeader column={column} title={t('admin.organization.table.createdAt')} />,
         cell: ({ row }) => {
           const date = row.getValue('createdAt') as string
           return <span className='text-muted-foreground'>{format(new Date(date), 'yyyy-MM-dd HH:mm')}</span>
@@ -120,6 +122,6 @@ export function useOrganizationsColumns() {
         },
       },
     ],
-    []
+    [t]
   )
 }

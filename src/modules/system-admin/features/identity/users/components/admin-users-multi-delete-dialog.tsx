@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { type Table } from '@tanstack/react-table'
 import { toast } from 'sonner'
 import { bulkDeleteUsersFn } from '../../../../shared/server-fns/user.fn'
+import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
 import { ConfirmDeleteDialog } from '@/components/confirm-delete-dialog'
 import { type AdminUser } from '../data/schema'
 import { adminUsersQueryKeys } from '~/shared/lib/query-keys'
@@ -18,6 +19,7 @@ export function AdminUsersMultiDeleteDialog<TData>({
   table,
 }: Readonly<AdminUserMultiDeleteDialogProps<TData>>) {
   const queryClient = useQueryClient()
+  const { t } = useTranslation()
 
   const selectedRows = table.getFilteredSelectedRowModel().rows
 
@@ -73,10 +75,8 @@ export function AdminUsersMultiDeleteDialog<TData>({
     })
 
     toast.promise(promise, {
-      loading: 'Deleting users...',
-      success: () => {
-        return `Deleted ${selectedRows.length} ${selectedRows.length > 1 ? 'users' : 'user'}`
-      },
+      loading: t('admin.user.bulk.delete.loading'),
+      success: () => t('admin.user.bulk.delete.success', { count: selectedRows.length }),
       error: String,
     })
   }
@@ -86,9 +86,18 @@ export function AdminUsersMultiDeleteDialog<TData>({
       open={open}
       onOpenChange={onOpenChange}
       onConfirm={handleDelete}
+      title={t('admin.user.bulk.delete.title')}
+      description={
+        <>
+          {t('admin.user.bulk.delete.desc', { count: selectedRows.length })} <br />
+          {t('admin.user.dialog.delete.cannotUndo')}
+        </>
+      }
+      confirmText={t('common.buttons.delete')}
+      cancelText={t('common.buttons.cancel')}
       confirmWord='DELETE'
       itemCount={selectedRows.length}
-      itemName='user'
+      itemName={t('admin.user.entity')}
       isLoading={bulkDeleteMutation.isPending}
     />
   )

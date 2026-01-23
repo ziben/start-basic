@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { createResourceFn, updateResourceFn, deleteResourceFn } from '@/modules/system-admin/shared/server-fns/rbac.fn'
+import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
 import {
   Dialog,
   DialogContent,
@@ -38,19 +39,20 @@ import { ConfirmDialog } from '@/components/confirm-dialog'
 import { useState } from 'react'
 import { Trash2 } from 'lucide-react'
 
-const formSchema = z.object({
-  name: z.string().min(1, '资源名称不能为空'),
-  displayName: z.string().min(1, '显示名称不能为空'),
-  description: z.string().optional(),
-  scope: z.enum(['GLOBAL', 'ORGANIZATION', 'BOTH']),
-})
-
-type FormValues = z.infer<typeof formSchema>
-
 export function ResourceMutateDialog() {
+  const { t } = useTranslation()
   const { resourceDialog, closeResourceDialog } = usePermissionsContext()
   const queryClient = useQueryClient()
   const [isConfirmOpen, setIsConfirmOpen] = useState(false)
+
+  const formSchema = z.object({
+    name: z.string().min(1, t('admin.permission.resource.validation.nameRequired')),
+    displayName: z.string().min(1, t('admin.permission.resource.validation.displayNameRequired')),
+    description: z.string().optional(),
+    scope: z.enum(['GLOBAL', 'ORGANIZATION', 'BOTH']),
+  })
+
+  type FormValues = z.infer<typeof formSchema>
 
   const isEdit = !!resourceDialog.data?.id
   const resource = resourceDialog.data
@@ -89,17 +91,17 @@ export function ResourceMutateDialog() {
     mutationFn: (data: FormValues) => createResourceFn({ data }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: rbacResourcesQueryKeys.all })
-      toast.success('资源创建成功')
+      toast.success(t('admin.permission.resource.toast.createSuccess'))
       closeResourceDialog()
     },
     onError: (error: Error) => {
-      toast.error('创建失败', { description: error.message })
+      toast.error(t('admin.permission.resource.toast.createError'), { description: error.message })
     },
   })
 
   const updateMutation = useMutation({
     mutationFn: (data: FormValues) => {
-      if (!resource?.id) throw new Error('资源ID不存在')
+      if (!resource?.id) throw new Error(t('admin.permission.resource.errors.missingId'))
       return updateResourceFn({
         data: {
           id: resource.id,
@@ -110,27 +112,27 @@ export function ResourceMutateDialog() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: rbacResourcesQueryKeys.all })
-      toast.success('资源更新成功')
+      toast.success(t('admin.permission.resource.toast.updateSuccess'))
       closeResourceDialog()
     },
     onError: (error: Error) => {
-      toast.error('更新失败', { description: error.message })
+      toast.error(t('admin.permission.resource.toast.updateError'), { description: error.message })
     },
   })
 
   const deleteMutation = useMutation({
     mutationFn: () => {
-      if (!resource?.id) throw new Error('资源ID不存在')
+      if (!resource?.id) throw new Error(t('admin.permission.resource.errors.missingId'))
       return deleteResourceFn({ data: { id: resource.id } })
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: rbacResourcesQueryKeys.all })
-      toast.success('资源删除成功')
+      toast.success(t('admin.permission.resource.toast.deleteSuccess'))
       setIsConfirmOpen(false)
       closeResourceDialog()
     },
     onError: (error: Error) => {
-      toast.error('删除失败', { description: error.message })
+      toast.error(t('admin.permission.resource.toast.deleteError'), { description: error.message })
     },
   })
 
@@ -148,7 +150,9 @@ export function ResourceMutateDialog() {
         <DialogContent>
           <DialogHeader>
             <div className='flex items-center justify-between'>
-              <DialogTitle>{isEdit ? '编辑资源' : '新增资源'}</DialogTitle>
+              <DialogTitle>
+                {isEdit ? t('admin.permission.resource.dialog.editTitle') : t('admin.permission.resource.dialog.createTitle')}
+              </DialogTitle>
               {isEdit && !resource?.isSystem && (
                 <Button
                   type='button'
@@ -161,7 +165,7 @@ export function ResourceMutateDialog() {
                 </Button>
               )}
             </div>
-            <DialogDescription>定义系统中的业务实体资源</DialogDescription>
+            <DialogDescription>{t('admin.permission.resource.dialog.desc')}</DialogDescription>
           </DialogHeader>
 
           <Form {...form}>
@@ -171,11 +175,11 @@ export function ResourceMutateDialog() {
                 name='name'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>资源标识</FormLabel>
+                    <FormLabel>{t('admin.permission.resource.form.name')}</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder='例如: user, order' disabled={isEdit} />
+                      <Input {...field} placeholder={t('admin.permission.resource.form.namePlaceholder')} disabled={isEdit} />
                     </FormControl>
-                    <FormDescription>英文标识符，创建后不可修改</FormDescription>
+                    <FormDescription>{t('admin.permission.resource.form.nameHelp')}</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -186,9 +190,9 @@ export function ResourceMutateDialog() {
                 name='displayName'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>显示名称</FormLabel>
+                    <FormLabel>{t('admin.permission.resource.form.displayName')}</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder='例如: 用户管理, 订单中心' />
+                      <Input {...field} placeholder={t('admin.permission.resource.form.displayNamePlaceholder')} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -200,17 +204,17 @@ export function ResourceMutateDialog() {
                 name='scope'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>作用域</FormLabel>
+                    <FormLabel>{t('admin.permission.resource.form.scope')}</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value} disabled={isEdit}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder='选择作用域' />
+                          <SelectValue placeholder={t('admin.permission.resource.form.scopePlaceholder')} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value='GLOBAL'>仅全局</SelectItem>
-                        <SelectItem value='ORGANIZATION'>仅组织</SelectItem>
-                        <SelectItem value='BOTH'>两者皆可</SelectItem>
+                        <SelectItem value='GLOBAL'>{t('admin.permission.resource.scope.global')}</SelectItem>
+                        <SelectItem value='ORGANIZATION'>{t('admin.permission.resource.scope.organization')}</SelectItem>
+                        <SelectItem value='BOTH'>{t('admin.permission.resource.scope.both')}</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -223,9 +227,9 @@ export function ResourceMutateDialog() {
                 name='description'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>描述</FormLabel>
+                    <FormLabel>{t('admin.permission.resource.form.description')}</FormLabel>
                     <FormControl>
-                      <Textarea {...field} placeholder='资源用途描述' />
+                      <Textarea {...field} placeholder={t('admin.permission.resource.form.descriptionPlaceholder')} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -234,10 +238,10 @@ export function ResourceMutateDialog() {
 
               <DialogFooter>
                 <Button type='button' variant='outline' onClick={closeResourceDialog}>
-                  取消
+                  {t('common.buttons.cancel')}
                 </Button>
                 <Button type='submit' disabled={createMutation.isPending || updateMutation.isPending}>
-                  {isEdit ? '保存' : '创建'}
+                  {isEdit ? t('common.buttons.save') : t('common.buttons.create')}
                 </Button>
               </DialogFooter>
             </form>
@@ -248,12 +252,10 @@ export function ResourceMutateDialog() {
       <ConfirmDialog
         open={isConfirmOpen}
         onOpenChange={setIsConfirmOpen}
-        title='删除资源'
+        title={t('admin.permission.resource.confirmDelete.title')}
         desc={
           <>
-            确定要删除资源 <strong>{resource?.displayName}</strong> 吗？
-            <br />
-            这将同时删除关联的所有操作和权限点，且不可撤销。
+            {t('admin.permission.resource.confirmDelete.desc', { name: resource?.displayName })}
           </>
         }
         destructive

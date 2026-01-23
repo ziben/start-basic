@@ -38,8 +38,8 @@ export function UserAuthForm({ className, redirectTo, ...props }: UserAuthFormPr
   const form = useForm<FormType>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: 'test@local.com',
-      password: 'test1234',
+      email: 'admin@example.com',
+      password: 'admin123',
       rememberMe: false,
     },
   } as any)

@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { createOrganizationFn, updateOrganizationFn } from '../../../../shared/server-fns/organization.fn'
+import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -28,22 +29,26 @@ type OrganizationMutateDialogProps = {
 }
 
 export function OrganizationMutateDialog({ currentRow, open, onOpenChange }: OrganizationMutateDialogProps) {
+  const { t } = useTranslation()
   const isEdit = !!currentRow
 
   const formSchema = useMemo(() => {
     return z.object({
-      name: z.string().min(1, '组织名称不能为空').max(100, '组织名称不能超过100个字符'),
+      name: z
+        .string()
+        .min(1, t('admin.organization.form.validation.nameRequired'))
+        .max(100, t('admin.organization.form.validation.nameMax')),
       slug: z
         .string()
         .optional()
         .refine(
           (val) => !val || /^[a-z0-9-]+$/.test(val),
-          '标识符只能包含小写字母、数字和连字符'
+          t('admin.organization.form.validation.slugFormat')
         ),
       logo: z.string().optional(),
       metadata: z.string().optional(),
     })
-  }, [])
+  }, [t])
 
   type OrganizationForm = z.infer<typeof formSchema>
 
@@ -83,7 +88,7 @@ export function OrganizationMutateDialog({ currentRow, open, onOpenChange }: Org
   const updateMutation = useMutation({
     mutationFn: async (data: OrganizationForm) => {
       if (!currentRow) {
-        throw new Error('缺少当前组织信息')
+        throw new Error(t('admin.organization.errors.missingCurrent'))
       }
 
       return await updateOrganizationFn({
@@ -107,8 +112,8 @@ export function OrganizationMutateDialog({ currentRow, open, onOpenChange }: Org
     const promise = isEdit ? updateMutation.mutateAsync(data) : createMutation.mutateAsync(data)
 
     toast.promise(promise, {
-      loading: isEdit ? '保存中...' : '创建中...',
-      success: isEdit ? '组织保存成功' : '组织创建成功',
+      loading: isEdit ? t('admin.organization.toast.save.loading') : t('admin.organization.toast.create.loading'),
+      success: isEdit ? t('admin.organization.toast.save.success') : t('admin.organization.toast.create.success'),
       error: (error) => {
         return getErrorMessage(error)
       },
@@ -125,10 +130,10 @@ export function OrganizationMutateDialog({ currentRow, open, onOpenChange }: Org
     >
       <DialogContent className='sm:max-w-lg'>
         <DialogHeader className='text-start'>
-          <DialogTitle>{isEdit ? '编辑组织' : '创建组织'}</DialogTitle>
+          <DialogTitle>{isEdit ? t('admin.organization.dialog.editTitle') : t('admin.organization.dialog.createTitle')}</DialogTitle>
           <DialogDescription>
-            {isEdit ? '修改组织信息。' : '创建新组织。'}
-            完成后点击保存。
+            {isEdit ? t('admin.organization.dialog.editDesc') : t('admin.organization.dialog.createDesc')}
+            {t('admin.organization.dialog.saveHint')}
           </DialogDescription>
         </DialogHeader>
         <div className='max-h-[26.25rem] overflow-y-auto py-1'>
@@ -139,9 +144,14 @@ export function OrganizationMutateDialog({ currentRow, open, onOpenChange }: Org
                 name='name'
                 render={({ field }) => (
                   <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
-                    <FormLabel className='col-span-2 text-end'>组织名称 *</FormLabel>
+                    <FormLabel className='col-span-2 text-end'>{t('admin.organization.form.name')}</FormLabel>
                     <FormControl>
-                      <Input placeholder='请输入组织名称' className='col-span-4' autoComplete='off' {...field} />
+                      <Input
+                        placeholder={t('admin.organization.form.namePlaceholder')}
+                        className='col-span-4'
+                        autoComplete='off'
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage className='col-span-4 col-start-3' />
                   </FormItem>
@@ -153,9 +163,14 @@ export function OrganizationMutateDialog({ currentRow, open, onOpenChange }: Org
                 name='slug'
                 render={({ field }) => (
                   <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
-                    <FormLabel className='col-span-2 text-end'>标识符</FormLabel>
+                    <FormLabel className='col-span-2 text-end'>{t('admin.organization.form.slug')}</FormLabel>
                     <FormControl>
-                      <Input placeholder='my-organization' className='col-span-4' autoComplete='off' {...field} />
+                      <Input
+                        placeholder={t('admin.organization.form.slugPlaceholder')}
+                        className='col-span-4'
+                        autoComplete='off'
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage className='col-span-4 col-start-3' />
                   </FormItem>
@@ -167,9 +182,13 @@ export function OrganizationMutateDialog({ currentRow, open, onOpenChange }: Org
                 name='logo'
                 render={({ field }) => (
                   <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
-                    <FormLabel className='col-span-2 text-end'>Logo URL</FormLabel>
+                    <FormLabel className='col-span-2 text-end'>{t('admin.organization.form.logo')}</FormLabel>
                     <FormControl>
-                      <Input placeholder='https://example.com/logo.png' className='col-span-4' {...field} />
+                      <Input
+                        placeholder={t('admin.organization.form.logoPlaceholder')}
+                        className='col-span-4'
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage className='col-span-4 col-start-3' />
                   </FormItem>
@@ -181,9 +200,14 @@ export function OrganizationMutateDialog({ currentRow, open, onOpenChange }: Org
                 name='metadata'
                 render={({ field }) => (
                   <FormItem className='grid grid-cols-6 items-start space-y-0 gap-x-4 gap-y-1'>
-                    <FormLabel className='col-span-2 text-end pt-2'>元数据</FormLabel>
+                    <FormLabel className='col-span-2 text-end pt-2'>{t('admin.organization.form.metadata')}</FormLabel>
                     <FormControl>
-                      <Textarea placeholder='JSON 格式的元数据' rows={3} className='col-span-4' {...field} />
+                      <Textarea
+                        placeholder={t('admin.organization.form.metadataPlaceholder')}
+                        rows={3}
+                        className='col-span-4'
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage className='col-span-4 col-start-3' />
                   </FormItem>
@@ -194,10 +218,10 @@ export function OrganizationMutateDialog({ currentRow, open, onOpenChange }: Org
         </div>
         <DialogFooter>
           <Button type='button' variant='outline' onClick={() => onOpenChange(false)}>
-            取消
+            {t('common.buttons.cancel')}
           </Button>
           <Button type='submit' form='organization-form'>
-            {isEdit ? '保存' : '创建'}
+            {isEdit ? t('common.buttons.save') : t('common.buttons.create')}
           </Button>
         </DialogFooter>
       </DialogContent>

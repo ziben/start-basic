@@ -21,10 +21,10 @@ export default function AdminRoleNavGroup() {
         <div className='mb-2 flex flex-wrap items-center justify-between space-y-2 gap-x-4'>
           <div>
             <h2 className='text-2xl font-bold tracking-tight'>
-              {t('admin.rolenavgroup.title', { defaultMessage: '角色菜单管理' })}
+              {t('admin.rolenavgroup.title')}
             </h2>
             <p className='text-muted-foreground'>
-              {t('admin.rolenavgroup.desc', { defaultMessage: '为角色配置可访问的菜单组' })}
+              {t('admin.rolenavgroup.desc')}
             </p>
           </div>
           <RoleNavGroupPrimaryButtons />

@@ -4,6 +4,7 @@ import { type Row } from '@tanstack/react-table'
 import { Trash2, UserPen, Ban } from 'lucide-react'
 import { toast } from 'sonner'
 import { bulkBanUsersFn } from '../../../../shared/server-fns/user.fn'
+import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -27,6 +28,7 @@ export function DataTableRowActions<TData>({ row }: DataTableRowActionsProps<TDa
 
   const { setOpen, setCurrentRow } = useAdminUsers()
   const { getOptimisticMutationOptions } = useUsersOptimisticUpdate()
+  const { t } = useTranslation()
 
   const banMutation = useMutation({
     mutationFn: async (input: { id: string; banned: boolean }) => {
@@ -47,8 +49,8 @@ export function DataTableRowActions<TData>({ row }: DataTableRowActionsProps<TDa
   const runBanToggle = (nextBanned: boolean) => {
     const promise = banMutation.mutateAsync({ id: user.id, banned: nextBanned })
     toast.promise(promise, {
-      loading: nextBanned ? '封禁用户...' : '解封用户...',
-      success: nextBanned ? '用户已封禁' : '用户已解封',
+      loading: nextBanned ? t('admin.user.toast.ban.loading') : t('admin.user.toast.unban.loading'),
+      success: nextBanned ? t('admin.user.toast.ban.success') : t('admin.user.toast.unban.success'),
       error: String,
     })
   }
@@ -58,7 +60,7 @@ export function DataTableRowActions<TData>({ row }: DataTableRowActionsProps<TDa
       <DropdownMenuTrigger asChild>
         <Button variant='ghost' className='flex h-8 w-8 p-0 data-[state=open]:bg-muted'>
           <DotsHorizontalIcon className='h-4 w-4' />
-          <span className='sr-only'>Open menu</span>
+          <span className='sr-only'>{t('admin.user.actions.openMenu')}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align='end' className='w-[60px]'>
@@ -68,7 +70,7 @@ export function DataTableRowActions<TData>({ row }: DataTableRowActionsProps<TDa
             runBanToggle(!user.banned)
           }}
         >
-          {user.banned ? '解封' : '封禁'}
+          {user.banned ? t('admin.user.actions.unban') : t('admin.user.actions.ban')}
           <DropdownMenuShortcut>
             <Ban size={16} />
           </DropdownMenuShortcut>
@@ -80,7 +82,7 @@ export function DataTableRowActions<TData>({ row }: DataTableRowActionsProps<TDa
             setOpen('update')
           }}
         >
-          编辑
+          {t('admin.user.actions.edit')}
           <DropdownMenuShortcut>
             <UserPen size={16} />
           </DropdownMenuShortcut>
@@ -93,7 +95,7 @@ export function DataTableRowActions<TData>({ row }: DataTableRowActionsProps<TDa
           }}
           className='text-red-500!'
         >
-          删除
+          {t('admin.user.actions.delete')}
           <DropdownMenuShortcut>
             <Trash2 size={16} />
           </DropdownMenuShortcut>

@@ -1,3 +1,4 @@
+import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
 import { AppHeaderMain } from '@/components/layout/app-header-main'
 import { PermissionsProvider, usePermissionsContext } from './context/permissions-context'
 import { useResourcesQuery, usePermissionsQuery } from './hooks/use-permissions-queries'
@@ -11,22 +12,23 @@ import { PermissionsDialogs } from './components/permissions-dialogs'
 import { PageHeader } from '@/components/layout/page-header'
 
 function PermissionsContent() {
+  const { t } = useTranslation()
   const { openResourceDialog, openPermissionDialog, openActionDialog } = usePermissionsContext()
   const { data: resources = [] } = useResourcesQuery()
   const { data: permissions = [] } = usePermissionsQuery()
 
   return (
     <AppHeaderMain>
-      <PageHeader 
-        title="权限定义" 
-        description="管理系统的资源（Resource）、操作（Action）以及最终生成的权限代码（Permission Code）"
+      <PageHeader
+        title={t('admin.permission.title')}
+        description={t('admin.permission.desc')}
       >
         <div className="flex gap-2">
           <Button size="sm" onClick={() => openResourceDialog()}>
-            <Plus className="mr-2 h-4 w-4" /> 新增资源
+            <Plus className="mr-2 h-4 w-4" /> {t('admin.permission.button.createResource')}
           </Button>
           <Button size="sm" variant="outline" onClick={() => openPermissionDialog()}>
-            <Plus className="mr-2 h-4 w-4" /> 新增权限点
+            <Plus className="mr-2 h-4 w-4" /> {t('admin.permission.button.createPermission')}
           </Button>
         </div>
       </PageHeader>
@@ -35,20 +37,20 @@ function PermissionsContent() {
         <TabsList>
           <TabsTrigger value="resources" className="flex items-center gap-2">
             <Box className="h-4 w-4" />
-            资源与操作
+            {t('admin.permission.tabs.resources')}
           </TabsTrigger>
           <TabsTrigger value="permissions" className="flex items-center gap-2">
             <Key className="h-4 w-4" />
-            权限代码
+            {t('admin.permission.tabs.permissions')}
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="resources">
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-lg font-medium">资源定义</CardTitle>
+              <CardTitle className="text-lg font-medium">{t('admin.permission.resources.title')}</CardTitle>
               <CardDescription>
-                定义系统中的物理或逻辑资源，并为每个资源指定支持的操作（如：create, read, update, delete）。
+                {t('admin.permission.resources.desc')}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -91,13 +93,15 @@ function PermissionsContent() {
                           className="h-5 px-1.5 text-[10px] border-dashed"
                           onClick={() => openActionDialog(resource.id)}
                         >
-                          <Plus className="mr-1 h-3 w-3" /> 添加操作
+                          <Plus className="mr-1 h-3 w-3" /> {t('admin.permission.resources.addAction')}
                         </Button>
                       </div>
                       <div className="flex items-center justify-between text-[10px] text-muted-foreground pt-2 border-t border-dashed">
-                        <span>作用域: {resource.scope}</span>
+                        <span>{t('admin.permission.resources.scope', { scope: resource.scope })}</span>
                         {resource.isSystem && (
-                          <Badge variant="outline" className="text-[9px] h-4 py-0">系统内置</Badge>
+                          <Badge variant="outline" className="text-[9px] h-4 py-0">
+                            {t('admin.permission.resources.system')}
+                          </Badge>
                         )}
                       </div>
                     </CardContent>
@@ -111,9 +115,9 @@ function PermissionsContent() {
         <TabsContent value="permissions">
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-lg font-medium">权限点列表</CardTitle>
+              <CardTitle className="text-lg font-medium">{t('admin.permission.permissions.title')}</CardTitle>
               <CardDescription>
-                权限点是“资源 + 操作”的组合。例如 `user:create`。这些代码将用于后端的权限校验。
+                {t('admin.permission.permissions.desc')}
               </CardDescription>
             </CardHeader>
             <CardContent>

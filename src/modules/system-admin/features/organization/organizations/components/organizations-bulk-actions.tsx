@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { type Table } from '@tanstack/react-table'
 import { Trash2, Download } from 'lucide-react'
 import { toast } from 'sonner'
+import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { DataTableBulkActions as BulkActionsToolbar } from '@/components/data-table'
@@ -13,18 +14,19 @@ type OrganizationsBulkActionsProps<TData> = {
 }
 
 export function OrganizationsBulkActions<TData>({ table }: OrganizationsBulkActionsProps<TData>) {
+  const { t } = useTranslation()
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const selectedRows = table.getFilteredSelectedRowModel().rows
 
   const handleBulkExport = () => {
     const selectedOrgs = selectedRows.map((row) => row.original as Organization)
     toast.promise(Promise.resolve(), {
-      loading: '导出中...',
+      loading: t('admin.organization.bulk.export.loading'),
       success: () => {
         table.resetRowSelection()
-        return `已导出 ${selectedOrgs.length} 个组织`
+        return t('admin.organization.bulk.export.success', { count: selectedOrgs.length })
       },
-      error: '导出失败',
+      error: t('admin.organization.bulk.export.error'),
     })
     table.resetRowSelection()
   }
@@ -39,15 +41,15 @@ export function OrganizationsBulkActions<TData>({ table }: OrganizationsBulkActi
               size='icon'
               onClick={() => handleBulkExport()}
               className='size-8'
-              aria-label='导出组织'
-              title='导出组织'
+              aria-label={t('admin.organization.bulk.export.label')}
+              title={t('admin.organization.bulk.export.label')}
             >
               <Download />
-              <span className='sr-only'>导出组织</span>
+              <span className='sr-only'>{t('admin.organization.bulk.export.label')}</span>
             </Button>
           </TooltipTrigger>
           <TooltipContent>
-            <p>导出组织</p>
+            <p>{t('admin.organization.bulk.export.label')}</p>
           </TooltipContent>
         </Tooltip>
 
@@ -58,15 +60,15 @@ export function OrganizationsBulkActions<TData>({ table }: OrganizationsBulkActi
               size='icon'
               onClick={() => setShowDeleteConfirm(true)}
               className='size-8'
-              aria-label='删除选中的组织'
-              title='删除选中的组织'
+              aria-label={t('admin.organization.bulk.delete.label')}
+              title={t('admin.organization.bulk.delete.label')}
             >
               <Trash2 />
-              <span className='sr-only'>删除选中的组织</span>
+              <span className='sr-only'>{t('admin.organization.bulk.delete.label')}</span>
             </Button>
           </TooltipTrigger>
           <TooltipContent>
-            <p>删除选中的组织</p>
+            <p>{t('admin.organization.bulk.delete.label')}</p>
           </TooltipContent>
         </Tooltip>
       </BulkActionsToolbar>

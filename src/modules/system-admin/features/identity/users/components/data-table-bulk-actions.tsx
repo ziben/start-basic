@@ -4,6 +4,7 @@ import { type Table } from '@tanstack/react-table'
 import { Trash2, CircleArrowUp, Download } from 'lucide-react'
 import { toast } from 'sonner'
 import { bulkBanUsersFn } from '../../../../shared/server-fns/user.fn'
+import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
 import { Button } from '@/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
@@ -21,6 +22,7 @@ export function DataTableBulkActions<TData>({ table }: DataTableBulkActionsProps
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const selectedRows = table.getFilteredSelectedRowModel().rows
   const { getOptimisticMutationOptions } = useUsersOptimisticUpdate()
+  const { t } = useTranslation()
 
   const bulkBanMutation = useMutation({
     mutationFn: async (input: { ids: string[]; banned: boolean }) => {
@@ -48,8 +50,8 @@ export function DataTableBulkActions<TData>({ table }: DataTableBulkActionsProps
     })
 
     toast.promise(promise, {
-      loading: 'Banning users...',
-      success: () => `Banned ${selectedUsers.length} user${selectedUsers.length > 1 ? 's' : ''}.`,
+      loading: t('admin.user.bulk.ban.loading'),
+      success: () => t('admin.user.bulk.ban.success', { count: selectedUsers.length }),
       error: String,
     })
   }
@@ -64,8 +66,8 @@ export function DataTableBulkActions<TData>({ table }: DataTableBulkActionsProps
     })
 
     toast.promise(promise, {
-      loading: 'Unbanning users...',
-      success: () => `Unbanned ${selectedUsers.length} user${selectedUsers.length > 1 ? 's' : ''}.`,
+      loading: t('admin.user.bulk.unban.loading'),
+      success: () => t('admin.user.bulk.unban.success', { count: selectedUsers.length }),
       error: String,
     })
   }
@@ -73,35 +75,39 @@ export function DataTableBulkActions<TData>({ table }: DataTableBulkActionsProps
   const handleBulkExport = () => {
     const selectedUsers = selectedRows.map((row) => row.original as AdminUser)
     toast.promise(Promise.resolve(), {
-      loading: 'Exporting users...',
+      loading: t('admin.user.bulk.export.loading'),
       success: () => {
         table.resetRowSelection()
-        return `Exported ${selectedUsers.length} user${selectedUsers.length > 1 ? 's' : ''} to CSV.`
+        return t('admin.user.bulk.export.success', { count: selectedUsers.length })
       },
-      error: 'Error',
+      error: t('admin.common.error'),
     })
     table.resetRowSelection()
   }
 
   return (
     <>
-      <BulkActionsToolbar table={table} entityName='user'>
+      <BulkActionsToolbar table={table} entityName={t('admin.user.entity')} placement='content'>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
               variant='outline'
               size='icon'
               className='size-8'
-              aria-label='Ban/unban users'
-              title='Ban/unban users'
+              aria-label={t('admin.user.bulk.banToggle.label')}
+              title={t('admin.user.bulk.banToggle.label')}
             >
               <CircleArrowUp />
-              <span className='sr-only'>Ban/unban users</span>
+              <span className='sr-only'>{t('admin.user.bulk.banToggle.label')}</span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent sideOffset={14}>
-            <DropdownMenuItem onClick={() => void runBulkBan()}>Ban selected</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => void runBulkUnban()}>Unban selected</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => void runBulkBan()}>
+              {t('admin.user.bulk.banSelected')}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => void runBulkUnban()}>
+              {t('admin.user.bulk.unbanSelected')}
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
 
@@ -112,15 +118,15 @@ export function DataTableBulkActions<TData>({ table }: DataTableBulkActionsProps
               size='icon'
               onClick={() => handleBulkExport()}
               className='size-8'
-              aria-label='Export users'
-              title='Export users'
+              aria-label={t('admin.user.bulk.export.label')}
+              title={t('admin.user.bulk.export.label')}
             >
               <Download />
-              <span className='sr-only'>Export users</span>
+              <span className='sr-only'>{t('admin.user.bulk.export.label')}</span>
             </Button>
           </TooltipTrigger>
           <TooltipContent>
-            <p>Export users</p>
+            <p>{t('admin.user.bulk.export.label')}</p>
           </TooltipContent>
         </Tooltip>
 
@@ -131,15 +137,15 @@ export function DataTableBulkActions<TData>({ table }: DataTableBulkActionsProps
               size='icon'
               onClick={() => setShowDeleteConfirm(true)}
               className='size-8'
-              aria-label='Delete selected users'
-              title='Delete selected users'
+              aria-label={t('admin.user.bulk.delete.label')}
+              title={t('admin.user.bulk.delete.label')}
             >
               <Trash2 />
-              <span className='sr-only'>Delete selected users</span>
+              <span className='sr-only'>{t('admin.user.bulk.delete.label')}</span>
             </Button>
           </TooltipTrigger>
           <TooltipContent>
-            <p>Delete selected users</p>
+            <p>{t('admin.user.bulk.delete.label')}</p>
           </TooltipContent>
         </Tooltip>
       </BulkActionsToolbar>

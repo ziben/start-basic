@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { bulkDeleteUsersFn } from '../../../../shared/server-fns/user.fn'
+import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { adminUsersQueryKeys } from '~/shared/lib/query-keys'
 import { useUsersOptimisticUpdate, createBulkDeleteUpdateFn } from '../hooks/use-users-optimistic-update'
@@ -12,6 +13,7 @@ import { useAdminUsers } from './admin-users-provider'
 export function AdminUsersDialogs() {
   const { open, setOpen, currentRow, setCurrentRow } = useAdminUsers()
   const { getOptimisticMutationOptions } = useUsersOptimisticUpdate()
+  const { t } = useTranslation()
 
   const deleteOneMutation = useMutation({
     mutationFn: async (input: { id: string }) => {
@@ -64,20 +66,21 @@ export function AdminUsersDialogs() {
 
               const promise = deleteOneMutation.mutateAsync({ id })
               toast.promise(promise, {
-                loading: 'Deleting user...',
-                success: () => `Deleted ${id}`,
+                loading: t('admin.user.toast.delete.loading'),
+                success: () => t('admin.user.toast.delete.success', { id }),
                 error: String,
               })
             }}
             className='max-w-md'
-            title={`Delete this user: ${currentRow.id} ?`}
+            title={t('admin.user.dialog.delete.title', { id: currentRow.id })}
             desc={
               <>
-                You are about to delete a user with the ID <strong>{currentRow.id}</strong>. <br />
-                This action cannot be undone.
+                {t('admin.user.dialog.delete.desc', { id: currentRow.id })} <br />
+                {t('admin.user.dialog.delete.cannotUndo')}
               </>
             }
-            confirmText='Delete'
+            confirmText={t('common.buttons.delete')}
+            cancelBtnText={t('common.buttons.cancel')}
           />
         </>
       )}

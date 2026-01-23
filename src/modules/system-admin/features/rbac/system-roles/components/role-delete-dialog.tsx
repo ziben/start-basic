@@ -11,10 +11,12 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { toast } from 'sonner'
+import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
 import { roleQueryKeys } from '~/shared/lib/query-keys'
 import { useRolesContext } from '../context/roles-context'
 
 export function RoleDeleteDialog() {
+  const { t } = useTranslation()
   const { deleteDialog, closeDeleteDialog } = useRolesContext()
   const queryClient = useQueryClient()
 
@@ -24,11 +26,11 @@ export function RoleDeleteDialog() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: roleQueryKeys.all })
-      toast.success('删除成功')
+      toast.success(t('admin.role.toast.deleteSuccess'))
       closeDeleteDialog()
     },
     onError: (error: Error) => {
-      toast.error('删除失败', { description: error.message })
+      toast.error(t('admin.role.toast.deleteError'), { description: error.message })
     },
   })
 
@@ -42,15 +44,15 @@ export function RoleDeleteDialog() {
     <AlertDialog open={deleteDialog.isOpen} onOpenChange={closeDeleteDialog}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>确认删除</AlertDialogTitle>
+          <AlertDialogTitle>{t('admin.role.delete.title')}</AlertDialogTitle>
           <AlertDialogDescription>
-            确定要删除角色 <strong>{deleteDialog.role?.displayName}</strong> 吗？此操作无法撤销。
+            {t('admin.role.delete.desc', { name: deleteDialog.role?.displayName })}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>取消</AlertDialogCancel>
+          <AlertDialogCancel>{t('common.buttons.cancel')}</AlertDialogCancel>
           <AlertDialogAction onClick={handleDelete} disabled={deleteMutation.isPending}>
-            删除
+            {t('common.buttons.delete')}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

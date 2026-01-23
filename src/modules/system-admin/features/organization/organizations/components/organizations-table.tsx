@@ -10,6 +10,7 @@ import {
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { cn } from '@/shared/lib/utils'
 import { type NavigateFn, useTableUrlState } from '@/shared/hooks/use-table-url-state'
+import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
 import { useOrganizationsListQuery } from '../hooks/use-organizations-list-query'
@@ -22,6 +23,7 @@ type OrganizationsTableProps = {
 }
 
 export function OrganizationsTable({ search, navigate }: OrganizationsTableProps) {
+  const { t } = useTranslation()
   const [rowSelection, setRowSelection] = useState({})
 
   const { globalFilter, onGlobalFilterChange, pagination, onPaginationChange, ensurePageInRange } = useTableUrlState({
@@ -95,7 +97,7 @@ export function OrganizationsTable({ search, navigate }: OrganizationsTableProps
     <div className={cn('max-sm:has-[div[role="toolbar"]]:mb-16', 'flex flex-1 flex-col gap-4')}>
       <DataTableToolbar
         table={table}
-        searchPlaceholder='按名称或标识符搜索...'
+        searchPlaceholder={t('admin.organization.table.searchPlaceholder')}
         onReload={() => void refetch()}
         isReloading={isRefetching}
       />
@@ -161,7 +163,7 @@ export function OrganizationsTable({ search, navigate }: OrganizationsTableProps
               ) : (
                 <TableRow>
                   <TableCell colSpan={columns.length} className='h-24 text-center'>
-                    暂无数据
+                    {t('admin.common.noData')}
                   </TableCell>
                 </TableRow>
               )}

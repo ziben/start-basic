@@ -18,7 +18,7 @@ export const childNavItemSchema = z.object({
 // 导航项schema
 export const adminNavItemSchema = z.object({
   id: z.string(),
-  title: z.string().min(1, { message: '标题不能为空' }),
+  title: z.string().min(1),
   url: z.string().nullable(),
   icon: z.string().nullable().optional(),
   badge: z.string().nullable().optional(),
@@ -36,24 +36,24 @@ export const adminNavItemListSchema = z.array(adminNavItemSchema)
 
 // 创建导航项的schema
 export const createNavItemSchema = z.object({
-  title: z.string().min(1, { message: '标题不能为空' }),
+  title: z.string().min(1),
   url: z.string().optional(),
   icon: z.string().optional(),
   badge: z.string().optional(),
   isCollapsible: z.boolean().optional(),
-  navGroupId: z.string().min(1, { message: '导航组ID不能为空' }),
+  navGroupId: z.string().min(1),
   parentId: z.string().optional(),
   orderIndex: z.number().int().optional(),
 })
 
 // 更新导航项的schema
 export const updateNavItemSchema = z.object({
-  title: z.string().min(1, { message: '标题不能为空' }).optional(),
+  title: z.string().min(1).optional(),
   url: z.string().optional(),
   icon: z.string().optional(),
   badge: z.string().optional(),
   isCollapsible: z.boolean().optional(),
-  navGroupId: z.string().min(1, { message: '导航组ID不能为空' }).optional(),
+  navGroupId: z.string().min(1).optional(),
   parentId: z.string().optional(),
   orderIndex: z.number().int().optional(),
 })

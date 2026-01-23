@@ -4,6 +4,7 @@ import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
+import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
 import { useRoles } from '~/modules/system-admin/shared/hooks/use-role-api'
 import { createUserFn, updateUserFn } from '../../../../shared/server-fns/user.fn'
 import { Button } from '@/components/ui/button'
@@ -31,23 +32,24 @@ type AdminUserMutateDialogProps = {
 
 export function AdminUsersMutateDialog({ currentRow, open, onOpenChange }: AdminUserMutateDialogProps) {
   const isEdit = !!currentRow
+  const { t } = useTranslation()
   const { data: rolesData } = useRoles({ page: 1, pageSize: 100 })
   const roles = (rolesData?.items ?? []) as Array<{ id: string; name: string; displayName: string }>
 
   const formSchema = useMemo(() => {
     return z.object({
-      name: z.string().min(1, 'Name is required.'),
-      email: z.string().email('Email is required.'),
+      name: z.string().min(1, t('admin.user.form.validation.nameRequired')),
+      email: z.string().email(t('admin.user.form.validation.emailRequired')),
       password: isEdit
         ? z.string().default('')
-        : z.string().min(8, 'Password must be at least 8 characters.'),
+        : z.string().min(8, t('admin.user.form.validation.passwordMin')),
       username: z.string().default(''),
       role: z.string().default(''),
       banned: z.boolean().default(false),
       banReason: z.string().default(''),
       banExpires: z.string().default(''),
     })
-  }, [isEdit])
+  }, [isEdit, t])
 
   type AdminUserForm = z.infer<typeof formSchema>
 
@@ -87,7 +89,7 @@ export function AdminUsersMutateDialog({ currentRow, open, onOpenChange }: Admin
   const createMutation = useMutation({
     mutationFn: async (data: AdminUserForm) => {
       if (!data.password) {
-        throw new Error('Password is required for new users')
+        throw new Error(t('admin.user.form.validation.passwordRequired'))
       }
 
       return await createUserFn({
@@ -111,7 +113,7 @@ export function AdminUsersMutateDialog({ currentRow, open, onOpenChange }: Admin
   const updateMutation = useMutation({
     mutationFn: async (data: AdminUserForm) => {
       if (!currentRow) {
-        throw new Error('Missing current user')
+        throw new Error(t('admin.user.errors.missingCurrent'))
       }
 
       return await updateUserFn({
@@ -135,15 +137,15 @@ export function AdminUsersMutateDialog({ currentRow, open, onOpenChange }: Admin
 
   const onSubmit = (data: AdminUserForm) => {
     if (!isEdit && (!data.password || data.password.length < 8)) {
-      form.setError('password', { message: 'Password must be at least 8 characters for new users.' })
+      form.setError('password', { message: t('admin.user.form.validation.passwordMinNew') })
       return
     }
 
     const promise = isEdit ? updateMutation.mutateAsync(data) : createMutation.mutateAsync(data)
 
     toast.promise(promise, {
-      loading: isEdit ? 'Saving user...' : 'Creating user...',
-      success: isEdit ? 'User saved successfully' : 'User created successfully',
+      loading: isEdit ? t('admin.user.toast.update.loading') : t('admin.user.toast.create.loading'),
+      success: isEdit ? t('admin.user.toast.update.success') : t('admin.user.toast.create.success'),
       error: (error) => {
         return getErrorMessage(error)
       },
@@ -160,10 +162,10 @@ export function AdminUsersMutateDialog({ currentRow, open, onOpenChange }: Admin
     >
       <DialogContent className='sm:max-w-lg'>
         <DialogHeader className='text-start'>
-          <DialogTitle>{isEdit ? 'Edit User' : 'Add New User'}</DialogTitle>
+          <DialogTitle>{isEdit ? t('admin.user.dialog.edit') : t('admin.user.dialog.create')}</DialogTitle>
           <DialogDescription>
-            {isEdit ? 'Update the user here. ' : 'Create new user here. '}
-            Click save when you&apos;re done.
+            {isEdit ? t('admin.user.dialog.update') : t('admin.user.dialog.createDesc')}
+            {t('admin.user.dialog.saveHint')}
           </DialogDescription>
         </DialogHeader>
         <div className='max-h-[26.25rem] overflow-y-auto py-1'>
@@ -174,9 +176,14 @@ export function AdminUsersMutateDialog({ currentRow, open, onOpenChange }: Admin
                 name='name'
                 render={({ field }) => (
                   <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
-                    <FormLabel className='col-span-2 text-end'>Name</FormLabel>
+                    <FormLabel className='col-span-2 text-end'>{t('admin.user.form.name')}</FormLabel>
                     <FormControl>
-                      <Input placeholder='Enter name' className='col-span-4' autoComplete='off' {...field} />
+                      <Input
+                        placeholder={t('admin.user.form.namePlaceholder')}
+                        className='col-span-4'
+                        autoComplete='off'
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage className='col-span-4 col-start-3' />
                   </FormItem>
@@ -188,9 +195,14 @@ export function AdminUsersMutateDialog({ currentRow, open, onOpenChange }: Admin
                 name='email'
                 render={({ field }) => (
                   <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
-                    <FormLabel className='col-span-2 text-end'>邮件</FormLabel>
+                    <FormLabel className='col-span-2 text-end'>{t('admin.user.form.email')}</FormLabel>
                     <FormControl>
-                      <Input placeholder='user@example.com' className='col-span-4' {...field} disabled={isEdit} />
+                      <Input
+                        placeholder={t('admin.user.form.emailPlaceholder')}
+                        className='col-span-4'
+                        {...field}
+                        disabled={isEdit}
+                      />
                     </FormControl>
                     <FormMessage className='col-span-4 col-start-3' />
                   </FormItem>
@@ -203,10 +215,10 @@ export function AdminUsersMutateDialog({ currentRow, open, onOpenChange }: Admin
                   name='password'
                   render={({ field }) => (
                     <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
-                      <FormLabel className='col-span-2 text-end'>密码</FormLabel>
+                      <FormLabel className='col-span-2 text-end'>{t('admin.user.form.password')}</FormLabel>
                       <FormControl>
                         <Input
-                          placeholder='Set initial password'
+                          placeholder={t('admin.user.form.passwordPlaceholder')}
                           className='col-span-4'
                           type='password'
                           autoComplete='off'
@@ -224,9 +236,14 @@ export function AdminUsersMutateDialog({ currentRow, open, onOpenChange }: Admin
                 name='username'
                 render={({ field }) => (
                   <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
-                    <FormLabel className='col-span-2 text-end'>用户名</FormLabel>
+                    <FormLabel className='col-span-2 text-end'>{t('admin.user.form.username')}</FormLabel>
                     <FormControl>
-                      <Input placeholder='username' className='col-span-4' autoComplete='off' {...field} />
+                      <Input
+                        placeholder={t('admin.user.form.usernamePlaceholder')}
+                        className='col-span-4'
+                        autoComplete='off'
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage className='col-span-4 col-start-3' />
                   </FormItem>
@@ -238,7 +255,7 @@ export function AdminUsersMutateDialog({ currentRow, open, onOpenChange }: Admin
                 name='role'
                 render={() => (
                   <FormItem className='grid grid-cols-6 items-start space-y-0 gap-x-4 gap-y-1'>
-                    <FormLabel className='col-span-2 text-end pt-2'>角色</FormLabel>
+                    <FormLabel className='col-span-2 text-end pt-2'>{t('admin.user.form.role')}</FormLabel>
                     <div className='col-span-4 grid grid-cols-2 gap-2'>
                       {roles.map((role) => (
                         <FormField
@@ -282,7 +299,7 @@ export function AdminUsersMutateDialog({ currentRow, open, onOpenChange }: Admin
                 name='banned'
                 render={({ field }) => (
                   <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
-                    <FormLabel className='col-span-2 text-end'>禁用</FormLabel>
+                    <FormLabel className='col-span-2 text-end'>{t('admin.user.form.banned')}</FormLabel>
                     <FormControl>
                       <RadioGroup
                         onValueChange={(v) => field.onChange(v === 'true')}
@@ -293,13 +310,13 @@ export function AdminUsersMutateDialog({ currentRow, open, onOpenChange }: Admin
                           <FormControl>
                             <RadioGroupItem value='true' />
                           </FormControl>
-                          <FormLabel className='font-normal'>Yes</FormLabel>
+                          <FormLabel className='font-normal'>{t('common.yes')}</FormLabel>
                         </FormItem>
                         <FormItem className='flex items-center space-y-0 space-x-2'>
                           <FormControl>
                             <RadioGroupItem value='false' />
                           </FormControl>
-                          <FormLabel className='font-normal'>No</FormLabel>
+                          <FormLabel className='font-normal'>{t('common.no')}</FormLabel>
                         </FormItem>
                       </RadioGroup>
                     </FormControl>
@@ -315,9 +332,13 @@ export function AdminUsersMutateDialog({ currentRow, open, onOpenChange }: Admin
                     name='banReason'
                     render={({ field }) => (
                       <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
-                        <FormLabel className='col-span-2 text-end'>禁用原因</FormLabel>
+                        <FormLabel className='col-span-2 text-end'>{t('admin.user.form.banReason')}</FormLabel>
                         <FormControl>
-                          <Input placeholder='reason (optional)' className='col-span-4' {...field} />
+                          <Input
+                            placeholder={t('admin.user.form.banReasonPlaceholder')}
+                            className='col-span-4'
+                            {...field}
+                          />
                         </FormControl>
                         <FormMessage className='col-span-4 col-start-3' />
                       </FormItem>
@@ -329,9 +350,13 @@ export function AdminUsersMutateDialog({ currentRow, open, onOpenChange }: Admin
                     name='banExpires'
                     render={({ field }) => (
                       <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
-                        <FormLabel className='col-span-2 text-end'>禁用到期</FormLabel>
+                        <FormLabel className='col-span-2 text-end'>{t('admin.user.form.banExpires')}</FormLabel>
                         <FormControl>
-                          <Input placeholder='2025-01-01T00:00:00.000Z' className='col-span-4' {...field} />
+                          <Input
+                            placeholder={t('admin.user.form.banExpiresPlaceholder')}
+                            className='col-span-4'
+                            {...field}
+                          />
                         </FormControl>
                         <FormMessage className='col-span-4 col-start-3' />
                       </FormItem>
@@ -344,7 +369,7 @@ export function AdminUsersMutateDialog({ currentRow, open, onOpenChange }: Admin
         </div>
         <DialogFooter>
           <Button type='submit' form='user-form' disabled={updateMutation.isPending || createMutation.isPending}>
-            Save changes
+            {t('common.buttons.save')}
           </Button>
         </DialogFooter>
       </DialogContent>

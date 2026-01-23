@@ -1,12 +1,14 @@
 import { Plus } from 'lucide-react'
+import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
 import { Button } from '@/components/ui/button'
 import { useOrganizations } from './organizations-provider'
 
 export function OrganizationsPrimaryButtons() {
+  const { t } = useTranslation()
   const { setOpen } = useOrganizations()
   return (
     <Button className='space-x-1' onClick={() => setOpen('create')}>
-      <span>创建组织</span> <Plus size={18} />
+      <span>{t('admin.organization.button.create')}</span> <Plus size={18} />
     </Button>
   )
 }

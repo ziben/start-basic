@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { createOrganizationRoleFn, updateOrganizationRoleFn } from "@/modules/system-admin/shared/server-fns/organization-role.fn"
+import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
 import {
   Dialog,
   DialogContent,
@@ -37,21 +38,22 @@ import { rbacOrgRolesQueryKeys } from '~/shared/lib/query-keys'
 import { useOrgRolesContext } from "../context/org-roles-context"
 import { useOrgRoleTemplatesQuery } from "../hooks/use-org-roles-queries"
 
-const formSchema = z.object({
-  role: z.string().min(1, "角色标识不能为空"),
-  displayName: z.string().min(1, "显示名称不能为空"),
-  description: z.string().optional(),
-  templateRoleId: z.string().optional(),
-  copyTemplatePermissions: z.boolean().default(true),
-  isActive: z.boolean().default(true),
-})
-
-type FormValues = z.infer<typeof formSchema>
-
 export function OrgRoleMutateDialog() {
+  const { t } = useTranslation()
   const { mutateDialog, closeMutateDialog, tableUrl } = useOrgRolesContext()
   const queryClient = useQueryClient()
   const { data: templates = [] } = useOrgRoleTemplatesQuery()
+
+  const formSchema = z.object({
+    role: z.string().min(1, t('admin.orgRole.validation.roleRequired')),
+    displayName: z.string().min(1, t('admin.orgRole.validation.displayNameRequired')),
+    description: z.string().optional(),
+    templateRoleId: z.string().optional(),
+    copyTemplatePermissions: z.boolean().default(true),
+    isActive: z.boolean().default(true),
+  })
+
+  type FormValues = z.input<typeof formSchema>
 
   const organizationId = (tableUrl.columnFilters.find(f => f.id === "organizationId")?.value as string) || ""
   const role = mutateDialog.data
@@ -99,17 +101,17 @@ export function OrgRoleMutateDialog() {
     }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: rbacOrgRolesQueryKeys.all })
-      toast.success("组织角色创建成功")
+      toast.success(t('admin.orgRole.toast.createSuccess'))
       closeMutateDialog()
     },
     onError: (error: Error) => {
-      toast.error("创建失败", { description: error.message })
+      toast.error(t('admin.orgRole.toast.createError'), { description: error.message })
     },
   })
 
   const updateMutation = useMutation({
     mutationFn: (data: FormValues) => {
-      if (!role?.id) throw new Error("角色ID不存在")
+      if (!role?.id) throw new Error(t('admin.orgRole.errors.missingId'))
       return updateOrganizationRoleFn({
         data: {
           id: role.id,
@@ -121,11 +123,11 @@ export function OrgRoleMutateDialog() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: rbacOrgRolesQueryKeys.all })
-      toast.success("组织角色更新成功")
+      toast.success(t('admin.orgRole.toast.updateSuccess'))
       closeMutateDialog()
     },
     onError: (error: Error) => {
-      toast.error("更新失败", { description: error.message })
+      toast.error(t('admin.orgRole.toast.updateError'), { description: error.message })
     },
   })
 
@@ -141,9 +143,11 @@ export function OrgRoleMutateDialog() {
     <Dialog open={mutateDialog.isOpen} onOpenChange={closeMutateDialog}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>{isEdit ? "编辑组织角色" : "新增组织角色"}</DialogTitle>
+          <DialogTitle>
+            {isEdit ? t('admin.orgRole.dialog.editTitle') : t('admin.orgRole.dialog.createTitle')}
+          </DialogTitle>
           <DialogDescription>
-            为当前组织创建或修改特定的角色实例
+            {t('admin.orgRole.dialog.desc')}
           </DialogDescription>
         </DialogHeader>
 
@@ -155,11 +159,11 @@ export function OrgRoleMutateDialog() {
                 name="templateRoleId"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>从模板选择 (可选)</FormLabel>
+                    <FormLabel>{t('admin.orgRole.form.template')}</FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="选择一个预设模板" />
+                          <SelectValue placeholder={t('admin.orgRole.form.templatePlaceholder')} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -170,7 +174,7 @@ export function OrgRoleMutateDialog() {
                         ))}
                       </SelectContent>
                     </Select>
-                    <FormDescription>基于模板可快速同步基础权限</FormDescription>
+                    <FormDescription>{t('admin.orgRole.form.templateHelp')}</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -182,9 +186,9 @@ export function OrgRoleMutateDialog() {
               name="role"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>角色标识</FormLabel>
+                  <FormLabel>{t('admin.orgRole.form.role')}</FormLabel>
                   <FormControl>
-                    <Input {...field} placeholder="例如: admin, manager" disabled={isEdit} />
+                    <Input {...field} placeholder={t('admin.orgRole.form.rolePlaceholder')} disabled={isEdit} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -196,9 +200,9 @@ export function OrgRoleMutateDialog() {
               name="displayName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>显示名称</FormLabel>
+                  <FormLabel>{t('admin.orgRole.form.displayName')}</FormLabel>
                   <FormControl>
-                    <Input {...field} placeholder="例如: 行政主管" />
+                    <Input {...field} placeholder={t('admin.orgRole.form.displayNamePlaceholder')} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -210,9 +214,9 @@ export function OrgRoleMutateDialog() {
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>描述</FormLabel>
+                  <FormLabel>{t('admin.orgRole.form.description')}</FormLabel>
                   <FormControl>
-                    <Textarea {...field} placeholder="角色职责描述" />
+                    <Textarea {...field} placeholder={t('admin.orgRole.form.descriptionPlaceholder')} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -225,7 +229,7 @@ export function OrgRoleMutateDialog() {
               render={({ field }) => (
                 <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
                   <div className="space-y-0.5">
-                    <FormLabel>启用状态</FormLabel>
+                    <FormLabel>{t('admin.orgRole.form.active')}</FormLabel>
                   </div>
                   <FormControl>
                     <Switch checked={field.value} onCheckedChange={field.onChange} />
@@ -236,10 +240,10 @@ export function OrgRoleMutateDialog() {
 
             <DialogFooter>
               <Button type="button" variant="outline" onClick={closeMutateDialog}>
-                取消
+                {t('common.buttons.cancel')}
               </Button>
               <Button type="submit" disabled={createMutation.isPending || updateMutation.isPending}>
-                {isEdit ? "保存" : "创建"}
+                {isEdit ? t('common.buttons.save') : t('common.buttons.create')}
               </Button>
             </DialogFooter>
           </form>

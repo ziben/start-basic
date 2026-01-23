@@ -42,7 +42,7 @@ export type AdminUserPageData = z.infer<typeof adminUsersPageSchema>
 
 // UI 常量
 export const banned = [
-  { label: '已封禁', value: true },
-  { label: '正常', value: false },
+  { labelKey: 'admin.user.table.status.banned', value: true },
+  { labelKey: 'admin.user.table.status.normal', value: false },
 ]
 

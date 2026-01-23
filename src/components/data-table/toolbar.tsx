@@ -91,7 +91,7 @@ export function DataTableToolbar<TData>({
             onClick={onReload}
             disabled={isReloading}
             aria-label='Reload'
-            title='Reload'
+            title='刷新'
           >
             <RefreshCw className={isReloading ? 'animate-spin' : undefined} />
           </Button>

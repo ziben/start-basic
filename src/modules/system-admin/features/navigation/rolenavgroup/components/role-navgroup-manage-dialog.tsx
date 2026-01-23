@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { toast } from 'sonner'
 import { useNavgroups } from '@/modules/system-admin/shared/hooks/use-navgroup-api'
 import { useAssignRoleNavGroups, useRole } from '@/modules/system-admin/shared/hooks/use-role-api'
+import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
 import {
     Dialog,
     DialogContent,
@@ -26,53 +27,85 @@ export function RoleNavGroupManageDialog({
     open,
     onOpenChange,
 }: RoleNavGroupManageDialogProps) {
+    const { t } = useTranslation()
     const { data: navGroups, isLoading: isNavGroupsLoading } = useNavgroups()
     const { data: role, isLoading: isRoleLoading } = useRole(roleId ?? undefined)
     const { mutate: assignNavGroups, isPending: isAssigning } = useAssignRoleNavGroups()
 
-    const [selectedIds, setSelectedIds] = useState<string[]>([])
+    const isLoading = isNavGroupsLoading || isRoleLoading
 
-    useEffect(() => {
-        if (role?.roleNavGroups) {
-            const ids = role.roleNavGroups.map((rng: any) => rng.navGroupId)
-            setSelectedIds(ids)
-        } else {
-            setSelectedIds([])
-        }
-    }, [role])
+    return (
+        <RoleNavGroupManageDialogInner
+            key={role?.id ?? 'empty'}
+            t={t}
+            roleId={roleId}
+            roleLabel={role?.label || role?.name}
+            roleNavGroupIds={role?.roleNavGroups?.map((rng: any) => rng.navGroupId) ?? []}
+            navGroups={navGroups}
+            open={open}
+            onOpenChange={onOpenChange}
+            isLoading={isLoading}
+            isAssigning={isAssigning}
+            assignNavGroups={assignNavGroups}
+        />
+    )
+}
+
+type RoleNavGroupManageDialogInnerProps = {
+    t: (key: string, options?: Record<string, unknown>) => string
+    roleId: string | null
+    roleLabel?: string | null
+    roleNavGroupIds: string[]
+    navGroups: Array<{ id: string; title: string; scope: string }> | undefined
+    open: boolean
+    onOpenChange: (open: boolean) => void
+    isLoading: boolean
+    isAssigning: boolean
+    assignNavGroups: (input: { id: string; navGroupIds: string[] }, options?: { onSuccess?: () => void; onError?: (error: Error) => void }) => void
+}
+
+function RoleNavGroupManageDialogInner({
+    t,
+    roleId,
+    roleLabel,
+    roleNavGroupIds,
+    navGroups,
+    open,
+    onOpenChange,
+    isLoading,
+    isAssigning,
+    assignNavGroups,
+}: RoleNavGroupManageDialogInnerProps) {
+    const translatedRoleLabel = roleLabel ? t(roleLabel, { defaultMessage: roleLabel }) : '-'
+    const [selectedIds, setSelectedIds] = useState<string[]>(() => Array.from(new Set(roleNavGroupIds)))
 
     const handleToggle = (id: string) => {
-        setSelectedIds((prev) =>
-            prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
-        )
+        setSelectedIds((prev) => (prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]))
     }
 
     const handleSave = () => {
         if (!roleId) return
-
         assignNavGroups(
             { id: roleId, navGroupIds: selectedIds },
             {
                 onSuccess: () => {
-                    toast.success('分配成功')
+                    toast.success(t('admin.rolenavgroup.manage.toast.success'))
                     onOpenChange(false)
                 },
                 onError: (error) => {
-                    toast.error(`提交失败: ${error.message}`)
+                    toast.error(t('admin.rolenavgroup.manage.toast.error'), { description: error.message })
                 },
             }
         )
     }
 
-    const isLoading = isNavGroupsLoading || isRoleLoading
-
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
-                    <DialogTitle>管理角色导航组</DialogTitle>
+                    <DialogTitle>{t('admin.rolenavgroup.manage.title')}</DialogTitle>
                     <DialogDescription>
-                        为角色 <strong>{role?.label || role?.name}</strong> 分配可见的导航组。
+                        {t('admin.rolenavgroup.manage.desc', { name: translatedRoleLabel })}
                     </DialogDescription>
                 </DialogHeader>
 
@@ -95,10 +128,10 @@ export function RoleNavGroupManageDialog({
                                             htmlFor={`group-${group.id}`}
                                             className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                                         >
-                                            {group.title}
+                                            {t(group.title, { defaultMessage: group.title })}
                                         </label>
                                         <p className="text-xs text-muted-foreground">
-                                            作用域: {group.scope}
+                                            {t('admin.rolenavgroup.manage.scope', { scope: group.scope })}
                                         </p>
                                     </div>
                                 </div>
@@ -109,11 +142,11 @@ export function RoleNavGroupManageDialog({
 
                 <DialogFooter>
                     <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isAssigning}>
-                        取消
+                        {t('common.buttons.cancel')}
                     </Button>
                     <Button onClick={handleSave} disabled={isAssigning || isLoading}>
                         {isAssigning && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                        保存更改
+                        {t('admin.rolenavgroup.manage.save')}
                     </Button>
                 </DialogFooter>
             </DialogContent>

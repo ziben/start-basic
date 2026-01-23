@@ -8,6 +8,7 @@ import {
   type VisibilityState,
 } from "@tanstack/react-table"
 import { useVirtualizer } from "@tanstack/react-virtual"
+import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
 import { cn } from "@/shared/lib/utils"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { DataTablePagination, DataTableToolbar } from "@/components/data-table"
@@ -16,6 +17,7 @@ import { useRolesQuery } from "../hooks/use-roles-query"
 import { useRolesColumns } from "./roles-columns"
 
 export function RolesTable() {
+  const { t } = useTranslation()
   const [rowSelection, setRowSelection] = useState({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const { tableUrl } = useRolesContext()
@@ -73,7 +75,7 @@ export function RolesTable() {
     <div className="flex flex-1 flex-col gap-4">
       <DataTableToolbar
         table={table}
-        searchPlaceholder="搜索角色名称或编码..."
+        searchPlaceholder={t('admin.role.searchPlaceholder')}
         onReload={() => void refetch()}
         isReloading={isRefetching}
       />
@@ -102,7 +104,7 @@ export function RolesTable() {
               {isLoading ? (
                 <TableRow>
                   <TableCell colSpan={columns.length} className="h-24 text-center">
-                    加载中...
+                    {t('admin.common.loading')}
                   </TableCell>
                 </TableRow>
               ) : rows?.length ? (
@@ -139,7 +141,7 @@ export function RolesTable() {
               ) : (
                 <TableRow>
                   <TableCell colSpan={columns.length} className="h-24 text-center">
-                    暂无数据
+                    {t('admin.common.noData')}
                   </TableCell>
                 </TableRow>
               )}

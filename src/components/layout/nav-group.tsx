@@ -1,7 +1,6 @@
-import { type ReactNode } from 'react'
-import type { ElementType } from 'react'
-import { Link, useLocation } from '@tanstack/react-router'
-import { Menu, ChevronRight } from 'lucide-react'
+import { type ReactNode, useEffect, useState } from 'react'
+import { useLocation } from '@tanstack/react-router'
+import { ChevronRight } from 'lucide-react'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import {
   SidebarGroup,
@@ -29,6 +28,21 @@ import { useTabs } from '@/shared/context/tab-context'
 export function NavGroup({ title, items }: NavGroupProps) {
   const { state, isMobile } = useSidebar()
   const href = useLocation({ select: (location) => location.href })
+  const storageKey = `nav_collapsible_state_${title}`
+  const [openMap, setOpenMap] = useState<Record<string, boolean>>(() => {
+    if (typeof window === 'undefined') return {}
+    try {
+      const raw = window.localStorage.getItem(storageKey)
+      return raw ? (JSON.parse(raw) as Record<string, boolean>) : {}
+    } catch {
+      return {}
+    }
+  })
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    window.localStorage.setItem(storageKey, JSON.stringify(openMap))
+  }, [openMap, storageKey])
   return (
     <SidebarGroup>
       <SidebarGroupLabel>{title}</SidebarGroupLabel>
@@ -36,14 +50,24 @@ export function NavGroup({ title, items }: NavGroupProps) {
         {items.map((item, idx) => {
           // 生成稳定 key：优先使用字符串类型的 url，否则回退到索引
           const urlPart = typeof item.url === 'string' ? item.url : String(idx)
-          const key = `${item.title}-${urlPart}`
+          const baseKey = `${item.title}-${urlPart}`
+          const key = item.items ? `${baseKey}-${href}` : baseKey
 
           if (!item.items) return <SidebarMenuLink key={key} item={item} href={href} />
 
           if (state === 'collapsed' && !isMobile)
             return <SidebarMenuCollapsedDropdown key={key} item={item} href={href} />
 
-          return <SidebarMenuCollapsible key={key} item={item} href={href} />
+          return (
+            <SidebarMenuCollapsible
+              key={key}
+              item={item}
+              href={href}
+              itemKey={baseKey}
+              openMap={openMap}
+              setOpenMap={setOpenMap}
+            />
+          )
         })}
       </SidebarMenu>
     </SidebarGroup>
@@ -81,9 +105,27 @@ function SidebarMenuLink({ item, href }: { item: NavLink; href: string }) {
   )
 }
 
-function SidebarMenuCollapsible({ item, href }: { item: NavCollapsible; href: string }) {
+function SidebarMenuCollapsible({
+  item,
+  href,
+  itemKey,
+  openMap,
+  setOpenMap,
+}: {
+  item: NavCollapsible
+  href: string
+  itemKey: string
+  openMap: Record<string, boolean>
+  setOpenMap: React.Dispatch<React.SetStateAction<Record<string, boolean>>>
+}) {
   const { setOpenMobile } = useSidebar()
   const tabContext = useTabs()
+  const isActive = checkIsActive(href, item, true)
+  const open = openMap[itemKey] ?? isActive
+
+  const handleOpenChange = (nextOpen: boolean) => {
+    setOpenMap((prev) => ({ ...prev, [itemKey]: nextOpen }))
+  }
 
   const handleSubItemClick = (subItem: NavLink) => (e: React.MouseEvent) => {
     if (!tabContext) {
@@ -96,7 +138,7 @@ function SidebarMenuCollapsible({ item, href }: { item: NavCollapsible; href: st
   }
 
   return (
-    <Collapsible asChild defaultOpen={checkIsActive(href, item, true)} className='group/collapsible'>
+    <Collapsible asChild open={open} onOpenChange={handleOpenChange} className='group/collapsible'>
       <SidebarMenuItem>
         <CollapsibleTrigger asChild>
           <SidebarMenuButton tooltip={item.title}>
@@ -170,10 +212,11 @@ function SidebarMenuCollapsedDropdown({ item, href }: { item: NavCollapsible; hr
 }
 
 function checkIsActive(href: string, item: NavItem, mainNav = false) {
+  const cleanHref = href.split('?')[0]
   return (
     href === item.url || // /endpint?search=param
-    href.split('?')[0] === item.url || // endpoint
-    !!item?.items?.filter((i) => i.url === href).length || // if child nav is active
+    cleanHref === item.url || // endpoint
+    !!item?.items?.filter((i) => i.url === href || i.url === cleanHref).length || // if child nav is active
     (mainNav && href.split('/')[1] !== '' && href.split('/')[1] === item?.url?.split('/')[1])
   )
 }

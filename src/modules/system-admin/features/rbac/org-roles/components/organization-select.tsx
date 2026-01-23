@@ -1,5 +1,6 @@
 import * as React from "react"
 import { Check, ChevronsUpDown } from "lucide-react"
+import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
 import { cn } from "@/shared/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
@@ -23,8 +24,9 @@ interface OrganizationSelectProps {
 }
 
 export function OrganizationSelect({ value, onValueChange }: OrganizationSelectProps) {
+  const { t } = useTranslation()
   const [open, setOpen] = React.useState(false)
-  const { data: organizations, isLoading } = useOrganizationsListQuery({
+  const { data: organizations, isRefetching } = useOrganizationsListQuery({
     pageIndex: 0,
     pageSize: 100, // 获取前100个组织，通常管理后台够用了
     sorting: [],
@@ -41,15 +43,19 @@ export function OrganizationSelect({ value, onValueChange }: OrganizationSelectP
           aria-expanded={open}
           className="w-[250px] justify-between h-8 text-xs"
         >
-          {selectedOrg ? selectedOrg.name : "选择组织..."}
+          {selectedOrg ? selectedOrg.name : t('admin.orgRole.organizationSelect.placeholder')}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[250px] p-0">
         <Command>
-          <CommandInput placeholder="搜索组织..." />
+          <CommandInput placeholder={t('admin.orgRole.organizationSelect.searchPlaceholder')} />
           <CommandList>
-            <CommandEmpty>{isLoading ? "加载中..." : "未找到组织"}</CommandEmpty>
+            <CommandEmpty>
+              {isRefetching
+                ? t('admin.orgRole.organizationSelect.loading')
+                : t('admin.orgRole.organizationSelect.empty')}
+            </CommandEmpty>
             <CommandGroup>
               {organizations.map((org) => (
                 <CommandItem

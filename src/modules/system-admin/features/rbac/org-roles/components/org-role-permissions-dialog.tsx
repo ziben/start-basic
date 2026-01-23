@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { assignOrganizationRolePermissionsFn, getOrganizationRolePermissionsFn } from '@/modules/system-admin/shared/server-fns/organization-role.fn'
+import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
 import {
   Dialog,
   DialogContent,
@@ -18,6 +19,7 @@ import { useOrgRolesContext } from '../context/org-roles-context'
 import { usePermissionsQuery } from '../../permissions/hooks/use-permissions-queries'
 
 export function OrgRolePermissionsDialog() {
+  const { t } = useTranslation()
   const { permissionsDialog, closePermissionsDialog } = useOrgRolesContext()
   const queryClient = useQueryClient()
   const { data: allPermissions = [] } = usePermissionsQuery()
@@ -31,17 +33,17 @@ export function OrgRolePermissionsDialog() {
         try {
           const res = await getOrganizationRolePermissionsFn({ data: { organizationRoleId: role.id } })
           setSelectedPermissions(res.map((p: any) => p.permissionId))
-        } catch (_error) {
-          toast.error('加载权限失败')
+        } catch {
+          toast.error(t('admin.orgRole.permissions.loadError'))
         }
       }
     }
     fetchPermissions()
-  }, [permissionsDialog.isOpen, role?.id])
+  }, [permissionsDialog.isOpen, role?.id, t])
 
   const assignMutation = useMutation({
     mutationFn: (permissionIds: string[]) => {
-      if (!role?.id) throw new Error('角色不存在')
+      if (!role?.id) throw new Error(t('admin.orgRole.errors.missingId'))
       return assignOrganizationRolePermissionsFn({
         data: {
           organizationRoleId: role.id,
@@ -52,11 +54,11 @@ export function OrgRolePermissionsDialog() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: rbacOrgRolesQueryKeys.all })
-      toast.success('权限分配成功')
+      toast.success(t('admin.orgRole.permissions.assignSuccess'))
       closePermissionsDialog()
     },
     onError: (error: Error) => {
-      toast.error('分配失败', { description: error.message })
+      toast.error(t('admin.orgRole.permissions.assignError'), { description: error.message })
     },
   })
 
@@ -68,7 +70,7 @@ export function OrgRolePermissionsDialog() {
 
   // 按分类分组
   const groupedPermissions = allPermissions.reduce((acc: any, p: any) => {
-    const category = p.category || '未分类'
+    const category = p.category || t('admin.orgRole.permissions.category.uncategorized')
     if (!acc[category]) acc[category] = []
     acc[category].push(p)
     return acc
@@ -78,8 +80,8 @@ export function OrgRolePermissionsDialog() {
     <Dialog open={permissionsDialog.isOpen} onOpenChange={closePermissionsDialog}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>分配权限 - {role?.displayName}</DialogTitle>
-          <DialogDescription>设置组织角色的功能访问权限</DialogDescription>
+          <DialogTitle>{t('admin.orgRole.permissions.title', { name: role?.displayName })}</DialogTitle>
+          <DialogDescription>{t('admin.orgRole.permissions.desc')}</DialogDescription>
         </DialogHeader>
 
         <ScrollArea className="h-[400px] pr-4">
@@ -107,9 +109,9 @@ export function OrgRolePermissionsDialog() {
         </ScrollArea>
 
         <DialogFooter>
-          <Button variant="outline" onClick={closePermissionsDialog}>取消</Button>
+          <Button variant="outline" onClick={closePermissionsDialog}>{t('common.buttons.cancel')}</Button>
           <Button onClick={() => assignMutation.mutate(selectedPermissions)} disabled={assignMutation.isPending}>
-            保存
+            {t('common.buttons.save')}
           </Button>
         </DialogFooter>
       </DialogContent>

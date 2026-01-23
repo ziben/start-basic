@@ -205,20 +205,25 @@ export default function AdminNavItemTable({ data, isLoading, error, navGroupId, 
   const rows = table.getRowModel().rows
 
   // 处理加载、错误和空数据状态
-  if (isLoading) return <div className='py-8 text-center'>加载中...</div>
-  if (error) return <div className='py-8 text-center text-red-500'>加载出错: {error.message}</div>
+  if (isLoading) return <div className='py-8 text-center'>{t('common.loading')}</div>
+  if (error)
+    return (
+      <div className='py-8 text-center text-red-500'>
+        {t('admin.navitem.loadError', { message: error.message })}
+      </div>
+    )
 
   return (
     <div className='space-y-4'>
       <DataTableToolbar
         table={table}
-        searchPlaceholder={t('admin.navgroup.table.searchPlaceholder')}
+        searchPlaceholder={t('admin.navitem.search')}
         onReload={onReload}
         isReloading={isReloading}
         filters={[
           {
             columnId: 'title',
-            title: t('admin.navgroup.table.title'),
+            title: t('admin.navitem.table.title'),
             options: [],
           },
         ]}

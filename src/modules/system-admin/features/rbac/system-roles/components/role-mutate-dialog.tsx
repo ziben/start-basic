@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { createRoleFn, updateRoleFn } from '@/modules/system-admin/shared/server-fns/rbac.fn'
+import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
 import {
   Dialog,
   DialogContent,
@@ -36,21 +37,22 @@ import { toast } from 'sonner'
 import { roleQueryKeys } from '~/shared/lib/query-keys'
 import { useRolesContext } from '../context/roles-context'
 
-const formSchema = z.object({
-  name: z.string().min(1, '角色名称不能为空'),
-  displayName: z.string().min(1, '显示名称不能为空'),
-  description: z.string().optional(),
-  scope: z.enum(['GLOBAL', 'ORGANIZATION', 'CUSTOM']),
-  category: z.string().optional(),
-  isTemplate: z.boolean(),
-  isActive: z.boolean(),
-})
-
-type FormValues = z.infer<typeof formSchema>
-
 export function RoleMutateDialog() {
+  const { t } = useTranslation()
   const { editDialog, closeEditDialog, createDialog, closeCreateDialog } = useRolesContext()
   const queryClient = useQueryClient()
+
+  const formSchema = z.object({
+    name: z.string().min(1, t('admin.role.validation.nameRequired')),
+    displayName: z.string().min(1, t('admin.role.validation.displayNameRequired')),
+    description: z.string().optional(),
+    scope: z.enum(['GLOBAL', 'ORGANIZATION', 'CUSTOM']),
+    category: z.string().optional(),
+    isTemplate: z.boolean(),
+    isActive: z.boolean(),
+  })
+
+  type FormValues = z.infer<typeof formSchema>
 
   const isEdit = editDialog.isOpen
   const isCreate = createDialog.isOpen
@@ -99,18 +101,18 @@ export function RoleMutateDialog() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: roleQueryKeys.all })
-      toast.success('创建成功')
+      toast.success(t('admin.role.toast.createSuccess'))
       closeCreateDialog()
       form.reset()
     },
     onError: (error: Error) => {
-      toast.error('创建失败', { description: error.message })
+      toast.error(t('admin.role.toast.createError'), { description: error.message })
     },
   })
 
   const updateMutation = useMutation({
     mutationFn: async (data: FormValues) => {
-      if (!role) throw new Error('角色不存在')
+      if (!role) throw new Error(t('admin.role.errors.notFound'))
       return await updateRoleFn({
         data: {
           id: role.id,
@@ -122,11 +124,11 @@ export function RoleMutateDialog() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: roleQueryKeys.all })
-      toast.success('更新成功')
+      toast.success(t('admin.role.toast.updateSuccess'))
       closeEditDialog()
     },
     onError: (error: Error) => {
-      toast.error('更新失败', { description: error.message })
+      toast.error(t('admin.role.toast.updateError'), { description: error.message })
     },
   })
 
@@ -151,9 +153,11 @@ export function RoleMutateDialog() {
     <Dialog open={isEdit || isCreate} onOpenChange={handleClose}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>{isEdit ? '编辑角色' : '新建角色'}</DialogTitle>
+          <DialogTitle>
+            {isEdit ? t('admin.role.dialog.editTitle') : t('admin.role.dialog.createTitle')}
+          </DialogTitle>
           <DialogDescription>
-            {isEdit ? '修改角色信息' : '创建新的角色'}
+            {isEdit ? t('admin.role.dialog.editDesc') : t('admin.role.dialog.createDesc')}
           </DialogDescription>
         </DialogHeader>
 
@@ -164,11 +168,11 @@ export function RoleMutateDialog() {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>角色名称</FormLabel>
+                  <FormLabel>{t('admin.role.form.name')}</FormLabel>
                   <FormControl>
-                    <Input {...field} placeholder="例如：content-manager" disabled={isEdit} />
+                    <Input {...field} placeholder={t('admin.role.form.namePlaceholder')} disabled={isEdit} />
                   </FormControl>
-                  <FormDescription>唯一标识符，创建后不可修改</FormDescription>
+                  <FormDescription>{t('admin.role.form.nameHelp')}</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -179,9 +183,9 @@ export function RoleMutateDialog() {
               name="displayName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>显示名称</FormLabel>
+                  <FormLabel>{t('admin.role.form.displayName')}</FormLabel>
                   <FormControl>
-                    <Input {...field} placeholder="例如：内容管理员" />
+                    <Input {...field} placeholder={t('admin.role.form.displayNamePlaceholder')} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -193,9 +197,9 @@ export function RoleMutateDialog() {
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>描述</FormLabel>
+                  <FormLabel>{t('admin.role.form.description')}</FormLabel>
                   <FormControl>
-                    <Textarea {...field} placeholder="角色描述" rows={3} />
+                    <Textarea {...field} placeholder={t('admin.role.form.descriptionPlaceholder')} rows={3} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -208,7 +212,7 @@ export function RoleMutateDialog() {
                 name="scope"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>作用域</FormLabel>
+                    <FormLabel>{t('admin.role.form.scope')}</FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
@@ -216,13 +220,13 @@ export function RoleMutateDialog() {
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="选择作用域" />
+                          <SelectValue placeholder={t('admin.role.form.scopePlaceholder')} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="GLOBAL">全局</SelectItem>
-                        <SelectItem value="ORGANIZATION">组织</SelectItem>
-                        <SelectItem value="CUSTOM">自定义</SelectItem>
+                        <SelectItem value="GLOBAL">{t('admin.role.scope.global')}</SelectItem>
+                        <SelectItem value="ORGANIZATION">{t('admin.role.scope.organization')}</SelectItem>
+                        <SelectItem value="CUSTOM">{t('admin.role.scope.custom')}</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -235,9 +239,9 @@ export function RoleMutateDialog() {
                 name="category"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>分类</FormLabel>
+                    <FormLabel>{t('admin.role.form.category')}</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="例如：内容管理" />
+                      <Input {...field} placeholder={t('admin.role.form.categoryPlaceholder')} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -252,8 +256,8 @@ export function RoleMutateDialog() {
                 render={({ field }) => (
                   <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
                     <div className="space-y-0.5">
-                      <FormLabel>角色模板</FormLabel>
-                      <FormDescription>可被组织实例化</FormDescription>
+                      <FormLabel>{t('admin.role.form.template')}</FormLabel>
+                      <FormDescription>{t('admin.role.form.templateDesc')}</FormDescription>
                     </div>
                     <FormControl>
                       <Switch checked={field.value} onCheckedChange={field.onChange} disabled={isEdit} />
@@ -268,8 +272,8 @@ export function RoleMutateDialog() {
                 render={({ field }) => (
                   <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
                     <div className="space-y-0.5">
-                      <FormLabel>启用状态</FormLabel>
-                      <FormDescription>是否启用此角色</FormDescription>
+                      <FormLabel>{t('admin.role.form.active')}</FormLabel>
+                      <FormDescription>{t('admin.role.form.activeDesc')}</FormDescription>
                     </div>
                     <FormControl>
                       <Switch checked={field.value} onCheckedChange={field.onChange} />
@@ -281,10 +285,10 @@ export function RoleMutateDialog() {
 
             <DialogFooter>
               <Button type="button" variant="outline" onClick={handleClose}>
-                取消
+                {t('common.buttons.cancel')}
               </Button>
               <Button type="submit" disabled={createMutation.isPending || updateMutation.isPending}>
-                {isEdit ? '保存' : '创建'}
+                {isEdit ? t('common.buttons.save') : t('common.buttons.create')}
               </Button>
             </DialogFooter>
           </form>

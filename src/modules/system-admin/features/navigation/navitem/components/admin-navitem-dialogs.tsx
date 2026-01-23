@@ -1,6 +1,7 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
 import { toast } from 'sonner'
 import { IconPicker } from '~/components/icon-picker'
 import { useNavgroups } from '~/modules/system-admin/shared/hooks/use-navgroup-api'
@@ -30,7 +31,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useAdminNavItemContext } from '../context/admin-navitem-context'
-import { CreateNavItemData, UpdateNavItemData, createNavItemSchema, updateNavItemSchema } from '../data/schema'
+import { CreateNavItemData, UpdateNavItemData } from '../data/schema'
 
 // 创建导航项对话框组件
 const CreateNavItemDialog = () => {
@@ -53,9 +54,22 @@ const CreateNavItemDialog = () => {
     orderIndex: 0,
   })
 
+  const createFormSchema = useMemo(() => {
+    return z.object({
+      title: z.string().min(1, t('admin.navitem.validation.titleRequired')),
+      url: z.string().optional(),
+      icon: z.string().optional(),
+      badge: z.string().optional(),
+      isCollapsible: z.boolean().optional(),
+      navGroupId: z.string().min(1, t('admin.navitem.validation.navGroupRequired')),
+      parentId: z.string().optional(),
+      orderIndex: z.number().int().optional(),
+    })
+  }, [t])
+
   // 创建表单
   const createForm = useForm<CreateNavItemData>({
-    resolver: zodResolver(createNavItemSchema),
+    resolver: zodResolver(createFormSchema),
     defaultValues: toCreateFormValues(navGroupId),
   })
 
@@ -149,7 +163,7 @@ const CreateNavItemDialog = () => {
                 <SelectContent>
                   {navgroups.map((group) => (
                     <SelectItem key={group.id} value={group.id}>
-                      {group.title}
+                      {t(group.title, { defaultMessage: group.title })}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -163,22 +177,22 @@ const CreateNavItemDialog = () => {
 
             <div className='grid grid-cols-4 items-center gap-4'>
               <Label htmlFor='parentId' className='text-right'>
-                父级菜单
+                {t('admin.navitem.fields.parentId')}
               </Label>
               <Select
                 value={createForm.watch('parentId') || 'root'}
                 onValueChange={(value) => createForm.setValue('parentId', value === 'root' ? '' : value)}
               >
                 <SelectTrigger className='col-span-3'>
-                  <SelectValue placeholder="选择父级菜单 (可选)" />
+                  <SelectValue placeholder={t('admin.navitem.fields.parentPlaceholder')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="root">无 (作为一级菜单)</SelectItem>
+                  <SelectItem value='root'>{t('admin.navitem.fields.parentRoot')}</SelectItem>
                   {navitems
                     .filter((item: any) => !item.parentId && item.isCollapsible) // 仅显示顶级且可折叠菜单
                     .map((item: any) => (
                       <SelectItem key={item.id} value={item.id}>
-                        {item.title}
+                        {t(item.title, { defaultMessage: item.title })}
                       </SelectItem>
                     ))}
                 </SelectContent>
@@ -260,8 +274,21 @@ const EditNavItemDialog = () => {
     parentId: '',
   }
 
+  const editFormSchema = useMemo(() => {
+    return z.object({
+      title: z.string().min(1, t('admin.navitem.validation.titleRequired')).optional(),
+      url: z.string().optional(),
+      icon: z.string().optional(),
+      badge: z.string().optional(),
+      isCollapsible: z.boolean().optional(),
+      navGroupId: z.string().min(1, t('admin.navitem.validation.navGroupRequired')).optional(),
+      parentId: z.string().optional(),
+      orderIndex: z.number().int().optional(),
+    })
+  }, [t])
+
   const editForm = useForm<UpdateNavItemData>({
-    resolver: zodResolver(updateNavItemSchema),
+    resolver: zodResolver(editFormSchema),
     defaultValues: selectedNavItem ? toEditFormValues(selectedNavItem) : emptyEditFormValues,
   })
 
@@ -372,7 +399,7 @@ const EditNavItemDialog = () => {
                 <SelectContent>
                   {navgroups.map((group) => (
                     <SelectItem key={group.id} value={group.id}>
-                      {group.title}
+                      {t(group.title, { defaultMessage: group.title })}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -386,24 +413,24 @@ const EditNavItemDialog = () => {
 
             <div className='grid grid-cols-4 items-center gap-4'>
               <Label htmlFor='parentId' className='text-right'>
-                父级菜单
+                {t('admin.navitem.fields.parentId')}
               </Label>
               <Select
                 value={editForm.watch('parentId') || 'root'}
                 onValueChange={(value) => editForm.setValue('parentId', value === 'root' ? '' : value)}
               >
                 <SelectTrigger className='col-span-3'>
-                  <SelectValue placeholder="选择父级菜单 (可选)" />
+                  <SelectValue placeholder={t('admin.navitem.fields.parentPlaceholder')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="root">无 (作为一级菜单)</SelectItem>
+                  <SelectItem value='root'>{t('admin.navitem.fields.parentRoot')}</SelectItem>
                   {navitems
                     .filter(
                       (item: any) => item.id !== selectedNavItem?.id && !item.parentId && item.isCollapsible
                     ) // 排除自身，且仅显示顶级可折叠菜单
                     .map((item: any) => (
                       <SelectItem key={item.id} value={item.id}>
-                        {item.title}
+                        {t(item.title, { defaultMessage: item.title })}
                       </SelectItem>
                     ))}
                 </SelectContent>

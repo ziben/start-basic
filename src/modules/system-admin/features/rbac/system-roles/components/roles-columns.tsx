@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { MoreHorizontal, Shield, Users } from 'lucide-react'
+import { useTranslation } from '~/modules/system-admin/shared/hooks/use-translation'
 import { useRolesContext } from '../context/roles-context'
 import type { Role } from '@/generated/prisma/client'
 
@@ -18,12 +19,13 @@ type RoleWithCount = Role & {
 }
 
 export function useRolesColumns() {
+  const { t } = useTranslation()
   const { openEditDialog, openDeleteDialog, openPermissionsDialog } = useRolesContext()
 
   const columns: ColumnDef<RoleWithCount>[] = [
     {
       accessorKey: 'displayName',
-      header: '角色名称',
+      header: t('admin.role.columns.name'),
       cell: ({ row }) => {
         const role = row.original
         return (
@@ -39,13 +41,13 @@ export function useRolesColumns() {
     },
     {
       accessorKey: 'scope',
-      header: '作用域',
+      header: t('admin.role.columns.scope'),
       cell: ({ row }) => {
         const scope = row.getValue('scope') as string
         const scopeMap = {
-          GLOBAL: { label: '全局', variant: 'default' as const },
-          ORGANIZATION: { label: '组织', variant: 'secondary' as const },
-          CUSTOM: { label: '自定义', variant: 'outline' as const },
+          GLOBAL: { label: t('admin.role.scope.global'), variant: 'default' as const },
+          ORGANIZATION: { label: t('admin.role.scope.organization'), variant: 'secondary' as const },
+          CUSTOM: { label: t('admin.role.scope.custom'), variant: 'outline' as const },
         }
         const config = scopeMap[scope as keyof typeof scopeMap]
         return <Badge variant={config.variant}>{config.label}</Badge>
@@ -53,19 +55,19 @@ export function useRolesColumns() {
     },
     {
       accessorKey: 'category',
-      header: '分类',
+      header: t('admin.role.columns.category'),
       cell: ({ row }) => {
         const category = row.getValue('category') as string | null
         return category ? (
           <Badge variant="outline">{category}</Badge>
         ) : (
-          <span className="text-muted-foreground">-</span>
+          <span className="text-muted-foreground">{t('admin.common.empty')}</span>
         )
       },
     },
     {
       id: 'permissions',
-      header: '权限数',
+      header: t('admin.role.columns.permissions'),
       cell: ({ row }) => {
         const count = row.original.rolePermissions?.length || 0
         return (
@@ -78,28 +80,28 @@ export function useRolesColumns() {
     },
     {
       accessorKey: 'isTemplate',
-      header: '模板',
+      header: t('admin.role.columns.template'),
       cell: ({ row }) => {
         const isTemplate = row.getValue('isTemplate') as boolean
-        return isTemplate ? <Badge variant="secondary">模板</Badge> : null
+        return isTemplate ? <Badge variant="secondary">{t('admin.role.badge.template')}</Badge> : null
       },
     },
     {
       accessorKey: 'isSystem',
-      header: '系统',
+      header: t('admin.role.columns.system'),
       cell: ({ row }) => {
         const isSystem = row.getValue('isSystem') as boolean
-        return isSystem ? <Badge variant="destructive">系统</Badge> : null
+        return isSystem ? <Badge variant="destructive">{t('admin.role.badge.system')}</Badge> : null
       },
     },
     {
       accessorKey: 'isActive',
-      header: '状态',
+      header: t('admin.role.columns.status'),
       cell: ({ row }) => {
         const isActive = row.getValue('isActive') as boolean
         return (
           <Badge variant={isActive ? 'default' : 'secondary'}>
-            {isActive ? '启用' : '禁用'}
+            {isActive ? t('admin.role.status.active') : t('admin.role.status.inactive')}
           </Badge>
         )
       },
@@ -113,25 +115,25 @@ export function useRolesColumns() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">打开菜单</span>
+                <span className="sr-only">{t('admin.common.openMenu')}</span>
                 <MoreHorizontal className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuLabel>操作</DropdownMenuLabel>
+              <DropdownMenuLabel>{t('admin.common.actions')}</DropdownMenuLabel>
               <DropdownMenuItem onClick={() => openPermissionsDialog(role)}>
-                管理权限
+                {t('admin.role.actions.permissions')}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => openEditDialog(role)} disabled={role.isSystem}>
-                编辑
+                {t('admin.common.edit')}
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => openDeleteDialog(role)}
                 disabled={role.isSystem}
                 className="text-destructive"
               >
-                删除
+                {t('admin.common.delete')}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

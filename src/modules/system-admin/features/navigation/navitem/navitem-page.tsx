@@ -46,7 +46,9 @@ export default function AdminNavItemPage() {
             </Link>
             <ChevronRight className='mx-2 h-4 w-4' />
             <span className='font-medium text-foreground'>
-              {navGroup?.title ?? t('admin.navitem.breadcrumb.loading')}
+              {navGroup?.title
+                ? t(navGroup.title, { defaultMessage: navGroup.title })
+                : t('admin.navitem.breadcrumb.loading')}
             </span>
           </div>
         )}
@@ -55,7 +57,9 @@ export default function AdminNavItemPage() {
           <div>
             <h2 className='text-2xl font-bold tracking-tight'>
               {navGroupId && navGroup
-                ? t('admin.navitem.titleForGroup', { title: t(navGroup.title) })
+                ? t('admin.navitem.titleForGroup', {
+                    title: t(navGroup.title, { defaultMessage: navGroup.title }),
+                  })
                 : t('admin.navitem.title')}
             </h2>
             <p className='text-muted-foreground'>

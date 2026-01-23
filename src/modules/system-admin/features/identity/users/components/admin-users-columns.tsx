@@ -19,7 +19,7 @@ export function useAdminUsersColumns(): ColumnDef<AdminUser>[] {
           <Checkbox
             checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate')}
             onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-            aria-label='Select all'
+            aria-label={t('admin.table.selectAll')}
             className='translate-y-[2px]'
           />
         ),
@@ -30,7 +30,7 @@ export function useAdminUsersColumns(): ColumnDef<AdminUser>[] {
           <Checkbox
             checked={row.getIsSelected()}
             onCheckedChange={(value) => row.toggleSelected(!!value)}
-            aria-label='Select row'
+            aria-label={t('admin.table.selectRow')}
             className='translate-y-[2px]'
           />
         ),
@@ -48,7 +48,7 @@ export function useAdminUsersColumns(): ColumnDef<AdminUser>[] {
             </div>
           )
         },
-        meta: { className: 'w-32', title: '姓名' },
+        meta: { className: 'w-32', title: t('admin.user.table.name') },
       },
       {
         accessorKey: 'username',
@@ -57,13 +57,13 @@ export function useAdminUsersColumns(): ColumnDef<AdminUser>[] {
           const value = row.getValue('username') as string | null
           return <div className='text-muted-foreground'>{value || '-'}</div>
         },
-        meta: { className: 'w-32', title: '用户名' },
+        meta: { className: 'w-32', title: t('admin.user.table.username') },
       },
       {
         accessorKey: 'email',
         header: ({ column }) => <DataTableColumnHeader column={column} title={t('admin.user.table.email')} />,
         cell: ({ row }) => <div className='w-fit ps-2 text-nowrap'>{row.getValue('email')}</div>,
-        meta: { className: 'w-48', title: '邮箱' },
+        meta: { className: 'w-48', title: t('admin.user.table.email') },
       },
       {
         accessorKey: 'role',
@@ -95,9 +95,9 @@ export function useAdminUsersColumns(): ColumnDef<AdminUser>[] {
           // 回退到解析逗号分隔的 role 字符串
           const roles = role ? role.split(',').map((r) => r.trim()) : []
           const roleLabels: Record<string, string> = {
-            superadmin: '超级管理员',
-            admin: '管理员',
-            user: '普通用户',
+            superadmin: t('admin.user.roles.superadmin'),
+            admin: t('admin.user.roles.admin'),
+            user: t('admin.user.roles.user'),
           }
 
           return (
@@ -117,7 +117,7 @@ export function useAdminUsersColumns(): ColumnDef<AdminUser>[] {
             </div>
           )
         },
-        meta: { className: 'w-40', title: '角色' },
+        meta: { className: 'w-40', title: t('admin.user.table.role') },
       },
       {
         accessorKey: 'banned',
@@ -133,7 +133,7 @@ export function useAdminUsersColumns(): ColumnDef<AdminUser>[] {
             {row.getValue('banned') ? t('admin.user.table.status.banned') : t('admin.user.table.status.normal')}
           </Badge>
         ),
-        meta: { className: 'w-24', title: '状态' },
+        meta: { className: 'w-24', title: t('admin.user.table.status') },
       },
       {
         accessorKey: 'banReason',
@@ -142,7 +142,7 @@ export function useAdminUsersColumns(): ColumnDef<AdminUser>[] {
           const value = row.getValue('banReason') as string | null
           return <div className='text-muted-foreground'>{value || '-'}</div>
         },
-        meta: { className: 'w-32', title: '封禁原因' },
+        meta: { className: 'w-32', title: t('admin.user.table.banReason') },
       },
       {
         accessorKey: 'banExpires',
@@ -151,19 +151,19 @@ export function useAdminUsersColumns(): ColumnDef<AdminUser>[] {
           const value = formatDate(row.getValue('banExpires'))
           return <div className='text-muted-foreground'>{value}</div>
         },
-        meta: { className: 'w-32', title: '封禁到期' },
+        meta: { className: 'w-32', title: t('admin.user.table.banExpires') },
       },
       {
         accessorKey: 'createdAt',
         header: ({ column }) => <DataTableColumnHeader column={column} title={t('admin.user.table.createdAt')} />,
         cell: ({ row }) => <div className='text-muted-foreground'>{formatDate(row.getValue('createdAt'))}</div>,
-        meta: { className: 'w-32', title: '创建时间' },
+        meta: { className: 'w-32', title: t('admin.user.table.createdAt') },
       },
       {
         accessorKey: 'updatedAt',
         header: ({ column }) => <DataTableColumnHeader column={column} title={t('admin.user.table.updatedAt')} />,
         cell: ({ row }) => <div className='text-muted-foreground'>{formatDate(row.getValue('updatedAt'))}</div>,
-        meta: { className: 'w-32', title: '更新时间' },
+        meta: { className: 'w-32', title: t('admin.user.table.updatedAt') },
       },
       {
         id: 'actions',
