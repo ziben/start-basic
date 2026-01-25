@@ -36,6 +36,10 @@ const envSchema = z.object({
   // Optional Sentry configuration
   SENTRY_DSN: z.string().optional(),
   SENTRY_ENVIRONMENT: z.string().optional(),
+
+  // Homepage configuration
+  VITE_PC_HOMEPAGE_ROUTE: z.string().default('/'),
+  VITE_MOBILE_HOMEPAGE_ROUTE: z.string().default('/'),
 })
 
 /**
@@ -60,6 +64,10 @@ function parseEnv(): Env {
   if (typeof import.meta !== 'undefined' && import.meta.env) {
     // @ts-ignore - import.meta.env is Vite specific
     rawEnv.VITE_APP_URL = import.meta.env.VITE_APP_URL
+    // @ts-ignore - import.meta.env is Vite specific
+    rawEnv.VITE_PC_HOMEPAGE_ROUTE = import.meta.env.VITE_PC_HOMEPAGE_ROUTE
+    // @ts-ignore - import.meta.env is Vite specific
+    rawEnv.VITE_MOBILE_HOMEPAGE_ROUTE = import.meta.env.VITE_MOBILE_HOMEPAGE_ROUTE
   }
 
   const result = envSchema.safeParse(rawEnv)

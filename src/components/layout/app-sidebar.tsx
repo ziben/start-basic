@@ -1,5 +1,5 @@
 import { useLayout } from '~/shared/context/layout-provider'
-import { useSidebar } from '~/modules/system-admin/shared/sidebar'
+import { useSidebar } from '~/modules/admin/shared/sidebar'
 import { iconResolver } from '@/shared/utils/icon-resolver'
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from '@/components/ui/sidebar'
 import { NavGroup as NavGroupComponent } from '@/components/layout/nav-group'

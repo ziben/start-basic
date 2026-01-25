@@ -5,7 +5,7 @@
 
 import { createServerFn } from '@tanstack/react-start'
 import { getDb } from '@/shared/lib/db'
-import { getAuth } from '~/modules/identity/shared/lib/auth'
+import { getAuth } from '~/modules/auth/shared/lib/auth'
 
 export type PermissionInfo = {
   code: string

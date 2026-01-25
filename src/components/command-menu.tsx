@@ -1,7 +1,7 @@
 import React from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { ArrowRight, ChevronRight, Laptop, Moon, Sun } from 'lucide-react'
-import { useSidebar } from '~/modules/system-admin/shared/sidebar'
+import { useSidebar } from '~/modules/admin/shared/sidebar'
 import { iconResolver } from '@/shared/utils/icon-resolver'
 import { useSearch } from '@/shared/context/search-provider'
 import { useTheme } from '@/shared/context/theme-provider'

@@ -16,7 +16,7 @@ import { seo } from '@/shared/utils/seo'
 import { GeneralError, NotFoundError } from '@/shared/components/errors'
 
 const getUser = createServerFn({ method: 'GET' }).handler(async () => {
-  const { auth } = await import('~/modules/identity/shared/lib/auth')
+  const { auth } = await import('~/modules/auth/shared/lib/auth')
   const headers = getRequestHeaders()
   const session = await auth.api.getSession({ headers })
 

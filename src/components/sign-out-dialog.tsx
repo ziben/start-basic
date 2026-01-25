@@ -1,6 +1,6 @@
 import { useNavigate, useLocation } from '@tanstack/react-router'
 import { ConfirmDialog } from '@/components/confirm-dialog'
-import { authClient } from '~/modules/identity/shared/lib/auth-client'
+import { authClient } from '~/modules/auth/shared/lib/auth-client'
 
 interface SignOutDialogProps {
   open: boolean

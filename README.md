@@ -16,18 +16,15 @@
 
 ```
 src/
-├── routes/           # 文件路由
-│   ├── __root.tsx    # Provider + beforeLoad
-│   ├── _authenticated/  # 需要登录的页面
-│   ├── (public)/     # 公共页面（登录/注册）
-│   └── admin/        # 管理后台
-├── features/         # 业务模块
-├── components/       # 公共组件
-├── modules/          # 系统模块（auth/admin 等）
-├── shared/           # 共享 hooks/utils/lib
-├── i18n/             # 国际化
+├── routes/           # 文件路由 (TanStack Router)
+├── modules/          # 核心业务模块 (auth, admin, dashboard, demo)
+├── components/       # 全局共享组件
+├── shared/           # 共享 hooks/utils/lib (包含 Query Keys 集中管理)
+├── i18n/             # 国际化配置
 └── styles/           # 全局样式
 ```
+
+详细的项目架构、设计模式和开发规范，请参阅 [架构文档](docs/ARCHITECTURE.md)。
 
 ## 快速开始
 

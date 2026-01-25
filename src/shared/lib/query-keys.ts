@@ -2,19 +2,22 @@ export const permissionsQueryKeys = {
   all: ['permissions'] as const,
   checkAll: ['permission'] as const,
   list: (userId?: string, organizationId?: string) =>
-    [...permissionsQueryKeys.all, userId ?? null, organizationId ?? null] as const,
+    [...permissionsQueryKeys.all, 'list', userId ?? null, organizationId ?? null] as const,
   check: (userId?: string, permission?: string, organizationId?: string) =>
     ['permission', userId ?? null, permission ?? null, organizationId ?? null] as const,
 }
 
 export const userQueryKeys = {
-  current: ['user'] as const,
-  list: (params?: { page?: number; pageSize?: number; filter?: string }) => ['users', params] as const,
-  profile: ['user-profile'] as const,
+  all: ['users'] as const,
+  current: ['users', 'current'] as const,
+  list: (params?: { page?: number; pageSize?: number; filter?: string }) =>
+    [...userQueryKeys.all, 'list', params] as const,
+  profile: ['users', 'profile'] as const,
 }
 
 export const authQueryKeys = {
-  session: ['auth-session'] as const,
+  all: ['auth'] as const,
+  session: ['auth', 'session'] as const,
 }
 
 export const rbacPermissionsQueryKeys = {
@@ -23,7 +26,7 @@ export const rbacPermissionsQueryKeys = {
     [...rbacPermissionsQueryKeys.all, 'list', params] as const,
   allList: (options?: { resource?: string; action?: string }) =>
     [...rbacPermissionsQueryKeys.all, 'all', options] as const,
-  detail: (id: string) => [...rbacPermissionsQueryKeys.all, id] as const,
+  detail: (id: string) => [...rbacPermissionsQueryKeys.all, 'detail', id] as const,
 }
 
 export const rbacResourcesQueryKeys = {
@@ -33,63 +36,63 @@ export const rbacResourcesQueryKeys = {
 export const rbacOrgRolesQueryKeys = {
   all: ['rbac', 'org-roles'] as const,
   list: (params: { organizationId: string; page?: number; pageSize?: number; search?: string }) =>
-    [...rbacOrgRolesQueryKeys.all, params] as const,
+    [...rbacOrgRolesQueryKeys.all, 'list', params] as const,
   templates: ['rbac', 'role-templates'] as const,
 }
 
 export const translationQueryKeys = {
   all: ['admin', 'translations'] as const,
-  list: (locale?: string) => [...translationQueryKeys.all, locale || 'all'] as const,
+  list: (locale?: string) => [...translationQueryKeys.all, 'list', locale || 'all'] as const,
 }
 
 export const navgroupQueryKeys = {
   all: ['admin', 'navgroups'] as const,
-  list: (scope?: 'APP' | 'ADMIN') => [...navgroupQueryKeys.all, scope ?? 'ALL'] as const,
-  detail: (id: string) => ['admin', 'navgroup', id] as const,
+  list: (scope?: 'APP' | 'ADMIN') => [...navgroupQueryKeys.all, 'list', scope ?? 'ALL'] as const,
+  detail: (id: string) => [...navgroupQueryKeys.all, 'detail', id] as const,
 }
 
 export const navitemQueryKeys = {
   all: ['admin', 'navitems'] as const,
   list: (navGroupId?: string, scope?: 'APP' | 'ADMIN') =>
-    [...navitemQueryKeys.all, navGroupId ?? null, scope ?? 'ALL'] as const,
-  detail: (id: string) => ['admin', 'navitem', id] as const,
+    [...navitemQueryKeys.all, 'list', navGroupId ?? null, scope ?? 'ALL'] as const,
+  detail: (id: string) => [...navitemQueryKeys.all, 'detail', id] as const,
 }
 
 export const organizationQueryKeys = {
-  all: ['admin-organizations'] as const,
+  all: ['admin', 'organizations'] as const,
   list: (params?: {
     page?: number
     pageSize?: number
     filter?: string
     sortBy?: string
     sortDir?: string
-  }) => [...organizationQueryKeys.all, params] as const,
-  detail: (id: string) => ['admin-organization', id] as const,
+  }) => [...organizationQueryKeys.all, 'list', params] as const,
+  detail: (id: string) => [...organizationQueryKeys.all, 'detail', id] as const,
 }
 
 export const roleQueryKeys = {
   all: ['rbac', 'roles'] as const,
   list: (params: { page?: number; pageSize?: number; filter?: string }) =>
-    [...roleQueryKeys.all, params] as const,
+    [...roleQueryKeys.all, 'list', params] as const,
   allList: () => [...roleQueryKeys.all, 'all'] as const,
-  detail: (id: string) => ['rbac', 'role', id] as const,
+  detail: (id: string) => [...roleQueryKeys.all, 'detail', id] as const,
 }
 
 export const rolePermissionsQueryKeys = {
-  all: ['role-permissions'] as const,
-  list: (roleId: string) => [...rolePermissionsQueryKeys.all, roleId] as const,
+  all: ['rbac', 'role-permissions'] as const,
+  list: (roleId: string) => [...rolePermissionsQueryKeys.all, 'list', roleId] as const,
 }
 
 export const orgRolesQueryKeys = {
-  all: ['org-roles'] as const,
-  list: (organizationId: string) => [...orgRolesQueryKeys.all, organizationId] as const,
+  all: ['rbac', 'org-roles'] as const,
+  list: (organizationId: string) => [...orgRolesQueryKeys.all, 'list', organizationId] as const,
   detail: (organizationId: string, roleIdOrName?: string) =>
-    [...orgRolesQueryKeys.all, organizationId, roleIdOrName ?? null] as const,
+    [...orgRolesQueryKeys.all, 'detail', organizationId, roleIdOrName ?? null] as const,
 }
 
 export const departmentQueryKeys = {
   all: ['admin', 'departments'] as const,
-  byOrg: (organizationId: string) => [...departmentQueryKeys.all, { organizationId }] as const,
+  byOrg: (organizationId: string) => [...departmentQueryKeys.all, 'by-org', { organizationId }] as const,
   tree: (organizationId: string) => [...departmentQueryKeys.all, 'tree', organizationId] as const,
   detail: (id: string) => [...departmentQueryKeys.all, 'detail', id] as const,
   subDepts: (id: string) => [...departmentQueryKeys.all, 'sub', id] as const,
@@ -104,12 +107,12 @@ export const memberQueryKeys = {
     organizationId?: string
     sortBy?: string
     sortDir?: string
-  }) => [...memberQueryKeys.all, params] as const,
-  detail: (id: string) => ['admin', 'member', id] as const,
+  }) => [...memberQueryKeys.all, 'list', params] as const,
+  detail: (id: string) => [...memberQueryKeys.all, 'detail', id] as const,
 }
 
 export const adminUsersQueryKeys = {
-  all: ['admin-users'] as const,
+  all: ['admin', 'users'] as const,
   list: (params?: {
     page?: number
     pageSize?: number
@@ -117,8 +120,8 @@ export const adminUsersQueryKeys = {
     sortBy?: string
     sortDir?: 'asc' | 'desc'
     banned?: boolean
-  }) => [...adminUsersQueryKeys.all, params] as const,
-  detail: (id: string) => ['admin-user', id] as const,
+  }) => [...adminUsersQueryKeys.all, 'list', params] as const,
+  detail: (id: string) => [...adminUsersQueryKeys.all, 'detail', id] as const,
 }
 
 export const sessionQueryKeys = {
@@ -130,7 +133,7 @@ export const sessionQueryKeys = {
     status?: Array<'active' | 'expired'>
     sortBy?: string
     sortDir?: 'asc' | 'desc'
-  }) => [...sessionQueryKeys.all, params] as const,
+  }) => [...sessionQueryKeys.all, 'list', params] as const,
 }
 
 export const logQueryKeys = {
@@ -148,18 +151,19 @@ export const logQueryKeys = {
     targetId?: string
     from?: string
     to?: string
-  }) => [...logQueryKeys.all, params] as const,
+  }) => [...logQueryKeys.all, 'list', params] as const,
 }
 
 export const sidebarQueryKeys = {
   all: ['sidebar'] as const,
-  list: (scope: 'APP' | 'ADMIN') => [...sidebarQueryKeys.all, scope] as const,
+  list: (scope: 'APP' | 'ADMIN') => [...sidebarQueryKeys.all, 'list', scope] as const,
 }
 
 export const orgPermissionQueryKeys = {
+  all: ['rbac', 'org-permissions'] as const,
   check: (userId?: string, organizationId?: string, resource?: string, action?: string) =>
-    ['org-permission', userId ?? null, organizationId ?? null, resource ?? null, action ?? null] as const,
+    [...orgPermissionQueryKeys.all, 'check', userId ?? null, organizationId ?? null, resource ?? null, action ?? null] as const,
   role: (userId?: string, organizationId?: string) =>
-    ['org-role', userId ?? null, organizationId ?? null] as const,
-  has: (permission: [string, string]) => ['has-permission', permission] as const,
+    [...orgPermissionQueryKeys.all, 'role', userId ?? null, organizationId ?? null] as const,
+  has: (permission: [string, string]) => [...orgPermissionQueryKeys.all, 'has', permission] as const,
 }

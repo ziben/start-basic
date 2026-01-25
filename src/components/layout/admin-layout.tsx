@@ -9,7 +9,7 @@ import { AdminSidebar } from '@/components/layout/admin-sidebar'
 import { TabBar } from '@/components/layout/tab-bar'
 import { TabContent } from '@/components/layout/tab-content'
 import { SkipToMain } from '@/components/skip-to-main'
-import { AdminHeader } from '~/modules/system-admin/components/admin-header'
+import { AdminHeader } from '~/modules/admin/components/admin-header'
 
 type AdminLayoutProps = {
   children?: React.ReactNode

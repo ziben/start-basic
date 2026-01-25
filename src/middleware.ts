@@ -1,5 +1,5 @@
 import { getRequest } from '@tanstack/react-start/server'
-import { auth } from '~/modules/identity/shared/lib/auth'
+import { auth } from '~/modules/auth/shared/lib/auth'
 import {
   createRequestId,
   getIpFromRequest,
@@ -8,7 +8,7 @@ import {
   toErrorString,
   writeAuditLog,
   writeSystemLog,
-} from '~/modules/system-admin/shared/services/server-log-writer'
+} from '~/modules/admin/shared/services/server-log-writer'
 
 // 类型定义
 type SessionUser = NonNullable<Awaited<ReturnType<typeof auth.api.getSession>>>['user']

@@ -28,7 +28,8 @@ export default [
       ...reactHooks.configs.recommended.rules,
 
       // keep project behavior stable; avoid over-enforcing
-      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-explicit-any': ['warn'],  // 先警告再逐步修复
+      '@typescript-eslint/explicit-function-return-type': ['warn', { allowExpressions: true }],
       '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
     },
   },

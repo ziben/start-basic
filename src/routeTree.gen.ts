@@ -10,17 +10,9 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as StudioRouteImport } from './routes/studio'
-import { Route as QuestionBankRouteRouteImport } from './routes/question-bank/route'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as publicRouteRouteImport } from './routes/(public)/route'
-import { Route as QuestionBankIndexRouteImport } from './routes/question-bank/index'
 import { Route as publicIndexRouteImport } from './routes/(public)/index'
-import { Route as QuestionBankTagsRouteImport } from './routes/question-bank/tags'
-import { Route as QuestionBankQuestionsRouteImport } from './routes/question-bank/questions'
-import { Route as QuestionBankPracticeRouteImport } from './routes/question-bank/practice'
-import { Route as QuestionBankImportExportRouteImport } from './routes/question-bank/import-export'
-import { Route as QuestionBankCategoriesRouteImport } from './routes/question-bank/categories'
-import { Route as QuestionBankAnalyticsRouteImport } from './routes/question-bank/analytics'
 import { Route as ApiUsersRouteImport } from './routes/api/users'
 import { Route as ApiSessionsRouteImport } from './routes/api/sessions'
 import { Route as publicTermsRouteImport } from './routes/(public)/terms'
@@ -60,9 +52,6 @@ import { Route as AuthenticatedAdminDashboardRouteImport } from './routes/_authe
 import { Route as AuthenticatedAdminAccountRouteImport } from './routes/_authenticated/admin/account'
 import { Route as AuthenticatedAppDashboardRouteImport } from './routes/_authenticated/_app/dashboard'
 import { Route as AuthenticatedDemoSettingsRouteRouteImport } from './routes/_authenticated/demo/settings/route'
-import { Route as ApiQuestionBankTagsIndexRouteImport } from './routes/api/question-bank/tags/index'
-import { Route as ApiQuestionBankQuestionsIndexRouteImport } from './routes/api/question-bank/questions/index'
-import { Route as ApiQuestionBankCategoriesIndexRouteImport } from './routes/api/question-bank/categories/index'
 import { Route as ApiDemoTasksIndexRouteImport } from './routes/api/demo/tasks/index'
 import { Route as AuthenticatedDemoUsersIndexRouteImport } from './routes/_authenticated/demo/users/index'
 import { Route as AuthenticatedDemoTasksIndexRouteImport } from './routes/_authenticated/demo/tasks/index'
@@ -70,9 +59,6 @@ import { Route as AuthenticatedDemoSettingsIndexRouteImport } from './routes/_au
 import { Route as AuthenticatedDemoChatsIndexRouteImport } from './routes/_authenticated/demo/chats/index'
 import { Route as AuthenticatedDemoAppsIndexRouteImport } from './routes/_authenticated/demo/apps/index'
 import { Route as AuthenticatedAppHelpCenterIndexRouteImport } from './routes/_authenticated/_app/help-center/index'
-import { Route as ApiQuestionBankTagsIdRouteImport } from './routes/api/question-bank/tags/$id'
-import { Route as ApiQuestionBankQuestionsIdRouteImport } from './routes/api/question-bank/questions/$id'
-import { Route as ApiQuestionBankCategoriesIdRouteImport } from './routes/api/question-bank/categories/$id'
 import { Route as AuthenticatedDemoSettingsNotificationsRouteImport } from './routes/_authenticated/demo/settings/notifications'
 import { Route as AuthenticatedDemoSettingsDisplayRouteImport } from './routes/_authenticated/demo/settings/display'
 import { Route as AuthenticatedDemoSettingsAppearanceRouteImport } from './routes/_authenticated/demo/settings/appearance'
@@ -87,11 +73,6 @@ const StudioRoute = StudioRouteImport.update({
   path: '/studio',
   getParentRoute: () => rootRouteImport,
 } as any)
-const QuestionBankRouteRoute = QuestionBankRouteRouteImport.update({
-  id: '/question-bank',
-  path: '/question-bank',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
@@ -100,46 +81,10 @@ const publicRouteRoute = publicRouteRouteImport.update({
   id: '/(public)',
   getParentRoute: () => rootRouteImport,
 } as any)
-const QuestionBankIndexRoute = QuestionBankIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => QuestionBankRouteRoute,
-} as any)
 const publicIndexRoute = publicIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => publicRouteRoute,
-} as any)
-const QuestionBankTagsRoute = QuestionBankTagsRouteImport.update({
-  id: '/tags',
-  path: '/tags',
-  getParentRoute: () => QuestionBankRouteRoute,
-} as any)
-const QuestionBankQuestionsRoute = QuestionBankQuestionsRouteImport.update({
-  id: '/questions',
-  path: '/questions',
-  getParentRoute: () => QuestionBankRouteRoute,
-} as any)
-const QuestionBankPracticeRoute = QuestionBankPracticeRouteImport.update({
-  id: '/practice',
-  path: '/practice',
-  getParentRoute: () => QuestionBankRouteRoute,
-} as any)
-const QuestionBankImportExportRoute =
-  QuestionBankImportExportRouteImport.update({
-    id: '/import-export',
-    path: '/import-export',
-    getParentRoute: () => QuestionBankRouteRoute,
-  } as any)
-const QuestionBankCategoriesRoute = QuestionBankCategoriesRouteImport.update({
-  id: '/categories',
-  path: '/categories',
-  getParentRoute: () => QuestionBankRouteRoute,
-} as any)
-const QuestionBankAnalyticsRoute = QuestionBankAnalyticsRouteImport.update({
-  id: '/analytics',
-  path: '/analytics',
-  getParentRoute: () => QuestionBankRouteRoute,
 } as any)
 const ApiUsersRoute = ApiUsersRouteImport.update({
   id: '/api/users',
@@ -350,24 +295,6 @@ const AuthenticatedDemoSettingsRouteRoute =
     path: '/settings',
     getParentRoute: () => AuthenticatedDemoRouteRoute,
   } as any)
-const ApiQuestionBankTagsIndexRoute =
-  ApiQuestionBankTagsIndexRouteImport.update({
-    id: '/api/question-bank/tags/',
-    path: '/api/question-bank/tags/',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiQuestionBankQuestionsIndexRoute =
-  ApiQuestionBankQuestionsIndexRouteImport.update({
-    id: '/api/question-bank/questions/',
-    path: '/api/question-bank/questions/',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiQuestionBankCategoriesIndexRoute =
-  ApiQuestionBankCategoriesIndexRouteImport.update({
-    id: '/api/question-bank/categories/',
-    path: '/api/question-bank/categories/',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 const ApiDemoTasksIndexRoute = ApiDemoTasksIndexRouteImport.update({
   id: '/api/demo/tasks/',
   path: '/api/demo/tasks/',
@@ -408,23 +335,6 @@ const AuthenticatedAppHelpCenterIndexRoute =
     id: '/help-center/',
     path: '/help-center/',
     getParentRoute: () => AuthenticatedAppRouteRoute,
-  } as any)
-const ApiQuestionBankTagsIdRoute = ApiQuestionBankTagsIdRouteImport.update({
-  id: '/api/question-bank/tags/$id',
-  path: '/api/question-bank/tags/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiQuestionBankQuestionsIdRoute =
-  ApiQuestionBankQuestionsIdRouteImport.update({
-    id: '/api/question-bank/questions/$id',
-    path: '/api/question-bank/questions/$id',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiQuestionBankCategoriesIdRoute =
-  ApiQuestionBankCategoriesIdRouteImport.update({
-    id: '/api/question-bank/categories/$id',
-    path: '/api/question-bank/categories/$id',
-    getParentRoute: () => rootRouteImport,
   } as any)
 const AuthenticatedDemoSettingsNotificationsRoute =
   AuthenticatedDemoSettingsNotificationsRouteImport.update({
@@ -477,7 +387,6 @@ const AuthenticatedAppErrorsErrorRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof publicIndexRoute
-  '/question-bank': typeof QuestionBankRouteRouteWithChildren
   '/studio': typeof StudioRoute
   '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/demo': typeof AuthenticatedDemoRouteRouteWithChildren
@@ -495,13 +404,6 @@ export interface FileRoutesByFullPath {
   '/terms': typeof publicTermsRoute
   '/api/sessions': typeof ApiSessionsRoute
   '/api/users': typeof ApiUsersRouteWithChildren
-  '/question-bank/analytics': typeof QuestionBankAnalyticsRoute
-  '/question-bank/categories': typeof QuestionBankCategoriesRoute
-  '/question-bank/import-export': typeof QuestionBankImportExportRoute
-  '/question-bank/practice': typeof QuestionBankPracticeRoute
-  '/question-bank/questions': typeof QuestionBankQuestionsRoute
-  '/question-bank/tags': typeof QuestionBankTagsRoute
-  '/question-bank/': typeof QuestionBankIndexRoute
   '/demo/settings': typeof AuthenticatedDemoSettingsRouteRouteWithChildren
   '/dashboard': typeof AuthenticatedAppDashboardRoute
   '/admin/account': typeof AuthenticatedAdminAccountRoute
@@ -532,9 +434,6 @@ export interface FileRoutesByFullPath {
   '/demo/settings/appearance': typeof AuthenticatedDemoSettingsAppearanceRoute
   '/demo/settings/display': typeof AuthenticatedDemoSettingsDisplayRoute
   '/demo/settings/notifications': typeof AuthenticatedDemoSettingsNotificationsRoute
-  '/api/question-bank/categories/$id': typeof ApiQuestionBankCategoriesIdRoute
-  '/api/question-bank/questions/$id': typeof ApiQuestionBankQuestionsIdRoute
-  '/api/question-bank/tags/$id': typeof ApiQuestionBankTagsIdRoute
   '/help-center/': typeof AuthenticatedAppHelpCenterIndexRoute
   '/demo/apps/': typeof AuthenticatedDemoAppsIndexRoute
   '/demo/chats/': typeof AuthenticatedDemoChatsIndexRoute
@@ -542,9 +441,6 @@ export interface FileRoutesByFullPath {
   '/demo/tasks/': typeof AuthenticatedDemoTasksIndexRoute
   '/demo/users/': typeof AuthenticatedDemoUsersIndexRoute
   '/api/demo/tasks/': typeof ApiDemoTasksIndexRoute
-  '/api/question-bank/categories/': typeof ApiQuestionBankCategoriesIndexRoute
-  '/api/question-bank/questions/': typeof ApiQuestionBankQuestionsIndexRoute
-  '/api/question-bank/tags/': typeof ApiQuestionBankTagsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof publicIndexRoute
@@ -563,13 +459,6 @@ export interface FileRoutesByTo {
   '/terms': typeof publicTermsRoute
   '/api/sessions': typeof ApiSessionsRoute
   '/api/users': typeof ApiUsersRouteWithChildren
-  '/question-bank/analytics': typeof QuestionBankAnalyticsRoute
-  '/question-bank/categories': typeof QuestionBankCategoriesRoute
-  '/question-bank/import-export': typeof QuestionBankImportExportRoute
-  '/question-bank/practice': typeof QuestionBankPracticeRoute
-  '/question-bank/questions': typeof QuestionBankQuestionsRoute
-  '/question-bank/tags': typeof QuestionBankTagsRoute
-  '/question-bank': typeof QuestionBankIndexRoute
   '/dashboard': typeof AuthenticatedAppDashboardRoute
   '/admin/account': typeof AuthenticatedAdminAccountRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
@@ -599,9 +488,6 @@ export interface FileRoutesByTo {
   '/demo/settings/appearance': typeof AuthenticatedDemoSettingsAppearanceRoute
   '/demo/settings/display': typeof AuthenticatedDemoSettingsDisplayRoute
   '/demo/settings/notifications': typeof AuthenticatedDemoSettingsNotificationsRoute
-  '/api/question-bank/categories/$id': typeof ApiQuestionBankCategoriesIdRoute
-  '/api/question-bank/questions/$id': typeof ApiQuestionBankQuestionsIdRoute
-  '/api/question-bank/tags/$id': typeof ApiQuestionBankTagsIdRoute
   '/help-center': typeof AuthenticatedAppHelpCenterIndexRoute
   '/demo/apps': typeof AuthenticatedDemoAppsIndexRoute
   '/demo/chats': typeof AuthenticatedDemoChatsIndexRoute
@@ -609,15 +495,11 @@ export interface FileRoutesByTo {
   '/demo/tasks': typeof AuthenticatedDemoTasksIndexRoute
   '/demo/users': typeof AuthenticatedDemoUsersIndexRoute
   '/api/demo/tasks': typeof ApiDemoTasksIndexRoute
-  '/api/question-bank/categories': typeof ApiQuestionBankCategoriesIndexRoute
-  '/api/question-bank/questions': typeof ApiQuestionBankQuestionsIndexRoute
-  '/api/question-bank/tags': typeof ApiQuestionBankTagsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/(public)': typeof publicRouteRouteWithChildren
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
-  '/question-bank': typeof QuestionBankRouteRouteWithChildren
   '/studio': typeof StudioRoute
   '/_authenticated/_app': typeof AuthenticatedAppRouteRouteWithChildren
   '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
@@ -636,14 +518,7 @@ export interface FileRoutesById {
   '/(public)/terms': typeof publicTermsRoute
   '/api/sessions': typeof ApiSessionsRoute
   '/api/users': typeof ApiUsersRouteWithChildren
-  '/question-bank/analytics': typeof QuestionBankAnalyticsRoute
-  '/question-bank/categories': typeof QuestionBankCategoriesRoute
-  '/question-bank/import-export': typeof QuestionBankImportExportRoute
-  '/question-bank/practice': typeof QuestionBankPracticeRoute
-  '/question-bank/questions': typeof QuestionBankQuestionsRoute
-  '/question-bank/tags': typeof QuestionBankTagsRoute
   '/(public)/': typeof publicIndexRoute
-  '/question-bank/': typeof QuestionBankIndexRoute
   '/_authenticated/demo/settings': typeof AuthenticatedDemoSettingsRouteRouteWithChildren
   '/_authenticated/_app/dashboard': typeof AuthenticatedAppDashboardRoute
   '/_authenticated/admin/account': typeof AuthenticatedAdminAccountRoute
@@ -674,9 +549,6 @@ export interface FileRoutesById {
   '/_authenticated/demo/settings/appearance': typeof AuthenticatedDemoSettingsAppearanceRoute
   '/_authenticated/demo/settings/display': typeof AuthenticatedDemoSettingsDisplayRoute
   '/_authenticated/demo/settings/notifications': typeof AuthenticatedDemoSettingsNotificationsRoute
-  '/api/question-bank/categories/$id': typeof ApiQuestionBankCategoriesIdRoute
-  '/api/question-bank/questions/$id': typeof ApiQuestionBankQuestionsIdRoute
-  '/api/question-bank/tags/$id': typeof ApiQuestionBankTagsIdRoute
   '/_authenticated/_app/help-center/': typeof AuthenticatedAppHelpCenterIndexRoute
   '/_authenticated/demo/apps/': typeof AuthenticatedDemoAppsIndexRoute
   '/_authenticated/demo/chats/': typeof AuthenticatedDemoChatsIndexRoute
@@ -684,15 +556,11 @@ export interface FileRoutesById {
   '/_authenticated/demo/tasks/': typeof AuthenticatedDemoTasksIndexRoute
   '/_authenticated/demo/users/': typeof AuthenticatedDemoUsersIndexRoute
   '/api/demo/tasks/': typeof ApiDemoTasksIndexRoute
-  '/api/question-bank/categories/': typeof ApiQuestionBankCategoriesIndexRoute
-  '/api/question-bank/questions/': typeof ApiQuestionBankQuestionsIndexRoute
-  '/api/question-bank/tags/': typeof ApiQuestionBankTagsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/question-bank'
     | '/studio'
     | '/admin'
     | '/demo'
@@ -710,13 +578,6 @@ export interface FileRouteTypes {
     | '/terms'
     | '/api/sessions'
     | '/api/users'
-    | '/question-bank/analytics'
-    | '/question-bank/categories'
-    | '/question-bank/import-export'
-    | '/question-bank/practice'
-    | '/question-bank/questions'
-    | '/question-bank/tags'
-    | '/question-bank/'
     | '/demo/settings'
     | '/dashboard'
     | '/admin/account'
@@ -747,9 +608,6 @@ export interface FileRouteTypes {
     | '/demo/settings/appearance'
     | '/demo/settings/display'
     | '/demo/settings/notifications'
-    | '/api/question-bank/categories/$id'
-    | '/api/question-bank/questions/$id'
-    | '/api/question-bank/tags/$id'
     | '/help-center/'
     | '/demo/apps/'
     | '/demo/chats/'
@@ -757,9 +615,6 @@ export interface FileRouteTypes {
     | '/demo/tasks/'
     | '/demo/users/'
     | '/api/demo/tasks/'
-    | '/api/question-bank/categories/'
-    | '/api/question-bank/questions/'
-    | '/api/question-bank/tags/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -778,13 +633,6 @@ export interface FileRouteTypes {
     | '/terms'
     | '/api/sessions'
     | '/api/users'
-    | '/question-bank/analytics'
-    | '/question-bank/categories'
-    | '/question-bank/import-export'
-    | '/question-bank/practice'
-    | '/question-bank/questions'
-    | '/question-bank/tags'
-    | '/question-bank'
     | '/dashboard'
     | '/admin/account'
     | '/admin/dashboard'
@@ -814,9 +662,6 @@ export interface FileRouteTypes {
     | '/demo/settings/appearance'
     | '/demo/settings/display'
     | '/demo/settings/notifications'
-    | '/api/question-bank/categories/$id'
-    | '/api/question-bank/questions/$id'
-    | '/api/question-bank/tags/$id'
     | '/help-center'
     | '/demo/apps'
     | '/demo/chats'
@@ -824,14 +669,10 @@ export interface FileRouteTypes {
     | '/demo/tasks'
     | '/demo/users'
     | '/api/demo/tasks'
-    | '/api/question-bank/categories'
-    | '/api/question-bank/questions'
-    | '/api/question-bank/tags'
   id:
     | '__root__'
     | '/(public)'
     | '/_authenticated'
-    | '/question-bank'
     | '/studio'
     | '/_authenticated/_app'
     | '/_authenticated/admin'
@@ -850,14 +691,7 @@ export interface FileRouteTypes {
     | '/(public)/terms'
     | '/api/sessions'
     | '/api/users'
-    | '/question-bank/analytics'
-    | '/question-bank/categories'
-    | '/question-bank/import-export'
-    | '/question-bank/practice'
-    | '/question-bank/questions'
-    | '/question-bank/tags'
     | '/(public)/'
-    | '/question-bank/'
     | '/_authenticated/demo/settings'
     | '/_authenticated/_app/dashboard'
     | '/_authenticated/admin/account'
@@ -888,9 +722,6 @@ export interface FileRouteTypes {
     | '/_authenticated/demo/settings/appearance'
     | '/_authenticated/demo/settings/display'
     | '/_authenticated/demo/settings/notifications'
-    | '/api/question-bank/categories/$id'
-    | '/api/question-bank/questions/$id'
-    | '/api/question-bank/tags/$id'
     | '/_authenticated/_app/help-center/'
     | '/_authenticated/demo/apps/'
     | '/_authenticated/demo/chats/'
@@ -898,15 +729,11 @@ export interface FileRouteTypes {
     | '/_authenticated/demo/tasks/'
     | '/_authenticated/demo/users/'
     | '/api/demo/tasks/'
-    | '/api/question-bank/categories/'
-    | '/api/question-bank/questions/'
-    | '/api/question-bank/tags/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   publicRouteRoute: typeof publicRouteRouteWithChildren
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
-  QuestionBankRouteRoute: typeof QuestionBankRouteRouteWithChildren
   StudioRoute: typeof StudioRoute
   authForgotPasswordRoute: typeof authForgotPasswordRoute
   authSignInRoute: typeof authSignInRoute
@@ -921,13 +748,7 @@ export interface RootRouteChildren {
   ApiUsersRoute: typeof ApiUsersRouteWithChildren
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiI18nLngRoute: typeof ApiI18nLngRoute
-  ApiQuestionBankCategoriesIdRoute: typeof ApiQuestionBankCategoriesIdRoute
-  ApiQuestionBankQuestionsIdRoute: typeof ApiQuestionBankQuestionsIdRoute
-  ApiQuestionBankTagsIdRoute: typeof ApiQuestionBankTagsIdRoute
   ApiDemoTasksIndexRoute: typeof ApiDemoTasksIndexRoute
-  ApiQuestionBankCategoriesIndexRoute: typeof ApiQuestionBankCategoriesIndexRoute
-  ApiQuestionBankQuestionsIndexRoute: typeof ApiQuestionBankQuestionsIndexRoute
-  ApiQuestionBankTagsIndexRoute: typeof ApiQuestionBankTagsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -937,13 +758,6 @@ declare module '@tanstack/react-router' {
       path: '/studio'
       fullPath: '/studio'
       preLoaderRoute: typeof StudioRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/question-bank': {
-      id: '/question-bank'
-      path: '/question-bank'
-      fullPath: '/question-bank'
-      preLoaderRoute: typeof QuestionBankRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated': {
@@ -960,61 +774,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof publicRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/question-bank/': {
-      id: '/question-bank/'
-      path: '/'
-      fullPath: '/question-bank/'
-      preLoaderRoute: typeof QuestionBankIndexRouteImport
-      parentRoute: typeof QuestionBankRouteRoute
-    }
     '/(public)/': {
       id: '/(public)/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof publicIndexRouteImport
       parentRoute: typeof publicRouteRoute
-    }
-    '/question-bank/tags': {
-      id: '/question-bank/tags'
-      path: '/tags'
-      fullPath: '/question-bank/tags'
-      preLoaderRoute: typeof QuestionBankTagsRouteImport
-      parentRoute: typeof QuestionBankRouteRoute
-    }
-    '/question-bank/questions': {
-      id: '/question-bank/questions'
-      path: '/questions'
-      fullPath: '/question-bank/questions'
-      preLoaderRoute: typeof QuestionBankQuestionsRouteImport
-      parentRoute: typeof QuestionBankRouteRoute
-    }
-    '/question-bank/practice': {
-      id: '/question-bank/practice'
-      path: '/practice'
-      fullPath: '/question-bank/practice'
-      preLoaderRoute: typeof QuestionBankPracticeRouteImport
-      parentRoute: typeof QuestionBankRouteRoute
-    }
-    '/question-bank/import-export': {
-      id: '/question-bank/import-export'
-      path: '/import-export'
-      fullPath: '/question-bank/import-export'
-      preLoaderRoute: typeof QuestionBankImportExportRouteImport
-      parentRoute: typeof QuestionBankRouteRoute
-    }
-    '/question-bank/categories': {
-      id: '/question-bank/categories'
-      path: '/categories'
-      fullPath: '/question-bank/categories'
-      preLoaderRoute: typeof QuestionBankCategoriesRouteImport
-      parentRoute: typeof QuestionBankRouteRoute
-    }
-    '/question-bank/analytics': {
-      id: '/question-bank/analytics'
-      path: '/analytics'
-      fullPath: '/question-bank/analytics'
-      preLoaderRoute: typeof QuestionBankAnalyticsRouteImport
-      parentRoute: typeof QuestionBankRouteRoute
     }
     '/api/users': {
       id: '/api/users'
@@ -1289,27 +1054,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDemoSettingsRouteRouteImport
       parentRoute: typeof AuthenticatedDemoRouteRoute
     }
-    '/api/question-bank/tags/': {
-      id: '/api/question-bank/tags/'
-      path: '/api/question-bank/tags'
-      fullPath: '/api/question-bank/tags/'
-      preLoaderRoute: typeof ApiQuestionBankTagsIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/question-bank/questions/': {
-      id: '/api/question-bank/questions/'
-      path: '/api/question-bank/questions'
-      fullPath: '/api/question-bank/questions/'
-      preLoaderRoute: typeof ApiQuestionBankQuestionsIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/question-bank/categories/': {
-      id: '/api/question-bank/categories/'
-      path: '/api/question-bank/categories'
-      fullPath: '/api/question-bank/categories/'
-      preLoaderRoute: typeof ApiQuestionBankCategoriesIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/api/demo/tasks/': {
       id: '/api/demo/tasks/'
       path: '/api/demo/tasks'
@@ -1358,27 +1102,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/help-center/'
       preLoaderRoute: typeof AuthenticatedAppHelpCenterIndexRouteImport
       parentRoute: typeof AuthenticatedAppRouteRoute
-    }
-    '/api/question-bank/tags/$id': {
-      id: '/api/question-bank/tags/$id'
-      path: '/api/question-bank/tags/$id'
-      fullPath: '/api/question-bank/tags/$id'
-      preLoaderRoute: typeof ApiQuestionBankTagsIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/question-bank/questions/$id': {
-      id: '/api/question-bank/questions/$id'
-      path: '/api/question-bank/questions/$id'
-      fullPath: '/api/question-bank/questions/$id'
-      preLoaderRoute: typeof ApiQuestionBankQuestionsIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/question-bank/categories/$id': {
-      id: '/api/question-bank/categories/$id'
-      path: '/api/question-bank/categories/$id'
-      fullPath: '/api/question-bank/categories/$id'
-      preLoaderRoute: typeof ApiQuestionBankCategoriesIdRouteImport
-      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/demo/settings/notifications': {
       id: '/_authenticated/demo/settings/notifications'
@@ -1592,29 +1315,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
-interface QuestionBankRouteRouteChildren {
-  QuestionBankAnalyticsRoute: typeof QuestionBankAnalyticsRoute
-  QuestionBankCategoriesRoute: typeof QuestionBankCategoriesRoute
-  QuestionBankImportExportRoute: typeof QuestionBankImportExportRoute
-  QuestionBankPracticeRoute: typeof QuestionBankPracticeRoute
-  QuestionBankQuestionsRoute: typeof QuestionBankQuestionsRoute
-  QuestionBankTagsRoute: typeof QuestionBankTagsRoute
-  QuestionBankIndexRoute: typeof QuestionBankIndexRoute
-}
-
-const QuestionBankRouteRouteChildren: QuestionBankRouteRouteChildren = {
-  QuestionBankAnalyticsRoute: QuestionBankAnalyticsRoute,
-  QuestionBankCategoriesRoute: QuestionBankCategoriesRoute,
-  QuestionBankImportExportRoute: QuestionBankImportExportRoute,
-  QuestionBankPracticeRoute: QuestionBankPracticeRoute,
-  QuestionBankQuestionsRoute: QuestionBankQuestionsRoute,
-  QuestionBankTagsRoute: QuestionBankTagsRoute,
-  QuestionBankIndexRoute: QuestionBankIndexRoute,
-}
-
-const QuestionBankRouteRouteWithChildren =
-  QuestionBankRouteRoute._addFileChildren(QuestionBankRouteRouteChildren)
-
 interface ApiUsersRouteChildren {
   ApiUsersIdRoute: typeof ApiUsersIdRoute
 }
@@ -1630,7 +1330,6 @@ const ApiUsersRouteWithChildren = ApiUsersRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   publicRouteRoute: publicRouteRouteWithChildren,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
-  QuestionBankRouteRoute: QuestionBankRouteRouteWithChildren,
   StudioRoute: StudioRoute,
   authForgotPasswordRoute: authForgotPasswordRoute,
   authSignInRoute: authSignInRoute,
@@ -1645,13 +1344,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiUsersRoute: ApiUsersRouteWithChildren,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiI18nLngRoute: ApiI18nLngRoute,
-  ApiQuestionBankCategoriesIdRoute: ApiQuestionBankCategoriesIdRoute,
-  ApiQuestionBankQuestionsIdRoute: ApiQuestionBankQuestionsIdRoute,
-  ApiQuestionBankTagsIdRoute: ApiQuestionBankTagsIdRoute,
   ApiDemoTasksIndexRoute: ApiDemoTasksIndexRoute,
-  ApiQuestionBankCategoriesIndexRoute: ApiQuestionBankCategoriesIndexRoute,
-  ApiQuestionBankQuestionsIndexRoute: ApiQuestionBankQuestionsIndexRoute,
-  ApiQuestionBankTagsIndexRoute: ApiQuestionBankTagsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

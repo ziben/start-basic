@@ -1,0 +1,166 @@
+/**
+ * NavGroup API Hooks - React Query 封装
+ *
+ * 使用 ServerFn 替代 REST API 调用
+ * 优点：端到端类型安全、无需 HTTP 请求
+ */
+
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import {
+  getNavGroupsFn,
+  getNavGroupFn,
+  createNavGroupFn,
+  updateNavGroupFn,
+  deleteNavGroupFn,
+  updateNavGroupOrderFn,
+  updateNavGroupVisibilityFn,
+} from '../server-fns/navgroup.fn'
+import type {
+  AdminNavgroup,
+  CreateNavgroupData,
+  UpdateNavgroupData,
+  UserRoleNavGroup,
+} from '@/modules/admin/features/navigation/navgroup'
+import { navgroupQueryKeys, sidebarQueryKeys } from '~/shared/lib/query-keys'
+
+type SuccessIdResponse = { success: true; id: string }
+
+export type UpdateNavgroupVisibilityData = {
+  userId: string
+  navGroupId: string
+  visible: boolean
+}
+
+// ============ Query Keys ============
+
+// ============ Query Hooks ============
+
+/**
+ * 获取所有菜单组
+ */
+export function useNavgroups(scope?: 'APP' | 'ADMIN') {
+  return useQuery<AdminNavgroup[]>({
+    queryKey: navgroupQueryKeys.list(scope),
+    queryFn: async () => {
+      const result = await getNavGroupsFn({ data: { scope } })
+      return result as AdminNavgroup[]
+    },
+  })
+}
+
+/**
+ * 获取单个菜单组信息
+ */
+export function useNavgroup(id?: string) {
+  return useQuery<AdminNavgroup | null>({
+    queryKey: navgroupQueryKeys.detail(id ?? ''),
+    queryFn: async () => {
+      if (!id) return null
+      const result = await getNavGroupFn({ data: { id } })
+      return result as AdminNavgroup
+    },
+    enabled: !!id,
+  })
+}
+
+// ============ Mutation Hooks ============
+
+/**
+ * 创建菜单组
+ */
+export function useCreateNavgroup() {
+  const queryClient = useQueryClient()
+
+  return useMutation<AdminNavgroup, Error, CreateNavgroupData>({
+    mutationFn: async (data: CreateNavgroupData) => {
+      const result = await createNavGroupFn({ data })
+      return result as AdminNavgroup
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: navgroupQueryKeys.all })
+      queryClient.invalidateQueries({ queryKey: sidebarQueryKeys.all })
+    },
+  })
+}
+
+/**
+ * 更新菜单组
+ */
+export function useUpdateNavgroup() {
+  const queryClient = useQueryClient()
+
+  return useMutation<AdminNavgroup, Error, { id: string; data: UpdateNavgroupData }>({
+    mutationFn: async ({ id, data }: { id: string; data: UpdateNavgroupData }) => {
+      const result = await updateNavGroupFn({ data: { id, ...data } })
+      return result as AdminNavgroup
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: navgroupQueryKeys.all })
+      queryClient.invalidateQueries({ queryKey: navgroupQueryKeys.detail(variables.id) })
+      queryClient.invalidateQueries({ queryKey: sidebarQueryKeys.all })
+    },
+  })
+}
+
+/**
+ * 删除菜单组
+ */
+export function useDeleteNavgroup() {
+  const queryClient = useQueryClient()
+
+  return useMutation<SuccessIdResponse, Error, string>({
+    mutationFn: async (id: string) => {
+      const result = await deleteNavGroupFn({ data: { id } })
+      return result
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: navgroupQueryKeys.all })
+      queryClient.invalidateQueries({ queryKey: sidebarQueryKeys.all })
+    },
+  })
+}
+
+/**
+ * 更新菜单组顺序
+ */
+export function useUpdateNavgroupOrder() {
+  const queryClient = useQueryClient()
+
+  return useMutation<{ success: true }, Error, string[]>({
+    mutationFn: async (groupIds: string[]) => {
+      const result = await updateNavGroupOrderFn({ data: { groupIds } })
+      return result
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: navgroupQueryKeys.all })
+      queryClient.invalidateQueries({ queryKey: sidebarQueryKeys.all })
+    },
+  })
+}
+
+/**
+ * 更新菜单组可见性
+ */
+export function useUpdateNavgroupVisibility() {
+  const queryClient = useQueryClient()
+
+  return useMutation<UserRoleNavGroup, Error, UpdateNavgroupVisibilityData>({
+    mutationFn: async (data: UpdateNavgroupVisibilityData) => {
+      const result = await updateNavGroupVisibilityFn({
+        data: {
+          userId: data.userId,
+          navGroupId: data.navGroupId,
+          visible: data.visible,
+        },
+      })
+      return result as UserRoleNavGroup
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: navgroupQueryKeys.all })
+      queryClient.invalidateQueries({ queryKey: sidebarQueryKeys.all })
+    },
+  })
+}
+
+// Re-export a compact name expected elsewhere in the codebase
+export type NavGroup = AdminNavgroup
