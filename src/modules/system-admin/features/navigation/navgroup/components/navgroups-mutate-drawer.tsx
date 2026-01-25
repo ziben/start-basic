@@ -127,7 +127,7 @@ export function NavGroupsMutateDrawer({ open, onOpenChange, currentRow }: NavGro
               name='scope'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Scope</FormLabel>
+                  <FormLabel>范围</FormLabel>
                   <FormControl>
                     <RadioGroup value={field.value} onValueChange={field.onChange} className='flex gap-4'>
                       <div className='flex items-center space-x-2'>
@@ -159,7 +159,7 @@ export function NavGroupsMutateDrawer({ open, onOpenChange, currentRow }: NavGro
                     <Input
                       {...field}
                       type='number'
-                      placeholder='Optional order index'
+                      placeholder='可选排序索引'
                       onChange={(e) => {
                         const v = e.target.value
                         field.onChange(v === '' ? undefined : Number(v))

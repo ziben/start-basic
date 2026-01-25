@@ -31,7 +31,7 @@ function DataTableBulkActionsInner<TData>({
   placement = 'viewport',
 }: DataTableBulkActionsProps<TData>): React.ReactNode | null {
   const selectedRows = table.getFilteredSelectedRowModel().rows
-  const selectedCount = selectedRows.length  
+  const selectedCount = selectedRows.length
   const toolbarRef = useRef<HTMLDivElement>(null)
   const [announcement, setAnnouncement] = useState('')
 
@@ -156,28 +156,27 @@ function DataTableBulkActionsInner<TData>({
                 onClick={handleClearSelection}
                 className='size-6 rounded-full'
                 aria-label='Clear selection'
-                title='Clear selection (Escape)'
+                title='清除选中项（ESC）'
               >
                 <X />
-                <span className='sr-only'>Clear selection</span>
+                <span className='sr-only'>清除选中项</span>
               </Button>
             </TooltipTrigger>
             <TooltipContent>
-              <p>Clear selection (Escape)</p>
+              <p>清除选中项（ESC）</p>
             </TooltipContent>
           </Tooltip>
 
           <Separator className='h-5' orientation='vertical' aria-hidden='true' />
 
           <div className='flex items-center gap-x-1 text-sm' id='bulk-actions-description'>
+            已选择
             <Badge variant='default' className='min-w-8 rounded-lg' aria-label={`${selectedCount} selected`}>
               {selectedCount}
             </Badge>{' '}
             <span className='hidden sm:inline'>
               {entityName}
-              {selectedCount > 1 ? 's' : ''}
-            </span>{' '}
-            selected
+            </span>
           </div>
 
           <Separator className='h-5' orientation='vertical' aria-hidden='true' />

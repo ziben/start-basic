@@ -4,30 +4,37 @@
  */
 
 import prisma from '@/shared/lib/db'
+import { auth } from '~/modules/identity/shared/lib/auth'
 
 /**
  * 检查用户的全局角色权限（better-auth）
  */
+type AuthHeaders = Headers | Record<string, string>
+
+function toPermissionObject(permission: string) {
+    const [resource, action] = permission.split(':')
+    if (!resource || !action) return null
+    return { [resource]: [action] }
+}
+
 export async function checkGlobalPermission(
     userId: string,
-    permission: string
+    permission: string,
+    headers?: AuthHeaders
 ): Promise<boolean> {
     try {
-        const user = await prisma.user.findUnique({
-            where: { id: userId },
-            select: { role: true }
+        const permissions = toPermissionObject(permission)
+        if (!permissions) return false
+
+        const result = await auth.api.userHasPermission({
+            headers,
+            body: {
+                userId,
+                permissions,
+            },
         })
 
-        if (!user?.role) return false
-
-        const roles = user.role.split(',').map((r) => r.trim())
-
-        // superadmin 拥有所有权限
-        if (roles.includes('superadmin')) return true
-
-        // 统一逻辑：改用更稳健的 getUserPermissions 流程
-        const userPermissions = await getUserPermissions(userId)
-        return userPermissions.includes(permission) || userPermissions.includes('*')
+        return result?.success ?? false
     } catch (error) {
         console.error('全局权限检查失败:', error)
         return false
@@ -39,9 +46,23 @@ export async function checkGlobalPermission(
  */
 async function getRolePermissions(role: string, scope: 'GLOBAL' | 'ORGANIZATION' = 'GLOBAL'): Promise<string[]> {
     try {
-        const fullRoleName = `${scope}:${role}`
-        const dbRole = await prisma.role.findUnique({
-            where: { name: fullRoleName },
+        const normalizedRole = role.replace(/^(GLOBAL|ORGANIZATION):/, '')
+        const roleNames = [
+            `${scope}:${normalizedRole}`,
+            normalizedRole,
+        ]
+        if (scope === 'ORGANIZATION') {
+            roleNames.push(`org-${normalizedRole}`)
+        }
+
+        const dbRole = await prisma.role.findFirst({
+            where: {
+                scope,
+                OR: [
+                    ...roleNames.map(name => ({ name })),
+                    { name: { endsWith: `:${normalizedRole}` } },
+                ],
+            },
             include: {
                 rolePermissions: {
                     include: {
@@ -66,11 +87,22 @@ async function getRolePermissions(role: string, scope: 'GLOBAL' | 'ORGANIZATION'
 export async function checkOrgPermission(
     userId: string,
     organizationId: string,
-    permission: string
+    permission: string,
+    headers?: AuthHeaders
 ): Promise<boolean> {
     try {
-        const userPermissions = await getUserPermissions(userId, organizationId)
-        return userPermissions.includes(permission) || userPermissions.includes('*')
+        const permissions = toPermissionObject(permission)
+        if (!permissions) return false
+
+        const result = await auth.api.hasOrgPermission({
+            headers,
+            body: {
+                organizationId,
+                permission: permissions,
+            },
+        })
+
+        return !!result
     } catch (error) {
         console.error('组织权限检查失败:', error)
         return false
@@ -86,12 +118,13 @@ export async function checkPermission(
     options?: {
         organizationId?: string
         departmentId?: string
-    }
+    },
+    headers?: AuthHeaders
 ): Promise<boolean> {
     if (options?.organizationId) {
-        return await checkOrgPermission(userId, options.organizationId, permissionName)
+        return await checkOrgPermission(userId, options.organizationId, permissionName, headers)
     }
-    return await checkGlobalPermission(userId, permissionName)
+    return await checkGlobalPermission(userId, permissionName, headers)
 }
 
 /**

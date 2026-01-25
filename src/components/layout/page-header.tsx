@@ -6,6 +6,8 @@ interface PageHeaderProps {
   children?: React.ReactNode
   className?: string
   hide?: boolean
+  hideTitle?: boolean
+  hideDescription?: boolean
 }
 
 export function PageHeader({
@@ -14,17 +16,21 @@ export function PageHeader({
   children,
   className,
   hide = true,
-}: PageHeaderProps) {
+  hideTitle = false,
+  hideDescription = false,
+}: Readonly<PageHeaderProps>) {
   if (hide) return null
 
   return (
     <div className={cn("mb-6 flex flex-wrap items-center justify-between gap-4", className)}>
-      <div className="space-y-1">
-        <h2 className="text-2xl font-bold tracking-tight">{title}</h2>
-        {description && (
-          <p className="text-muted-foreground">{description}</p>
-        )}
-      </div>
+      {!(hideTitle && hideDescription) && (
+        <div className="space-y-1">
+          {!hideTitle && <h2 className="text-2xl font-bold tracking-tight">{title}</h2>}
+          {!hideDescription && description && (
+            <p className="text-muted-foreground">{description}</p>
+          )}
+        </div>
+      )}
       {children && (
         <div className="flex items-center gap-2">
           {children}

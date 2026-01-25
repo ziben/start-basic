@@ -13,6 +13,7 @@ type DataTableToolbarProps<TData> = {
   searchKey?: string
   onReload?: () => void
   isReloading?: boolean
+  showViewOptions?: boolean
   filters?: {
     columnId: string
     title: string
@@ -32,6 +33,7 @@ export function DataTableToolbar<TData>({
   searchKey,
   onReload,
   isReloading = false,
+  showViewOptions = true,
   filters = [],
 }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0 || table.getState().globalFilter
@@ -96,7 +98,7 @@ export function DataTableToolbar<TData>({
             <RefreshCw className={isReloading ? 'animate-spin' : undefined} />
           </Button>
         ) : null}
-        <DataTableViewOptions table={table} />
+        {showViewOptions ? <DataTableViewOptions table={table} /> : null}
       </div>
     </div>
   )

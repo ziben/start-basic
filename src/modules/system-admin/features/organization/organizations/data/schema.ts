@@ -7,12 +7,9 @@ export const organizationSchema = z.object({
   logo: z.string().nullable(),
   createdAt: z.string(),
   metadata: z.string().nullable(),
-  _count: z
-    .object({
-      members: z.number(),
-      departments: z.number(),
-    })
-    .optional(),
+  memberCount: z.number().optional(),
+  departmentCount: z.number().optional(),
+  invitationCount: z.number().optional(),
 })
 
 export type Organization = z.infer<typeof organizationSchema>

@@ -201,7 +201,8 @@ export async function requirePermission(
         const hasPermission = await checkPermission(
             session.user.id,
             permission,
-            options
+            options,
+            request.headers
         )
 
         if (!hasPermission) {

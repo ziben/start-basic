@@ -36,7 +36,7 @@ export function DataTableBulkActions<TData>({ table }: DataTableBulkActionsProps
 
   return (
     <>
-      <BulkActionsToolbar table={table} entityName='navgroup'>
+      <BulkActionsToolbar table={table} entityName='菜单组'>
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
@@ -63,15 +63,15 @@ export function DataTableBulkActions<TData>({ table }: DataTableBulkActionsProps
               size='icon'
               onClick={() => setShowDeleteConfirm(true)}
               className='size-8'
-              aria-label='删除选中的导航组'
-              title='删除选中的导航组'
+              aria-label='删除选中的菜单组'
+              title='删除选中的菜单组'
             >
               <Trash2 />
-              <span className='sr-only'>删除选中的导航组</span>
+              <span className='sr-only'>删除选中的菜单组</span>
             </Button>
           </TooltipTrigger>
           <TooltipContent>
-            <p>删除选中的导航组</p>
+            <p>删除选中的菜单组</p>
           </TooltipContent>
         </Tooltip>
       </BulkActionsToolbar>

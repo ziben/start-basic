@@ -71,10 +71,10 @@ export function useOrganizationsColumns() {
       },
       {
         id: 'members',
-        accessorFn: (row) => row._count?.members ?? 0,
+        accessorFn: (row) => row.memberCount ?? 0,
         header: ({ column }) => <DataTableColumnHeader column={column} title={t('admin.organization.table.members')} />,
         cell: ({ row }) => {
-          const count = row.original._count?.members ?? 0
+          const count = row.original.memberCount ?? 0
           return (
             <div className='flex items-center gap-2'>
               <Users className='h-4 w-4 text-muted-foreground' />
@@ -88,10 +88,10 @@ export function useOrganizationsColumns() {
       },
       {
         id: 'departments',
-        accessorFn: (row) => row._count?.departments ?? 0,
+        accessorFn: (row) => row.departmentCount ?? 0,
         header: ({ column }) => <DataTableColumnHeader column={column} title={t('admin.organization.table.departments')} />,
         cell: ({ row }) => {
-          const count = row.original._count?.departments ?? 0
+          const count = row.original.departmentCount ?? 0
           return (
             <div className='flex items-center gap-2'>
               <Layers className='h-4 w-4 text-muted-foreground' />

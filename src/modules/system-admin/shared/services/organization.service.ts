@@ -37,6 +37,7 @@ export interface OrganizationItem {
     createdAt: string
     metadata: string
     memberCount: number
+    departmentCount: number
     invitationCount: number
 }
 
@@ -51,6 +52,7 @@ type OrganizationWithCount = Prisma.OrganizationGetPayload<{
         _count: {
             select: {
                 members: true
+                departments: true
                 invitations: true
             }
         }
@@ -90,6 +92,7 @@ export const OrganizationService = {
                         _count: {
                             select: {
                                 members: true,
+                                departments: true,
                                 invitations: true,
                             },
                         },
@@ -105,6 +108,7 @@ export const OrganizationService = {
                 createdAt: org.createdAt.toISOString(),
                 metadata: org.metadata ?? '',
                 memberCount: org._count.members,
+                departmentCount: org._count.departments,
                 invitationCount: org._count.invitations,
             }))
 
@@ -127,6 +131,7 @@ export const OrganizationService = {
                     _count: {
                         select: {
                             members: true,
+                            departments: true,
                             invitations: true,
                         },
                     },
@@ -146,6 +151,7 @@ export const OrganizationService = {
                 createdAt: organization.createdAt.toISOString(),
                 metadata: organization.metadata ?? '',
                 memberCount: orgWithCount._count.members,
+                departmentCount: orgWithCount._count.departments,
                 invitationCount: orgWithCount._count.invitations,
             }
         } catch (error) {
@@ -163,8 +169,8 @@ export const OrganizationService = {
                 input.slug ??
                 input.name
                     .toLowerCase()
-                    .replace(/[^a-z0-9]+/g, '-')
-                    .replace(/(^-|-$)/g, '')
+                    .replaceAll(/[^a-z0-9]+/g, '-')
+                    .replaceAll(/(^-|-$)/g, '')
 
             const existing = await prisma.organization.findFirst({
                 where: { slug },
@@ -186,6 +192,7 @@ export const OrganizationService = {
                     _count: {
                         select: {
                             members: true,
+                            departments: true,
                             invitations: true,
                         },
                     },
@@ -201,6 +208,7 @@ export const OrganizationService = {
                 createdAt: organization.createdAt.toISOString(),
                 metadata: organization.metadata ?? '',
                 memberCount: orgWithCount._count.members,
+                departmentCount: orgWithCount._count.departments,
                 invitationCount: orgWithCount._count.invitations,
             }
         } catch (error) {
@@ -226,6 +234,7 @@ export const OrganizationService = {
                     _count: {
                         select: {
                             members: true,
+                            departments: true,
                             invitations: true,
                         },
                     },
@@ -241,6 +250,7 @@ export const OrganizationService = {
                 createdAt: updated.createdAt.toISOString(),
                 metadata: updated.metadata ?? '',
                 memberCount: updatedWithCount._count.members,
+                departmentCount: updatedWithCount._count.departments,
                 invitationCount: updatedWithCount._count.invitations,
             }
         } catch (error) {

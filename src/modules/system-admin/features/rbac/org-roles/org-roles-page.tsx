@@ -15,10 +15,10 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useOrgRolesQuery } from "./hooks/use-org-roles-queries"
 import { OrgRolesDialogs } from "./components/org-roles-dialogs"
-import { OrgRolesToolbar } from "./components/org-roles-toolbar"
-import { DataTablePagination } from "@/components/data-table"
+import { DataTablePagination, DataTableToolbar } from "@/components/data-table"
 import { Skeleton } from "@/components/ui/skeleton"
 import { OrganizationSelect } from "./components/organization-select"
+import { getCoreRowModel, useReactTable } from "@tanstack/react-table"
 
 function OrgRolesContent() {
   const { t } = useTranslation()
@@ -34,10 +34,28 @@ function OrgRolesContent() {
 
   const roles = orgRolesData?.data || []
   const totalPages = orgRolesData?.pagination?.totalPages || 1
+  const toolbarTable = useReactTable({
+    data: [],
+    columns: [],
+    state: {
+      globalFilter: tableUrl.globalFilter ?? "",
+      columnFilters: [],
+    },
+    onGlobalFilterChange: tableUrl.onGlobalFilterChange,
+    manualFiltering: true,
+    getCoreRowModel: getCoreRowModel(),
+  })
 
   return (
     <AppHeaderMain>
-      <PageHeader title={t('admin.orgRole.title')} description={t('admin.orgRole.desc')}>
+      <PageHeader
+        title={t('admin.orgRole.title')}
+        description={t('admin.orgRole.desc')}
+        hide={false}
+        hideTitle
+        hideDescription
+        className="mb-2"
+      >
         <Button onClick={() => openMutateDialog()} disabled={!organizationId}>
           <Plus className="mr-2 h-4 w-4" /> {t('admin.orgRole.button.create')}
         </Button>
@@ -45,9 +63,12 @@ function OrgRolesContent() {
 
       <div className="space-y-4">
         <div className="flex items-center justify-between gap-4">
-          <OrgRolesToolbar 
-            onReload={() => void refetch()} 
-            isReloading={isRefetching} 
+          <DataTableToolbar
+            table={toolbarTable}
+            searchPlaceholder={t('admin.orgRole.searchPlaceholder')}
+            onReload={() => void refetch()}
+            isReloading={isRefetching}
+            showViewOptions={false}
           />
           <div className="flex items-center gap-2">
             <span className="text-xs text-muted-foreground whitespace-nowrap">
