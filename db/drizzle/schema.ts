@@ -1,5 +1,8 @@
-import { sqliteTable, foreignKey, type AnySQLiteColumn, primaryKey, index, uniqueIndex, text, numeric, integer, customType } from "drizzle-orm/sqlite-core"
+import { sqliteTable, type AnySQLiteColumn, index, uniqueIndex, text, numeric, integer, customType } from "drizzle-orm/sqlite-core"
 import { sql } from "drizzle-orm"
+
+const CURRENT_TIMESTAMP = sql`CURRENT_TIMESTAMP`
+const current_timestamp = sql`CURRENT_TIMESTAMP`
 
 export const prismaMigrations = sqliteTable("_prisma_migrations", {
 	id: text().primaryKey(),
@@ -95,70 +98,6 @@ export const auditLog = sqliteTable("audit_log", {
 index("audit_log_actorUserId_idx").on(table.actorUserId),
 index("audit_log_createdAt_idx").on(table.createdAt),
 ]);
-
-export const qbCategory = sqliteTable("qb_category", {
-	id: text().primaryKey(),
-	name: text().notNull(),
-	description: text(),
-	orderIndex: integer().default(0).notNull(),
-	depth: integer().default(0).notNull(),
-	parentId: text().references((): AnySQLiteColumn => qbCategory.id, { onDelete: "set null", onUpdate: "cascade" } ),
-	createdAt: numeric().default(CURRENT_TIMESTAMP).notNull(),
-	updatedAt: numeric().notNull(),
-});
-
-export const qbTag = sqliteTable("qb_tag", {
-	id: text().primaryKey(),
-	name: text().notNull(),
-	color: text(),
-	createdAt: numeric().default(CURRENT_TIMESTAMP).notNull(),
-	updatedAt: numeric().notNull(),
-},
-(table) => [uniqueIndex("qb_tag_name_key").on(table.name),
-]);
-
-export const qbQuestion = sqliteTable("qb_question", {
-	id: text().primaryKey(),
-	type: text().notNull(),
-	content: text().notNull(),
-	options: customType({ dataType: () => 'JSONB' })(),
-	answer: customType({ dataType: () => 'JSONB' })().notNull(),
-	explanation: text(),
-	difficulty: integer().default(1).notNull(),
-	categoryId: text().references(() => qbCategory.id, { onDelete: "set null", onUpdate: "cascade" } ),
-	createdAt: numeric().default(CURRENT_TIMESTAMP).notNull(),
-	updatedAt: numeric().notNull(),
-});
-
-export const qbQuestionTag = sqliteTable("qb_question_tag", {
-	questionId: text().notNull().references(() => qbQuestion.id, { onDelete: "cascade", onUpdate: "cascade" } ),
-	tagId: text().notNull().references(() => qbTag.id, { onDelete: "cascade", onUpdate: "cascade" } ),
-},
-(table) => [primaryKey({ columns: [table.questionId, table.tagId], name: "qb_question_tag_pk"}),
-]);
-
-export const qbPracticeSession = sqliteTable("qb_practice_session", {
-	id: text().primaryKey(),
-	userId: text().notNull(),
-	type: text().notNull(),
-	status: text().default("active").notNull(),
-	startTime: numeric().default(CURRENT_TIMESTAMP).notNull(),
-	endTime: numeric(),
-	totalCount: integer().default(0).notNull(),
-	correctCount: integer().default(0).notNull(),
-	createdAt: numeric().default(CURRENT_TIMESTAMP).notNull(),
-	updatedAt: numeric().notNull(),
-});
-
-export const qbPracticeAttempt = sqliteTable("qb_practice_attempt", {
-	id: text().primaryKey(),
-	sessionId: text().notNull().references(() => qbPracticeSession.id, { onDelete: "cascade", onUpdate: "cascade" } ),
-	questionId: text().notNull().references(() => qbQuestion.id, { onDelete: "cascade", onUpdate: "cascade" } ),
-	userAnswer: customType({ dataType: () => 'JSONB' })().notNull(),
-	isCorrect: numeric().notNull(),
-	durationMs: integer(),
-	createdAt: numeric().default(CURRENT_TIMESTAMP).notNull(),
-});
 
 export const departments = sqliteTable("departments", {
 	id: text().primaryKey(),
