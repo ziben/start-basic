@@ -1,5 +1,4 @@
 import path from 'node:path'
-import { pathToFileURL } from 'node:url'
 
 function normalizeDatabaseUrl(url: string, cwd: string): string {
   if (!url.startsWith('file:')) {
@@ -13,7 +12,7 @@ function normalizeDatabaseUrl(url: string, cwd: string): string {
   }
 
   const absPath = path.resolve(cwd, rest)
-  return pathToFileURL(absPath).href
+  return `file:${absPath.replace(/\\/g, '/')}`
 }
 
 export function getDatabaseUrl(options?: { cwd?: string }): string {
