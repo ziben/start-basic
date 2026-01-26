@@ -11,8 +11,9 @@
 import { hashPassword } from 'better-auth/crypto'
 import { PrismaLibSql } from '@prisma/adapter-libsql'
 import { PrismaClient } from '../src/generated/prisma/client'
+import { getDatabaseUrl } from '../src/shared/lib/database-url'
 
-const DATABASE_URL = process.env.DATABASE_URL ?? 'file:./prisma/dev.db'
+const DATABASE_URL = getDatabaseUrl()
 const adapter = new PrismaLibSql({ url: DATABASE_URL })
 const prisma = new PrismaClient({ adapter })
 

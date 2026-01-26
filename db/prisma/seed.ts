@@ -2,8 +2,9 @@ import { PrismaLibSql } from '@prisma/adapter-libsql'
 import { PrismaClient, RoleScope, ResourceScope } from '../../src/generated/prisma/client'
 import en from '../../src/i18n/locales/en'
 import zh from '../../src/i18n/locales/zh'
+import { getDatabaseUrl } from '../../src/shared/lib/database-url'
 
-const DATABASE_URL = process.env.DATABASE_URL ?? 'file:./db/dev.db'
+const DATABASE_URL = getDatabaseUrl()
 const adapter = new PrismaLibSql({ url: DATABASE_URL })
 const prisma = new PrismaClient({ adapter })
 

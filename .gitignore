@@ -23,3 +23,6 @@ yarn.lock
 /blob-report/
 /playwright/.cache/
 /src/generated/prisma
+/src/routeTree.gen.ts
+/db/*.db
+/db/*.db-*

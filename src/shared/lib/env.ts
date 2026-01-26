@@ -24,7 +24,7 @@ const envSchema = z.object({
   BETTER_AUTH_URL: z.string().url().default('http://localhost:3000'),
 
   // Database
-  DATABASE_URL: z.string().default('file:./prisma/dev.db'),
+  DATABASE_URL: z.string().default('file:./db/dev.db'),
 
   // Authentication token cookie key
   AUTH_TOKEN_KEY: z.string().default('app_access_token'),

@@ -1,7 +1,8 @@
 import { PrismaLibSql } from '@prisma/adapter-libsql'
 import { PrismaClient } from '../src/generated/prisma/client'
+import { getDatabaseUrl } from '../src/shared/lib/database-url'
 
-const prisma = new PrismaClient({ adapter: new PrismaLibSql({ url: 'file:./prisma/dev.db' }) })
+const prisma = new PrismaClient({ adapter: new PrismaLibSql({ url: getDatabaseUrl() }) })
 
 async function check() {
     const accounts = await prisma.account.findMany({

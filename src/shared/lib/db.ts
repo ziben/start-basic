@@ -1,17 +1,18 @@
 import type { PrismaClient } from '~/generated/prisma/client'
+import { getDatabaseUrl } from '~/shared/lib/database-url'
 
-const DATABASE_URL = process.env.DATABASE_URL ?? 'file:./db/dev.db'
+const DATABASE_URL = getDatabaseUrl()
 
 const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient }
 
-async function createPrismaClient() {
+async function createPrismaClient(): Promise<PrismaClient> {
   const { PrismaLibSql } = await import('@prisma/adapter-libsql')
   const { PrismaClient } = await import('~/generated/prisma/client')
   const adapter = new PrismaLibSql({ url: DATABASE_URL })
   return new PrismaClient({ adapter })
 }
 
-export async function getDb() {
+export async function getDb(): Promise<PrismaClient> {
   if (!globalForPrisma.prisma) {
     globalForPrisma.prisma = await createPrismaClient()
   }
@@ -21,7 +22,7 @@ export async function getDb() {
 
 let prismaInstance: PrismaClient | null = null
 
-async function initPrisma() {
+async function initPrisma(): Promise<PrismaClient> {
   if (!prismaInstance) {
     prismaInstance = await getDb()
   }
@@ -41,7 +42,7 @@ const prisma = new Proxy({} as PrismaClient, {
 /**
  * 获取 Prisma 实例（同步，但必须确保已在入口初始化）
  */
-export function getDbSync() {
+export function getDbSync(): PrismaClient {
   if (!prismaInstance) {
     throw new Error('Prisma client not initialized.')
   }
