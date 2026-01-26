@@ -158,6 +158,26 @@ export function getUserAgentFromRequest(request: Request) {
   return request.headers.get('user-agent') || null
 }
 
+/**
+ * 将 TanStack Start 的服务器函数路径还原为易读的函数名
+ */
+export function getFriendlyFunctionName(path: string): string {
+  if (path.startsWith('/_serverFn/')) {
+    try {
+      const base64 = path.substring('/_serverFn/'.length)
+      const buffer = Buffer.from(base64, 'base64')
+      const decoded = JSON.parse(buffer.toString('utf8'))
+      if (decoded.export) {
+        // 去掉 TanStack Start 自动添加的后缀
+        return `[ServerFn] ${decoded.export.replace(/_createServerFn_handler$/, '')}`
+      }
+    } catch {
+      // 忽略解码错误
+    }
+  }
+  return path
+}
+
 export async function writeSystemLog(input: SystemLogInput) {
   const now = new Date()
   if (!shouldSample(input.level)) return

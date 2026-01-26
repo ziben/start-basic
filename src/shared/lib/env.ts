@@ -53,10 +53,12 @@ export type Env = z.infer<typeof envSchema>
  * For client-side: Uses import.meta.env (Vite convention)
  * For server-side: Uses process.env
  */
+const isServer = typeof window === 'undefined'
+
 function parseEnv(): Env {
   // Collect env vars from both sources
   const rawEnv: Record<string, unknown> = {
-    ...process.env,
+    ...(typeof process !== 'undefined' ? process.env : {}),
   }
 
   // Vite exposes env vars with VITE_ prefix to client
@@ -64,13 +66,24 @@ function parseEnv(): Env {
   if (typeof import.meta !== 'undefined' && import.meta.env) {
     // @ts-ignore - import.meta.env is Vite specific
     rawEnv.VITE_APP_URL = import.meta.env.VITE_APP_URL
-    // @ts-ignore - import.meta.env is Vite specific
+    // @ts-ignore - import.meta.env.VITE_PC_HOMEPAGE_ROUTE is Vite specific
     rawEnv.VITE_PC_HOMEPAGE_ROUTE = import.meta.env.VITE_PC_HOMEPAGE_ROUTE
-    // @ts-ignore - import.meta.env is Vite specific
+    // @ts-ignore - import.meta.env.VITE_MOBILE_HOMEPAGE_ROUTE is Vite specific
     rawEnv.VITE_MOBILE_HOMEPAGE_ROUTE = import.meta.env.VITE_MOBILE_HOMEPAGE_ROUTE
   }
 
-  const result = envSchema.safeParse(rawEnv)
+  // On the server, we want to ensure all required variables are present.
+  // On the client (browser), we only validate what we have, as server-only
+  // variables will be missing.
+  const schema = isServer
+    ? envSchema
+    : envSchema.partial().extend({
+      // Keep defaulting for routes even on client
+      VITE_PC_HOMEPAGE_ROUTE: envSchema.shape.VITE_PC_HOMEPAGE_ROUTE,
+      VITE_MOBILE_HOMEPAGE_ROUTE: envSchema.shape.VITE_MOBILE_HOMEPAGE_ROUTE,
+    })
+
+  const result = schema.safeParse(rawEnv)
 
   if (!result.success) {
     const missingVars = result.error.issues
@@ -81,7 +94,7 @@ function parseEnv(): Env {
     )
   }
 
-  return result.data
+  return result.data as Env
 }
 
 /**

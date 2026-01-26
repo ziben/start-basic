@@ -7,6 +7,7 @@ import {
     getIpFromRequest,
     getUserAgentFromRequest,
     toErrorString,
+    getFriendlyFunctionName,
 } from '../services/server-log-writer'
 import { checkPermission } from '../lib/permission-check'
 
@@ -33,6 +34,8 @@ export async function requireAdmin(actionName?: string) {
         if (fnId) {
             path = `[ServerFn] ${fnId}`
         }
+    } else if (path.startsWith('/_serverFn/')) {
+        path = getFriendlyFunctionName(path)
     }
 
     // Truncate long query
@@ -169,6 +172,8 @@ export async function requirePermission(
         if (fnId) {
             path = `[ServerFn] ${fnId}`
         }
+    } else if (path.startsWith('/_serverFn/')) {
+        path = getFriendlyFunctionName(path)
     }
 
     if (query && query.length > 255) {
