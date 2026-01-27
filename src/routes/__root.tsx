@@ -12,7 +12,7 @@ import { LocaleProvider } from '~/shared/context/locale-context'
 import { ThemeProvider } from '~/shared/context/theme-provider'
 import { userQueryKeys } from '~/shared/lib/query-keys'
 import appCss from '~/styles/index.css?url'
-import { seo } from '@/shared/utils/seo'
+import { composeSeoDescription, composeSeoTitle, seo } from '@/shared/utils/seo'
 import { GeneralError, NotFoundError } from '@/shared/components/errors'
 
 const getUser = createServerFn({ method: 'GET' }).handler(async () => {
@@ -44,8 +44,8 @@ export const Route = createRootRouteWithContext<{
         content: 'width=device-width, initial-scale=1',
       },
       ...seo({
-        title: 'Zi Start',
-        description: `Zi Start.`,
+        title: composeSeoTitle({}),
+        description: composeSeoDescription({}),
       }),
     ],
     links: [
@@ -76,7 +76,7 @@ export const Route = createRootRouteWithContext<{
   component: RootComponent,
 })
 
-function RootComponent() {
+function RootComponent(): React.ReactElement {
   return (
     <React.StrictMode>
       <ThemeProvider defaultTheme='light' storageKey='vite-ui-theme'>
@@ -97,7 +97,7 @@ function RootComponent() {
   )
 }
 
-function RootDocument({ children }: { children: React.ReactNode }) {
+function RootDocument({ children }: { children: React.ReactNode }): React.ReactElement {
   return (
     <html suppressHydrationWarning>
       <head>

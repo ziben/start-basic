@@ -13,7 +13,7 @@ import { TranslationsPrimaryButtons } from './components/translations-primary-bu
 import { TranslationsProvider } from './components/translations-provider'
 import { TranslationsTable } from './components/translations-table'
 
-const route = getRouteApi('/admin/translation')
+const route = getRouteApi('/_authenticated/admin/translation')
 
 export function AdminTranslations() {
   const { t } = useTranslation()
