@@ -10,6 +10,7 @@ import { AuthProvider } from '~/shared/context/auth-context'
 import { DirectionProvider } from '~/shared/context/direction-provider'
 import { LocaleProvider } from '~/shared/context/locale-context'
 import { ThemeProvider } from '~/shared/context/theme-provider'
+import { useRouteSeoSync } from '~/shared/hooks/use-route-seo-sync'
 import { userQueryKeys } from '~/shared/lib/query-keys'
 import appCss from '~/styles/index.css?url'
 import { composeSeoDescription, composeSeoTitle, seo } from '@/shared/utils/seo'
@@ -77,6 +78,8 @@ export const Route = createRootRouteWithContext<{
 })
 
 function RootComponent(): React.ReactElement {
+  useRouteSeoSync()
+
   return (
     <React.StrictMode>
       <ThemeProvider defaultTheme='light' storageKey='vite-ui-theme'>
