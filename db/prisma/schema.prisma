@@ -8,11 +8,6 @@ generator client {
   engineType = "client"
 }
 
-enum SidebarScope {
-  APP
-  ADMIN
-}
-
 model User {
   id              String   @id
   name            String
@@ -45,77 +40,6 @@ model User {
   @@unique([email])
   @@unique([username])
   @@map("user")
-}
-
-// SystemRole 表已移除，角色由 better-auth 管理
-// User.role: 全局角色 (admin, superadmin, user)
-// Member.role: 组织角色 (owner, admin, member)
-
-// 侧边栏导航组 - 顶层分组
-model NavGroup {
-  id         String       @id @default(cuid())
-  title      String // 分组标题
-  scope      SidebarScope @default(APP) // 导航作用域：APP(用户侧)/ADMIN(管理侧)
-  orderIndex Int // 排序索引
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
-
-  // 关联 
-  navItems          NavItem[] // 导航项
-  roleNavGroups     RoleNavGroup[] // 关联角色
-  userRoleNavGroups UserRoleNavGroup[] // 用户角色关联
-
-  @@map("nav_group")
-}
-
-// 导航项 - 可以是链接或子菜单
-model NavItem {
-  id            String   @id @default(cuid())
-  title         String // 菜单项标题
-  url           String? // 链接地址，如为子菜单则为null
-  icon          String? // 图标名称
-  badge         String? // 徽章内容
-  orderIndex    Int // 排序索引
-  isCollapsible Boolean  @default(false) // 是否为可折叠菜单
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  // 关联
-  navGroupId String? // 父导航组ID
-  navGroup   NavGroup? @relation(fields: [navGroupId], references: [id], onDelete: Cascade)
-
-  parentId String? // 父级菜单项ID，用于子菜单
-  parent   NavItem?  @relation("NavItemToNavItem", fields: [parentId], references: [id], onDelete: Cascade)
-  children NavItem[] @relation("NavItemToNavItem")
-
-  @@map("nav_item")
-}
-
-// 角色与导航组关联表
-model RoleNavGroup {
-  id         String   @id @default(cuid())
-  roleName   String // 关联的角色名称
-  role       Role     @relation(fields: [roleName], references: [name], onDelete: Cascade)
-  navGroupId String
-  navGroup   NavGroup @relation(fields: [navGroupId], references: [id], onDelete: Cascade)
-  createdAt  DateTime @default(now())
-
-  @@unique([roleName, navGroupId])
-  @@map("role_nav_group")
-}
-
-// 用户与导航组关联表 - 用于个性化设置
-model UserRoleNavGroup {
-  id         String   @id @default(cuid())
-  userId     String
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  navGroupId String
-  navGroup   NavGroup @relation(fields: [navGroupId], references: [id], onDelete: Cascade)
-  visible    Boolean  @default(true) // 用户是否可见此导航组
-  createdAt  DateTime @default(now())
-
-  @@unique([userId, navGroupId])
-  @@map("user_role_nav_group")
 }
 
 model Session {
@@ -189,6 +113,88 @@ model Organization {
   @@map("organization")
 }
 
+model Team {
+  id             String       @id
+  name           String
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdAt      DateTime
+  updatedAt      DateTime?    @updatedAt
+  teammembers    TeamMember[]
+  invitations    Invitation[]
+
+  @@index([organizationId])
+  @@map("team")
+}
+
+model TeamMember {
+  id        String    @id
+  teamId    String
+  team      Team      @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime?
+
+  @@index([teamId])
+  @@index([userId])
+  @@map("teamMember")
+}
+
+model Member {
+  id             String       @id
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  userId         String
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role           String // better-auth organization 插件管理: owner, admin, member
+  departmentId   String?
+  department     Department?  @relation(fields: [departmentId], references: [id])
+
+  // 组织角色关联（可选，用于新的 RBAC 系统）
+  organizationRoleId String?
+  organizationRole   OrganizationRole? @relation(fields: [organizationRoleId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime
+
+  @@index([organizationRoleId])
+  @@map("member")
+}
+
+model Invitation {
+  id             String       @id
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  email          String
+  role           String?
+  teamId         String?
+  team           Team?        @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  status         String
+  expiresAt      DateTime
+  createdAt      DateTime     @default(now())
+  inviterId      String
+  user           User         @relation(fields: [inviterId], references: [id], onDelete: Cascade)
+
+  @@map("invitation")
+}
+
+// ============================================
+// 统一权限管理系统 (RBAC)
+// ============================================
+
+// 角色作用域枚举
+enum RoleScope {
+  GLOBAL // 全局角色（superadmin, admin, user）
+  ORGANIZATION // 组织角色（owner, admin, member, viewer）
+  CUSTOM // 自定义扩展角色
+}
+
+// 资源作用域枚举
+enum ResourceScope {
+  GLOBAL // 全局资源
+  ORGANIZATION // 组织资源
+  BOTH // 两者都支持
+}
+
 // 组织角色表（增强版，支持角色模板和自定义权限）
 model OrganizationRole {
   id             String       @id
@@ -246,191 +252,6 @@ model OrganizationRolePermission {
   @@index([organizationRoleId])
   @@index([permissionId])
   @@map("organization_role_permissions")
-}
-
-// better-auth teams 插件 - 团队
-model Team {
-  id             String       @id
-  name           String
-  organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  createdAt      DateTime
-  updatedAt      DateTime?    @updatedAt
-  teammembers    TeamMember[]
-  invitations    Invitation[]
-
-  @@index([organizationId])
-  @@map("team")
-}
-
-// better-auth teams 插件 - 团队成员
-model TeamMember {
-  id        String    @id
-  teamId    String
-  team      Team      @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  userId    String
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt DateTime?
-
-  @@index([teamId])
-  @@index([userId])
-  @@map("teamMember")
-}
-
-model Member {
-  id             String       @id
-  organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  userId         String
-  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  role           String // better-auth organization 插件管理: owner, admin, member
-  departmentId   String?
-  department     Department?  @relation(fields: [departmentId], references: [id])
-
-  // 组织角色关联（可选，用于新的 RBAC 系统）
-  organizationRoleId String?
-  organizationRole   OrganizationRole? @relation(fields: [organizationRoleId], references: [id], onDelete: SetNull)
-
-  createdAt DateTime
-
-  @@index([organizationRoleId])
-  @@map("member")
-}
-
-model Invitation {
-  id             String       @id
-  organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  email          String
-  role           String?
-  teamId         String?
-  team           Team?        @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  status         String
-  expiresAt      DateTime
-  createdAt      DateTime     @default(now())
-  inviterId      String
-  user           User         @relation(fields: [inviterId], references: [id], onDelete: Cascade)
-
-  @@map("invitation")
-}
-
-// 可选：翻译存储表（用于运行时从数据库加载本地化文本）
-model Translation {
-  id        String   @id @default(cuid())
-  locale    String // e.g. 'en' or 'zh'
-  key       String // message key, e.g. 'admin.navgroup.table.title'
-  value     String // translated text
-  createdAt DateTime @default(now())
-
-  @@unique([locale, key])
-  @@map("translation")
-}
-
-model SystemLog {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-
-  level     String  @default("info")
-  requestId String?
-
-  method     String
-  path       String
-  query      String?
-  status     Int
-  durationMs Int
-
-  ip        String?
-  userAgent String?
-
-  userId   String?
-  user     User?   @relation("UserSystemLogs", fields: [userId], references: [id], onDelete: SetNull)
-  userRole String?
-
-  error String?
-  meta  Json?
-
-  @@index([createdAt])
-  @@index([method, path])
-  @@index([userId])
-  @@map("system_log")
-}
-
-model AuditLog {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-
-  actorUserId String?
-  actorUser   User?   @relation("UserAuditLogs", fields: [actorUserId], references: [id], onDelete: SetNull)
-  actorRole   String?
-
-  action     String
-  targetType String
-  targetId   String?
-
-  ip        String?
-  userAgent String?
-  success   Boolean @default(true)
-  message   String?
-  meta      Json?
-
-  @@index([createdAt])
-  @@index([actorUserId])
-  @@index([targetType, targetId])
-  @@map("audit_log")
-}
-
-// ==================== RBAC 权限系统 ====================
-
-// 部门表（组织内部层级结构）
-model Department {
-  id   String @id @default(cuid())
-  name String // 部门名称
-  code String // 部门编码
-
-  // 所属组织
-  organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-
-  // 树形结构
-  parentId String?
-  parent   Department?  @relation("DepartmentTree", fields: [parentId], references: [id])
-  children Department[] @relation("DepartmentTree")
-
-  level  Int     @default(1) // 层级
-  sort   Int     @default(0) // 排序
-  leader String? // 负责人
-  phone  String?
-  email  String?
-  status String  @default("ACTIVE") // ACTIVE, INACTIVE
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // 关联
-  members Member[]
-
-  @@unique([organizationId, code])
-  @@index([organizationId])
-  @@index([parentId])
-  @@map("departments")
-}
-
-// ============================================
-// 统一权限管理系统
-// ============================================
-
-// 角色作用域枚举
-enum RoleScope {
-  GLOBAL // 全局角色（superadmin, admin, user）
-  ORGANIZATION // 组织角色（owner, admin, member, viewer）
-  CUSTOM // 自定义扩展角色
-}
-
-// 资源作用域枚举
-enum ResourceScope {
-  GLOBAL // 全局资源
-  ORGANIZATION // 组织资源
-  BOTH // 两者都支持
 }
 
 // 角色表（统一管理全局角色、组织角色模板、自定义角色）
@@ -607,4 +428,175 @@ model CrossOrgAccess {
   @@unique([role, sourceOrgId, targetOrgId, resource])
   @@index([role])
   @@map("cross_org_access")
+}
+
+// 部门表（组织内部层级结构）
+model Department {
+  id   String @id @default(cuid())
+  name String // 部门名称
+  code String // 部门编码
+
+  // 所属组织
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  // 树形结构
+  parentId String?
+  parent   Department?  @relation("DepartmentTree", fields: [parentId], references: [id])
+  children Department[] @relation("DepartmentTree")
+
+  level  Int     @default(1) // 层级
+  sort   Int     @default(0) // 排序
+  leader String? // 负责人
+  phone  String?
+  email  String?
+  status String  @default("ACTIVE") // ACTIVE, INACTIVE
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // 关联
+  members Member[]
+
+  @@unique([organizationId, code])
+  @@index([organizationId])
+  @@index([parentId])
+  @@map("departments")
+}
+
+enum SidebarScope {
+  APP
+  ADMIN
+}
+
+// 侧边栏导航组 - 顶层分组
+model NavGroup {
+  id         String       @id @default(cuid())
+  title      String // 分组标题
+  scope      SidebarScope @default(APP) // 导航作用域：APP(用户侧)/ADMIN(管理侧)
+  orderIndex Int // 排序索引
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+
+  // 关联 
+  navItems          NavItem[] // 导航项
+  roleNavGroups     RoleNavGroup[] // 关联角色
+  userRoleNavGroups UserRoleNavGroup[] // 用户角色关联
+
+  @@map("nav_group")
+}
+
+// 导航项 - 可以是链接或子菜单
+model NavItem {
+  id            String   @id @default(cuid())
+  title         String // 菜单项标题
+  url           String? // 链接地址，如为子菜单则为null
+  icon          String? // 图标名称
+  badge         String? // 徽章内容
+  orderIndex    Int // 排序索引
+  isCollapsible Boolean  @default(false) // 是否为可折叠菜单
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // 关联
+  navGroupId String? // 父导航组ID
+  navGroup   NavGroup? @relation(fields: [navGroupId], references: [id], onDelete: Cascade)
+
+  parentId String? // 父级菜单项ID，用于子菜单
+  parent   NavItem?  @relation("NavItemToNavItem", fields: [parentId], references: [id], onDelete: Cascade)
+  children NavItem[] @relation("NavItemToNavItem")
+
+  @@map("nav_item")
+}
+
+// 角色与导航组关联表
+model RoleNavGroup {
+  id         String   @id @default(cuid())
+  roleName   String // 关联的角色名称
+  role       Role     @relation(fields: [roleName], references: [name], onDelete: Cascade)
+  navGroupId String
+  navGroup   NavGroup @relation(fields: [navGroupId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+
+  @@unique([roleName, navGroupId])
+  @@map("role_nav_group")
+}
+
+// 用户与导航组关联表 - 用于个性化设置
+model UserRoleNavGroup {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  navGroupId String
+  navGroup   NavGroup @relation(fields: [navGroupId], references: [id], onDelete: Cascade)
+  visible    Boolean  @default(true) // 用户是否可见此导航组
+  createdAt  DateTime @default(now())
+
+  @@unique([userId, navGroupId])
+  @@map("user_role_nav_group")
+}
+
+// 可选：翻译存储表（用于运行时从数据库加载本地化文本）
+model Translation {
+  id        String   @id @default(cuid())
+  locale    String // e.g. 'en' or 'zh'
+  key       String // message key, e.g. 'admin.navgroup.table.title'
+  value     String // translated text
+  createdAt DateTime @default(now())
+
+  @@unique([locale, key])
+  @@map("translation")
+}
+
+model SystemLog {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  level     String  @default("info")
+  requestId String?
+
+  method     String
+  path       String
+  query      String?
+  status     Int
+  durationMs Int
+
+  ip        String?
+  userAgent String?
+
+  userId   String?
+  user     User?   @relation("UserSystemLogs", fields: [userId], references: [id], onDelete: SetNull)
+  userRole String?
+
+  error String?
+  meta  Json?
+
+  @@index([createdAt])
+  @@index([method, path])
+  @@index([userId])
+  @@map("system_log")
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  actorUserId String?
+  actorUser   User?   @relation("UserAuditLogs", fields: [actorUserId], references: [id], onDelete: SetNull)
+  actorRole   String?
+
+  action     String
+  targetType String
+  targetId   String?
+
+  ip        String?
+  userAgent String?
+  success   Boolean @default(true)
+  message   String?
+  meta      Json?
+
+  @@index([createdAt])
+  @@index([actorUserId])
+  @@index([targetType, targetId])
+  @@map("audit_log")
 }

@@ -1,0 +1,64 @@
+// 可选：翻译存储表（用于运行时从数据库加载本地化文本）
+model Translation {
+  id        String   @id @default(cuid())
+  locale    String // e.g. 'en' or 'zh'
+  key       String // message key, e.g. 'admin.navgroup.table.title'
+  value     String // translated text
+  createdAt DateTime @default(now())
+
+  @@unique([locale, key])
+  @@map("translation")
+}
+
+model SystemLog {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  level     String  @default("info")
+  requestId String?
+
+  method     String
+  path       String
+  query      String?
+  status     Int
+  durationMs Int
+
+  ip        String?
+  userAgent String?
+
+  userId   String?
+  user     User?   @relation("UserSystemLogs", fields: [userId], references: [id], onDelete: SetNull)
+  userRole String?
+
+  error String?
+  meta  Json?
+
+  @@index([createdAt])
+  @@index([method, path])
+  @@index([userId])
+  @@map("system_log")
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  actorUserId String?
+  actorUser   User?   @relation("UserAuditLogs", fields: [actorUserId], references: [id], onDelete: SetNull)
+  actorRole   String?
+
+  action     String
+  targetType String
+  targetId   String?
+
+  ip        String?
+  userAgent String?
+  success   Boolean @default(true)
+  message   String?
+  meta      Json?
+
+  @@index([createdAt])
+  @@index([actorUserId])
+  @@index([targetType, targetId])
+  @@map("audit_log")
+}

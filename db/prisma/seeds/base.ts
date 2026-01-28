@@ -260,11 +260,48 @@ export async function seedBase() {
           title: data.title,
           scope: 'ADMIN',
           orderIndex: data.orderIndex,
-          roleNavGroups: { create: [{ roleName: 'admin' }] },
+          roleNavGroups: { create: [{ roleName: 'admin' }, { roleName: 'superadmin' }] },
           navItems: { create: data.navItems },
         },
       })
     }
+
+    const ensureAppNavGroup = async (data: {
+      title: string
+      orderIndex: number
+      navItems: { title: string; url: string; icon: string; orderIndex: number }[]
+    }) => {
+      const existing = await prisma.navGroup.findFirst({
+        where: { title: data.title, scope: 'APP' },
+        select: { id: true },
+      })
+
+      if (existing) {
+        return
+      }
+
+      await prisma.navGroup.create({
+        data: {
+          title: data.title,
+          scope: 'APP',
+          orderIndex: data.orderIndex,
+          roleNavGroups: { create: [{ roleName: 'user' }, { roleName: 'admin' }, { roleName: 'superadmin' }] },
+          navItems: { create: data.navItems },
+        },
+      })
+    }
+
+    await ensureAppNavGroup({
+      title: '常规',
+      orderIndex: 0,
+      navItems: [
+        { title: '仪表盘', url: '/', icon: 'LayoutDashboard', orderIndex: 0 },
+        { title: '任务', url: '/tasks', icon: 'ListTodo', orderIndex: 1 },
+        { title: '应用', url: '/apps', icon: 'Package', orderIndex: 2 },
+        { title: '聊天', url: '/chats', icon: 'MessagesSquare', orderIndex: 3 },
+        { title: '用户', url: '/users', icon: 'Users', orderIndex: 4 },
+      ],
+    })
 
     await ensureAdminNavGroup({
       title: '仪表盘',

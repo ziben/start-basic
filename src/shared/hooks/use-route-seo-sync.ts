@@ -2,11 +2,13 @@ import * as React from 'react'
 import { useTranslation as useI18nextTranslation } from 'react-i18next'
 import { useRouterState } from '@tanstack/react-router'
 import { composeSeoDescription, composeSeoTitle } from '@/shared/utils/seo'
+import { useSeoConfig } from '@/shared/context/seo-config-context'
 import { deriveRouteSeoConfig } from '@/shared/utils/route-seo'
 
 export function useRouteSeoSync(): void {
   const { t: rawT } = useI18nextTranslation()
   const state = useRouterState()
+  const seoConfig = useSeoConfig()
 
   const pathname = state.location.pathname
 
@@ -21,8 +23,8 @@ export function useRouteSeoSync(): void {
 
     const pageDesc = cfg?.pageDescKey ? String(rawT(String(cfg.pageDescKey))) : cfg?.fallbackDescription
 
-    const title = composeSeoTitle({ pageTitle })
-    const description = composeSeoDescription({ pageDesc })
+    const title = composeSeoTitle({ pageTitle }, seoConfig)
+    const description = composeSeoDescription({ pageDesc }, seoConfig)
 
     if (title) document.title = title
 
@@ -35,5 +37,5 @@ export function useRouteSeoSync(): void {
       }
       tag.setAttribute('content', description)
     }
-  }, [rawT, pathname])
+  }, [rawT, pathname, seoConfig])
 }

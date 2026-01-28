@@ -129,10 +129,23 @@ export async function getSidebarData(
       logo: serializeIcon(team.logo),
     }))
 
-    const serializedNavGroups = (defaultData.navGroups || []).map((group) => ({
-      ...group,
-      items: serializeNavItems(group.items || []),
-    }))
+    const serializedNavGroups = (defaultData.navGroups || [])
+      .filter((group) => {
+        // 如果是 ADMIN scope，只保留包含 /admin 的项或者显式标记为系统管理的组（简单启发式）
+        // 或者更准确地，根据我们在 Prisma 中的逻辑，我们可以根据标题或内容过滤
+        // 这里我们简单处理：APP scope 过滤掉包含 'admin' 路径的项目，ADMIN scope 则保留所有
+        if (scope === 'APP') {
+          const hasAdminUrl = group.items.some((item: any) =>
+            'url' in item ? item.url?.includes('/admin') : item.items?.some((sub: any) => sub.url?.includes('/admin'))
+          )
+          return !hasAdminUrl
+        }
+        return true
+      })
+      .map((group) => ({
+        ...group,
+        items: serializeNavItems(group.items || []),
+      }))
 
     // 返回结果（前端会根据字符串标识再用 iconResolver 解析回组件）
     return {

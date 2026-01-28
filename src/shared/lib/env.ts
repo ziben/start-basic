@@ -40,6 +40,12 @@ const envSchema = z.object({
   // Homepage configuration
   VITE_PC_HOMEPAGE_ROUTE: z.string().default('/'),
   VITE_MOBILE_HOMEPAGE_ROUTE: z.string().default('/'),
+
+  // SEO (public)
+  VITE_APP_NAME: z.string().default('Zi Start'),
+  VITE_APP_DESC: z.string().default('Zi Start.'),
+  VITE_ADMIN_APP_NAME: z.string().optional(),
+  VITE_ADMIN_APP_DESC: z.string().optional(),
 })
 
 /**
@@ -62,14 +68,19 @@ function parseEnv(): Env {
   }
 
   // Vite exposes env vars with VITE_ prefix to client
-  // @ts-ignore - import.meta is Vite specific
-  if (typeof import.meta !== 'undefined' && import.meta.env) {
-    // @ts-ignore - import.meta.env is Vite specific
-    rawEnv.VITE_APP_URL = import.meta.env.VITE_APP_URL
-    // @ts-ignore - import.meta.env.VITE_PC_HOMEPAGE_ROUTE is Vite specific
-    rawEnv.VITE_PC_HOMEPAGE_ROUTE = import.meta.env.VITE_PC_HOMEPAGE_ROUTE
-    // @ts-ignore - import.meta.env.VITE_MOBILE_HOMEPAGE_ROUTE is Vite specific
-    rawEnv.VITE_MOBILE_HOMEPAGE_ROUTE = import.meta.env.VITE_MOBILE_HOMEPAGE_ROUTE
+  const metaEnv =
+    typeof import.meta !== 'undefined'
+      ? (import.meta as unknown as { env?: Record<string, unknown> }).env
+      : undefined
+
+  if (metaEnv) {
+    rawEnv.VITE_APP_URL = metaEnv.VITE_APP_URL
+    rawEnv.VITE_APP_NAME = metaEnv.VITE_APP_NAME
+    rawEnv.VITE_APP_DESC = metaEnv.VITE_APP_DESC
+    rawEnv.VITE_ADMIN_APP_NAME = metaEnv.VITE_ADMIN_APP_NAME
+    rawEnv.VITE_ADMIN_APP_DESC = metaEnv.VITE_ADMIN_APP_DESC
+    rawEnv.VITE_PC_HOMEPAGE_ROUTE = metaEnv.VITE_PC_HOMEPAGE_ROUTE
+    rawEnv.VITE_MOBILE_HOMEPAGE_ROUTE = metaEnv.VITE_MOBILE_HOMEPAGE_ROUTE
   }
 
   // On the server, we want to ensure all required variables are present.

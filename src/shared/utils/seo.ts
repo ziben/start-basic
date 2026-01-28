@@ -1,3 +1,5 @@
+import { env } from '@/shared/lib/env'
+
 export const seo = ({
   title,
   description,
@@ -47,8 +49,8 @@ export type SeoTemplateConfig = {
 }
 
 export const DEFAULT_SEO_TEMPLATE_CONFIG: SeoTemplateConfig = {
-  appName: 'Zi Start',
-  appDesc: 'Zi Start.',
+  appName: env.VITE_APP_NAME ?? 'Zi Start',
+  appDesc: env.VITE_APP_DESC ?? 'Zi Start.',
   titleTemplate: '{{pageTitle}} | {{appName}}',
   descriptionTemplate: '{{pageDesc}} · {{appName}}',
 }

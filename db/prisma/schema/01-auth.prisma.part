@@ -1,0 +1,168 @@
+model User {
+  id              String   @id
+  name            String
+  email           String
+  emailVerified   Boolean  @default(false)
+  image           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  username        String?
+  displayUsername String?
+
+  sessions Session[]
+  accounts Account[]
+
+  role            String? // 存储角色名称，用逗号分隔，例如 "admin,user"
+  banned          Boolean? @default(false) // better-auth admin 插件管理
+  banReason  String? // better-auth admin 插件管理
+  banExpires DateTime? // better-auth admin 插件管理
+
+  members     Member[]
+  invitations Invitation[]
+  teammembers TeamMember[] // better-auth teams 插件
+
+  // 角色与侧边栏的关联
+  roleNavGroups UserRoleNavGroup[]
+
+  systemLogs SystemLog[] @relation("UserSystemLogs")
+  auditLogs  AuditLog[]  @relation("UserAuditLogs")
+
+  @@unique([email])
+  @@unique([username])
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  impersonatedBy String?
+
+  activeOrganizationId String?
+  activeTeamId         String? // better-auth teams 插件
+
+  @@unique([token])
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
+}
+
+model Organization {
+  id                String             @id
+  name              String
+  slug              String?
+  logo              String?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime?          @updatedAt
+  metadata          String?
+  members           Member[]
+  invitations       Invitation[]
+  departments       Department[] // 新增：部门关联
+  organizationroles OrganizationRole[] // 组织角色（增强版）
+  teams             Team[] // better-auth teams 插件
+
+  @@unique([slug])
+  @@map("organization")
+}
+
+model Team {
+  id             String       @id
+  name           String
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdAt      DateTime
+  updatedAt      DateTime?    @updatedAt
+  teammembers    TeamMember[]
+  invitations    Invitation[]
+
+  @@index([organizationId])
+  @@map("team")
+}
+
+model TeamMember {
+  id        String    @id
+  teamId    String
+  team      Team      @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime?
+
+  @@index([teamId])
+  @@index([userId])
+  @@map("teamMember")
+}
+
+model Member {
+  id             String       @id
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  userId         String
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role           String // better-auth organization 插件管理: owner, admin, member
+  departmentId   String?
+  department     Department?  @relation(fields: [departmentId], references: [id])
+
+  // 组织角色关联（可选，用于新的 RBAC 系统）
+  organizationRoleId String?
+  organizationRole   OrganizationRole? @relation(fields: [organizationRoleId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime
+
+  @@index([organizationRoleId])
+  @@map("member")
+}
+
+model Invitation {
+  id             String       @id
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  email          String
+  role           String?
+  teamId         String?
+  team           Team?        @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  status         String
+  expiresAt      DateTime
+  createdAt      DateTime     @default(now())
+  inviterId      String
+  user           User         @relation(fields: [inviterId], references: [id], onDelete: Cascade)
+
+  @@map("invitation")
+}
