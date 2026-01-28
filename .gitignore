@@ -26,3 +26,4 @@ yarn.lock
 /src/routeTree.gen.ts
 /db/*.db
 /db/*.db-*
+/db/prisma/schema.prisma
