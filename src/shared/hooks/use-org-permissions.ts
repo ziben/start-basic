@@ -19,7 +19,7 @@ const checkOrgPermissionFn = createServerFn({ method: 'GET' })
   }) => data)
   .handler(async ({ data }: { data: { organizationId: string; resource: string; action: string } }) => {
     const { getRequest } = await import('@tanstack/react-start/server')
-    const { auth } = await import('~/modules/auth/shared/lib/auth')
+    const { auth } = await import('../../modules/auth/shared/lib/auth')
     
     const request = getRequest()
     if (!request) throw new Error('无法获取请求信息')
@@ -53,7 +53,7 @@ const getOrgRoleFn = createServerFn({ method: 'GET' })
   .inputValidator((data: { organizationId: string }) => data)
   .handler(async ({ data }: { data: { organizationId: string } }) => {
     const { getRequest } = await import('@tanstack/react-start/server')
-    const { auth } = await import('~/modules/auth/shared/lib/auth')
+    const { auth } = await import('../../modules/auth/shared/lib/auth')
     
     const request = getRequest()
     if (!request) throw new Error('无法获取请求信息')

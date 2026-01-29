@@ -7,9 +7,10 @@ const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient }
 
 async function createPrismaClient(): Promise<PrismaClient> {
   const { PrismaLibSql } = await import('@prisma/adapter-libsql')
-  const { PrismaClient } = await import('~/generated/prisma/client')
+  // 使用相对路径，Vite 会正确打包到 dist
+  const { PrismaClient: PrismaClientConstructor } = await import('../../generated/prisma/client')
   const adapter = new PrismaLibSql({ url: DATABASE_URL })
-  return new PrismaClient({ adapter })
+  return new PrismaClientConstructor({ adapter })
 }
 
 export async function getDb(): Promise<PrismaClient> {

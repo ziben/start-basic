@@ -52,7 +52,6 @@ export default defineConfig({
       '@prisma/client',
       '.prisma/client',
       '@prisma/adapter-libsql',
-      '~/generated/prisma/client',
     ],
   },
   optimizeDeps: {
@@ -60,14 +59,13 @@ export default defineConfig({
       '@prisma/client',
       '.prisma/client',
       '@prisma/adapter-libsql',
-      '~/generated/prisma/client',
     ],
   },
   build: {
     rollupOptions: {
       external: (id) => {
-        // 确保 Prisma 相关模块在客户端构建时被排除
-        if (id.includes('@prisma') || id.includes('.prisma') || id.includes('generated/prisma')) {
+        // 只排除 Prisma 引擎和 adapter，不排除生成的 client
+        if (id.includes('@prisma/client') || id.includes('.prisma/client') || id.includes('@prisma/adapter')) {
           return true
         }
         return false

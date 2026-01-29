@@ -27,3 +27,6 @@ yarn.lock
 /db/*.db
 /db/*.db-*
 /db/prisma/schema.prisma
+
+# 生成的 CSS 文件
+/src/styles/index.legacy.css

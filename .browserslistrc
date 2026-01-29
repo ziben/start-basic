@@ -1,0 +1,10 @@
+[modern]
+last 2 Chrome versions
+last 2 Firefox versions
+last 2 Safari versions
+last 2 Edge versions
+
+[legacy]
+defaults
+> 0.5%
+not dead

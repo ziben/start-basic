@@ -16,8 +16,8 @@ const getUserPermissionsFn = createServerFn({ method: 'GET' })
   .inputValidator((data?: { organizationId?: string }) => data)
   .handler(async ({ data }) => {
     const { getRequest } = await import('@tanstack/react-start/server')
-    const { auth } = await import('~/modules/auth/shared/lib/auth')
-    const { getUserPermissions } = await import('~/modules/admin/shared/lib/permission-check')
+    const { auth } = await import('../../modules/auth/shared/lib/auth')
+    const { getUserPermissions } = await import('../../modules/admin/shared/lib/permission-check')
     
     const request = getRequest()
     if (!request) throw new Error('无法获取请求信息')
@@ -35,8 +35,8 @@ const checkPermissionFn = createServerFn({ method: 'GET' })
   .inputValidator((data: { permission: string; organizationId?: string }) => data)
   .handler(async ({ data }) => {
     const { getRequest } = await import('@tanstack/react-start/server')
-    const { auth } = await import('~/modules/auth/shared/lib/auth')
-    const { checkPermission } = await import('~/modules/admin/shared/lib/permission-check')
+    const { auth } = await import('../../modules/auth/shared/lib/auth')
+    const { checkPermission } = await import('../../modules/admin/shared/lib/permission-check')
     
     const request = getRequest()
     if (!request) throw new Error('无法获取请求信息')

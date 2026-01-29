@@ -1,0 +1,38 @@
+// 支付方式
+enum PaymentMethod {
+  WECHAT_JSAPI
+  WECHAT_NATIVE
+  WECHAT_H5
+  ALIPAY
+}
+
+// 支付订单
+model PaymentOrder {
+  id            String        @id @default(cuid())
+  userId        String
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  outTradeNo    String        @unique // 商户订单号
+  transactionId String?       // 微信/支付宝交易号
+  amount        Int           // 金额（单位：分）
+  status        PaymentStatus @default(PENDING)
+  description   String        // 商品描述
+  paymentMethod PaymentMethod // 支付方式
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  paidAt        DateTime?     // 支付成功时间
+  metadata      Json?         // 扩展信息
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("payment_order")
+}
+
+// 支付状态
+enum PaymentStatus {
+  PENDING  // 待支付
+  SUCCESS  // 支付成功
+  FAILED   // 支付失败
+  REFUNDED // 已退款
+  CLOSED   // 已关闭
+}

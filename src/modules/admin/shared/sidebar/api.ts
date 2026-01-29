@@ -2,7 +2,7 @@ import { createServerFn } from '@tanstack/react-start'
 
 export const getSidebarDataFn = createServerFn({ method: 'GET' }).handler(async ({ data }: { data?: unknown }) => {
   const { getRequest } = await import('@tanstack/react-start/server')
-  const { auth } = await import('~/modules/auth/shared/lib/auth')
+  const { auth } = await import('../../../auth/shared/lib/auth')
   const { getSidebarData } = await import('./server-utils')
 
   const rawScope =

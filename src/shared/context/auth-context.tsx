@@ -36,3 +36,11 @@ export const useAuthContext = () => {
   return context
 }
 
+/**
+ * 快捷获取当前用户信息
+ */
+export const useAuth = () => {
+  const { user } = useRouteContext({ from: '__root__' })
+  return { user }
+}
+
