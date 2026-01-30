@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { isModernBrowser } from '@/shared/utils/browser-detect'
 
 interface DynamicCSSLoaderProps {
@@ -9,75 +9,63 @@ interface DynamicCSSLoaderProps {
 
 /**
  * 客户端动态加载 CSS
- * 避免 SSR hydration 不匹配，在客户端检测浏览器能力后动态替换 CSS
+ * 避免 SSR hydration 不匹配,在客户端检测浏览器能力后动态替换 CSS
  */
 export function DynamicCSSLoader({ modernUrl, legacyUrl, onReady }: DynamicCSSLoaderProps): null {
+  const onReadyRef = useRef(onReady)
+
   useEffect(() => {
-    // 只在客户端执行
+    onReadyRef.current = onReady
+  }, [onReady])
+
+  useEffect(() => {
     if (typeof window === 'undefined') return
 
     const shouldUseLegacy = !isModernBrowser()
-    
+
     if (shouldUseLegacy) {
-      // 查找现有的 CSS link 标签
       const existingLink = document.querySelector<HTMLLinkElement>(
         `link[rel="stylesheet"][href="${modernUrl}"]`
       )
 
       if (existingLink) {
-        // 创建新的 legacy CSS link
         const legacyLink = document.createElement('link')
         legacyLink.rel = 'stylesheet'
         legacyLink.href = legacyUrl
 
-        // 等待 legacy CSS 加载完成后再移除 modern CSS
         legacyLink.onload = () => {
           existingLink.remove()
           console.log('已切换到 legacy CSS')
-          onReady?.()
+          onReadyRef.current?.()
         }
 
         legacyLink.onerror = () => {
-          console.error('Legacy CSS 加载失败')
-          onReady?.() // 即使失败也要显示页面
+          console.error('Legacy CSS 加载失败,继续使用 modern CSS')
+          onReadyRef.current?.()
         }
 
-        // 插入到 head
         document.head.appendChild(legacyLink)
       } else {
-        onReady?.()
+        onReadyRef.current?.()
       }
     } else {
-      // 现代浏览器直接就绪
-      onReady?.()
+      onReadyRef.current?.()
     }
-  }, [modernUrl, legacyUrl, onReady])
+  }, [modernUrl, legacyUrl])
 
   return null
 }
 
 /**
  * 使用 CSS 加载状态的 Hook
+ * 优化版本:消除竞态条件,简化逻辑
  */
 export function useCSSReady(): { isReady: boolean; handleReady: () => void } {
-  // SSR 和客户端初始状态都为 false，避免 hydration 不匹配
   const [isReady, setIsReady] = useState(false)
 
-  useEffect(() => {
-    // 只在客户端执行
-    if (typeof window === 'undefined') return
-
-    // 延迟一帧，等待 DynamicCSSLoader 执行
-    requestAnimationFrame(() => {
-      const shouldUseLegacy = !isModernBrowser()
-      if (!shouldUseLegacy) {
-        // 现代浏览器立即就绪
-        setIsReady(true)
-      }
-    })
+  const handleReady = useCallback(() => {
+    setIsReady(true)
   }, [])
-
-  const handleReady = (): void => setIsReady(true)
 
   return { isReady, handleReady }
 }
