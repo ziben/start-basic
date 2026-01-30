@@ -1,9 +1,9 @@
+import { normalizePath } from 'vite'
+import viteReact from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { devtools } from '@tanstack/devtools-vite'
 import { tanstackStart } from '@tanstack/react-start/plugin/vite'
-import viteReact from '@vitejs/plugin-react'
 import { fileURLToPath } from 'node:url'
-import { normalizePath } from 'vite'
 import Inspect from 'vite-plugin-inspect'
 import tsconfigPaths from 'vite-tsconfig-paths'
 import { defineConfig } from 'vitest/config'
@@ -11,6 +11,9 @@ import { defineConfig } from 'vitest/config'
 const SRC_DIR = `${normalizePath(fileURLToPath(new URL('./src', import.meta.url)))}/`
 
 export default defineConfig({
+  server: {
+    allowedHosts: true,
+  },
   plugins: [
     devtools({
       eventBusConfig: {
@@ -48,18 +51,10 @@ export default defineConfig({
   },
   ssr: {
     noExternal: ['@tanstack/react-router'],
-    external: [
-      '@prisma/client',
-      '.prisma/client',
-      '@prisma/adapter-libsql',
-    ],
+    external: ['@prisma/client', '.prisma/client', '@prisma/adapter-libsql'],
   },
   optimizeDeps: {
-    exclude: [
-      '@prisma/client',
-      '.prisma/client',
-      '@prisma/adapter-libsql',
-    ],
+    exclude: ['@prisma/client', '.prisma/client', '@prisma/adapter-libsql'],
   },
   build: {
     rollupOptions: {

@@ -1,18 +1,27 @@
-import { useNavigate, useLocation } from '@tanstack/react-router'
+import { useNavigate, useLocation, useRouter } from '@tanstack/react-router'
+import { useQueryClient } from '@tanstack/react-query'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { authClient } from '~/modules/auth/shared/lib/auth-client'
+import { authQueryKeys, userQueryKeys } from '~/shared/lib/query-keys'
 
 interface SignOutDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
 }
 
-export function SignOutDialog({ open, onOpenChange }: SignOutDialogProps) {
+export function SignOutDialog({ open, onOpenChange }: SignOutDialogProps): React.ReactElement {
   const navigate = useNavigate()
   const location = useLocation()
+  const router = useRouter()
+  const queryClient = useQueryClient()
 
-  const handleSignOut = () => {
-    authClient.signOut()
+  const handleSignOut = async (): Promise<void> => {
+    await authClient.signOut()
+    queryClient.setQueryData(userQueryKeys.current, null)
+    queryClient.setQueryData(authQueryKeys.session, null)
+    queryClient.invalidateQueries({ queryKey: userQueryKeys.current })
+    queryClient.invalidateQueries({ queryKey: authQueryKeys.session })
+    await router.invalidate()
     // Preserve current location for redirect after sign-in
     const currentPath = location.href
     navigate({

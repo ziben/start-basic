@@ -1,23 +1,24 @@
 import { useNavigate, useRouter } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
+import { useTranslation } from '@/modules/admin/shared/hooks/use-translation'
 
-export function ForbiddenError() {
+export function ForbiddenError(): React.ReactElement {
   const navigate = useNavigate()
   const { history } = useRouter()
+  const { t } = useTranslation()
   return (
     <div className='h-svh'>
       <div className='m-auto flex h-full w-full flex-col items-center justify-center gap-2'>
         <h1 className='text-[7rem] leading-tight font-bold'>403</h1>
-        <span className='font-medium'>访问被拒绝</span>
+        <span className='font-medium'>{t('errors.forbidden.title')}</span>
         <p className='text-center text-muted-foreground'>
-          您没有足够的权限 <br />
-          访问此资源。
+          {t('errors.forbidden.desc.line1')} <br /> {t('errors.forbidden.desc.line2')}
         </p>
         <div className='mt-6 flex gap-4'>
           <Button variant='outline' onClick={() => history.go(-1)}>
-            返回
+            {t('errors.actions.back')}
           </Button>
-          <Button onClick={() => navigate({ to: '/' })}>返回首页</Button>
+          <Button onClick={() => navigate({ to: '/' })}>{t('errors.actions.home')}</Button>
         </div>
       </div>
     </div>

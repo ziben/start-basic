@@ -3,8 +3,8 @@ import {
   adminClient,
   usernameClient,
   organizationClient,
-  genericOAuthClient,
 } from 'better-auth/client/plugins'
+import { wechatOAuthClient } from './plugins/wechat-oauth-client'
 
 /**
  * Better-Auth 客户端配置
@@ -24,7 +24,7 @@ export const authClient = createAuthClient({
         enabled: true,
       },
     }),
-    genericOAuthClient(), // 支持微信等自定义 OAuth 登录
+    wechatOAuthClient(), // 微信 OAuth 登录
   ],
 })
 

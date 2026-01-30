@@ -1,25 +1,32 @@
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Settings, CreditCard, Shield, ChevronRight, LogOut, Heart } from 'lucide-react'
+import { type LucideIcon, Settings, CreditCard, Shield, ChevronRight, LogOut, Heart } from 'lucide-react'
 import { useAuth } from '@/shared/context/auth-context'
 import { useNavigate, useRouter } from '@tanstack/react-router'
+import { useQueryClient } from '@tanstack/react-query'
 import { authClient } from '@/modules/auth/shared/lib/auth-client'
 import { toast } from 'sonner'
+import { authQueryKeys, userQueryKeys } from '@/shared/lib/query-keys'
 
-export function MobileProfilePage() {
+export function MobileProfilePage(): React.ReactElement {
     const { user } = useAuth()
     const navigate = useNavigate()
     const router = useRouter()
+    const queryClient = useQueryClient()
 
-    const handleLogout = async () => {
+    const handleLogout = async (): Promise<void> => {
         try {
             await authClient.signOut()
+            queryClient.setQueryData(userQueryKeys.current, null)
+            queryClient.setQueryData(authQueryKeys.session, null)
+            queryClient.invalidateQueries({ queryKey: userQueryKeys.current })
+            queryClient.invalidateQueries({ queryKey: authQueryKeys.session })
             toast.success('已退出登录')
             // 重置路由状态，清除 context 中的用户信息
             await router.invalidate()
             navigate({ to: '/m' })
-        } catch (err) {
+        } catch {
             toast.error('退出登录失败')
         }
     }
@@ -93,16 +100,17 @@ export function MobileProfilePage() {
     )
 }
 
-function StatItem({ label, value, icon: Icon }: any) {
+function StatItem({ label, value, icon: Icon }: Readonly<{ label: string; value: string; icon?: LucideIcon }>): React.ReactElement {
     return (
         <div className="flex flex-col items-center justify-center p-3 rounded-2xl bg-white dark:bg-slate-900 shadow-sm gap-1">
+            {Icon ? <Icon className="h-4 w-4 text-muted-foreground" /> : null}
             <span className="text-lg font-bold">{value}</span>
             <span className="text-[10px] text-muted-foreground uppercase">{label}</span>
         </div>
     )
 }
 
-function MenuItem({ icon: Icon, label }: { icon: any, label: string }) {
+function MenuItem({ icon: Icon, label }: Readonly<{ icon: LucideIcon; label: string }>): React.ReactElement {
     return (
         <Button variant="ghost" className="w-full justify-between h-14 px-4 border-b last:border-b-0 rounded-none">
             <div className="flex items-center gap-3">

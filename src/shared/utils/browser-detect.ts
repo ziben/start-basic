@@ -8,6 +8,20 @@ export function isWechat(): boolean {
 }
 
 /**
+ * 服务端 UA 判定（仅基于 user-agent）
+ * 保守策略：可疑/旧 UA 走 legacy
+ */
+export function isModernBrowserServer(userAgent?: string | null): boolean {
+  if (!userAgent) return true
+  const ua = userAgent.toLowerCase()
+
+  if (ua.includes('wechatdevtools')) return false
+  if (ua.includes('msie') || ua.includes('trident/')) return false
+
+  return true
+}
+
+/**
  * 检测是否在微信开发者工具中
  */
 export function isWechatDevTools(): boolean {

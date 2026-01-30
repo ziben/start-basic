@@ -33,3 +33,17 @@ declare module '@tanstack/react-start/plugin/vite' {
   export const tanstackStart: any
 }
 
+declare module 'better-auth/cookies' {
+  import type { GenericEndpointContext, Session, User } from 'better-auth'
+
+  export function setSessionCookie(
+    ctx: GenericEndpointContext,
+    session: {
+      session: Session & Record<string, unknown>
+      user: User
+    },
+    dontRememberMe?: boolean,
+    overrides?: Record<string, unknown>
+  ): Promise<void>
+}
+

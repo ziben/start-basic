@@ -1,23 +1,24 @@
 import { useNavigate, useRouter } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
+import { useTranslation } from '@/modules/admin/shared/hooks/use-translation'
 
-export function NotFoundError() {
+export function NotFoundError(): React.ReactElement {
   const navigate = useNavigate()
   const { history } = useRouter()
+  const { t } = useTranslation()
   return (
     <div className='h-svh'>
       <div className='m-auto flex h-full w-full flex-col items-center justify-center gap-2'>
         <h1 className='text-[7rem] leading-tight font-bold'>404</h1>
-        <span className='font-medium'>Oops! Page Not Found!</span>
+        <span className='font-medium'>{t('errors.notFound.title')}</span>
         <p className='text-center text-muted-foreground'>
-          It seems like the page you're looking for <br />
-          does not exist or might have been removed.
+          {t('errors.notFound.desc.line1')} <br /> {t('errors.notFound.desc.line2')}
         </p>
         <div className='mt-6 flex gap-4'>
           <Button variant='outline' onClick={() => history.go(-1)}>
-            Go Back
+            {t('errors.actions.back')}
           </Button>
-          <Button onClick={() => navigate({ to: '/' })}>Back to Home</Button>
+          <Button onClick={() => navigate({ to: '/' })}>{t('errors.actions.home')}</Button>
         </div>
       </div>
     </div>

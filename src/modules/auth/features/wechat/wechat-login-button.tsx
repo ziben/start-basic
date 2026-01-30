@@ -1,8 +1,8 @@
 /**
  * WeChat Login Button Component
  *
- * 使用 Better-Auth 的 genericOAuth 插件实现微信登录
- * Better-Auth 会自动处理 OAuth 流程，包括跳转和回调
+ * 使用 Better-Auth 客户端 API 调用微信登录
+ * 客户端插件自动推断服务端插件的类型
  */
 
 import { useState, useCallback } from 'react'
@@ -13,6 +13,10 @@ import { authClient } from '../../shared/lib/auth-client'
 interface WeChatLoginButtonProps {
     /** 登录成功后的回调 URL */
     callbackUrl?: string
+    /** 登录失败后的回调 URL */
+    errorCallbackUrl?: string
+    /** 新用户回调 URL */
+    newUserCallbackUrl?: string
     /** 登录失败后的回调 */
     onError?: (error: Error) => void
     /** 按钮文案 */
@@ -29,6 +33,8 @@ interface WeChatLoginButtonProps {
 
 export function WeChatLoginButton({
     callbackUrl,
+    errorCallbackUrl,
+    newUserCallbackUrl,
     onError,
     children,
     variant = 'outline',
@@ -42,18 +48,25 @@ export function WeChatLoginButton({
         setIsLoading(true)
 
         try {
-            // 使用 Better-Auth 的 genericOAuth 登录
-            // 这会自动处理 OAuth 流程，包括跳转和回调
-            await authClient.signIn.oauth2({
-                providerId: 'wechat',
+            // 使用 Better-Auth 客户端 API
+            // 服务端 /sign-in/wechat 自动转换为 signIn.wechat
+            const response = await authClient.signIn.wechat({
                 callbackURL: callbackUrl || '/',
+                errorCallbackURL: errorCallbackUrl,
+                newUserCallbackURL: newUserCallbackUrl,
+                disableRedirect: false,
             })
+
+            // 跳转到微信授权页面
+            if (response.data?.url) {
+                window.location.href = response.data.url
+            }
         } catch (error) {
             console.error('[WeChatLogin] Failed to initiate login:', error)
             onError?.(error instanceof Error ? error : new Error('Failed to initiate WeChat login'))
             setIsLoading(false)
         }
-    }, [callbackUrl, onError])
+    }, [callbackUrl, errorCallbackUrl, newUserCallbackUrl, onError])
 
     return (
         <Button
