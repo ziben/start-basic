@@ -4,6 +4,7 @@
 
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
+import { auth } from '~/modules/auth/shared/lib/auth'
 import { requireAdmin } from './auth'
 
 // ============ Schema 定义 ============
@@ -15,6 +16,7 @@ const ListSessionsSchema = z.object({
     status: z.array(z.enum(['active', 'expired'])).optional(),
     sortBy: z.string().optional(),
     sortDir: z.enum(['asc', 'desc']).optional(),
+    userId: z.string().optional(),
 })
 
 // ============ ServerFn 定义 ============
@@ -56,4 +58,28 @@ export const deleteSessionFn = createServerFn({ method: 'POST' })
         await requireAdmin('DeleteSession')
         const { SessionService } = await import('../services/session.service')
         return SessionService.delete(data.id)
+    })
+
+/**
+ * 撤销用户全部会话
+ */
+export const revokeUserSessionsFn = createServerFn({ method: 'POST' })
+    .inputValidator((data: { userId: string }) => {
+        if (!data?.userId) throw new Error('userId 不能为空')
+        return data
+    })
+    .handler(async ({ data }: { data: { userId: string } }) => {
+        await requireAdmin('RevokeUserSessions')
+        const { getRequest } = await import('@tanstack/react-start/server')
+        const request = getRequest()
+        if (!request) throw new Error('无法获取请求信息')
+
+        await auth.api.admin.revokeUserSessions({
+            headers: request.headers,
+            body: {
+                userId: data.userId,
+            },
+        })
+
+        return { success: true as const }
     })

@@ -4,6 +4,7 @@
  * 使用 ServerFn 替代 REST API 调用
  */
 
+import type { UseMutationResult, UseQueryResult } from '@tanstack/react-query'
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { getSessionsFn, deleteSessionFn, bulkDeleteSessionsFn } from '../server-fns/session.fn'
 import type { AdminSessionsPage } from '../types/session'
@@ -20,10 +21,13 @@ export function useAdminSessions(params: {
   status?: Array<'active' | 'expired'>
   sortBy?: string
   sortDir?: 'asc' | 'desc'
-}) {
+  userId?: string
+  enabled?: boolean
+}): UseQueryResult<AdminSessionsPage> {
   return useQuery<AdminSessionsPage>({
     queryKey: sessionQueryKeys.list(params),
     placeholderData: keepPreviousData,
+    enabled: params.enabled ?? true,
     queryFn: async () => {
       const result = await getSessionsFn({ data: params })
       return result as AdminSessionsPage
@@ -33,7 +37,7 @@ export function useAdminSessions(params: {
 
 // ============ Mutation Hooks ============
 
-export function useDeleteAdminSession() {
+export function useDeleteAdminSession(): UseMutationResult<{ success: true; id: string }, Error, { id: string }> {
   const qc = useQueryClient()
   return useMutation<{ success: true; id: string }, Error, { id: string }>({
     mutationFn: async ({ id }) => {
@@ -45,7 +49,11 @@ export function useDeleteAdminSession() {
   })
 }
 
-export function useBulkDeleteAdminSessions() {
+export function useBulkDeleteAdminSessions(): UseMutationResult<
+  { success: true; count: number },
+  Error,
+  { ids: string[] }
+> {
   const qc = useQueryClient()
   return useMutation<{ success: true; count: number }, Error, { ids: string[] }>({
     mutationFn: async ({ ids }) => {

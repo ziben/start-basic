@@ -13,6 +13,7 @@ export interface ListSessionsInput {
     status?: ('active' | 'expired')[]
     sortBy?: string
     sortDir?: 'asc' | 'desc'
+    userId?: string
 }
 
 export interface SessionItem {
@@ -35,7 +36,7 @@ export const SessionService = {
      */
     async getList(input: ListSessionsInput = {}) {
         try {
-            const { page = 1, pageSize = 10, filter = '', status = [], sortBy, sortDir } = input
+            const { page = 1, pageSize = 10, filter = '', status = [], sortBy, sortDir, userId } = input
             const now = new Date()
 
             // 状态过滤
@@ -67,6 +68,7 @@ export const SessionService = {
                 : {}
 
             const where = {
+                ...(userId ? { userId } : {}),
                 ...statusWhere,
                 ...filterWhere,
             }
