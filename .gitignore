@@ -30,3 +30,15 @@ yarn.lock
 
 # 生成的 CSS 文件
 /src/styles/index.legacy.css
+
+# PM2
+.pm2
+*.pid
+
+# 应用日志
+logs/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*

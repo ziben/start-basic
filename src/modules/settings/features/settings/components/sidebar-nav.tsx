@@ -1,5 +1,5 @@
 import { useState, type JSX } from 'react'
-import { useLocation } from '@tanstack/react-router'
+import { Link, useLocation, useNavigate } from '@tanstack/react-router'
 import { cn } from '@/shared/lib/utils'
 import { buttonVariants } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -15,11 +15,12 @@ type SidebarNavProps = React.HTMLAttributes<HTMLElement> & {
 
 export function SidebarNav({ className, items, ...props }: SidebarNavProps): React.ReactElement {
   const { pathname } = useLocation()
+  const navigate = useNavigate()
   const [val, setVal] = useState(pathname ?? '/_authenticated/settings')
 
   const handleSelect = (e: string): void => {
     setVal(e)
-    globalThis.location.href = e
+    navigate({ to: e as any })
   }
 
   return (
@@ -49,9 +50,9 @@ export function SidebarNav({ className, items, ...props }: SidebarNavProps): Rea
       >
         <nav className={cn('flex space-x-2 py-1 lg:flex-col lg:space-y-1 lg:space-x-0', className)} {...props}>
           {items.map((item) => (
-            <a
+            <Link
               key={item.href}
-              href={item.href}
+              to={item.href as any}
               className={cn(
                 buttonVariants({ variant: 'ghost' }),
                 pathname === item.href ? 'bg-muted hover:bg-accent' : 'hover:bg-accent hover:underline',
@@ -60,10 +61,11 @@ export function SidebarNav({ className, items, ...props }: SidebarNavProps): Rea
             >
               <span className='me-2'>{item.icon}</span>
               {item.title}
-            </a>
+            </Link>
           ))}
         </nav>
       </ScrollArea>
     </>
   )
 }
+

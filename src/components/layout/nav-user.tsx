@@ -74,23 +74,17 @@ export function NavUser({ user }: NavUserProps) {
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
               <DropdownMenuGroup>
-                <DropdownMenuItem asChild>
-                  <Link to='/demo/settings/account'>
-                    <BadgeCheck />
-                    Account
-                  </Link>
+                <DropdownMenuItem disabled>
+                  <BadgeCheck />
+                  Account
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to='/demo/settings'>
-                    <CreditCard />
-                    Billing
-                  </Link>
+                <DropdownMenuItem disabled>
+                  <CreditCard />
+                  Billing
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to='/demo/settings/notifications'>
-                    <Bell />
-                    Notifications
-                  </Link>
+                <DropdownMenuItem disabled>
+                  <Bell />
+                  Notifications
                 </DropdownMenuItem>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />

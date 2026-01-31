@@ -12,6 +12,16 @@ import {
 import { checkPermission } from '../lib/permission-check'
 
 /**
+ * 不需要记录任何日志的操作列表
+ * 主要是日志查询相关的操作，避免产生循环日志和日志噪音
+ */
+const LOG_EXCLUSIONS = new Set([
+    'ListLogs',
+    'GetLogDetail',
+    'ExportLogs',
+])
+
+/**
  * 集中管理管理员权限检查并记录日志
  */
 export async function requireAdmin(actionName?: string) {
@@ -87,6 +97,11 @@ export async function requireAdmin(actionName?: string) {
                 meta: { action: actionName },
             })
             throw new Error('无权限访问')
+        }
+
+        // 如果是排除操作，直接返回，不记录任何日志
+        if (actionName && LOG_EXCLUSIONS.has(actionName)) {
+            return session.user
         }
 
         // 如果提供了动作名称，记录审计日志
@@ -228,6 +243,11 @@ export async function requirePermission(
                 meta: { permission, action: options?.actionName },
             })
             throw new Error(`缺少权限: ${permission}`)
+        }
+
+        // 如果是排除操作，直接返回，不记录任何日志
+        if (options?.actionName && LOG_EXCLUSIONS.has(options.actionName)) {
+            return session.user
         }
 
         // 记录审计日志

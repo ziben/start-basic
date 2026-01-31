@@ -36,8 +36,7 @@ src/
 │   │   ├── features/   # 具体功能区 (用户、组织、角色)
 │   │   └── shared/     # 模块内共享服务、Hooks 等
 │   ├── auth/           # 认证流程模块 (原 identity)
-│   ├── dashboard/      # 控制面板模块
-│   └── demo/           # 示例与 Playground
+│   └── dashboard/      # 控制面板模块
 ├── components/         # 全局共享组件
 │   └── ui/             # shadcn 原始位
 ├── shared/             # 全局共享资源

@@ -296,10 +296,6 @@ export async function seedBase() {
       orderIndex: 0,
       navItems: [
         { title: '仪表盘', url: '/', icon: 'LayoutDashboard', orderIndex: 0 },
-        { title: '任务', url: '/tasks', icon: 'ListTodo', orderIndex: 1 },
-        { title: '应用', url: '/apps', icon: 'Package', orderIndex: 2 },
-        { title: '聊天', url: '/chats', icon: 'MessagesSquare', orderIndex: 3 },
-        { title: '用户', url: '/users', icon: 'Users', orderIndex: 4 },
       ],
     })
 
@@ -316,13 +312,14 @@ export async function seedBase() {
         { title: '菜单管理', url: '/admin/navigation', icon: 'List', orderIndex: 1 },
         { title: 'I18N管理', url: '/admin/translation', icon: 'Users', orderIndex: 2 },
         { title: '用户管理', url: '/admin/users', icon: 'Users', orderIndex: 3 },
-        { title: '会话管理', url: '/admin/session', icon: 'Lock', orderIndex: 4 },
-        { title: '系统角色', url: '/admin/rbac/roles', icon: 'Shield', orderIndex: 5 },
-        { title: '组织角色', url: '/admin/rbac/org-roles', icon: 'Building', orderIndex: 6 },
-        { title: '权限定义', url: '/admin/rbac/permissions', icon: 'Key', orderIndex: 7 },
-        { title: '组织管理', url: '/admin/organization', icon: 'Building', orderIndex: 8 },
-        { title: '成员管理', url: '/admin/member', icon: 'Users', orderIndex: 9 },
-        { title: '部门管理', url: '/admin/department', icon: 'Building', orderIndex: 10 },
+        { title: '账号管理', url: '/admin/accounts', icon: 'User', orderIndex: 4 },
+        { title: '会话管理', url: '/admin/sessions', icon: 'Lock', orderIndex: 5 },
+        { title: '系统角色', url: '/admin/rbac/roles', icon: 'Shield', orderIndex: 6 },
+        { title: '组织角色', url: '/admin/rbac/org-roles', icon: 'Building', orderIndex: 7 },
+        { title: '权限定义', url: '/admin/rbac/permissions', icon: 'Key', orderIndex: 8 },
+        { title: '组织管理', url: '/admin/organizations', icon: 'Building', orderIndex: 9 },
+        { title: '成员管理', url: '/admin/members', icon: 'Users', orderIndex: 10 },
+        { title: '部门管理', url: '/admin/department', icon: 'Building', orderIndex: 11 },
       ],
     })
 

@@ -75,7 +75,7 @@ export function HomepageMobile() {
 
             {/* Bottom Navigation */}
             <nav className='fixed bottom-0 left-0 right-0 z-50 h-16 border-t bg-background/95 backdrop-blur-sm shadow-lg'>
-                <div className='container grid h-full grid-cols-4 items-center gap-1 px-2'>
+                <div className='container grid h-full grid-cols-3 items-center gap-1 px-2'>
                     <Link to='/' className='flex flex-col items-center gap-1 text-primary'>
                         <LayoutDashboard className='h-5 w-5' />
                         <span className='text-[10px] font-medium'>首页</span>
@@ -83,10 +83,6 @@ export function HomepageMobile() {
                     <Link to='/admin' className='flex flex-col items-center gap-1 text-muted-foreground'>
                         <Settings className='h-5 w-5' />
                         <span className='text-[10px] font-medium'>管理</span>
-                    </Link>
-                    <Link to='/demo' className='flex flex-col items-center gap-1 text-muted-foreground'>
-                        <LayoutDashboard className='h-5 w-5' />
-                        <span className='text-[10px] font-medium'>演示</span>
                     </Link>
                     <Link to='/sign-in' className='flex flex-col items-center gap-1 text-muted-foreground'>
                         <User className='h-5 w-5' />

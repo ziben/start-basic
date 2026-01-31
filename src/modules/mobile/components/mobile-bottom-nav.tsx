@@ -1,4 +1,4 @@
-import { Home, User, Settings, LayoutGrid } from 'lucide-react'
+import { Home, User } from 'lucide-react'
 import { Link, useLocation } from '@tanstack/react-router'
 import { cn } from '@/shared/lib/utils'
 
@@ -7,16 +7,6 @@ const navItems = [
         label: '首页',
         icon: Home,
         to: '/m',
-    },
-    {
-        label: '分类',
-        icon: LayoutGrid,
-        to: '/m/category',
-    },
-    {
-        label: '设置',
-        icon: Settings,
-        to: '/m/settings',
     },
     {
         label: '我的',

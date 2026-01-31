@@ -82,7 +82,7 @@ function DisplayIcon({ iconName }: { iconName: string }) {
 
 ## 示例
 
-完整示例请查看 `icon-picker-demo.tsx`
+查看组件源代码 `icon-picker.tsx` 了解实现细节
 
 ## 技术实现
 

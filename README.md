@@ -17,7 +17,7 @@
 ```
 src/
 ├── routes/           # 文件路由 (TanStack Router)
-├── modules/          # 核心业务模块 (auth, admin, dashboard, demo)
+├── modules/          # 核心业务模块 (auth, admin, dashboard)
 ├── components/       # 全局共享组件
 ├── shared/           # 共享 hooks/utils/lib (包含 Query Keys 集中管理)
 ├── i18n/             # 国际化配置
