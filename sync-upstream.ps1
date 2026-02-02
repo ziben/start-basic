@@ -12,13 +12,8 @@ Write-Host "Repo: $RepoPath"
 Write-Host "Upstream: $Upstream ($UpstreamBranch)"
 Write-Host "Local: $LocalBranch"
 
-# 0. 检查 ecosystem.config.cjs 是否被忽略 (如果未被忽略，提醒用户注意)
-$isIgnored = git check-ignore ecosystem.config.cjs -q
-if ($LASTEXITCODE -ne 0) {
-    Write-Host "Warning: ecosystem.config.cjs is not ignored by git. It might be overwritten during merge if it exists in upstream." -ForegroundColor Yellow
-} else {
-    Write-Host "ecosystem.config.cjs is ignored, but we will still protect your local copy." -ForegroundColor DarkGray
-}
+# 0. 检查 ecosystem.config.cjs 状态
+Write-Host "ecosystem.config.cjs is now tracked by git, we will protect your local copy during sync." -ForegroundColor DarkGray
 
 Set-Location $RepoPath
 
