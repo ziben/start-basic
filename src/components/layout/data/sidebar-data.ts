@@ -35,9 +35,9 @@ import { type SidebarData } from '../types'
 // 所以我们创建一个函数来生成带有翻译的侧边栏数据
 export const createSidebarData = (t: (key: string) => string): SidebarData => ({
   user: {
-    name: 'satnaing',
-    email: 'satnaingdev@gmail.com',
-    avatar: '/avatars/shadcn.jpg',
+    name: 'Admin',
+    email: 'admin@example.com',
+    avatar: '/avatars/admin.jpg',
   },
   teams: [
     {
@@ -159,27 +159,27 @@ export const createSidebarData = (t: (key: string) => string): SidebarData => ({
           items: [
             {
               title: t('settings.profile.title'),
-              url: '/settings',
+              url: '/admin/profile/settings',
               icon: UserCog,
             },
             {
               title: t('settings.account.title'),
-              url: '/settings/account',
+              url: '/admin/profile/settings/account',
               icon: Wrench,
             },
             {
               title: t('settings.appearance.title'),
-              url: '/settings/appearance',
+              url: '/admin/profile/settings/appearance',
               icon: Palette,
             },
             {
               title: t('settings.notifications.title'),
-              url: '/settings/notifications',
+              url: '/admin/profile/settings/notifications',
               icon: Bell,
             },
             {
               title: t('settings.display.title'),
-              url: '/settings/display',
+              url: '/admin/profile/settings/display',
               icon: Monitor,
             },
           ],

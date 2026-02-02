@@ -18,9 +18,9 @@ type AuthenticatedLayoutProps = {
 export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
   const defaultOpen = getCookie('sidebar_state') !== 'false'
   return (
-    <SearchProvider>
-      <LayoutProvider>
-        <TabProvider>
+    <LayoutProvider>
+      <TabProvider>
+        <SearchProvider>
           <SidebarProvider defaultOpen={defaultOpen}>
             <SkipToMain />
             <AppSidebar />
@@ -48,9 +48,9 @@ export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
               </div>
             </SidebarInset>
           </SidebarProvider>
-        </TabProvider>
-      </LayoutProvider>
-    </SearchProvider>
+        </SearchProvider>
+      </TabProvider>
+    </LayoutProvider>
   )
 }
 

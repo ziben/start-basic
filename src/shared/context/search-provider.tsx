@@ -36,10 +36,10 @@ export function SearchProvider({ children }: SearchProviderProps) {
   const contextValue = useMemo(() => ({ open, setOpen }), [open, setOpen])
 
   return (
-    <SearchContext value={contextValue}>
+    <SearchContext.Provider value={contextValue}>
       {children}
       {CommandMenu && <CommandMenu />}
-    </SearchContext>
+    </SearchContext.Provider>
   )
 }
 

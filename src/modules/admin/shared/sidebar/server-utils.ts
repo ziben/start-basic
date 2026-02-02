@@ -99,41 +99,32 @@ export async function getSidebarData(
         const obj = val as { displayName?: string; name?: string }
         return obj.displayName || obj.name || ''
       }
-      try {
-        return String(val)
-      } catch (error) {
-        console.error('Error serializing icon:', error)
-        return ''
-      }
+      return String(val || '')
     }
 
-    // 递归序列化导航项中的图标
-    const serializeNavItems = (items: any[]): NavItem[] => {
-      return (items || []).map((it) => {
-        const base = {
-          ...it,
-          icon: serializeIcon(it.icon),
+    // 获取动态 Teams (Organizations)
+    const organizations = await prisma.organization.findMany({
+      where: userId ? {
+        members: {
+          some: { userId }
         }
-        if (it.items) {
-          return {
-            ...base,
-            items: serializeNavItems(it.items),
-          } as NavCollapsible
-        }
-        return base as NavLink
-      })
-    }
+      } : {},
+      take: 10,
+    })
 
-    const serializedTeams = (defaultData.teams || []).map((team) => ({
-      ...team,
-      logo: serializeIcon(team.logo),
-    }))
+    const serializedTeams = organizations.length > 0
+      ? organizations.map(org => ({
+        name: org.name,
+        logo: org.logo || 'IconCommand', // 默认图标
+        plan: org.slug || 'Free',
+      }))
+      : (defaultData.teams || []).map((team) => ({
+        ...team,
+        logo: serializeIcon(team.logo),
+      }))
 
     const serializedNavGroups = (defaultData.navGroups || [])
       .filter((group) => {
-        // 如果是 ADMIN scope，只保留包含 /admin 的项或者显式标记为系统管理的组（简单启发式）
-        // 或者更准确地，根据我们在 Prisma 中的逻辑，我们可以根据标题或内容过滤
-        // 这里我们简单处理：APP scope 过滤掉包含 'admin' 路径的项目，ADMIN scope 则保留所有
         if (scope === 'APP') {
           const hasAdminUrl = group.items.some((item: any) =>
             'url' in item ? item.url?.includes('/admin') : item.items?.some((sub: any) => sub.url?.includes('/admin'))
@@ -142,10 +133,28 @@ export async function getSidebarData(
         }
         return true
       })
-      .map((group) => ({
-        ...group,
-        items: serializeNavItems(group.items || []),
-      }))
+      .map((group) => {
+        // 递归序列化导航项中的图标
+        const serializeNavItems = (items: any[]): NavItem[] => {
+          return (items || []).map((it) => {
+            const base = {
+              ...it,
+              icon: serializeIcon(it.icon),
+            }
+            if (it.items) {
+              return {
+                ...base,
+                items: serializeNavItems(it.items),
+              } as NavCollapsible
+            }
+            return base as NavLink
+          })
+        }
+        return {
+          ...group,
+          items: serializeNavItems(group.items || []),
+        }
+      })
 
     // 返回结果（前端会根据字符串标识再用 iconResolver 解析回组件）
     return {

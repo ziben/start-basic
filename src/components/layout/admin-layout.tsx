@@ -23,9 +23,9 @@ export function AdminLayout(): React.ReactElement {
         descriptionTemplate: '{{pageDesc}} · {{appName}}',
       }}
     >
-      <SearchProvider>
-        <LayoutProvider>
-          <TabProvider>
+      <LayoutProvider>
+        <TabProvider>
+          <SearchProvider>
             <SidebarProvider defaultOpen={defaultOpen}>
               <SkipToMain />
               <AdminSidebar />
@@ -48,9 +48,9 @@ export function AdminLayout(): React.ReactElement {
                 </div>
               </SidebarInset>
             </SidebarProvider>
-          </TabProvider>
-        </LayoutProvider>
-      </SearchProvider>
+          </SearchProvider>
+        </TabProvider>
+      </LayoutProvider>
     </SeoConfigProvider>
   )
 }
