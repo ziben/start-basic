@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { X } from 'lucide-react'
+import { X, RefreshCcw, ArrowRightToLine, MinusCircle } from 'lucide-react'
 import {
     DndContext,
     closestCenter,
@@ -20,11 +20,13 @@ import { useTabs } from '@/shared/context/tab-context'
 import type { Tab } from '@/shared/types/tab-types'
 import { cn } from '@/shared/lib/utils'
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+    ContextMenu,
+    ContextMenuContent,
+    ContextMenuItem,
+    ContextMenuSeparator,
+    ContextMenuTrigger,
+} from '@/components/ui/context-menu'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 interface SortableTabProps {
     tab: Tab
@@ -32,9 +34,10 @@ interface SortableTabProps {
     onActivate: () => void
     onClose: () => void
     onCloseOthers: () => void
+    onCloseToRight: () => void
 }
 
-function SortableTab({ tab, isActive, onActivate, onClose, onCloseOthers }: SortableTabProps) {
+function SortableTab({ tab, isActive, onActivate, onClose, onCloseOthers, onCloseToRight }: SortableTabProps) {
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
         id: tab.id,
         disabled: tab.sortable === false,
@@ -49,49 +52,70 @@ function SortableTab({ tab, isActive, onActivate, onClose, onCloseOthers }: Sort
     const Icon = typeof tab.icon === 'string' ? null : tab.icon
 
     return (
-        <DropdownMenu>
-            <div
-                ref={setNodeRef}
-                style={style}
-                className={cn(
-                    'group relative flex h-9 min-w-[120px] max-w-[200px] cursor-pointer items-center gap-2 rounded-t-md border-b-2 px-3 transition-all duration-200 ease-in-out',
-                    isActive
-                        ? 'border-primary bg-background text-foreground shadow-sm'
-                        : 'border-transparent bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground',
-                    tab.sortable === false && 'cursor-default'
-                )}
-                {...(tab.sortable !== false ? attributes : {})}
-                {...(tab.sortable !== false ? listeners : {})}
-            >
-                <div className="flex flex-1 items-center gap-2 min-w-0">
-                    <div className="flex flex-1 items-center gap-2 min-w-0" onClick={onActivate}>
-                        {Icon && <Icon className="h-4 w-4" />}
-                        <span className="flex-1 truncate text-sm font-medium">{tab.title}</span>
-                    </div>
+        <ContextMenu>
+            <ContextMenuTrigger asChild>
+                <div
+                    ref={setNodeRef}
+                    style={style}
+                    className={cn(
+                        'relative flex-shrink-0 select-none outline-none',
+                        isDragging && 'z-50'
+                    )}
+                    {...(tab.sortable !== false ? attributes : {})}
+                    {...(tab.sortable !== false ? listeners : {})}
+                >
+                    <TabsTrigger
+                        value={tab.id}
+                        data-state={isActive ? 'active' : 'inactive'}
+                        onClick={onActivate}
+                        className={cn(
+                            'relative h-8 min-w-[100px] max-w-[180px] gap-2 px-3 transition-all duration-200',
+                            isActive
+                                ? 'bg-background shadow-xs'
+                                : 'bg-transparent text-muted-foreground hover:bg-muted/50 hover:text-foreground border-transparent'
+                        )}
+                    >
+                        {Icon && <Icon className={cn("h-3.5 w-3.5 shrink-0", isActive ? "text-primary" : "text-muted-foreground")} />}
+                        <span className="truncate text-xs font-medium">{tab.title}</span>
+                        {tab.closable !== false && (
+                            <button
+                                className={cn(
+                                    'ml-1 shrink-0 rounded-sm p-0.5 opacity-0 transition-opacity hover:bg-muted/80 group-hover:opacity-100',
+                                    isActive && 'opacity-100'
+                                )}
+                                onClick={(e) => {
+                                    e.stopPropagation()
+                                    onClose()
+                                }}
+                            >
+                                <X className="h-3 w-3" />
+                            </button>
+                        )}
+                    </TabsTrigger>
                 </div>
+            </ContextMenuTrigger>
+            <ContextMenuContent className="w-48">
+                <ContextMenuItem onClick={() => window.location.reload()}>
+                    <RefreshCcw className="mr-2 h-4 w-4" />
+                    <span>刷新当前</span>
+                </ContextMenuItem>
+                <ContextMenuSeparator />
                 {tab.closable !== false && (
-                    <DropdownMenuTrigger asChild>
-                        <button
-                            className={cn(
-                                'shrink-0 rounded-sm p-0.5 opacity-0 transition-all duration-200 hover:bg-accent group-hover:opacity-100',
-                                isActive && 'opacity-100'
-                            )}
-                            onClick={(e) => {
-                                e.stopPropagation()
-                            }}
-                        >
-                            <X className="h-3 w-3" />
-                        </button>
-                    </DropdownMenuTrigger>
+                    <ContextMenuItem onClick={onClose}>
+                        <X className="mr-2 h-4 w-4" />
+                        <span>关闭当前</span>
+                    </ContextMenuItem>
                 )}
-                {tab.closable !== false && (
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={onClose}>关闭标签页</DropdownMenuItem>
-                        <DropdownMenuItem onClick={onCloseOthers}>关闭其他标签页</DropdownMenuItem>
-                    </DropdownMenuContent>
-                )}
-            </div>
-        </DropdownMenu>
+                <ContextMenuItem onClick={onCloseOthers}>
+                    <MinusCircle className="mr-2 h-4 w-4" />
+                    <span>关闭其他</span>
+                </ContextMenuItem>
+                <ContextMenuItem onClick={onCloseToRight}>
+                    <ArrowRightToLine className="mr-2 h-4 w-4" />
+                    <span>关闭右侧</span>
+                </ContextMenuItem>
+            </ContextMenuContent>
+        </ContextMenu>
     )
 }
 
@@ -100,14 +124,13 @@ export function TabBar() {
     const [isMounted, setIsMounted] = useState(false)
 
     useEffect(() => {
-        // eslint-disable-next-line
         setIsMounted(true)
     }, [])
 
     const sensors = useSensors(
         useSensor(PointerSensor, {
             activationConstraint: {
-                distance: 8, // 拖拽 8px 后才激活，避免误触
+                distance: 8,
             },
         }),
         useSensor(KeyboardSensor, {
@@ -131,25 +154,30 @@ export function TabBar() {
         return null
     }
 
-    const { tabs, activeTabId, activateTab, closeTab, closeOtherTabs } = tabContext
+    const { tabs, activeTabId, activateTab, closeTab, closeOtherTabs, closeTabsToRight } = tabContext
 
     return (
-        <div className="border-b bg-muted/30">
-            <div className="flex items-center gap-1 px-2 pt-2">
-                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-                    <SortableContext items={tabs.map((tab) => tab.id)} strategy={horizontalListSortingStrategy}>
-                        {tabs.map((tab) => (
-                            <SortableTab
-                                key={tab.id}
-                                tab={tab}
-                                isActive={tab.id === activeTabId}
-                                onActivate={() => activateTab(tab.id)}
-                                onClose={() => closeTab(tab.id)}
-                                onCloseOthers={() => closeOtherTabs(tab.id)}
-                            />
-                        ))}
-                    </SortableContext>
-                </DndContext>
+        <div className="hidden border-b bg-muted/30 backdrop-blur-sm md:block">
+            <div className="flex h-11 items-center px-3">
+                <Tabs value={activeTabId || ''} className="w-full">
+                    <TabsList className="h-9 w-full justify-start bg-transparent p-0 gap-1 overflow-x-auto no-scrollbar">
+                        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+                            <SortableContext items={tabs.map((tab) => tab.id)} strategy={horizontalListSortingStrategy}>
+                                {tabs.map((tab) => (
+                                    <SortableTab
+                                        key={tab.id}
+                                        tab={tab}
+                                        isActive={tab.id === activeTabId}
+                                        onActivate={() => activateTab(tab.id)}
+                                        onClose={() => closeTab(tab.id)}
+                                        onCloseOthers={() => closeOtherTabs(tab.id)}
+                                        onCloseToRight={() => closeTabsToRight(tab.id)}
+                                    />
+                                ))}
+                            </SortableContext>
+                        </DndContext>
+                    </TabsList>
+                </Tabs>
             </div>
         </div>
     )

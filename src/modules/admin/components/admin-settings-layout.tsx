@@ -6,27 +6,27 @@ import { SidebarNav } from '@/modules/settings/features/settings/components/side
 const sidebarNavItems = [
     {
         title: 'Profile',
-        href: '/admin/settings',
+        href: '/admin/profile/settings',
         icon: <UserCog size={18} />,
     },
     {
         title: 'Account',
-        href: '/admin/settings/account',
+        href: '/admin/profile/settings/account',
         icon: <Wrench size={18} />,
     },
     {
         title: 'Appearance',
-        href: '/admin/settings/appearance',
+        href: '/admin/profile/settings/appearance',
         icon: <Palette size={18} />,
     },
     {
         title: 'Notifications',
-        href: '/admin/settings/notifications',
+        href: '/admin/profile/settings/notifications',
         icon: <Bell size={18} />,
     },
     {
         title: 'Display',
-        href: '/admin/settings/display',
+        href: '/admin/profile/settings/display',
         icon: <Monitor size={18} />,
     },
 ]

@@ -5,7 +5,7 @@ import { useSidebar as useDynamicSidebar } from '~/modules/admin/shared/sidebar'
 import { iconResolver } from '@/shared/utils/icon-resolver'
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from '@/components/ui/sidebar'
 import { NavGroup as NavGroupComponent } from '@/components/layout/nav-group'
-import { AdminNavUser } from '~/modules/admin/components/admin-nav-user'
+import { NavUser } from '@/components/layout/nav-user'
 import { AdminTitle } from './admin-title'
 import { SidebarSkeleton } from './sidebar-skeleton'
 import type { NavGroup as NavGroupType } from './types'
@@ -19,7 +19,7 @@ function createAdminSidebarData() {
         items: [
           {
             title: '仪表盘',
-            url: '/admin',
+            url: '/admin/dashboard',
             icon: LayoutDashboard,
           },
         ],
@@ -74,7 +74,7 @@ export function AdminSidebar() {
         ))}
       </SidebarContent>
       <SidebarFooter>
-        <AdminNavUser user={userData} />
+        <NavUser user={userData} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

@@ -10,7 +10,7 @@ import { AdminSidebar } from '@/components/layout/admin-sidebar'
 import { TabBar } from '@/components/layout/tab-bar'
 import { TabContent } from '@/components/layout/tab-content'
 import { SkipToMain } from '@/components/skip-to-main'
-import { AdminHeader } from '~/modules/admin/components/admin-header'
+import { AppHeader } from '@/components/layout/app-header'
 
 export function AdminLayout(): React.ReactElement {
   const defaultOpen = getCookie('sidebar_state') !== 'false'
@@ -41,7 +41,7 @@ export function AdminLayout(): React.ReactElement {
                   'flex flex-col'
                 )}
               >
-                <AdminHeader />
+                <AppHeader />
                 <TabBar />
                 <div className="flex-1 overflow-hidden">
                   <TabContent />

@@ -21,6 +21,7 @@ export interface TabContextValue {
     closeTab: (tabId: string) => void
     activateTab: (tabId: string) => void
     closeOtherTabs: (tabId: string) => void
+    closeTabsToRight: (tabId: string) => void
     closeAllTabs: () => void
     reorderTabs: (startIndex: number, endIndex: number) => void
 }

@@ -6,11 +6,6 @@ import { useNavgroup } from '~/modules/admin/shared/hooks/use-navgroup-api'
 import { useNavitems } from '~/modules/admin/shared/hooks/use-navitem-api'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import { Route as NavItemRoute } from '~/routes/_authenticated/admin/navigation'
-import { Header } from '@/components/layout/header'
-import { Main } from '@/components/layout/main'
-import { ProfileDropdown } from '@/components/profile-dropdown'
-import { Search } from '@/components/search'
-import { ThemeSwitch } from '@/components/theme-switch'
 import AdminNavItemDialogs from './components/admin-navitem-dialogs'
 import AdminNavItemPrimaryButtons from './components/admin-navitem-primary-buttons'
 import AdminNavItemTable from './components/admin-navitem-table'
@@ -29,14 +24,8 @@ export default function AdminNavItemPage() {
 
   return (
     <AdminNavItemProvider initialNavGroupId={navGroupId}>
-      <Header fixed>
-        <Search />
-        <div className='ml-auto flex items-center space-x-4'>
-          <ThemeSwitch />
-          <ProfileDropdown />
-        </div>
-      </Header>
-      <Main>
+      
+      <AppHeaderMain>
         {/* 导航路径 */}
         {navGroupId && (
           <div className='mb-4 flex items-center text-sm text-muted-foreground'>
@@ -71,12 +60,14 @@ export default function AdminNavItemPage() {
         <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-y-0 lg:space-x-12'>
           <AdminNavItemTable data={navItemList} isLoading={isLoading} error={error} navGroupId={navGroupId} />
         </div>
-      </Main>
+      </AppHeaderMain>
       <AdminNavItemDialogs />
       <Toaster />
     </AdminNavItemProvider>
   )
 }
+
+
 
 
 

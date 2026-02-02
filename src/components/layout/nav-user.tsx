@@ -74,9 +74,11 @@ export function NavUser({ user }: NavUserProps) {
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
               <DropdownMenuGroup>
-                <DropdownMenuItem disabled>
-                  <BadgeCheck />
-                  Account
+                <DropdownMenuItem asChild>
+                  <Link to='/admin/profile/settings'>
+                    <BadgeCheck />
+                    Account Settings
+                  </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem disabled>
                   <CreditCard />

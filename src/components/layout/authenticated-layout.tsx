@@ -9,6 +9,7 @@ import { AppSidebar } from '@/components/layout/app-sidebar'
 import { TabBar } from '@/components/layout/tab-bar'
 import { TabContent } from '@/components/layout/tab-content'
 import { SkipToMain } from '@/components/skip-to-main'
+import { AppHeader } from '@/components/layout/app-header'
 
 type AuthenticatedLayoutProps = {
   children?: React.ReactNode
@@ -40,6 +41,7 @@ export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
                 'flex flex-col'
               )}
             >
+              <AppHeader />
               <TabBar />
               <div className="flex-1 overflow-auto">
                 <TabContent />

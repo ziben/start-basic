@@ -11,7 +11,7 @@ export function TabProvider({ children }: { children: React.ReactNode }) {
     const navigate = useNavigate()
     const location = useLocation()
     type NavigateTo = Parameters<typeof navigate>[0]['to']
-    
+
     // 根据 URL 自动计算当前的 Scope
     const currentScope = useMemo((): TabScope => {
         return location.pathname.startsWith('/admin') ? 'ADMIN' : 'APP'
@@ -30,16 +30,131 @@ export function TabProvider({ children }: { children: React.ReactNode }) {
         return tabs.filter(t => t.scope === currentScope)
     }, [tabs, currentScope])
 
+    // 打开新标签页或激活已存在的标签页
+    const openTab = useCallback(
+        (path: string | undefined, title: string, icon?: React.ElementType | string): boolean => {
+            if (!path) return false
+
+            const targetScope: TabScope = path.startsWith('/admin') ? 'ADMIN' : 'APP'
+            const existingTab = tabs.find((tab) => tab.path === path)
+
+            if (existingTab) {
+                if (!location.pathname.startsWith(path)) {
+                    navigate({ to: path as NavigateTo })
+                }
+                return true
+            }
+
+            if (tabs.length >= MAX_TABS) {
+                console.warn(`已达到最大标签页数量限制 (${MAX_TABS})`)
+                return false
+            }
+
+            const newTab: Tab = {
+                id: `tab-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                title,
+                path,
+                icon,
+                order: tabs.length,
+                closable: true,
+                sortable: true,
+                scope: targetScope,
+            }
+
+            setTabs((prev) => [...prev, newTab])
+            if (!location.pathname.startsWith(path)) {
+                navigate({ to: path as NavigateTo })
+            }
+            return true
+        },
+        [tabs, navigate, location.pathname]
+    )
+
     const activeTabId = useMemo(() => {
         // 1. 处理 /admin 首页路径，映射到 dashboard
         const normalizedPath = location.pathname === '/admin' ? '/admin/dashboard' : location.pathname
 
         // 2. 优先根据当前路径匹配已有的 Tab（考虑 scope）
-        const matchingTab = scopedTabs.find((tab) => tab.path === normalizedPath)
-        if (matchingTab) return matchingTab.id
+        let matchingTab = scopedTabs.find((tab) => tab.path === normalizedPath)
 
+        // 3. 如果没有精确匹配，尝试匹配父级路径（针对设置页等嵌套页面）
+        if (!matchingTab) {
+            if (normalizedPath.startsWith('/admin/profile/settings')) {
+                matchingTab = scopedTabs.find((tab) => tab.path === '/admin/profile/settings')
+            }
+        }
+
+        if (matchingTab) return matchingTab.id
         return null
     }, [scopedTabs, location.pathname])
+
+    // 辅助函数：根据路径推断标题
+    const getTitleForPath = useCallback((path: string): string => {
+        // 常规路径映射
+        const titleMap: Record<string, string> = {
+            '/admin/dashboard': '系统概览',
+            '/admin/users': '用户管理',
+            '/admin/roles': '角色管理',
+            '/admin/log': '系统日志',
+            '/admin/profile/settings': '账号设置',
+            '/admin/settings': '系统设置',
+            '/admin/identity/users': '用户列表',
+            '/admin/identity/roles': '权限分配',
+        }
+
+        if (titleMap[path]) return titleMap[path]
+
+        // 智能推断：提取路径最后一段
+        const segments = path.split('/').filter(Boolean)
+        const lastSegment = segments[segments.length - 1]
+
+        if (lastSegment) {
+            // 常见词库翻译
+            const segmentMap: Record<string, string> = {
+                'settings': '设置',
+                'profile': '个人资料',
+                'dashboard': '概览',
+                'users': '用户',
+                'roles': '角色',
+                'permissions': '权限',
+                'log': '日志',
+                'audit': '审计',
+                'account': '账户',
+                'security': '安全',
+                'identity': '身份认证',
+                'system': '系统',
+            }
+
+            if (segmentMap[lastSegment.toLowerCase()]) {
+                return segmentMap[lastSegment.toLowerCase()]
+            }
+
+            // 兜底：首字母大写
+            return lastSegment.charAt(0).toUpperCase() + lastSegment.slice(1)
+        }
+
+        return '详情页'
+    }, [])
+
+    // 自动打开标签页逻辑
+    useEffect(() => {
+        let path = location.pathname === '/admin' ? '/admin/dashboard' : location.pathname
+
+        // 特殊处理：设置页及其子页面统统归类到 /admin/profile/settings 标签
+        if (path.startsWith('/admin/profile/settings')) {
+            path = '/admin/profile/settings'
+        }
+
+        // 只处理对应的 Scope
+        const targetScope: TabScope = path.startsWith('/admin') ? 'ADMIN' : 'APP'
+        if (targetScope !== currentScope) return
+
+        const existingTab = tabs.find((tab) => tab.path === path)
+        if (!existingTab) {
+            const title = getTitleForPath(path)
+            openTab(path, title)
+        }
+    }, [location.pathname, tabs, openTab, currentScope, getTitleForPath])
 
     // 客户端从 localStorage 恢复 tabs
     useEffect(() => {
@@ -97,42 +212,6 @@ export function TabProvider({ children }: { children: React.ReactNode }) {
         }
     }, [tabs])
 
-    // 打开新标签页或激活已存在的标签页
-    const openTab = useCallback(
-        (path: string | undefined, title: string, icon?: React.ElementType | string): boolean => {
-            if (!path) return false
-
-            const targetScope: TabScope = path.startsWith('/admin') ? 'ADMIN' : 'APP'
-            const existingTab = tabs.find((tab) => tab.path === path)
-
-            if (existingTab) {
-                navigate({ to: path as NavigateTo })
-                return true
-            }
-
-            if (tabs.length >= MAX_TABS) {
-                console.warn(`已达到最大标签页数量限制 (${MAX_TABS})`)
-                return false
-            }
-
-            const newTab: Tab = {
-                id: `tab-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-                title,
-                path,
-                icon,
-                order: tabs.length,
-                closable: true,
-                sortable: true,
-                scope: targetScope,
-            }
-
-            setTabs((prev) => [...prev, newTab])
-            navigate({ to: path as NavigateTo })
-            return true
-        },
-        [tabs, navigate]
-    )
-
     // 关闭标签页
     const closeTab = useCallback(
         (tabId: string) => {
@@ -177,10 +256,19 @@ export function TabProvider({ children }: { children: React.ReactNode }) {
     // 关闭其他标签页
     const closeOtherTabs = useCallback(
         (tabId: string) => {
-            const tab = tabs.find((t) => t.id === tabId)
-            if (tab) {
-                const protectedTabs = tabs.filter(t => t.closable === false || t.id === tabId)
-                setTabs(protectedTabs.map((t, index) => ({ ...t, order: index })))
+            const protectedTabs = tabs.filter(t => t.closable === false || t.id === tabId)
+            setTabs(protectedTabs.map((t, index) => ({ ...t, order: index })))
+        },
+        [tabs]
+    )
+
+    // 关闭右侧标签页
+    const closeTabsToRight = useCallback(
+        (tabId: string) => {
+            const tabIndex = tabs.findIndex((tab) => tab.id === tabId)
+            if (tabIndex !== -1) {
+                const protectedTabs = tabs.filter((t, index) => t.closable === false || index <= tabIndex)
+                setTabs(protectedTabs)
             }
         },
         [tabs]
@@ -203,7 +291,7 @@ export function TabProvider({ children }: { children: React.ReactNode }) {
             if (prev[startIndex].sortable === false || prev[endIndex].sortable === false) {
                 return prev
             }
-            
+
             const result = Array.from(prev)
             const [removed] = result.splice(startIndex, 1)
             result.splice(endIndex, 0, removed)
@@ -221,6 +309,7 @@ export function TabProvider({ children }: { children: React.ReactNode }) {
         closeTab,
         activateTab,
         closeOtherTabs,
+        closeTabsToRight,
         closeAllTabs,
         reorderTabs,
     }
