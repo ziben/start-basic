@@ -7,105 +7,104 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-Write-Host ">> Sync upstream with name protection" -ForegroundColor Cyan
+# ==========================================
+# 保护名单配置 (全文件保护)
+# 这些文件在合并后将完全恢复为本地版本
+# ==========================================
+$ProtectedFiles = @(
+  "ecosystem.config.cjs",
+  "README.md"
+  # "public/favicon.ico" # 如果有需要也可以加在这里
+)
+
+Write-Host ">> Sync upstream with multi-layer protection" -ForegroundColor Cyan
 Write-Host "Repo: $RepoPath"
 Write-Host "Upstream: $Upstream ($UpstreamBranch)"
 Write-Host "Local: $LocalBranch"
 
-# 0. 检查 ecosystem.config.cjs 状态
-Write-Host "ecosystem.config.cjs is now tracked by git, we will protect your local copy during sync." -ForegroundColor DarkGray
-
 Set-Location $RepoPath
 
-# 1. 获取当前的 package.json 中的项目名称
+# 1. 专项保护：获取当前的 package.json 中的项目名称
+# (因为 package.json 需要合并依赖，所以不能全文件保护，只能字段级保护)
 if (Test-Path "package.json") {
-    $currentPackage = Get-Content "package.json" -Raw | ConvertFrom-Json
-    $localProjectName = $currentPackage.name
-    Write-Host "Preserving local project name: $localProjectName" -ForegroundColor DarkGray
-} else {
-    Write-Error "package.json not found!"
-    exit 1
+  $currentPackage = Get-Content "package.json" -Raw | ConvertFrom-Json
+  $localProjectName = $currentPackage.name
+  Write-Host "[Protect] Local project name: $localProjectName" -ForegroundColor DarkGray
 }
 
-# 2. 备份本地 ecosystem.config.cjs
-$ecosystemBackupPath = [System.IO.Path]::GetTempFileName()
-$hasEcosystem = Test-Path "ecosystem.config.cjs"
-if ($hasEcosystem) {
-    Copy-Item "ecosystem.config.cjs" $ecosystemBackupPath
-    Write-Host "Backed up local ecosystem.config.cjs" -ForegroundColor DarkGray
+# 2. 全文件保护：备份名单中的文件
+$BackupDir = Join-Path $env:TEMP "zi-sync-backup-$(Get-Date -Format 'yyyyMMddHHmmss')"
+New-Item -ItemType Directory -Path $BackupDir | Out-Null
+$Backups = @{}
+
+foreach ($file in $ProtectedFiles) {
+  if (Test-Path $file) {
+    $dest = Join-Path $BackupDir $file.Replace("/", "_").Replace("\", "_")
+    Copy-Item $file $dest
+    $Backups[$file] = $dest
+    Write-Host "[Protect] Backed up $file" -ForegroundColor DarkGray
+  }
 }
 
-# 3. 确保 remote 存在
+# 3. 确保 git remote 存在
 if (-not (git remote | Select-String -Pattern "upstream")) {
   git remote add upstream $Upstream
-  Write-Host "Added upstream remote" -ForegroundColor Green
+  Write-Host "Added upstream remote: $Upstream" -ForegroundColor Green
 }
 
 Write-Host "Fetching from upstream..." -ForegroundColor Gray
 git fetch upstream
 
-# 3. 切换到本地分支
+# 4. 切换到本地分支
 git checkout $LocalBranch
 
-# 4. 执行合并
+# 5. 执行合并
 Write-Host "Merging upstream/$UpstreamBranch..." -ForegroundColor Gray
 try {
-    # 尝试合并
-    $mergeOutput = git merge "upstream/$UpstreamBranch"
-    Write-Host $mergeOutput
-} catch {
-    Write-Host "Merge encountered conflicts or failed." -ForegroundColor Yellow
+  # 尝试合并
+  $mergeOutput = git merge "upstream/$UpstreamBranch"
+  Write-Host $mergeOutput
+}
+catch {
+  Write-Host "Merge encountered conflicts or failed. Protection will still attempt to restore local files." -ForegroundColor Yellow
 }
 
-# 5. 恢复并保护 package.json 中的名称
+# 6. 恢复专项保护：恢复 package.json 中的名称
 if (Test-Path "package.json") {
-    $mergedPackageRaw = Get-Content "package.json" -Raw
-    $mergedPackage = $mergedPackageRaw | ConvertFrom-Json
-    
-    if ($mergedPackage.name -ne $localProjectName) {
-        Write-Host "Restoring project name to '$localProjectName'..." -ForegroundColor Cyan
-        $mergedPackage.name = $localProjectName
-        
-        # 转换回 JSON 并保持格式 (PowerShell 的 ConvertTo-Json 在处理深度和字符编码时需要注意)
-        # 使用 -Depth 100 确保复杂对象不被截断
-        $jsonOutput = $mergedPackage | ConvertTo-Json -Depth 100
-        
-        # 简单的正则修复：ConvertTo-Json 可能会把某些字符转义，这里通过 Set-Content 保持 UTF8
-        # 如果你发现缩进变了，可以使用更复杂的方案，但通常对于 package.json 够用了
-        [System.IO.File]::WriteAllText((Join-Path $PWD "package.json"), $jsonOutput)
-        
-        Write-Host "package.json name restored." -ForegroundColor Green
-        
-        # 如果目前是合并中的状态或者是干净的状态，自动 commit
-        if ((git status --porcelain | Select-String "package.json")) {
-             git add package.json
-             Write-Host "Auto-staged package.json changes." -ForegroundColor Gray
-        }
-    }
+  $mergedPackage = Get-Content "package.json" -Raw | ConvertFrom-Json
+  if ($mergedPackage.name -ne $localProjectName) {
+    Write-Host "[Restore] Restoring project name to '$localProjectName'..." -ForegroundColor Cyan
+    $mergedPackage.name = $localProjectName
+    $jsonOutput = $mergedPackage | ConvertTo-Json -Depth 100
+    [System.IO.File]::WriteAllText((Join-Path $PWD "package.json"), $jsonOutput)
+    git add package.json
+  }
 }
 
-# 6. 恢复 ecosystem.config.cjs
-if ($hasEcosystem) {
-    if (Test-Path "ecosystem.config.cjs") {
-        # 如果合并产生了新的文件，检查是否不同
-        $currentHash = (Get-FileHash "ecosystem.config.cjs").Hash
-        $backupHash = (Get-FileHash $ecosystemBackupPath).Hash
-        
-        if ($currentHash -ne $backupHash) {
-            Write-Host "Restoring your local ecosystem.config.cjs..." -ForegroundColor Cyan
-            Copy-Item $ecosystemBackupPath "ecosystem.config.cjs" -Force
-            Write-Host "ecosystem.config.cjs restored." -ForegroundColor Green
-        }
-    } else {
-        # 如果文件在合并中由于某种原因消失了，恢复它
-        Write-Host "Restoring missing ecosystem.config.cjs..." -ForegroundColor Cyan
-        Copy-Item $ecosystemBackupPath "ecosystem.config.cjs"
-        Write-Host "ecosystem.config.cjs restored." -ForegroundColor Green
+# 7. 恢复全文件保护：恢复名单中的文件
+foreach ($file in $Backups.Keys) {
+  $backupPath = $Backups[$file]
+  if (Test-Path $file) {
+    $currentHash = (Get-FileHash $file).Hash
+    $backupHash = (Get-FileHash $backupPath).Hash
+    if ($currentHash -ne $backupHash) {
+      Write-Host "[Restore] Restoring local version of $file..." -ForegroundColor Cyan
+      Copy-Item $backupPath $file -Force
+      git add $file
     }
+  }
+  else {
+    Write-Host "[Restore] Restoring missing file $file..." -ForegroundColor Cyan
+    Copy-Item $backupPath $file
+    git add $file
+  }
 }
 
 # 清理备份
-if (Test-Path $ecosystemBackupPath) { Remove-Item $ecosystemBackupPath }
+Remove-Item $BackupDir -Recurse -Force
 
 Write-Host "`nDone." -ForegroundColor Green
-Write-Host "If there are conflicts in other files, please resolve them manually." -ForegroundColor Yellow
+Write-Host "--------------------------------------------------------"
+Write-Host "Pro Tip: If upstream updated '.env.example', please check"
+Write-Host "if you need to add new keys to your local '.env' file."
+Write-Host "--------------------------------------------------------" -ForegroundColor DarkGray
