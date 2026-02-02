@@ -34,7 +34,6 @@ yarn.lock
 # PM2
 .pm2
 *.pid
-ecosystem.config.cjs
 
 # 应用日志
 logs/
