@@ -41,6 +41,25 @@ type OAuthUser = User & Record<string, unknown>
 type OAuthAccount = { id: string; providerId: string }
 type OAuthUserResult = { user: OAuthUser; accounts: OAuthAccount[] }
 
+/**
+ * 生成简短的邮箱前缀
+ * 使用 SHA-256 哈希的前 12 位，确保唯一性的同时缩短长度
+ * 例如：openid "oX4pC6..." -> "a3f5b2c1d4e6"
+ */
+async function generateEmailPrefix(id: string): Promise<string> {
+  // 使用 Web Crypto API 生成 SHA-256 哈希
+  const encoder = new TextEncoder()
+  const data = encoder.encode(id)
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data)
+
+  // 转换为十六进制字符串
+  const hashArray = Array.from(new Uint8Array(hashBuffer))
+  const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
+
+  // 取前 12 位（足够唯一，且比原 openid 短很多）
+  return hashHex.substring(0, 12)
+}
+
 export function wechatOAuth(options: WeChatOAuthOptions): BetterAuthPlugin {
   const { appId, appSecret, syntheticEmailDomain = 'wechat.local', debug = false } = options
 
@@ -305,7 +324,11 @@ export function wechatOAuth(options: WeChatOAuthOptions): BetterAuthPlugin {
       expiresIn,
       scope,
     } = params
-    const email = `${providerUserId}@${syntheticEmailDomain}`.toLowerCase()
+
+    // 使用 SHA-256 哈希的前 12 位作为邮箱前缀，缩短邮箱长度
+    const emailPrefix = await generateEmailPrefix(providerUserId)
+    const email = `${emailPrefix}@${syntheticEmailDomain}`.toLowerCase()
+
     const dbUser = (await ctx.context.internalAdapter
       .findOAuthUser(email, providerUserId, 'wechat')
       .catch(() => null)) as OAuthUserResult | null
