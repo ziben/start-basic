@@ -24,6 +24,16 @@ export const adminUsersSchema = z.object({
   banExpires: z.string().or(z.date()).nullable().optional(),
   username: z.string().nullable().optional(),
   displayUsername: z.string().nullable().optional(),
+  accounts: z
+    .array(
+      z.object({
+        id: z.string(),
+        providerId: z.string(),
+        accountId: z.string(),
+        createdAt: z.string().or(z.date()),
+      })
+    )
+    .optional(),
 })
 
 export const adminUsersListSchema = z.array(adminUsersSchema)

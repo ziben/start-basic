@@ -4,7 +4,6 @@
 
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
-import { getWeChatPayClient } from '../lib/wechat-pay'
 
 // 请求参数校验
 const prepaySchema = z.object({
@@ -19,7 +18,7 @@ const prepaySchema = z.object({
  * 创建微信支付预订单
  */
 export const createPrepayOrderFn = createServerFn({ method: 'POST' })
-    .validator((data: unknown) => prepaySchema.parse(data))
+    .inputValidator((data: unknown) => prepaySchema.parse(data))
     .handler(async ({ data }: { data: z.infer<typeof prepaySchema> }) => {
         const { getRequest } = await import('@tanstack/react-start/server')
         const { auth } = await import('../../../auth/shared/lib/auth')
@@ -34,7 +33,8 @@ export const createPrepayOrderFn = createServerFn({ method: 'POST' })
         }
 
         const prisma = await getDb()
-        const client = getWeChatPayClient()
+        const { getWeChatPayClient } = await import('../lib/wechat-pay')
+        const client = await getWeChatPayClient()
 
         // 生成商户订单号 (格式: 时间戳 + 随机字符)
         const outTradeNo = `${Date.now()}${Math.random().toString(36).substring(2, 8).toUpperCase()}`
@@ -71,7 +71,16 @@ export const createPrepayOrderFn = createServerFn({ method: 'POST' })
                 }
             } else {
                 // JSAPI 支付 (公众号/小程序)
-                if (!data.openid) {
+                // 优先使用前端传入的 openid，否则从 account 表查（idToken 字段存储了 openid）
+                let openid = data.openid
+                if (!openid) {
+                    const wechatAccount = await prisma.account.findFirst({
+                        where: { userId: session.user.id, providerId: 'wechat' },
+                        select: { idToken: true },
+                    })
+                    openid = wechatAccount?.idToken ?? undefined
+                }
+                if (!openid) {
                     throw new Error('openid is required for JSAPI payment')
                 }
 
@@ -80,17 +89,25 @@ export const createPrepayOrderFn = createServerFn({ method: 'POST' })
                     out_trade_no: outTradeNo,
                     notify_url: process.env.WECHAT_PAY_NOTIFY_URL!,
                     amount: { total: data.amount, currency: 'CNY' },
-                    payer: { openid: data.openid },
+                    payer: { openid },
                     attach: data.attach,
                 })
 
-                // 生成前端调起支付所需的签名参数
-                const jsapiParams = await client.generateJSAPIPaymentParams(result.prepay_id)
+                // SDK 返回 { status, data: { appId, timeStamp, nonceStr, package, signType, paySign } }
+                const jsapiData = result.data || result
+                const jsapiParams = {
+                    appId: jsapiData.appId,
+                    timeStamp: jsapiData.timeStamp,
+                    nonceStr: jsapiData.nonceStr,
+                    package: jsapiData.package,
+                    signType: jsapiData.signType || 'RSA' as const,
+                    paySign: jsapiData.paySign,
+                }
 
                 return {
                     orderId: order.id,
                     outTradeNo,
-                    prepayId: result.prepay_id,
+                    prepayId: jsapiData.package?.replace('prepay_id=', ''),
                     jsapiParams,
                 }
             }
@@ -112,15 +129,24 @@ export const createPrepayOrderFn = createServerFn({ method: 'POST' })
  * 查询订单状态
  */
 export const queryOrderStatusFn = createServerFn({ method: 'GET' })
-    .validator((data: unknown) => z.object({ orderId: z.string() }).parse(data))
+    .inputValidator((data: unknown) => z.object({ orderId: z.string() }).parse(data))
     .handler(async ({ data }: { data: { orderId: string } }) => {
+        const { getRequest } = await import('@tanstack/react-start/server')
+        const { auth } = await import('../../../auth/shared/lib/auth')
         const { getDb } = await import('~/shared/lib/db')
-        const prisma = await getDb()
 
+        const { headers } = getRequest()!
+        const session = await auth.api.getSession({ headers })
+        if (!session?.user?.id) {
+            throw new Error('Unauthorized')
+        }
+
+        const prisma = await getDb()
         const order = await prisma.paymentOrder.findUnique({
             where: { id: data.orderId },
             select: {
                 id: true,
+                userId: true,
                 outTradeNo: true,
                 transactionId: true,
                 amount: true,
@@ -136,25 +162,41 @@ export const queryOrderStatusFn = createServerFn({ method: 'GET' })
             throw new Error('Order not found')
         }
 
-        return order
+        if (order.userId !== session.user.id) {
+            throw new Error('Forbidden')
+        }
+
+        const { userId: _, ...orderWithoutUserId } = order
+        return orderWithoutUserId
     })
 
 /**
  * 主动查询微信支付订单状态 (用于客户端轮询)
  */
 export const syncOrderStatusFn = createServerFn({ method: 'POST' })
-    .validator((data: unknown) => z.object({ orderId: z.string() }).parse(data))
+    .inputValidator((data: unknown) => z.object({ orderId: z.string() }).parse(data))
     .handler(async ({ data }: { data: { orderId: string } }) => {
+        const { getRequest } = await import('@tanstack/react-start/server')
+        const { auth } = await import('../../../auth/shared/lib/auth')
         const { getDb } = await import('~/shared/lib/db')
-        const prisma = await getDb()
-        const client = getWeChatPayClient()
 
+        const { headers } = getRequest()!
+        const session = await auth.api.getSession({ headers })
+        if (!session?.user?.id) {
+            throw new Error('Unauthorized')
+        }
+
+        const prisma = await getDb()
         const order = await prisma.paymentOrder.findUnique({
             where: { id: data.orderId },
         })
 
         if (!order) {
             throw new Error('Order not found')
+        }
+
+        if (order.userId !== session.user.id) {
+            throw new Error('Forbidden')
         }
 
         // 如果订单已完成，直接返回
@@ -164,6 +206,8 @@ export const syncOrderStatusFn = createServerFn({ method: 'POST' })
 
         try {
             // 查询微信支付订单状态
+            const { getWeChatPayClient } = await import('../lib/wechat-pay')
+            const client = await getWeChatPayClient()
             const result = await client.queryOrderByOutTradeNo(order.outTradeNo)
 
             if (result.trade_state === 'SUCCESS') {
@@ -176,6 +220,10 @@ export const syncOrderStatusFn = createServerFn({ method: 'POST' })
                         paidAt: new Date(result.success_time),
                     },
                 })
+
+                // 触发业务逻辑：给用户加余额
+                const { onPaymentSuccess } = await import('./notify')
+                await onPaymentSuccess(order.id, result)
 
                 return {
                     status: 'SUCCESS',
@@ -201,12 +249,19 @@ export const syncOrderStatusFn = createServerFn({ method: 'POST' })
  * 关闭订单 (取消支付)
  */
 export const closeOrderFn = createServerFn({ method: 'POST' })
-    .validator((data: unknown) => z.object({ orderId: z.string() }).parse(data))
+    .inputValidator((data: unknown) => z.object({ orderId: z.string() }).parse(data))
     .handler(async ({ data }: { data: { orderId: string } }) => {
+        const { getRequest } = await import('@tanstack/react-start/server')
+        const { auth } = await import('../../../auth/shared/lib/auth')
         const { getDb } = await import('~/shared/lib/db')
-        const prisma = await getDb()
-        const client = getWeChatPayClient()
 
+        const { headers } = getRequest()!
+        const session = await auth.api.getSession({ headers })
+        if (!session?.user?.id) {
+            throw new Error('Unauthorized')
+        }
+
+        const prisma = await getDb()
         const order = await prisma.paymentOrder.findUnique({
             where: { id: data.orderId },
         })
@@ -215,11 +270,17 @@ export const closeOrderFn = createServerFn({ method: 'POST' })
             throw new Error('Order not found')
         }
 
+        if (order.userId !== session.user.id) {
+            throw new Error('Forbidden')
+        }
+
         if (order.status !== 'PENDING') {
             throw new Error('Only pending orders can be closed')
         }
 
         try {
+            const { getWeChatPayClient } = await import('../lib/wechat-pay')
+            const client = await getWeChatPayClient()
             await client.closeOrder(order.outTradeNo)
 
             await prisma.paymentOrder.update({

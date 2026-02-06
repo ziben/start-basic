@@ -4,6 +4,7 @@ import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import { cn, formatDate } from '@/shared/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { DataTableColumnHeader } from '@/components/data-table'
 import { type AdminUser } from '../data/schema'
 import { DataTableRowActions } from './data-table-row-actions'
@@ -66,12 +67,74 @@ export function useAdminUsersColumns(): ColumnDef<AdminUser>[] {
         meta: { className: 'w-48', title: t('admin.user.table.email') },
       },
       {
+        accessorKey: 'accounts',
+        header: ({ column }) => <DataTableColumnHeader column={column} title="登录方式" />,
+        cell: ({ row }) => {
+          const accounts = row.original.accounts || []
+
+          if (accounts.length === 0) {
+            return <div className="text-muted-foreground">-</div>
+          }
+
+          // Provider ID 到中文映射
+          const providerLabels: Record<string, string> = {
+            wechat: '微信',
+            username: '用户名',
+            email: '邮箱',
+            google: 'Google',
+            github: 'GitHub',
+          }
+
+          return (
+            <div className="flex flex-wrap gap-1">
+              {accounts.map((account) => (
+                <TooltipProvider key={account.id}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Badge variant="secondary" className="cursor-help">
+                        {providerLabels[account.providerId] || account.providerId}
+                      </Badge>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <div className="text-xs space-y-1">
+                        <div className="font-medium">
+                          {providerLabels[account.providerId] || account.providerId}登录
+                        </div>
+                        {account.providerId !== 'username' && account.providerId !== 'email' && (
+                          <div className="text-muted-foreground">
+                            ID: {account.accountId.substring(0, 12)}...
+                          </div>
+                        )}
+                        {(account.providerId === 'username' || account.providerId === 'email') && (
+                          <div>
+                            {account.providerId === 'username' ? '用户名' : '邮箱'}: {account.accountId}
+                          </div>
+                        )}
+                        <div className="text-muted-foreground">
+                          绑定于: {formatDate(account.createdAt)}
+                        </div>
+                      </div>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              ))}
+              {accounts.length > 1 && (
+                <Badge variant="outline" className="text-muted-foreground">
+                  ({accounts.length})
+                </Badge>
+              )}
+            </div>
+          )
+        },
+        meta: { className: 'w-40', title: '登录方式' },
+      },
+      {
         accessorKey: 'role',
         header: ({ column }) => <DataTableColumnHeader column={column} title={t('admin.user.table.role')} />,
         cell: ({ row }) => {
           const role = row.getValue('role') as string
           const systemRoles = row.original.systemRoles || []
-          
+
           // 如果有详细的 systemRoles 信息，优先使用它
           if (systemRoles.length > 0) {
             return (

@@ -152,6 +152,7 @@ function RootDocument({ children }: { children: React.ReactNode }): React.ReactE
   return (
     <html suppressHydrationWarning>
       <head>
+        <script dangerouslySetInnerHTML={{ __html: `if(!Object.hasOwn){Object.hasOwn=function(o,p){return Object.prototype.hasOwnProperty.call(o,p)}}` }} />
         <HeadContent />
       </head>
       <body className='group/body'>

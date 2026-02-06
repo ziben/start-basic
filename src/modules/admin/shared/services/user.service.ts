@@ -73,6 +73,20 @@ export const UserService = {
                     orderBy,
                     skip: (page - 1) * pageSize,
                     take: pageSize,
+                    include: {
+                        accounts: {
+                            select: {
+                                id: true,
+                                providerId: true,
+                                accountId: true,
+                                createdAt: true,
+                                // 不返回敏感信息
+                                // accessToken: false,
+                                // refreshToken: false,
+                                // password: false,
+                            },
+                        },
+                    },
                 }),
             ])
 

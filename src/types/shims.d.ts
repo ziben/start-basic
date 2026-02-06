@@ -1,41 +1,41 @@
-// Limited shims to reduce noise from third-party type differences
-// Keep minimal and remove when upstream types are aligned.
+/**
+ * TypeScript Shims and Type Augmentations
+ *
+ * 这个文件定义了第三方库的类型补充和全局类型扩展
+ * 仅包含必要的类型声明，官方已提供类型的库不再重复声明
+ */
 
-// Allow importing certain modules that may not have types in this environment
-declare module '@tanstack/react-start/api'
+// ============================================================================
+// Asset Imports
+// ============================================================================
 
+/**
+ * SVG文件模块声明
+ * 允许在 TypeScript 中导入 .svg 文件
+ */
 declare module '*.svg' {
   const content: string
   export default content
 }
 
-// widen some global types used in middleware/server fns
-declare module '@tanstack/start-client-core' {
-  // re-export minimal types if needed (kept empty to avoid errors)
-}
+// ============================================================================
+// Better Auth Extensions
+// ============================================================================
 
-// Minimal shims for @tanstack/react-start to satisfy TypeScript until
-// upstream types are aligned with the project's usage.
-declare module '@tanstack/react-start' {
-  export function createServerFn(opts?: any): {
-    inputValidator: (fn: any) => any;
-    validator: (fn: any) => any;
-    handler: (fn: any) => any;
-    middleware: (fn: any) => any;
-  }
-  export function createStart(opts?: any): any
-  export function registerGlobalMiddleware(...args: any[]): any
-  export function createMiddleware(...args: any[]): any
-  export function createServerFileRoute(...args: any[]): any
-}
-
-declare module '@tanstack/react-start/plugin/vite' {
-  export const tanstackStart: any
-}
-
+/**
+ * Better Auth Cookie 工具函数扩展
+ * 补充 better-auth/cookies 模块的类型定义
+ */
 declare module 'better-auth/cookies' {
   import type { GenericEndpointContext, Session, User } from 'better-auth'
 
+  /**
+   * 设置会话Cookie
+   * @param ctx - 端点上下文
+   * @param session - 会话和用户信息
+   * @param dontRememberMe - 是否不记住登录状态
+   * @param overrides - Cookie覆盖选项
+   */
   export function setSessionCookie(
     ctx: GenericEndpointContext,
     session: {
@@ -47,3 +47,54 @@ declare module 'better-auth/cookies' {
   ): Promise<void>
 }
 
+// ============================================================================
+// Third-Party SDKs
+// ============================================================================
+
+/**
+ * 微信JS-SDK Bridge接口
+ * 用于微信内置浏览器的原生功能调用
+ */
+interface WeixinJSBridgeInstance {
+  /**
+   * 调用微信原生API
+   * @param api - API名称
+   * @param params - 参数对象
+   * @param callback - 回调函数
+   */
+  invoke(
+    api: string,
+    params: Record<string, unknown>,
+    callback: (res: { err_msg: string }) => void
+  ): void
+
+  /**
+   * 监听微信事件
+   * @param event - 事件名称
+   * @param callback - 事件回调
+   */
+  on(event: string, callback: (res: unknown) => void): void
+
+  /**
+   * 直接调用微信API（无回调）
+   * @param api - API名称
+   * @param params - 可选参数
+   */
+  call(api: string, params?: Record<string, unknown>): void
+}
+
+// ============================================================================
+// Global Type Augmentations
+// ============================================================================
+
+declare global {
+  /**
+   * 微信JS-SDK Bridge全局对象
+   * 仅在微信内置浏览器中可用
+   */
+  // eslint-disable-next-line no-var
+  var WeixinJSBridge: WeixinJSBridgeInstance | undefined
+}
+
+// 必须导出以使其成为模块
+export { }

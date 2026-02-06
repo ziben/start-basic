@@ -20,6 +20,12 @@ export type PrismaUser = {
     name: string
     label: string
   }>
+  accounts?: Array<{
+    id: string
+    providerId: string
+    accountId: string
+    createdAt: Date
+  }>
 }
 
 /**
@@ -67,6 +73,7 @@ export function serializeAdminUser(user: PrismaUser): AdminUser {
     banExpires: user.banExpires ?? null,
     username: user.username ?? null,
     displayUsername: user.displayUsername ?? null,
+    accounts: user.accounts || [],
   }
 }
 
@@ -176,6 +183,106 @@ export function getErrorStatus(type: ApiErrorType): number {
   }
 }
 
+// ============ Payment Order Utils ============
 
+/**
+ * Sort fields allowed for payment order queries
+ */
+export const PAYMENT_ORDER_SORT_FIELDS = ['createdAt', 'updatedAt', 'amount', 'paidAt', 'status'] as const
+export type PaymentOrderSortField = (typeof PAYMENT_ORDER_SORT_FIELDS)[number]
 
+/**
+ * Check if a string is a valid payment order sort field
+ */
+export function isValidPaymentOrderSortField(value: string): value is PaymentOrderSortField {
+  return PAYMENT_ORDER_SORT_FIELDS.includes(value as PaymentOrderSortField)
+}
+
+/**
+ * Type for Prisma PaymentOrder with user relation
+ */
+export type PrismaPaymentOrder = {
+  id: string
+  userId: string
+  outTradeNo: string
+  transactionId: string | null
+  amount: number
+  status: string
+  description: string
+  paymentMethod: string
+  createdAt: Date
+  updatedAt: Date
+  paidAt: Date | null
+  metadata: unknown
+  user?: {
+    id: string
+    name: string
+    email: string
+    image: string | null
+    username?: string | null
+  }
+}
+
+/**
+ * Serialized payment order type
+ */
+export type SerializedPaymentOrder = {
+  id: string
+  userId: string
+  outTradeNo: string
+  transactionId: string | null
+  amount: number
+  amountYuan: string // 金额（元）
+  status: string
+  description: string
+  paymentMethod: string
+  createdAt: string
+  updatedAt: string
+  paidAt: string | null
+  metadata: unknown
+  user?: {
+    id: string
+    name: string
+    email: string
+    image: string | null
+    username: string | null
+  }
+}
+
+/**
+ * Serialize Prisma PaymentOrder to API format
+ */
+export function serializePaymentOrder(order: PrismaPaymentOrder): SerializedPaymentOrder {
+  return {
+    id: order.id,
+    userId: order.userId,
+    outTradeNo: order.outTradeNo,
+    transactionId: order.transactionId,
+    amount: order.amount,
+    amountYuan: (order.amount / 100).toFixed(2), // 分转元
+    status: order.status,
+    description: order.description,
+    paymentMethod: order.paymentMethod,
+    createdAt: order.createdAt.toISOString(),
+    updatedAt: order.updatedAt.toISOString(),
+    paidAt: order.paidAt?.toISOString() ?? null,
+    metadata: order.metadata,
+    user: order.user
+      ? {
+        id: order.user.id,
+        name: order.user.name,
+        email: order.user.email,
+        image: order.user.image,
+        username: order.user.username ?? null,
+      }
+      : undefined,
+  }
+}
+
+/**
+ * Serialize array of Prisma PaymentOrders to API format
+ */
+export function serializePaymentOrders(orders: PrismaPaymentOrder[]): SerializedPaymentOrder[] {
+  return orders.map(serializePaymentOrder)
+}
 

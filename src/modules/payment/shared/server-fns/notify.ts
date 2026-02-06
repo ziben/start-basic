@@ -6,7 +6,6 @@
  */
 
 import {
-    getWeChatPayClient,
     type WeChatPayNotification,
     type PaymentResult,
 } from '../lib/wechat-pay'
@@ -22,7 +21,8 @@ export async function handleWeChatPayNotify(
 ): Promise<{ code: 'SUCCESS' | 'FAIL'; message: string }> {
     const { getDb } = await import('../../../../shared/lib/db')
     const prisma = await getDb()
-    const client = getWeChatPayClient()
+    const { getWeChatPayClient } = await import('../lib/wechat-pay')
+    const client = await getWeChatPayClient()
 
     try {
         // 解密通知数据
@@ -111,7 +111,8 @@ export async function verifyWeChatPaySignature(
     headers: Record<string, string | undefined>,
     body: string
 ): Promise<boolean> {
-    const client = getWeChatPayClient()
+    const { getWeChatPayClient } = await import('../lib/wechat-pay')
+    const client = await getWeChatPayClient()
 
     const timestamp = headers['wechatpay-timestamp']
     const nonce = headers['wechatpay-nonce']
@@ -146,12 +147,42 @@ export async function verifyWeChatPaySignature(
  * - 创建发货单
  * - 记录审计日志
  */
-export async function onPaymentSuccess(orderId: string, result: Partial<PaymentResult>): Promise<void> {
-    // 这里是业务钩子的核心位置
-    console.log('🔔 [WeChatPay Biz Hook] 支付成功钩子已触发！')
-    console.log(`订单 ID: ${orderId}`)
-    console.log(`支付结果:`, JSON.stringify(result, null, 2))
+export async function onPaymentSuccess(orderId: string, _result: Partial<PaymentResult>): Promise<void> {
+    const { getDb } = await import('../../../../shared/lib/db')
+    const prisma = await getDb()
 
-    // TODO: 实现你的业务逻辑
-    // 例如：await prisma.user.update(...)
+    const order = await prisma.paymentOrder.findUnique({
+        where: { id: orderId },
+        select: { userId: true, amount: true, status: true, outTradeNo: true },
+    })
+
+    if (!order) {
+        console.error('[WeChatPay Biz] onPaymentSuccess: order not found', orderId)
+        return
+    }
+
+    // 幂等检查：看是否已经加过余额（通过 balanceHistory 的 relatedId）
+    const existing = await prisma.zcBalanceHistory.findFirst({
+        where: { relatedId: orderId, type: 'RECHARGE' },
+    })
+    if (existing) {
+        console.log('[WeChatPay Biz] onPaymentSuccess: already processed', orderId)
+        return
+    }
+
+    // 给用户加余额
+    const { ZcUserService } = await import('../../../zc/shared/services/zc-user.service')
+    await ZcUserService.updateBalance({
+        userId: order.userId,
+        delta: order.amount,
+        type: 'RECHARGE',
+        description: `微信支付充值 (${order.outTradeNo})`,
+        relatedId: orderId,
+    })
+
+    console.log('[WeChatPay Biz] onPaymentSuccess: balance updated', {
+        orderId,
+        userId: order.userId,
+        amount: order.amount,
+    })
 }

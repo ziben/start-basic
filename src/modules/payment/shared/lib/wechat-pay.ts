@@ -16,8 +16,7 @@
  * @see https://pay.weixin.qq.com/wiki/doc/apiv3/index.shtml
  */
 
-import { readFileSync } from 'node:fs'
-import { resolve } from 'node:path'
+// node:fs / node:path 仅在服务端使用，延迟加载避免客户端打包报错
 
 // 微信支付配置
 export interface WeChatPayConfig {
@@ -109,6 +108,12 @@ export interface JSAPIPaymentParams {
     paySign: string
 }
 
+// SDK transactions_jsapi 返回类型
+export interface WxPayJSAPIResponse {
+    status: number
+    data: JSAPIPaymentParams
+}
+
 let wechatPayInstance: WeChatPayClient | null = null
 
 /**
@@ -122,7 +127,6 @@ export class WeChatPayClient {
 
     constructor(config: WeChatPayConfig) {
         this.config = config
-        this.initWxPay()
     }
 
     private async initWxPay() {
@@ -157,7 +161,7 @@ export class WeChatPayClient {
      *
      * @see https://pay.weixin.qq.com/wiki/doc/apiv3/apis/chapter3_1_1.shtml
      */
-    async transactionsJSAPI(params: JSAPIPayParams): Promise<{ prepay_id: string }> {
+    async transactionsJSAPI(params: JSAPIPayParams): Promise<WxPayJSAPIResponse> {
         const pay = await this.ensurePay()
         const result = await pay.transactions_jsapi({
             ...params,
@@ -222,31 +226,6 @@ export class WeChatPayClient {
         return JSON.parse(result)
     }
 
-    /**
-     * 生成 JSAPI 调起支付所需的签名参数
-     *
-     * @see https://pay.weixin.qq.com/wiki/doc/apiv3/apis/chapter3_1_4.shtml
-     */
-    async generateJSAPIPaymentParams(prepayId: string): Promise<JSAPIPaymentParams> {
-        const pay = await this.ensurePay()
-        const timestamp = Math.floor(Date.now() / 1000).toString()
-        const nonceStr = Math.random().toString(36).substring(2, 15)
-        const packageStr = `prepay_id=${prepayId}`
-
-        // 生成签名
-        // 签名串格式: appId\n时间戳\n随机字符串\npackage\n
-        const message = `${this.config.appid}\n${timestamp}\n${nonceStr}\n${packageStr}\n`
-        const paySign = pay.rsaSign(message)
-
-        return {
-            appId: this.config.appid,
-            timeStamp: timestamp,
-            nonceStr,
-            package: packageStr,
-            signType: 'RSA',
-            paySign,
-        }
-    }
 
     /**
      * 申请退款
@@ -302,7 +281,10 @@ export class WeChatPayClient {
 /**
  * 获取微信支付配置
  */
-export function getWeChatPayConfig(): WeChatPayConfig {
+export async function getWeChatPayConfig(): Promise<WeChatPayConfig> {
+    const { readFileSync } = await import('node:fs')
+    const { resolve } = await import('node:path')
+
     const appid = process.env.WECHAT_APP_ID
     const mchid = process.env.WECHAT_PAY_MCH_ID
     const key = process.env.WECHAT_PAY_API_V3_KEY
@@ -342,9 +324,9 @@ export function getWeChatPayConfig(): WeChatPayConfig {
 /**
  * 获取微信支付客户端单例
  */
-export function getWeChatPayClient(): WeChatPayClient {
+export async function getWeChatPayClient(): Promise<WeChatPayClient> {
     if (!wechatPayInstance) {
-        const config = getWeChatPayConfig()
+        const config = await getWeChatPayConfig()
         wechatPayInstance = new WeChatPayClient(config)
     }
     return wechatPayInstance

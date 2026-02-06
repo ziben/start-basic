@@ -4,7 +4,7 @@
  */
 
 import type { BetterAuthPlugin, GenericEndpointContext, User } from 'better-auth'
-import { generateState, parseState } from 'better-auth'
+import { generateState } from 'better-auth'
 import { setSessionCookie } from 'better-auth/cookies'
 import { createAuthEndpoint } from 'better-auth/api'
 import { z } from 'zod'
@@ -40,25 +40,6 @@ type WeChatProfile = {
 type OAuthUser = User & Record<string, unknown>
 type OAuthAccount = { id: string; providerId: string }
 type OAuthUserResult = { user: OAuthUser; accounts: OAuthAccount[] }
-
-/**
- * 生成简短的邮箱前缀
- * 使用 SHA-256 哈希的前 12 位，确保唯一性的同时缩短长度
- * 例如：openid "oX4pC6..." -> "a3f5b2c1d4e6"
- */
-async function generateEmailPrefix(id: string): Promise<string> {
-  // 使用 Web Crypto API 生成 SHA-256 哈希
-  const encoder = new TextEncoder()
-  const data = encoder.encode(id)
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data)
-
-  // 转换为十六进制字符串
-  const hashArray = Array.from(new Uint8Array(hashBuffer))
-  const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
-
-  // 取前 12 位（足够唯一，且比原 openid 短很多）
-  return hashHex.substring(0, 12)
-}
 
 export function wechatOAuth(options: WeChatOAuthOptions): BetterAuthPlugin {
   const { appId, appSecret, syntheticEmailDomain = 'wechat.local', debug = false } = options
@@ -190,16 +171,18 @@ export function wechatOAuth(options: WeChatOAuthOptions): BetterAuthPlugin {
   const updateExistingAccount = async (params: {
     ctx: GenericEndpointContext
     existing: OAuthAccount
+    openid: string
     accessToken: string
     refreshToken?: string
     expiresIn?: number
     scope?: string
   }): Promise<void> => {
-    const { ctx, existing, accessToken, refreshToken, expiresIn, scope } = params
+    const { ctx, existing, openid, accessToken, refreshToken, expiresIn, scope } = params
     const updateData = Object.fromEntries(
       Object.entries({
         accessToken,
         refreshToken,
+        idToken: openid,
         accessTokenExpiresAt: expiresIn ? new Date(Date.now() + expiresIn * 1000) : undefined,
         scope,
       }).filter(([_, v]) => v !== undefined)
@@ -217,6 +200,7 @@ export function wechatOAuth(options: WeChatOAuthOptions): BetterAuthPlugin {
     buildErrorRedirect: (err: string) => string
     userId: string
     providerUserId: string
+    openid: string
     accessToken: string
     refreshToken?: string
     expiresIn?: number
@@ -227,6 +211,7 @@ export function wechatOAuth(options: WeChatOAuthOptions): BetterAuthPlugin {
       buildErrorRedirect,
       userId,
       providerUserId,
+      openid,
       accessToken,
       refreshToken,
       expiresIn,
@@ -239,6 +224,7 @@ export function wechatOAuth(options: WeChatOAuthOptions): BetterAuthPlugin {
         userId,
         accessToken,
         refreshToken,
+        idToken: openid,
         accessTokenExpiresAt: expiresIn ? new Date(Date.now() + expiresIn * 1000) : undefined,
         scope,
       })
@@ -256,6 +242,7 @@ export function wechatOAuth(options: WeChatOAuthOptions): BetterAuthPlugin {
     profile: WeChatProfile
     email: string
     providerUserId: string
+    openid: string
     accessToken: string
     refreshToken?: string
     expiresIn?: number
@@ -267,6 +254,7 @@ export function wechatOAuth(options: WeChatOAuthOptions): BetterAuthPlugin {
       profile,
       email,
       providerUserId,
+      openid,
       accessToken,
       refreshToken,
       expiresIn,
@@ -285,6 +273,7 @@ export function wechatOAuth(options: WeChatOAuthOptions): BetterAuthPlugin {
           accountId: providerUserId.toString(),
           accessToken,
           refreshToken,
+          idToken: openid,
           accessTokenExpiresAt: expiresIn ? new Date(Date.now() + expiresIn * 1000) : undefined,
           scope,
         }
@@ -309,6 +298,7 @@ export function wechatOAuth(options: WeChatOAuthOptions): BetterAuthPlugin {
     buildErrorRedirect: (err: string) => string
     profile: WeChatProfile
     providerUserId: string
+    openid: string
     accessToken: string
     refreshToken?: string
     expiresIn?: number
@@ -319,16 +309,13 @@ export function wechatOAuth(options: WeChatOAuthOptions): BetterAuthPlugin {
       buildErrorRedirect,
       profile,
       providerUserId,
+      openid,
       accessToken,
       refreshToken,
       expiresIn,
       scope,
     } = params
-
-    // 使用 SHA-256 哈希的前 12 位作为邮箱前缀，缩短邮箱长度
-    const emailPrefix = await generateEmailPrefix(providerUserId)
-    const email = `${emailPrefix}@${syntheticEmailDomain}`.toLowerCase()
-
+    const email = `${providerUserId}@${syntheticEmailDomain}`.toLowerCase()
     const dbUser = (await ctx.context.internalAdapter
       .findOAuthUser(email, providerUserId, 'wechat')
       .catch(() => null)) as OAuthUserResult | null
@@ -339,6 +326,7 @@ export function wechatOAuth(options: WeChatOAuthOptions): BetterAuthPlugin {
         await updateExistingAccount({
           ctx,
           existing,
+          openid,
           accessToken,
           refreshToken,
           expiresIn,
@@ -350,6 +338,7 @@ export function wechatOAuth(options: WeChatOAuthOptions): BetterAuthPlugin {
           buildErrorRedirect,
           userId: dbUser.user.id,
           providerUserId,
+          openid,
           accessToken,
           refreshToken,
           expiresIn,
@@ -366,6 +355,7 @@ export function wechatOAuth(options: WeChatOAuthOptions): BetterAuthPlugin {
       profile,
       email,
       providerUserId,
+      openid,
       accessToken,
       refreshToken,
       expiresIn,
@@ -414,12 +404,21 @@ export function wechatOAuth(options: WeChatOAuthOptions): BetterAuthPlugin {
           query: callbackQuerySchema,
         },
         async (ctx: GenericEndpointContext) => {
-          const { callbackURL, errorURL, newUserURL } = await parseState(ctx)
+          // 不使用 Better Auth 的 parseState —— 它内部会 delete verification 记录，
+          // 并发请求或服务器重启后记录不存在时抛 Prisma P2025 导致登录失败。
+          // 微信 OAuth 的 callbackURL 固定为 /zc/m，无需从 state 恢复。
+          const callbackURL = '/zc/m'
+
+          // 尝试清理 verification 记录（不影响主流程）
+          const stateParam = ctx.query.state
+          if (stateParam) {
+            ctx.context.internalAdapter.deleteVerificationValue(stateParam).catch(() => { })
+          }
+
           const buildErrorRedirect = (err: string): string => {
-            const base = errorURL || callbackURL || ctx.context.baseURL
-            const hasQuery = base.includes('?')
+            const hasQuery = callbackURL.includes('?')
             const separator = hasQuery ? '&' : '?'
-            return `${base}${separator}error=${encodeURIComponent(err)}`
+            return `${callbackURL}${separator}error=${encodeURIComponent(err)}`
           }
 
 
@@ -433,8 +432,6 @@ export function wechatOAuth(options: WeChatOAuthOptions): BetterAuthPlugin {
               hasCode: !!ctx.query.code,
               state: ctx.query.state,
               callbackURL,
-              errorURL,
-              newUserURL,
             })
           }
 
@@ -459,11 +456,12 @@ export function wechatOAuth(options: WeChatOAuthOptions): BetterAuthPlugin {
           }
 
           // 3. 查找或创建用户
-          const { user, isRegister } = await upsertOAuthUser({
+          const { user } = await upsertOAuthUser({
             ctx,
             buildErrorRedirect,
             profile,
             providerUserId: id.toString(),
+            openid,
             accessToken,
             refreshToken,
             expiresIn,
@@ -481,7 +479,7 @@ export function wechatOAuth(options: WeChatOAuthOptions): BetterAuthPlugin {
           }
 
           await setSessionCookie(ctx, { session, user })
-          const redirectTo = isRegister ? newUserURL || callbackURL : callbackURL
+          const redirectTo = callbackURL
           if (debug) {
             console.log('[WeChat OAuth] Success, redirecting to:', redirectTo)
           }
