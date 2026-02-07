@@ -72,8 +72,6 @@ export async function handleWeChatPayNotify(
 
             console.log('[WeChatPay Notify] Order paid successfully:', order.outTradeNo)
 
-            // TODO: 在这里触发业务逻辑
-            // 例如：发送通知、开通权限、发货等
             await onPaymentSuccess(order.id, paymentResult)
 
             return { code: 'SUCCESS', message: '成功' }
@@ -141,11 +139,8 @@ export async function verifyWeChatPaySignature(
 /**
  * 支付成功后的业务处理
  *
- * 在这里添加你的业务逻辑，例如：
- * - 发送支付成功通知
- * - 开通会员权限
- * - 创建发货单
- * - 记录审计日志
+ * 通过 hook 机制触发子模块的回调逻辑，
+ * payment 模块不直接耦合业务模块。
  */
 export async function onPaymentSuccess(orderId: string, _result: Partial<PaymentResult>): Promise<void> {
     const { getDb } = await import('../../../../shared/lib/db')
@@ -153,7 +148,7 @@ export async function onPaymentSuccess(orderId: string, _result: Partial<Payment
 
     const order = await prisma.paymentOrder.findUnique({
         where: { id: orderId },
-        select: { userId: true, amount: true, status: true, outTradeNo: true },
+        select: { userId: true, amount: true, status: true, outTradeNo: true, transactionId: true, paidAt: true },
     })
 
     if (!order) {
@@ -161,26 +156,18 @@ export async function onPaymentSuccess(orderId: string, _result: Partial<Payment
         return
     }
 
-    // 幂等检查：看是否已经加过余额（通过 balanceHistory 的 relatedId）
-    const existing = await prisma.zcBalanceHistory.findFirst({
-        where: { relatedId: orderId, type: 'RECHARGE' },
-    })
-    if (existing) {
-        console.log('[WeChatPay Biz] onPaymentSuccess: already processed', orderId)
-        return
-    }
-
-    // 给用户加余额
-    const { ZcUserService } = await import('../../../zc/shared/services/zc-user.service')
-    await ZcUserService.updateBalance({
+    // 触发所有注册的充值成功回调
+    const { firePaymentSuccessHooks } = await import('../lib/payment-hooks')
+    await firePaymentSuccessHooks({
+        orderId,
         userId: order.userId,
-        delta: order.amount,
-        type: 'RECHARGE',
-        description: `微信支付充值 (${order.outTradeNo})`,
-        relatedId: orderId,
+        amount: order.amount,
+        outTradeNo: order.outTradeNo,
+        transactionId: order.transactionId ?? undefined,
+        paidAt: order.paidAt ?? undefined,
     })
 
-    console.log('[WeChatPay Biz] onPaymentSuccess: balance updated', {
+    console.log('[WeChatPay Biz] onPaymentSuccess: hooks fired', {
         orderId,
         userId: order.userId,
         amount: order.amount,
