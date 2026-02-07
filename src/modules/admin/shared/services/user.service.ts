@@ -161,6 +161,22 @@ export const UserService = {
                 },
             })
 
+            // 3. 触发用户创建钩子
+            try {
+                const { fireUserCreatedHooks } = await import('../lib/user-hooks')
+                await fireUserCreatedHooks({
+                    userId: updated.id,
+                    email: updated.email,
+                    name: updated.name,
+                    username: updated.username ?? undefined,
+                    role: updated.role ?? undefined,
+                    createdAt: updated.createdAt,
+                })
+            } catch (hookError) {
+                // 钩子失败不影响用户创建
+                console.error('[UserService] User creation hooks failed:', hookError)
+            }
+
             return serializeAdminUser(updated as PrismaUser)
         } catch (error) {
             console.error('创建用户失败:', error)

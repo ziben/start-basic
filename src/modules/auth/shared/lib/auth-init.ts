@@ -9,6 +9,7 @@ import { admin, username, organization } from 'better-auth/plugins'
 import { getDb } from '@/shared/lib/db'
 import { getAccessControl } from './auth-dynamic'
 import { wechatOAuth } from './plugins/wechat-oauth'
+import { userCreatedPlugin } from './plugins/user-created-plugin'
 
 let authInstance: ReturnType<typeof betterAuth> | null = null
 
@@ -60,14 +61,16 @@ export async function initAuth() {
       // 微信 OAuth 登录
       ...(process.env.WECHAT_APP_ID && process.env.WECHAT_APP_SECRET
         ? [
-            wechatOAuth({
-              appId: process.env.WECHAT_APP_ID,
-              appSecret: process.env.WECHAT_APP_SECRET,
-              syntheticEmailDomain: 'wechat.local',
-              debug: process.env.NODE_ENV === 'development',
-            }),
-          ]
+          wechatOAuth({
+            appId: process.env.WECHAT_APP_ID,
+            appSecret: process.env.WECHAT_APP_SECRET,
+            syntheticEmailDomain: 'wechat.local',
+            debug: process.env.NODE_ENV === 'development',
+          }),
+        ]
         : []),
+      // 用户创建钩子插件
+      userCreatedPlugin(),
     ],
     user: {
       additionalFields: {

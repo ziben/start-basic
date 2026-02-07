@@ -5,6 +5,8 @@
  * payment 模块不直接耦合业务模块。
  */
 
+import { PAYMENT_HOOK_MODULES } from './payment-hooks.config'
+
 export interface PaymentSuccessContext {
   orderId: string
   userId: string
@@ -37,9 +39,20 @@ async function ensureHooksRegistered() {
   if (initialized) return
   initialized = true
 
-  // 注册 zc 模块的充值成功回调
-  const { registerZcPaymentHook } = await import('../../../zc/shared/services/payment-hook')
-  await registerZcPaymentHook()
+  // 从配置文件动态加载所有子模块钩子
+  for (const modulePath of PAYMENT_HOOK_MODULES) {
+    try {
+      const module = await import(modulePath)
+      if (typeof module.register === 'function') {
+        await module.register()
+      } else {
+        console.warn(`[PaymentHooks] Module ${modulePath} does not export a register function`)
+      }
+    } catch (error) {
+      console.error(`[PaymentHooks] Failed to load module: ${modulePath}`, error)
+      // 不中断其他模块加载
+    }
+  }
 }
 
 /**

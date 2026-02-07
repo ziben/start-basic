@@ -290,6 +290,22 @@ export function wechatOAuth(options: WeChatOAuthOptions): BetterAuthPlugin {
       throw ctx.redirect(buildErrorRedirect('unable_to_create_user'))
     }
 
+    // 触发用户创建钩子
+    try {
+      const { fireUserCreatedHooks } = await import('../../../../admin/shared/lib/user-hooks')
+      await fireUserCreatedHooks({
+        userId: created.id,
+        email: created.email,
+        name: created.name,
+        username: (created as any).username ?? undefined,
+        role: (created as any).role ?? undefined,
+        createdAt: new Date(created.createdAt),
+      })
+    } catch (hookError) {
+      console.error('[WeChat OAuth] User creation hooks failed:', hookError)
+      // 不影响OAuth流程，用户已创建
+    }
+
     return created
   }
 
