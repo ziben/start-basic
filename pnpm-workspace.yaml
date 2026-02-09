@@ -8,3 +8,4 @@ ignoredBuiltDependencies:
 
 onlyBuiltDependencies:
   - '@prisma/client'
+  - protobufjs
