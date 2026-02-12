@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import { defineConfig } from 'prisma/config'
 import { getDatabaseUrl } from './src/shared/lib/database-url'
 

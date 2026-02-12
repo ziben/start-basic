@@ -10,6 +10,7 @@ import AdminNavItemDialogs from './components/admin-navitem-dialogs'
 import AdminNavItemPrimaryButtons from './components/admin-navitem-primary-buttons'
 import AdminNavItemTable from './components/admin-navitem-table'
 import AdminNavItemProvider from './context/admin-navitem-context'
+import { AppHeaderMain } from '~/components/layout/app-header-main'
 
 export default function AdminNavItemPage() {
   const { t } = useTranslation()

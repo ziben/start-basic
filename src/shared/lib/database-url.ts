@@ -1,5 +1,4 @@
 import path from 'node:path'
-import { env } from 'prisma/config'
 
 function normalizeDatabaseUrl(url: string, cwd: string): string {
   if (!url.startsWith('file:')) {

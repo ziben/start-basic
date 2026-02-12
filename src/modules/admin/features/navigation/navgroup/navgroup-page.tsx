@@ -4,6 +4,7 @@ import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import { NavGroupsDialogs } from './components/navgroups-dialogs'
 import { NavGroupsPrimaryButtons } from './components/navgroups-primary-buttons'
 import { NavGroupsProvider } from './components/navgroups-provider'
+import { AppHeaderMain } from '~/components/layout/app-header-main'
 import { NavGroupsTable } from './components/navgroups-table'
 
 export function AdminNavGroups() {
