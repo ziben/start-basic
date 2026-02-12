@@ -1,9 +1,8 @@
 import { hashPassword } from 'better-auth/crypto'
-import { PrismaLibSql } from '@prisma/adapter-libsql'
-import { PrismaClient, RoleScope, ResourceScope } from '../../../src/generated/prisma/client'
+import { getDb } from '~/shared/lib/db'
+import { ResourceScope, RoleScope } from '../../../src/generated/prisma/client'
 import en from '../../../src/i18n/locales/en'
 import zh from '../../../src/i18n/locales/zh'
-import { getDatabaseUrl } from '../../../src/shared/lib/database-url'
 
 function flatten(obj: any, prefix = ''): Record<string, string> {
   const res: Record<string, string> = {}
@@ -20,9 +19,7 @@ function flatten(obj: any, prefix = ''): Record<string, string> {
 }
 
 export async function seedBase() {
-  const DATABASE_URL = getDatabaseUrl()
-  const adapter = new PrismaLibSql({ url: DATABASE_URL })
-  const prisma = new PrismaClient({ adapter })
+  const prisma = await getDb()
 
   try {
     console.log('Starting base seed...')

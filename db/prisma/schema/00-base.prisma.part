@@ -1,9 +1,8 @@
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
 }
 
 generator client {
-  provider   = "prisma-client"
-  output     = "../../src/generated/prisma"
-  engineType = "client"
+  provider = "prisma-client"
+  output   = "../../src/generated/prisma"
 }

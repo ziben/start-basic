@@ -92,8 +92,44 @@ declare global {
    * 微信JS-SDK Bridge全局对象
    * 仅在微信内置浏览器中可用
    */
-  // eslint-disable-next-line no-var
   var WeixinJSBridge: WeixinJSBridgeInstance | undefined
+
+  interface Window {
+    wx?: {
+      config: (options: {
+        debug: boolean
+        appId: string
+        timestamp: number
+        nonceStr: string
+        signature: string
+        jsApiList: string[]
+      }) => void
+      ready: (callback: () => void) => void
+      error: (callback: (err: unknown) => void) => void
+      updateAppMessageShareData?: (options: {
+        title: string
+        desc: string
+        link: string
+        imgUrl: string
+      }) => void
+      updateTimelineShareData?: (options: {
+        title: string
+        link: string
+        imgUrl: string
+      }) => void
+      onMenuShareAppMessage?: (options: {
+        title: string
+        desc: string
+        link: string
+        imgUrl: string
+      }) => void
+      onMenuShareTimeline?: (options: {
+        title: string
+        link: string
+        imgUrl: string
+      }) => void
+    }
+  }
 }
 
 // 必须导出以使其成为模块

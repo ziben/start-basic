@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useSearch } from '@tanstack/react-router'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { BadgeCheck, CircleAlert, Link2 } from 'lucide-react'
 import { toast } from 'sonner'
@@ -19,6 +20,8 @@ export default function AdminAccount(): React.ReactElement {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
   const [newPassword, setNewPassword] = useState('')
+  const search = useSearch({ from: '/_authenticated/admin/account' })
+  const targetUserId = search.userId
   const sessionQuery = useQuery({
     queryKey: ['admin', 'account', 'session'],
     queryFn: async () => {
@@ -28,14 +31,15 @@ export default function AdminAccount(): React.ReactElement {
   })
 
   const overviewQuery = useQuery<AdminAccountOverview>({
-    queryKey: ['admin', 'account', 'overview'],
+    queryKey: ['admin', 'account', 'overview', targetUserId ?? 'self'],
     queryFn: async () => {
-      return await getAdminAccountFn()
+      return await getAdminAccountFn({ data: { userId: targetUserId } })
     },
   })
 
   const resetPassword = useMutation({
-    mutationFn: async (payload: { newPassword: string }) => setAdminPasswordFn({ data: payload }),
+    mutationFn: async (payload: { newPassword: string }) =>
+      setAdminPasswordFn({ data: { ...payload, userId: targetUserId } }),
     onSuccess: () => {
       setNewPassword('')
       toast.success('密码已重置')
@@ -46,7 +50,8 @@ export default function AdminAccount(): React.ReactElement {
   })
 
   const unlinkAccount = useMutation({
-    mutationFn: async ({ accountId }: { accountId: string }) => unlinkAdminAccountFn({ data: { accountId } }),
+    mutationFn: async ({ accountId }: { accountId: string }) =>
+      unlinkAdminAccountFn({ data: { accountId, userId: targetUserId } }),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['admin', 'account', 'overview'] })
       toast.success('已解绑账号')
@@ -60,7 +65,7 @@ export default function AdminAccount(): React.ReactElement {
   const overview = overviewQuery.data
   const accounts: AdminAccountOverview['accounts'] = overview?.accounts ?? []
   const hasAccounts = accounts.length > 0
-  const userId = overview?.session.user.id
+  const userId = overview?.user?.id
   const isBusy =
     resetPassword.isPending || unlinkAccount.isPending
 

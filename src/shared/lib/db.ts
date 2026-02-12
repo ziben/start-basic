@@ -1,22 +1,17 @@
-import type { PrismaClient } from '~/generated/prisma/client'
+import { PrismaClient } from '~/generated/prisma/client'
 import { getDatabaseUrl } from '~/shared/lib/database-url'
-
+import { PrismaPg } from '@prisma/adapter-pg'
 const DATABASE_URL = getDatabaseUrl()
 
 const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient }
 
 async function createPrismaClient(): Promise<PrismaClient> {
-  const { PrismaLibSql } = await import('@prisma/adapter-libsql')
-  // 使用相对路径，Vite 会正确打包到 dist
-  const { PrismaClient: PrismaClientConstructor } = await import('../../generated/prisma/client')
-  const adapter = new PrismaLibSql({ url: DATABASE_URL })
-  return new PrismaClientConstructor({ adapter })
+  const adapter = new PrismaPg({ connectionString: DATABASE_URL })
+  return new PrismaClient({ adapter })
 }
 
 export async function getDb(): Promise<PrismaClient> {
-  if (!globalForPrisma.prisma) {
-    globalForPrisma.prisma = await createPrismaClient()
-  }
+  globalForPrisma.prisma ??= await createPrismaClient();
 
   return globalForPrisma.prisma
 }
@@ -24,9 +19,7 @@ export async function getDb(): Promise<PrismaClient> {
 let prismaInstance: PrismaClient | null = null
 
 async function initPrisma(): Promise<PrismaClient> {
-  if (!prismaInstance) {
-    prismaInstance = await getDb()
-  }
+  prismaInstance ??= await getDb();
   return prismaInstance
 }
 

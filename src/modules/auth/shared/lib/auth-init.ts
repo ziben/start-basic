@@ -35,7 +35,7 @@ export async function initAuth() {
       ? process.env.BETTER_AUTH_TRUSTED_ORIGINS.split(',').map(origin => origin.trim())
       : undefined,
     database: prismaAdapter(prisma, {
-      provider: 'sqlite',
+      provider: 'postgresql',
     }),
     emailAndPassword: {
       enabled: true,

@@ -1,4 +1,5 @@
 import path from 'node:path'
+import { env } from 'prisma/config'
 
 function normalizeDatabaseUrl(url: string, cwd: string): string {
   if (!url.startsWith('file:')) {
@@ -23,5 +24,8 @@ export function getDatabaseUrl(options?: { cwd?: string }): string {
     return normalizeDatabaseUrl(fromEnv, cwd)
   }
 
-  return normalizeDatabaseUrl('file:./db/dev.db', cwd)
+  return normalizeDatabaseUrl(
+    'postgresql://zc:7ESAfHjx8NzA@58.87.66.50:5432/zc?schema=public',
+    cwd
+  )
 }

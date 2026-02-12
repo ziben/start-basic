@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { type ColumnDef } from '@tanstack/react-table'
+import { Link } from '@tanstack/react-router'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import { cn, formatDate } from '@/shared/lib/utils'
 import { Badge } from '@/components/ui/badge'
@@ -43,10 +44,16 @@ export function useAdminUsersColumns(): ColumnDef<AdminUser>[] {
         header: ({ column }) => <DataTableColumnHeader column={column} title={t('admin.user.table.name')} />,
         cell: ({ row }) => {
           const value = row.getValue('name') as string
+          const userId = row.original.id
           return (
-            <div className='ps-2 text-nowrap' title={value}>
+            <Link
+              to='/admin/account'
+              search={{ userId }}
+              className='ps-2 text-nowrap text-primary hover:underline'
+              title={value}
+            >
               {value?.length > 20 ? `${value.slice(0, 20)}...` : value}
-            </div>
+            </Link>
           )
         },
         meta: { className: 'w-32', title: t('admin.user.table.name') },

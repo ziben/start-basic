@@ -51,16 +51,16 @@ export default defineConfig({
   },
   ssr: {
     noExternal: ['@tanstack/react-router'],
-    external: ['@prisma/client', '.prisma/client', '@prisma/adapter-libsql'],
+    external: ['@prisma/client', '.prisma/client', '@prisma/adapter-pg'],
   },
   optimizeDeps: {
-    exclude: ['@prisma/client', '.prisma/client', '@prisma/adapter-libsql'],
+    exclude: ['@prisma/client', '.prisma/client', '@prisma/adapter-pg'],
   },
   build: {
     rollupOptions: {
       external: (id) => {
         // 只排除 Prisma 引擎和 adapter，不排除生成的 client
-        if (id.includes('@prisma/client') || id.includes('.prisma/client') || id.includes('@prisma/adapter')) {
+        if (id.includes('@prisma/client') || id.includes('.prisma/client') || id.includes('@prisma/adapter-pg')) {
           return true
         }
         return false

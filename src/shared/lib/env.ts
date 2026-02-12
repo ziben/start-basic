@@ -24,7 +24,9 @@ const envSchema = z.object({
   BETTER_AUTH_URL: z.string().url().default('http://localhost:3000'),
 
   // Database
-  DATABASE_URL: z.string().default('file:./db/dev.db'),
+  DATABASE_URL: z
+    .string()
+    .default('postgresql://zc:7ESAfHjx8NzA@58.87.66.50:5432/zc?schema=public'),
 
   // Authentication token cookie key
   AUTH_TOKEN_KEY: z.string().default('app_access_token'),

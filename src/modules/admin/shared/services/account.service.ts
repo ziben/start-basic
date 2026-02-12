@@ -47,14 +47,15 @@ async function getSessionFromHeaders(headers: Headers): Promise<Awaited<ReturnTy
 
 export const AccountService = {
     /**
-     * 获取当前管理员账号概览
+     * 获取管理员账号概览（可指定 userId）
      */
-    async getOverview(headers: Headers): Promise<AdminAccountOverview> {
+    async getOverview(headers: Headers, userId?: string): Promise<AdminAccountOverview> {
         try {
             const session = await getSessionFromHeaders(headers)
+            const targetUserId = userId || session.user.id
 
             const user = await prisma.user.findUnique({
-                where: { id: session.user.id },
+                where: { id: targetUserId },
                 select: {
                     id: true,
                     email: true,
@@ -68,7 +69,7 @@ export const AccountService = {
             })
 
             const accounts = await prisma.account.findMany({
-                where: { userId: session.user.id },
+                where: { userId: targetUserId },
                 select: {
                     id: true,
                     providerId: true,
@@ -102,16 +103,17 @@ export const AccountService = {
     },
 
     /**
-     * 设置当前管理员密码
+     * 设置管理员密码（可指定 userId）
      */
-    async setPassword(headers: Headers, newPassword: string): Promise<{ success: true }> {
+    async setPassword(headers: Headers, newPassword: string, userId?: string): Promise<{ success: true }> {
         try {
             const session = await getSessionFromHeaders(headers)
+            const targetUserId = userId || session.user.id
 
             await auth.api.admin.setUserPassword({
                 headers,
                 body: {
-                    userId: session.user.id,
+                    userId: targetUserId,
                     newPassword,
                 },
             })
@@ -124,16 +126,17 @@ export const AccountService = {
     },
 
     /**
-     * 解绑当前管理员账号
+     * 解绑管理员账号（可指定 userId）
      */
-    async unlinkAccount(headers: Headers, accountId: string): Promise<{ success: true }> {
+    async unlinkAccount(headers: Headers, accountId: string, userId?: string): Promise<{ success: true }> {
         try {
             const session = await getSessionFromHeaders(headers)
+            const targetUserId = userId || session.user.id
 
             await prisma.account.deleteMany({
                 where: {
                     id: accountId,
-                    userId: session.user.id,
+                    userId: targetUserId,
                 },
             })
 
