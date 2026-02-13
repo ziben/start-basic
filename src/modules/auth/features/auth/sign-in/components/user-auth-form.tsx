@@ -14,6 +14,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/password-input'
+import { isDevelopment } from '@/shared/lib/env'
 
 const formSchema = z.object({
   email: z.email({
@@ -29,6 +30,7 @@ interface UserAuthFormProps extends React.HTMLAttributes<HTMLFormElement> {
 
 export function UserAuthForm({ className, redirectTo, ...props }: UserAuthFormProps) {
   const [isLoading, setIsLoading] = useState(false)
+  const isDev = isDevelopment()
   const navigate = useNavigate()
   // const { auth } = useAuthStore()
   const { queryClient } = Route.useRouteContext()
@@ -38,8 +40,8 @@ export function UserAuthForm({ className, redirectTo, ...props }: UserAuthFormPr
   const form = useForm<FormType>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: 'admin@example.com',
-      password: 'admin123',
+      email: isDev ? 'admin@example.com' : '',
+      password: isDev ? 'admin123' : '',
       rememberMe: false,
     },
   } as any)
@@ -146,6 +148,5 @@ export function UserAuthForm({ className, redirectTo, ...props }: UserAuthFormPr
     </Form>
   )
 }
-
 
 

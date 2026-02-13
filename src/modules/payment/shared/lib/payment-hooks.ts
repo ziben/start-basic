@@ -5,7 +5,7 @@
  * payment 模块不直接耦合业务模块。
  */
 
-import { PAYMENT_HOOK_MODULES } from './payment-hooks.config'
+import { PAYMENT_HOOK_REGISTRARS } from './payment-hooks.config'
 
 export interface PaymentSuccessContext {
   orderId: string
@@ -39,18 +39,11 @@ async function ensureHooksRegistered() {
   if (initialized) return
   initialized = true
 
-  // 从配置文件动态加载所有子模块钩子
-  for (const modulePath of PAYMENT_HOOK_MODULES) {
+  for (const registrar of PAYMENT_HOOK_REGISTRARS) {
     try {
-      const module = await import(modulePath)
-      if (typeof module.register === 'function') {
-        await module.register()
-      } else {
-        console.warn(`[PaymentHooks] Module ${modulePath} does not export a register function`)
-      }
+      await registrar.register()
     } catch (error) {
-      console.error(`[PaymentHooks] Failed to load module: ${modulePath}`, error)
-      // 不中断其他模块加载
+      console.error(`[PaymentHooks] Failed to register module: ${registrar.name}`, error)
     }
   }
 }
