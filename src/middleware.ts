@@ -10,6 +10,7 @@ import {
   writeSystemLog,
   getFriendlyFunctionName,
 } from '~/modules/admin/shared/services/server-log-writer'
+import { getRuntimeConfig } from '~/shared/config/runtime-config'
 
 // 类型定义
 type SessionUser = NonNullable<Awaited<ReturnType<typeof auth.api.getSession>>>['user']
@@ -62,7 +63,7 @@ export function withAuth<T extends HandlerContext>(handler: Handler<T & Authenti
     const requestId = createRequestId()
     const ip = getIpFromRequest(request)
     const userAgent = getUserAgentFromRequest(request)
-    const shouldLogBody = process.env.LOG_REQUEST_BODY === 'true'
+    const shouldLogBody = getRuntimeConfig('log.requestBody.enabled')
     const requestBody = shouldLogBody ? await readRequestBodySafe(request) : null
 
     try {
@@ -172,7 +173,7 @@ export function withAdminAuth<T extends HandlerContext>(handler: Handler<T & Aut
     const requestId = createRequestId()
     const ip = getIpFromRequest(request)
     const userAgent = getUserAgentFromRequest(request)
-    const shouldLogBody = process.env.LOG_REQUEST_BODY === 'true'
+    const shouldLogBody = getRuntimeConfig('log.requestBody.enabled')
     const requestBody = shouldLogBody ? await readRequestBodySafe(request) : null
 
     try {

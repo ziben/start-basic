@@ -5,3 +5,5 @@ export { DataTableViewOptions } from './view-options'
 export { DataTableToolbar } from './toolbar'
 export { DataTableBulkActions } from './bulk-actions'
 
+
+export { DataTable } from './data-table'

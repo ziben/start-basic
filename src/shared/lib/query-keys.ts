@@ -159,6 +159,14 @@ export const sidebarQueryKeys = {
   list: (scope: 'APP' | 'ADMIN') => [...sidebarQueryKeys.all, 'list', scope] as const,
 }
 
+export const systemConfigQueryKeys = {
+  all: ['admin', 'system-config'] as const,
+  list: () => [...systemConfigQueryKeys.all, 'list'] as const,
+  history: (configId: string) => [...systemConfigQueryKeys.all, 'history', configId] as const,
+}
+
+export const runtimeConfigQueryKeys = systemConfigQueryKeys
+
 export const orgPermissionQueryKeys = {
   all: ['rbac', 'org-permissions'] as const,
   check: (userId?: string, organizationId?: string, resource?: string, action?: string) =>

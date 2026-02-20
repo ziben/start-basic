@@ -64,6 +64,7 @@
  */
 
 import path from 'node:path'
+import { initRuntimeConfig } from './src/shared/config/runtime-config'
 
 // Configuration
 const SERVER_PORT = Number(process.env.PORT ?? 3000)
@@ -536,6 +537,8 @@ function withPerfMonitoring(
  */
 async function initializeServer() {
   log.header('🚀 Starting Production Server')
+
+  await initRuntimeConfig()
 
   // Load TanStack Start server handler
   let handler: { fetch: (request: Request) => Response | Promise<Response> }

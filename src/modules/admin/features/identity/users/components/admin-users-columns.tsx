@@ -238,6 +238,10 @@ export function useAdminUsersColumns(): ColumnDef<AdminUser>[] {
       {
         id: 'actions',
         cell: DataTableRowActions,
+        enableSorting: false,
+        enableHiding: false,
+        enableResizing: false,
+        meta: { className: 'sticky end-0 bg-background shadow-[-1px_0_0_0_hsl(var(--border))] text-end' },
       },
     ],
     [t]

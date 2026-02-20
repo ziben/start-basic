@@ -1,8 +1,63 @@
 import { hashPassword } from 'better-auth/crypto'
+import { randomUUID } from 'node:crypto'
 import { getDb } from '~/shared/lib/db'
 import { ResourceScope, RoleScope } from '../../../src/generated/prisma/client'
 import en from '../../../src/i18n/locales/en'
 import zh from '../../../src/i18n/locales/zh'
+
+type RuntimeConfigSeedItem = {
+  key: string
+  value: string
+  description: string
+}
+
+const runtimeConfigSeedItems: RuntimeConfigSeedItem[] = [
+  {
+    key: 'log.requestBody.enabled',
+    value: JSON.stringify(false),
+    description: '是否记录请求体（布尔）',
+  },
+  {
+    key: 'log.dir',
+    value: JSON.stringify('logs'),
+    description: '日志目录（字符串）',
+  },
+  {
+    key: 'log.system.sampleRate',
+    value: JSON.stringify(1),
+    description: '系统日志采样率（0-1）',
+  },
+  {
+    key: 'log.system.sampleLevels',
+    value: JSON.stringify(['info']),
+    description: '受采样影响的日志级别（字符串数组）',
+  },
+  {
+    key: 'log.maxBodyBytes',
+    value: JSON.stringify(8 * 1024),
+    description: '日志记录的请求体最大字节数',
+  },
+  {
+    key: 'ai.enabled',
+    value: JSON.stringify(false),
+    description: '是否启用 AI 功能',
+  },
+  {
+    key: 'ai.provider',
+    value: JSON.stringify('gemini'),
+    description: 'AI 提供商（gemini/openai）',
+  },
+  {
+    key: 'ai.model',
+    value: JSON.stringify('gemini-3-flash-preview'),
+    description: '默认 AI 模型',
+  },
+  {
+    key: 'auth.trustedOrigins',
+    value: JSON.stringify([]),
+    description: 'Better Auth 可信来源（字符串数组）',
+  },
+]
 
 function flatten(obj: any, prefix = ''): Record<string, string> {
   const res: Record<string, string> = {}
@@ -61,6 +116,20 @@ export async function seedBase() {
       }
     }
     console.log(`Translations complete. inserted=${inserted}, updated=${updated}`)
+
+    console.log('Seeding runtime configs...')
+    for (const item of runtimeConfigSeedItems) {
+      await prisma.$executeRaw`
+        INSERT INTO "system_config" ("id", "key", "value", "description", "updatedAt")
+        VALUES (${randomUUID()}, ${item.key}, ${item.value}, ${item.description}, NOW())
+        ON CONFLICT ("key")
+        DO UPDATE SET
+          "value" = EXCLUDED."value",
+          "description" = EXCLUDED."description",
+          "updatedAt" = NOW()
+      `
+    }
+    console.log(`Runtime configs complete. upserted=${runtimeConfigSeedItems.length}`)
 
     console.log('Seeding admin user...')
     const adminEmail = 'admin@example.com'

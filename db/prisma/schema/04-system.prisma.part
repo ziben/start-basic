@@ -62,3 +62,59 @@ model AuditLog {
   @@index([targetType, targetId])
   @@map("audit_log")
 }
+
+model SystemConfig {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  value       String
+  category    String   @default("runtime")
+  valueType   ConfigValueType @default(JSON)
+  isSecret    Boolean  @default(false)
+  isPublic    Boolean  @default(false)
+  isEnabled   Boolean  @default(true)
+  version     Int      @default(1)
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  updatedBy   String?
+  publishedAt DateTime?
+
+  changes     SystemConfigChange[]
+
+  @@map("system_config")
+}
+
+model SystemConfigChange {
+  id           String           @id @default(cuid())
+  configId     String
+  configKey    String
+  oldValue     String?
+  newValue     String?
+  valueType    ConfigValueType  @default(JSON)
+  changeType   ConfigChangeType @default(UPDATE)
+  operatorId   String?
+  operatorName String?
+  note         String?
+  createdAt    DateTime         @default(now())
+
+  config       SystemConfig @relation(fields: [configId], references: [id], onDelete: Cascade)
+
+  @@index([configId, createdAt])
+  @@index([configKey, createdAt])
+  @@map("system_config_change")
+}
+
+enum ConfigValueType {
+  STRING
+  NUMBER
+  BOOLEAN
+  JSON
+  STRING_ARRAY
+}
+
+enum ConfigChangeType {
+  CREATE
+  UPDATE
+  DELETE
+  REFRESH
+}

@@ -6,11 +6,26 @@
 
 import { geminiText } from '@tanstack/ai-gemini'
 import { openaiText } from '@tanstack/ai-openai'
+import { getRuntimeConfig } from '~/shared/config/runtime-config'
+
+export function getAIConfig() {
+  return {
+    provider: getRuntimeConfig('ai.provider'),
+    enabled: getRuntimeConfig('ai.enabled'),
+    model: getRuntimeConfig('ai.model'),
+  }
+}
 
 export const AI_CONFIG = {
-  provider: process.env.AI_PROVIDER || 'gemini',
-  enabled: process.env.ENABLE_AI === 'true',
-  model: process.env.GEMINI_MODEL || 'gemini-3-flash-preview',
+  get provider() {
+    return getRuntimeConfig('ai.provider')
+  },
+  get enabled() {
+    return getRuntimeConfig('ai.enabled')
+  },
+  get model() {
+    return getRuntimeConfig('ai.model')
+  },
 } as const
 
 type Provider = 'openai' | 'gemini'
@@ -25,7 +40,9 @@ const adapters = {
  * 获取配置的 AI Provider
  */
 export function getAIAdapter(provider: Provider) {
-  if (!AI_CONFIG.enabled) {
+  const config = getAIConfig()
+
+  if (!config.enabled) {
     throw new Error('AI features are disabled. Set ENABLE_AI=true in .env')
   }
 

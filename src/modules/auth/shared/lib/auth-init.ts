@@ -7,6 +7,7 @@ import { betterAuth } from 'better-auth'
 import { prismaAdapter } from 'better-auth/adapters/prisma'
 import { admin, username, organization } from 'better-auth/plugins'
 import { getDb } from '@/shared/lib/db'
+import { getRuntimeConfig } from '~/shared/config/runtime-config'
 import { getAccessControl } from './auth-dynamic'
 import { wechatOAuth } from './plugins/wechat-oauth'
 import { userCreatedPlugin } from './plugins/user-created-plugin'
@@ -30,10 +31,10 @@ export async function initAuth() {
   const { globalAc, orgAc, globalRoles, orgRoles } = await getAccessControl(prisma)
 
   // 创建 better-auth 实例
+  const trustedOrigins = getRuntimeConfig('auth.trustedOrigins')
+
   authInstance = betterAuth({
-    trustedOrigins: process.env.BETTER_AUTH_TRUSTED_ORIGINS
-      ? process.env.BETTER_AUTH_TRUSTED_ORIGINS.split(',').map(origin => origin.trim())
-      : undefined,
+    trustedOrigins: trustedOrigins.length > 0 ? trustedOrigins : undefined,
     database: prismaAdapter(prisma, {
       provider: 'postgresql',
     }),

@@ -6,6 +6,7 @@ declare module '@tanstack/react-table' {
     className?: string // apply to both th and td
     tdClassName?: string
     thClassName?: string
+    title?: string // display name for DataTableViewOptions
   }
 }
 

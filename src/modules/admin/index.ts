@@ -4,5 +4,6 @@ export * from './features/organization'
 export * from './features/i18n'
 export * from './features/audit'
 export * from './features/rbac'
+export * from './features/system-config'
 export * from './shared/hooks/use-translation'
 

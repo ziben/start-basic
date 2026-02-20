@@ -3,6 +3,7 @@ import path from 'node:path'
 import { randomUUID } from 'node:crypto'
 import type { Prisma } from '~/generated/prisma/client'
 import prisma from '@/shared/lib/db'
+import { getRuntimeConfig } from '~/shared/config/runtime-config'
 
 export type SystemLogLevel = 'debug' | 'info' | 'warn' | 'error'
 
@@ -22,15 +23,21 @@ export type SystemLogInput = {
   meta?: Prisma.InputJsonValue | null
 }
 
-const LOG_DIR = process.env.LOG_DIR || 'logs'
-const SYSTEM_LOG_SAMPLE_RATE = Number(process.env.SYSTEM_LOG_SAMPLE_RATE ?? '1')
-const SYSTEM_LOG_SAMPLE_LEVELS = new Set<string>(
-  String(process.env.SYSTEM_LOG_SAMPLE_LEVELS ?? 'info')
-    .split(',')
-    .map((s) => s.trim())
-    .filter(Boolean)
-)
-const LOG_MAX_BODY_BYTES = Number(process.env.LOG_MAX_BODY_BYTES ?? String(8 * 1024))
+function getLogDir(): string {
+  return getRuntimeConfig('log.dir')
+}
+
+function getSystemLogSampleRate(): number {
+  return getRuntimeConfig('log.system.sampleRate')
+}
+
+function getSystemLogSampleLevels(): Set<string> {
+  return new Set(getRuntimeConfig('log.system.sampleLevels'))
+}
+
+function getLogMaxBodyBytes(): number {
+  return getRuntimeConfig('log.maxBodyBytes')
+}
 
 type QueueState = {
   system: Array<Omit<SystemLogInput, 'meta'> & { meta?: Prisma.InputJsonValue | null; createdAt: Date }>
@@ -68,7 +75,7 @@ function toDateKey(date: Date) {
 }
 
 async function ensureLogsDir() {
-  const dir = path.join(process.cwd(), LOG_DIR)
+  const dir = path.join(process.cwd(), getLogDir())
   await mkdir(dir, { recursive: true })
   return dir
 }
@@ -90,8 +97,10 @@ function safeStringifyError(err: unknown) {
 }
 
 function shouldSample(level: SystemLogLevel) {
+  const SYSTEM_LOG_SAMPLE_LEVELS = getSystemLogSampleLevels()
   if (!SYSTEM_LOG_SAMPLE_LEVELS.has(level)) return true
 
+  const SYSTEM_LOG_SAMPLE_RATE = getSystemLogSampleRate()
   const rate = Number.isFinite(SYSTEM_LOG_SAMPLE_RATE) ? SYSTEM_LOG_SAMPLE_RATE : 1
   if (rate >= 1) return true
   if (rate <= 0) return false
@@ -133,6 +142,7 @@ export async function readRequestBodySafe(request: Request) {
   try {
     // clone to avoid consuming original body
     const text = await request.clone().text()
+    const LOG_MAX_BODY_BYTES = getLogMaxBodyBytes()
     const clipped = text.length > LOG_MAX_BODY_BYTES ? text.slice(0, LOG_MAX_BODY_BYTES) : text
     try {
       return redact(JSON.parse(clipped))
