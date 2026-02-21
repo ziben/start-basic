@@ -1,5 +1,5 @@
-import React from 'react'
-import { flexRender, type Table as TanstackTable } from '@tanstack/react-table'
+import React, { memo } from 'react'
+import { flexRender, type Table as TanstackTable, type Row as TanstackRow } from '@tanstack/react-table'
 import { type Virtualizer } from '@tanstack/react-virtual'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -32,6 +32,41 @@ export interface DataTableProps<TData> {
     tableClassName?: string
 }
 
+const MemoizedTableRow = memo(
+    ({ row, columnsLength }: { row: TanstackRow<any>; columnsLength: number }) => {
+        return (
+            <TableRow data-state={row.getIsSelected() && 'selected'} className='group/row'>
+                {row.getVisibleCells().map((cell) => {
+                    const isAutoWidth = cell.column.id === 'actions'
+                    return (
+                        <TableCell
+                            key={cell.id}
+                            className={cn(
+                                'bg-background transition-colors group-hover/row:bg-muted/50 group-data-[state=selected]/row:bg-muted/50',
+                                cell.column.columnDef.meta?.className,
+                                (cell.column.columnDef.meta as Record<string, unknown>)?.tdClassName as string,
+                            )}
+                            style={
+                                isAutoWidth
+                                    ? { width: 'auto' }
+                                    : cell.column.columnDef.enableResizing
+                                        ? { width: `var(--col-${cell.column.id}-size)` }
+                                        : undefined
+                            }
+                        >
+                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </TableCell>
+                    )
+                })}
+            </TableRow>
+        )
+    },
+    (prev, next) =>
+        prev.row === next.row &&
+        prev.row.getIsSelected() === next.row.getIsSelected() &&
+        prev.row.getIsExpanded() === next.row.getIsExpanded()
+)
+
 export function DataTable<TData>({
     table,
     columnsLength,
@@ -56,7 +91,19 @@ export function DataTable<TData>({
     return (
         <div className={cn('relative overflow-x-auto rounded-md border', containerClassName)}>
             <div ref={containerRef} className={cn('max-h-[70vh] overflow-auto', rowVirtualizer ? 'w-full' : '')}>
-                <Table className={tableClassName}>
+                <Table
+                    className={tableClassName}
+                    style={
+                        {
+                            ...Object.fromEntries(
+                                table.getFlatHeaders().map((header) => [
+                                    `--col-${header.column.id}-size`,
+                                    `${header.column.getSize()}px`,
+                                ])
+                            ),
+                        } as React.CSSProperties
+                    }
+                >
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
                             <TableRow key={headerGroup.id}>
@@ -75,7 +122,7 @@ export function DataTable<TData>({
                                                 isAutoWidth
                                                     ? { width: 'auto' }
                                                     : header.column.getCanResize()
-                                                        ? { width: header.getSize() }
+                                                        ? { width: `var(--col-${header.column.id}-size)` }
                                                         : undefined
                                             }
                                         >
@@ -118,30 +165,7 @@ export function DataTable<TData>({
                                 ) : null}
 
                                 {(virtualRows ? virtualRows.map((v) => rows[v.index]!) : rows).map((row) => (
-                                    <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'} className='group/row'>
-                                        {row.getVisibleCells().map((cell) => {
-                                            const isAutoWidth = cell.column.id === 'actions'
-                                            return (
-                                                <TableCell
-                                                    key={cell.id}
-                                                    className={cn(
-                                                        'bg-background transition-colors group-hover/row:bg-muted/50 group-data-[state=selected]/row:bg-muted/50',
-                                                        cell.column.columnDef.meta?.className,
-                                                        (cell.column.columnDef.meta as Record<string, unknown>)?.tdClassName as string,
-                                                    )}
-                                                    style={
-                                                        isAutoWidth
-                                                            ? { width: 'auto' }
-                                                            : cell.column.columnDef.enableResizing
-                                                                ? { width: cell.column.getSize() }
-                                                                : undefined
-                                                    }
-                                                >
-                                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                                </TableCell>
-                                            )
-                                        })}
-                                    </TableRow>
+                                    <MemoizedTableRow key={row.id} row={row} columnsLength={columnsLength} />
                                 ))}
 
                                 {paddingBottom > 0 ? (

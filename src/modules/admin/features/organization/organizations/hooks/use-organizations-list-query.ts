@@ -56,6 +56,7 @@ export function useOrganizationsListQuery(input: UseOrganizationsListQueryInput)
 
   const {
     data: pageData,
+    isLoading,
     refetch,
     isRefetching,
   } = useQuery<PageData>({
@@ -97,6 +98,7 @@ export function useOrganizationsListQuery(input: UseOrganizationsListQueryInput)
     pageData,
     data: pageData?.items ?? [],
     serverPageCount: pageData?.pageCount ?? 0,
+    isLoading,
     refetch,
     isRefetching,
   }

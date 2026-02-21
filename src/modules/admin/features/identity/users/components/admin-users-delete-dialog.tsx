@@ -65,6 +65,7 @@ export function AdminUsersDeleteDialog({ row, open, onClose }: Props): ReactElem
             }
             confirmText='删除'
             cancelText='取消'
+            confirmWord={row?.name || row?.id}
             isLoading={deleteMutation.isPending}
             showWarningAlert
             warningTitle='危险操作'

@@ -1,5 +1,13 @@
 import { type ColumnDef } from '@tanstack/react-table'
-import { History, Pencil, Trash2 } from 'lucide-react'
+import { History, Pencil, Trash2, MoreHorizontal } from 'lucide-react'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
@@ -8,7 +16,7 @@ import type { SystemConfig } from '../data/schema'
 import { maskConfigValue } from '../utils/value-parser'
 import { useSystemConfigContext } from './system-config-provider'
 
-// ─── Row Actions ──────────────────────────────────────────────────────────────
+import { PermissionGuard } from '@/shared/components/permission-guard'
 
 function RowActions({ row }: { row: { original: SystemConfig } }): React.ReactElement {
   const { setOpen, setCurrentRow } = useSystemConfigContext()
@@ -29,36 +37,52 @@ function RowActions({ row }: { row: { original: SystemConfig } }): React.ReactEl
   }
 
   return (
-    <div className='flex items-center justify-end gap-1'>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button variant='ghost' size='icon' className='h-8 w-8' onClick={openEdit}>
-            <Pencil className='h-4 w-4' />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>编辑</TooltipContent>
-      </Tooltip>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button variant='ghost' size='icon' className='h-8 w-8' onClick={openHistory}>
-            <History className='h-4 w-4' />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>变更历史</TooltipContent>
-      </Tooltip>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            variant='ghost'
-            size='icon'
-            className='h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive'
-            onClick={openDelete}
-          >
-            <Trash2 className='h-4 w-4' />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>删除</TooltipContent>
-      </Tooltip>
+    <div className='flex items-center justify-end gap-2'>
+      <PermissionGuard permission="sysconfig.update">
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant='ghost' size='icon' className='h-8 w-8' onClick={openEdit}>
+              <Pencil className='h-4 w-4 text-muted-foreground' />
+              <span className='sr-only'>编辑</span>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>编辑</TooltipContent>
+        </Tooltip>
+      </PermissionGuard>
+
+      <PermissionGuard permission="sysconfig.update">
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant='ghost' size='icon' className='h-8 w-8' onClick={openHistory}>
+              <History className='h-4 w-4 text-muted-foreground' />
+              <span className='sr-only'>变更历史</span>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>变更历史</TooltipContent>
+        </Tooltip>
+      </PermissionGuard>
+
+      <PermissionGuard permission="sysconfig.delete">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant='ghost' className='flex h-8 w-8 p-0 data-[state=open]:bg-muted'>
+              <MoreHorizontal className='h-4 w-4' />
+              <span className='sr-only'>打开菜单</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align='end' className='w-[160px]'>
+            <DropdownMenuLabel>操作</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={openDelete}
+              className='text-destructive focus:text-destructive'
+            >
+              <Trash2 className='mr-2 h-4 w-4' />
+              删除
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </PermissionGuard>
     </div>
   )
 }

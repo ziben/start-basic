@@ -1,10 +1,8 @@
-import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { DataTable, DataTablePagination, DataTableToolbar } from '@/components/data-table'
 import { type NavigateFn, useTableUrlState } from '@/shared/hooks/use-table-url-state'
 import { getRouteApi } from '@tanstack/react-router'
 import {
   type VisibilityState,
-  flexRender,
   getCoreRowModel,
   getFacetedRowModel,
   getFacetedUniqueValues,
@@ -107,44 +105,11 @@ function NavGroupsTableInner({ data, search, navigate, onReload, isReloading }: 
           },
         ]}
       />
-      <div className='rounded-md border'>
-        <div>
-          <Table>
-            <TableHeader>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => {
-                    return (
-                      <TableHead key={header.id} colSpan={header.colSpan}>
-                        {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                      </TableHead>
-                    )
-                  })}
-                </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody>
-              {rows?.length ? (
-                rows.map((row) => (
-                  <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={columns.length} className='h-24 text-center'>
-                    {t('admin.common.noData')}
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </div>
-      </div>
+      <DataTable
+        table={table}
+        columnsLength={columns.length}
+        emptyState={t('admin.common.noData')}
+      />
       <DataTablePagination table={table} />
       <DataTableBulkActions table={table} />
     </div>

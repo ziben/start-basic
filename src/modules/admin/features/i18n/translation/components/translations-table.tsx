@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import {
   type VisibilityState,
-  flexRender,
   getCoreRowModel,
   getFacetedRowModel,
   getFacetedUniqueValues,
@@ -14,8 +13,7 @@ import { useVirtualizer } from '@tanstack/react-virtual'
 import type { Translation } from '~/modules/admin/shared/types/translation'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import { type NavigateFn, useTableUrlState } from '@/shared/hooks/use-table-url-state'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
+import { DataTable, DataTablePagination, DataTableToolbar } from '@/components/data-table'
 import { DataTableBulkActions } from './data-table-bulk-actions'
 import { useTranslationColumns } from './translations-columns'
 
@@ -115,61 +113,14 @@ export function TranslationsTable({ data, search, navigate }: DataTableProps) {
           },
         ]}
       />
-      <div className='overflow-hidden rounded-md border'>
-        <div ref={tableContainerRef} className='max-h-[70vh] overflow-auto'>
-          <Table>
-            <TableHeader>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => {
-                    return (
-                      <TableHead key={header.id} colSpan={header.colSpan}>
-                        {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                      </TableHead>
-                    )
-                  })}
-                </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody>
-              {rows?.length ? (
-                <>
-                  {paddingTop > 0 ? (
-                    <TableRow aria-hidden='true' className='border-0 hover:bg-transparent'>
-                      <TableCell colSpan={columns.length} className='p-0' style={{ height: `${paddingTop}px` }} />
-                    </TableRow>
-                  ) : null}
-
-                  {virtualRows.map((virtualRow) => {
-                    const row = rows[virtualRow.index]!
-                    return (
-                      <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
-                        {row.getVisibleCells().map((cell) => (
-                          <TableCell key={cell.id}>
-                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                          </TableCell>
-                        ))}
-                      </TableRow>
-                    )
-                  })}
-
-                  {paddingBottom > 0 ? (
-                    <TableRow aria-hidden='true' className='border-0 hover:bg-transparent'>
-                      <TableCell colSpan={columns.length} className='p-0' style={{ height: `${paddingBottom}px` }} />
-                    </TableRow>
-                  ) : null}
-                </>
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={columns.length} className='h-24 text-center'>
-                    {t('admin.common.noData')}
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </div>
-      </div>
+      <DataTable
+        table={table}
+        columnsLength={columns.length}
+        skeletonCount={pagination.pageSize}
+        containerRef={tableContainerRef}
+        rowVirtualizer={rowVirtualizer}
+        emptyState={t('admin.common.noData')}
+      />
       <DataTablePagination table={table} />
       <DataTableBulkActions table={table} />
     </div>

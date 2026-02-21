@@ -22,35 +22,44 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
   const organization = row.original
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant='ghost' className='flex h-8 w-8 p-0 data-[state=open]:bg-muted'>
-          <MoreHorizontal className='h-4 w-4' />
-          <span className='sr-only'>{t('admin.common.openMenu')}</span>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align='end' className='w-[160px]'>
-        <DropdownMenuItem
-          onClick={() => {
-            setCurrentRow(organization)
-            setOpen('update')
-          }}
-        >
-          <Pen className='mr-2 h-4 w-4' />
-          {t('admin.common.edit')}
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem
-          onClick={() => {
-            setCurrentRow(organization)
-            setOpen('delete')
-          }}
-          className='text-destructive focus:text-destructive'
-        >
-          <Trash2 className='mr-2 h-4 w-4' />
-          {t('admin.common.delete')}
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <div className="flex items-center justify-end gap-2">
+      <Button
+        variant="ghost"
+        size="icon"
+        className="h-8 w-8"
+        onClick={() => {
+          setCurrentRow(organization)
+          setOpen('update')
+        }}
+      >
+        <Pen className="h-4 w-4 text-muted-foreground" />
+        <span className="sr-only">{t('admin.common.edit')}</span>
+      </Button>
+
+      <Button
+        variant="ghost"
+        size="icon"
+        className="h-8 w-8"
+        onClick={() => {
+          setCurrentRow(organization)
+          setOpen('delete')
+        }}
+      >
+        <Trash2 className="h-4 w-4 text-destructive" />
+        <span className="sr-only">{t('admin.common.delete')}</span>
+      </Button>
+
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" className="flex h-8 w-8 p-0 data-[state=open]:bg-muted">
+            <MoreHorizontal className="h-4 w-4" />
+            <span className="sr-only">{t('admin.common.openMenu')}</span>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-[160px]">
+          {/* Add future secondary actions here */}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
   )
 }

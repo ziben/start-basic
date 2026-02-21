@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import {
   type VisibilityState,
-  flexRender,
   getCoreRowModel,
   getFacetedRowModel,
   getFacetedUniqueValues,
@@ -11,11 +10,11 @@ import { useVirtualizer } from '@tanstack/react-virtual'
 import { cn } from '@/shared/lib/utils'
 import { type NavigateFn, useTableUrlState } from '@/shared/hooks/use-table-url-state'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
+import { DataTable, DataTablePagination, DataTableToolbar } from '@/components/data-table'
 import { useOrganizationsListQuery } from '../hooks/use-organizations-list-query'
 import { useOrganizationsColumns } from './organizations-columns'
 import { OrganizationsBulkActions } from './organizations-bulk-actions'
+import { useTableColumnVisibility } from '@/shared/hooks/use-table-column-visibility'
 
 type OrganizationsTableProps = {
   search: Record<string, unknown>
@@ -34,11 +33,11 @@ export function OrganizationsTable({ search, navigate }: OrganizationsTableProps
     columnFilters: [],
   })
 
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+  const { columnVisibility, setColumnVisibility } = useTableColumnVisibility({ tableId: 'admin-organizations' })
 
   const columns = useOrganizationsColumns()
 
-  const { data, serverPageCount, refetch, isRefetching } = useOrganizationsListQuery({
+  const { data, serverPageCount, isLoading, refetch, isRefetching } = useOrganizationsListQuery({
     pageIndex: pagination.pageIndex,
     pageSize: pagination.pageSize,
     filter: globalFilter ?? undefined,
@@ -101,76 +100,15 @@ export function OrganizationsTable({ search, navigate }: OrganizationsTableProps
         onReload={() => void refetch()}
         isReloading={isRefetching}
       />
-      <div className='overflow-hidden rounded-md border'>
-        <div ref={tableContainerRef} className='max-h-[70vh] overflow-auto'>
-          <Table>
-            <TableHeader>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id} className='group/row'>
-                  {headerGroup.headers.map((header) => {
-                    return (
-                      <TableHead
-                        key={header.id}
-                        colSpan={header.colSpan}
-                        className={cn(
-                          'bg-background group-hover/row:bg-muted group-data-[state=selected]/row:bg-muted',
-                          header.column.columnDef.meta?.className,
-                          header.column.columnDef.meta?.thClassName
-                        )}
-                      >
-                        {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                      </TableHead>
-                    )
-                  })}
-                </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody>
-              {rows?.length ? (
-                <>
-                  {paddingTop > 0 ? (
-                    <TableRow aria-hidden='true' className='border-0 hover:bg-transparent'>
-                      <TableCell colSpan={columns.length} className='p-0' style={{ height: `${paddingTop}px` }} />
-                    </TableRow>
-                  ) : null}
-
-                  {virtualRows.map((virtualRow) => {
-                    const row = rows[virtualRow.index]!
-                    return (
-                      <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'} className='group/row'>
-                        {row.getVisibleCells().map((cell) => (
-                          <TableCell
-                            key={cell.id}
-                            className={cn(
-                              'bg-background group-hover/row:bg-muted group-data-[state=selected]/row:bg-muted',
-                              cell.column.columnDef.meta?.className,
-                              cell.column.columnDef.meta?.tdClassName
-                            )}
-                          >
-                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                          </TableCell>
-                        ))}
-                      </TableRow>
-                    )
-                  })}
-
-                  {paddingBottom > 0 ? (
-                    <TableRow aria-hidden='true' className='border-0 hover:bg-transparent'>
-                      <TableCell colSpan={columns.length} className='p-0' style={{ height: `${paddingBottom}px` }} />
-                    </TableRow>
-                  ) : null}
-                </>
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={columns.length} className='h-24 text-center'>
-                    {t('admin.common.noData')}
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </div>
-      </div>
+      <DataTable
+        table={table}
+        columnsLength={columns.length}
+        isLoading={isLoading}
+        skeletonCount={pagination.pageSize}
+        containerRef={tableContainerRef}
+        rowVirtualizer={rowVirtualizer}
+        emptyState={t('admin.common.noData')}
+      />
       <DataTablePagination table={table} className='mt-auto' />
       <OrganizationsBulkActions table={table} />
     </div>

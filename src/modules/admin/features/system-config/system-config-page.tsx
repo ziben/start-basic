@@ -6,6 +6,7 @@ import { SystemConfigPrimaryButtons } from './components/system-config-primary-b
 import { SystemConfigProvider } from './components/system-config-provider'
 import { SystemConfigTable } from './components/system-config-table'
 import { useSystemConfigs } from './hooks/use-system-config-query'
+import { ErrorBoundary } from '@/shared/components/error-boundary'
 
 const route = getRouteApi('/_authenticated/admin/system-config')
 
@@ -25,7 +26,9 @@ export default function AdminSystemConfigPage(): ReactElement {
           <SystemConfigPrimaryButtons />
         </div>
 
-        <SystemConfigTable data={configs} isLoading={isLoading} search={search} navigate={navigate} />
+        <ErrorBoundary fallbackMessage="配置表格渲染失败">
+          <SystemConfigTable data={configs} isLoading={isLoading} search={search} navigate={navigate} />
+        </ErrorBoundary>
       </AppHeaderMain>
 
       <SystemConfigDialogs />

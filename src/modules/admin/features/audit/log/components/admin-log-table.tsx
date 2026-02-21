@@ -18,6 +18,7 @@ import { auditResults, logLevels, type LogType } from '../data/schema'
 import { useAdminLogsQuery } from '../hooks/use-admin-logs-query'
 import { getSingleBooleanFromArrayFilter, getSingleStringFromArrayFilter } from '../utils/table-filters'
 import { useAuditLogColumns, useSystemLogColumns } from './admin-log-columns'
+import { useTableColumnVisibility } from '@/shared/hooks/use-table-column-visibility'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -69,7 +70,7 @@ export function AdminLogTable({ type, search, navigate }: AdminLogTableProps) {
     ],
   })
 
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+  const { columnVisibility, setColumnVisibility } = useTableColumnVisibility({ tableId: `admin-logs-${type}` })
 
   const systemColumns = useSystemLogColumns()
   const auditColumns = useAuditLogColumns()

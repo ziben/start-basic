@@ -1,6 +1,6 @@
 import { DotsHorizontalIcon } from '@radix-ui/react-icons'
 import { type Row } from '@tanstack/react-table'
-import { Trash2 } from 'lucide-react'
+import { Trash2, Pen } from 'lucide-react'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import { Button } from '@/components/ui/button'
 import {
@@ -26,38 +26,46 @@ export function DataTableRowActions<TData>({ row }: DataTableRowActionsProps<TDa
   const { t } = useTranslation()
 
   return (
-    <DropdownMenu modal={false}>
-      <DropdownMenuTrigger asChild>
-        <Button variant='ghost' className='flex h-8 w-8 p-0 data-[state=open]:bg-muted'>
-          <DotsHorizontalIcon className='h-4 w-4' />
-          <span className='sr-only'>Open menu</span>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align='end' className='w-[160px]'>
-        <DropdownMenuItem
-          onClick={() => {
-            setCurrentRow(navgroup)
-            setOpen('update')
-          }}
-        >
-          {t('admin.navgroup.actions.edit')}
-        </DropdownMenuItem>
-        <DropdownMenuItem disabled>{t('admin.navgroup.actions.makeCopy')}</DropdownMenuItem>
-        <DropdownMenuItem disabled>{t('admin.navgroup.actions.favorite')}</DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem
-          onClick={() => {
-            setCurrentRow(navgroup)
-            setOpen('delete')
-          }}
-        >
-          {t('admin.navgroup.actions.delete')}
-          <DropdownMenuShortcut>
-            <Trash2 size={16} />
-          </DropdownMenuShortcut>
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <div className='flex items-center justify-end gap-2'>
+      <Button
+        variant='ghost'
+        size='icon'
+        className='h-8 w-8'
+        onClick={() => {
+          setCurrentRow(navgroup)
+          setOpen('update')
+        }}
+      >
+        <Pen className='h-4 w-4 text-muted-foreground' />
+        <span className='sr-only'>{t('admin.navgroup.actions.edit')}</span>
+      </Button>
+
+      <Button
+        variant='ghost'
+        size='icon'
+        className='h-8 w-8'
+        onClick={() => {
+          setCurrentRow(navgroup)
+          setOpen('delete')
+        }}
+      >
+        <Trash2 className='h-4 w-4 text-destructive' />
+        <span className='sr-only'>{t('admin.navgroup.actions.delete')}</span>
+      </Button>
+
+      <DropdownMenu modal={false}>
+        <DropdownMenuTrigger asChild>
+          <Button variant='ghost' className='flex h-8 w-8 p-0 data-[state=open]:bg-muted'>
+            <DotsHorizontalIcon className='h-4 w-4' />
+            <span className='sr-only'>Open menu</span>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align='end' className='w-[160px]'>
+          <DropdownMenuItem disabled>{t('admin.navgroup.actions.makeCopy')}</DropdownMenuItem>
+          <DropdownMenuItem disabled>{t('admin.navgroup.actions.favorite')}</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
   )
 }
 

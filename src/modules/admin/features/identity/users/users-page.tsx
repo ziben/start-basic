@@ -5,6 +5,7 @@ import { AdminUsersDialogs } from './components/admin-users-dialogs'
 import { AdminUsersPrimaryButtons } from './components/admin-users-primary-buttons'
 import { AdminUsersProvider } from './components/admin-users-provider'
 import { AdminUsersTable } from './components/admin-users-table'
+import { ErrorBoundary } from '@/shared/components/error-boundary'
 
 const route = getRouteApi('/_authenticated/admin/users')
 
@@ -23,7 +24,9 @@ export default function AdminUsers() {
           <AdminUsersPrimaryButtons />
         </div>
         <div className='-mx-4 flex-1 overflow-auto px-4 py-1'>
-          <AdminUsersTable search={search} navigate={navigate as unknown as NavigateFn} />
+          <ErrorBoundary fallbackMessage="用户表格渲染失败">
+            <AdminUsersTable search={search} navigate={navigate as unknown as NavigateFn} />
+          </ErrorBoundary>
         </div>
       </AppHeaderMain>
 

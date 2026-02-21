@@ -10,14 +10,13 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { type AdminUser } from '../data/schema'
 import { adminUsersQueryKeys } from '~/shared/lib/query-keys'
 import { useUsersOptimisticUpdate, createBulkBanUpdateFn } from '../hooks/use-users-optimistic-update'
 import { useAdminUsers } from './admin-users-provider'
+import { PermissionGuard } from '@/shared/components/permission-guard'
 
 type DataTableRowActionsProps<TData> = {
   row: Row<TData>
@@ -56,58 +55,61 @@ export function DataTableRowActions<TData>({ row }: DataTableRowActionsProps<TDa
   }
 
   return (
-    <DropdownMenu modal={false}>
-      <DropdownMenuTrigger asChild>
-        <Button variant='ghost' className='flex h-8 w-8 p-0 data-[state=open]:bg-muted'>
-          <DotsHorizontalIcon className='h-4 w-4' />
-          <span className='sr-only'>{t('admin.user.actions.openMenu')}</span>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align='end' className='w-[60px]'>
-        <DropdownMenuItem
-          onClick={() => {
-            setCurrentRow(user)
-            runBanToggle(!user.banned)
-          }}
-        >
-          {user.banned ? t('admin.user.actions.unban') : t('admin.user.actions.ban')}
-          <DropdownMenuShortcut>
-            <Ban size={16} />
-          </DropdownMenuShortcut>
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem
-          onClick={() => {
+    <div className='flex items-center justify-end gap-2'>
+      <PermissionGuard permission="users.update">
+        <Button
+          variant='ghost'
+          size='icon'
+          className='h-8 w-8'
+          onClick={(e) => {
+            e.stopPropagation()
             setCurrentRow(user)
             setOpen('update')
           }}
         >
-          {t('admin.user.actions.edit')}
-          <DropdownMenuShortcut>
-            <UserPen size={16} />
-          </DropdownMenuShortcut>
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem
-          onClick={() => {
+          <UserPen className='h-4 w-4 text-muted-foreground' />
+          <span className='sr-only'>{t('admin.user.actions.edit')}</span>
+        </Button>
+      </PermissionGuard>
+
+      <PermissionGuard permission="users.delete">
+        <Button
+          variant='ghost'
+          size='icon'
+          className='h-8 w-8'
+          onClick={(e) => {
+            e.stopPropagation()
             setCurrentRow(user)
             setOpen('delete')
           }}
-          className='text-red-500!'
         >
-          {t('admin.user.actions.delete')}
-          <DropdownMenuShortcut>
-            <Trash2 size={16} />
-          </DropdownMenuShortcut>
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+          <Trash2 className='h-4 w-4 text-destructive' />
+          <span className='sr-only'>{t('admin.user.actions.delete')}</span>
+        </Button>
+      </PermissionGuard>
+
+      <PermissionGuard permission="users.update">
+        <DropdownMenu modal={false}>
+          <DropdownMenuTrigger asChild>
+            <Button variant='ghost' className='flex h-8 w-8 p-0 data-[state=open]:bg-muted' onClick={(e) => e.stopPropagation()}>
+              <DotsHorizontalIcon className='h-4 w-4' />
+              <span className='sr-only'>{t('admin.user.actions.openMenu')}</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align='end' className='w-[160px]'>
+            <DropdownMenuItem
+              onClick={(e) => {
+                e.stopPropagation()
+                setCurrentRow(user)
+                runBanToggle(!user.banned)
+              }}
+            >
+              <Ban className='mr-2 h-4 w-4 text-muted-foreground' />
+              {user.banned ? t('admin.user.actions.unban') : t('admin.user.actions.ban')}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </PermissionGuard>
+    </div>
   )
 }
-
-
-
-
-
-
-

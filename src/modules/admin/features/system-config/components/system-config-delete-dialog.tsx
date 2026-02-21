@@ -50,6 +50,7 @@ export function SystemConfigDeleteDialog({ row, open, onClose }: Props): ReactEl
             }
             confirmText='删除'
             cancelText='取消'
+            confirmWord={row?.key}
             isLoading={deleteMutation.isPending}
             showWarningAlert
             warningTitle='危险操作'

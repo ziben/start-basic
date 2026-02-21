@@ -8,45 +8,47 @@ import { useIsAdmin, usePermissionsMap } from '@/shared/hooks/use-permissions'
 
 export type PermissionGuardLoadingFallback = ReactNode | ((state: { isLoading: boolean }) => ReactNode)
 
-export interface PermissionGuardProps {
+// Base properties available across all modes
+interface PermissionGuardBaseProps {
   children: ReactNode
-  permission?: string
-  anyPermissions?: string[]
-  allPermissions?: string[]
-  requireAdmin?: boolean
   organizationId?: string
   permissionsMap?: Record<string, boolean>
   fallback?: ReactNode
   loadingFallback?: PermissionGuardLoadingFallback
 }
 
-export type PermissionGuardPropTypes = PermissionGuardProps
+// Discriminated Union to enforce mutually exclusive permission conditions
+export type PermissionGuardProps = PermissionGuardBaseProps & (
+  | { requireAdmin: true; permission?: never; anyPermissions?: never; allPermissions?: never }
+  | { requireAdmin?: never; permission: string; anyPermissions?: never; allPermissions?: never }
+  | { requireAdmin?: never; permission?: never; anyPermissions: string[]; allPermissions?: never }
+  | { requireAdmin?: never; permission?: never; anyPermissions?: never; allPermissions: string[] }
+  | { requireAdmin?: false; permission?: never; anyPermissions?: never; allPermissions?: never } // allow empty/no-op guard
+)
 
 /**
  * 权限守卫组件
  * 根据权限控制子组件的显示
  */
-export function PermissionGuard({
-  children,
-  permission,
-  anyPermissions,
-  allPermissions,
-  requireAdmin,
-  organizationId,
-  permissionsMap,
-  fallback = null,
-  loadingFallback,
-}: PermissionGuardProps) {
+export function PermissionGuard(props: PermissionGuardProps) {
+  const {
+    children,
+    fallback = null,
+    loadingFallback,
+    organizationId,
+    permissionsMap,
+  } = props
+
   const { isAdmin } = useIsAdmin()
   const resolvedLoadingFallback = loadingFallback ?? fallback
 
   const permissionsForMap = useMemo(() => {
     const list: string[] = []
-    if (permission) list.push(permission)
-    if (anyPermissions?.length) list.push(...anyPermissions)
-    if (allPermissions?.length) list.push(...allPermissions)
+    if (props.permission) list.push(props.permission)
+    if (props.anyPermissions?.length) list.push(...props.anyPermissions)
+    if (props.allPermissions?.length) list.push(...props.allPermissions)
     return Array.from(new Set(list))
-  }, [permission, anyPermissions, allPermissions])
+  }, [props.permission, props.anyPermissions, props.allPermissions])
 
   const permissionsMapQuery = usePermissionsMap(permissionsForMap, organizationId)
   const resolvedMap = permissionsMap ?? permissionsMapQuery.map
@@ -58,36 +60,29 @@ export function PermissionGuard({
     }
     return resolvedLoadingFallback
   }
-  
-  // 如果要求管理员权限
-  if (requireAdmin) {
-    return isAdmin ? <>{children}</> : <>{fallback}</>
-  }
-  
-  // 单个权限检查
-  if (permission) {
-    if (isLoading) return <>{renderLoadingFallback()}</>
-    return resolvedMap[permission] ? <>{children}</> : <>{fallback}</>
-  }
-  
-  // 任一权限检查
-  if (anyPermissions && anyPermissions.length > 0) {
-    const hasPermission = anyPermissions.some(permissionKey => resolvedMap[permissionKey])
 
-    if (isLoading) return <>{renderLoadingFallback()}</>
-    return hasPermission ? <>{children}</> : <>{fallback}</>
+  // 1. Check if loading is pending
+  if (isLoading && ('permission' in props || 'anyPermissions' in props || 'allPermissions' in props)) {
+    return <>{renderLoadingFallback()}</>
   }
-  
-  // 全部权限检查
-  if (allPermissions && allPermissions.length > 0) {
-    const hasPermission = allPermissions.every(permissionKey => resolvedMap[permissionKey])
 
-    if (isLoading) return <>{renderLoadingFallback()}</>
-    return hasPermission ? <>{children}</> : <>{fallback}</>
+  // 2. Resolve access based on the specifically provided prop mode
+  let hasAccess = false
+
+  if (props.requireAdmin) {
+    hasAccess = isAdmin
+  } else if (props.permission) {
+    hasAccess = !!resolvedMap[props.permission]
+  } else if (props.anyPermissions && props.anyPermissions.length > 0) {
+    hasAccess = props.anyPermissions.some(permissionKey => resolvedMap[permissionKey])
+  } else if (props.allPermissions && props.allPermissions.length > 0) {
+    hasAccess = props.allPermissions.every(permissionKey => resolvedMap[permissionKey])
+  } else {
+    // 默认通过 (如果什么条件都没传)
+    hasAccess = true
   }
-  
-  // 没有指定任何权限要求，默认显示
-  return <>{children}</>
+
+  return hasAccess ? <>{children}</> : <>{fallback}</>
 }
 
 /**

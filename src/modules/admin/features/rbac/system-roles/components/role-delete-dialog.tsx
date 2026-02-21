@@ -1,15 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { deleteRoleFn } from '@/modules/admin/shared/server-fns/rbac.fn'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
+import { ConfirmDeleteDialog } from '@/components/confirm-delete-dialog'
 import { toast } from 'sonner'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import { roleQueryKeys } from '~/shared/lib/query-keys'
@@ -41,21 +32,22 @@ export function RoleDeleteDialog() {
   }
 
   return (
-    <AlertDialog open={deleteDialog.isOpen} onOpenChange={closeDeleteDialog}>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>{t('admin.role.delete.title')}</AlertDialogTitle>
-          <AlertDialogDescription>
-            {t('admin.role.delete.desc', { name: deleteDialog.role?.displayName })}
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>{t('common.buttons.cancel')}</AlertDialogCancel>
-          <AlertDialogAction onClick={handleDelete} disabled={deleteMutation.isPending}>
-            {t('common.buttons.delete')}
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+    <ConfirmDeleteDialog
+      open={deleteDialog.isOpen}
+      onOpenChange={(open) => {
+        if (!open) closeDeleteDialog()
+      }}
+      onConfirm={handleDelete}
+      title={t('admin.role.delete.title')}
+      description={t('admin.role.delete.desc', { name: deleteDialog.role?.displayName })}
+      confirmWord={deleteDialog.role?.name || deleteDialog.role?.displayName}
+      confirmText={t('common.buttons.delete')}
+      cancelText={t('common.buttons.cancel')}
+      isLoading={deleteMutation.isPending}
+      showWarningAlert
+      warningTitle='危险操作'
+      warningDescription='删除后，拥有该角色的用户将失去相关权限。此操作无法还原。'
+      itemName='角色'
+    />
   )
 }

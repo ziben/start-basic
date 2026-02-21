@@ -24,11 +24,19 @@ import { useUrlSyncedSorting } from '@/shared/hooks/use-url-synced-sorting'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { DataTableColumnHeader, DataTablePagination, DataTableToolbar } from '@/components/data-table'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { DataTable, DataTableColumnHeader, DataTablePagination, DataTableToolbar } from '@/components/data-table'
 import { AppHeaderMain } from '~/components/layout/app-header-main'
 import { AdminSessionPrimaryButtons } from './components/admin-session-primary-buttons'
 import { AdminSessionDialogs } from './components/admin-session-dialogs'
+import { Eye, Trash2, MoreHorizontal } from 'lucide-react'
 
 const route = getRouteApi('/_authenticated/admin/session')
 
@@ -206,10 +214,11 @@ export default function AdminSession() {
         cell: ({ row }) => {
           const s = row.original
           return (
-            <div className='flex justify-end gap-2'>
+            <div className='flex items-center justify-end gap-2'>
               <Button
-                variant='outline'
-                size='sm'
+                variant='ghost'
+                size='icon'
+                className='h-8 w-8'
                 onClick={(e) => {
                   e.stopPropagation()
                   setViewSession(s)
@@ -219,11 +228,13 @@ export default function AdminSession() {
                   e.stopPropagation()
                 }}
               >
-                {t('common.view', { defaultMessage: '查看' })}
+                <Eye className='h-4 w-4 text-muted-foreground' />
+                <span className='sr-only'>{t('common.view', { defaultMessage: '查看' })}</span>
               </Button>
               <Button
-                variant='destructive'
-                size='sm'
+                variant='ghost'
+                size='icon'
+                className='h-8 w-8'
                 disabled={isMutating}
                 onClick={(e) => {
                   e.stopPropagation()
@@ -233,8 +244,21 @@ export default function AdminSession() {
                   e.stopPropagation()
                 }}
               >
-                {t('admin.session.revoke', { defaultMessage: '撤销' })}
+                <Trash2 className='h-4 w-4 text-destructive' />
+                <span className='sr-only'>{t('admin.session.revoke', { defaultMessage: '撤销' })}</span>
               </Button>
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant='ghost' className='flex h-8 w-8 p-0 data-[state=open]:bg-muted' onClick={(e) => e.stopPropagation()}>
+                    <MoreHorizontal className='h-4 w-4' />
+                    <span className='sr-only'>打开菜单</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align='end' className='w-[160px]'>
+                  {/* Add future secondary actions here */}
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           )
         },
@@ -370,51 +394,13 @@ export default function AdminSession() {
                   ]}
                 />
 
-                <div className='min-h-0 flex-1 overflow-hidden rounded-md border'>
-                  <div className='h-full overflow-auto'>
-                    <Table>
-                      <TableHeader>
-                        {table.getHeaderGroups().map((headerGroup) => (
-                          <TableRow key={headerGroup.id}>
-                            {headerGroup.headers.map((header) => (
-                              <TableHead key={header.id} colSpan={header.colSpan}>
-                                {header.isPlaceholder
-                                  ? null
-                                  : flexRender(header.column.columnDef.header, header.getContext())}
-                              </TableHead>
-                            ))}
-                          </TableRow>
-                        ))}
-                      </TableHeader>
-
-                      <TableBody>
-                        {isLoading ? (
-                          <TableRow>
-                            <TableCell colSpan={columns.length} className='h-24 text-center'>
-                              {t('common.loading', { defaultMessage: '加载中...' })}
-                            </TableCell>
-                          </TableRow>
-                        ) : table.getRowModel().rows?.length ? (
-                          table.getRowModel().rows.map((row) => (
-                            <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
-                              {row.getVisibleCells().map((cell) => (
-                                <TableCell key={cell.id}>
-                                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                </TableCell>
-                              ))}
-                            </TableRow>
-                          ))
-                        ) : (
-                          <TableRow>
-                            <TableCell colSpan={columns.length} className='h-24 text-center'>
-                              {t('admin.common.noData', { defaultMessage: '暂无数据' })}
-                            </TableCell>
-                          </TableRow>
-                        )}
-                      </TableBody>
-                    </Table>
-                  </div>
-                </div>
+                <DataTable
+                  table={table}
+                  columnsLength={columns.length}
+                  isLoading={isLoading}
+                  skeletonCount={tableUrl.pagination.pageSize}
+                  emptyState={t('admin.common.noData', { defaultMessage: '暂无数据' })}
+                />
 
                 <DataTablePagination table={table} />
               </>

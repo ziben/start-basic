@@ -4,8 +4,16 @@ import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import { cn, formatDate } from '@/shared/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import { DataTableColumnHeader } from '@/components/data-table'
-import { Copy } from 'lucide-react'
+import { Copy, MoreHorizontal, FileText, Activity } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { toast } from 'sonner'
 import { type PaymentOrder } from '../data/schema'
 import { usePaymentOrdersContext } from './payment-orders-provider'
@@ -158,33 +166,51 @@ export function usePaymentOrdersColumns(): ColumnDef<PaymentOrder>[] {
             },
             {
                 id: 'actions',
-                cell: ({ row }) => (
-                    <div className="flex items-center gap-2">
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => {
-                                setSelectedOrder(row.original)
-                                setDetailDialogOpen(true)
-                            }}
-                        >
-                            详情
-                        </Button>
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => {
-                                setSelectedOrder(row.original)
-                                setUpdateStatusDialogOpen(true)
-                            }}
-                        >
-                            更新状态
-                        </Button>
-                    </div>
-                ),
-                meta: { className: 'w-48' },
+                cell: ({ row }) => {
+                    const order = row.original
+                    return (
+                        <div className="flex items-center justify-end gap-2">
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8"
+                                onClick={() => {
+                                    setSelectedOrder(order)
+                                    setDetailDialogOpen(true)
+                                }}
+                            >
+                                <FileText className="h-4 w-4 text-muted-foreground" />
+                                <span className="sr-only">详情</span>
+                            </Button>
+
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" className="flex h-8 w-8 p-0 data-[state=open]:bg-muted">
+                                        <span className="sr-only">打开菜单</span>
+                                        <MoreHorizontal className="h-4 w-4" />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="w-[160px]">
+                                    <DropdownMenuLabel>操作</DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem
+                                        onClick={() => {
+                                            setSelectedOrder(order)
+                                            setUpdateStatusDialogOpen(true)
+                                        }}
+                                    >
+                                        <Activity className="mr-2 h-4 w-4 text-muted-foreground" />
+                                        更新状态
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </div>
+                    )
+                },
+                meta: { className: 'w-24 text-right' },
             },
         ],
         [t, setSelectedOrder, setDetailDialogOpen, setUpdateStatusDialogOpen]
     )
 }
+

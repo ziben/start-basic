@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useMemo } from 'react'
-import type { Role } from '@/generated/prisma/client'
+import type { Role } from '@/generated/prisma/browser'
 import { useTableUrlState } from '@/shared/hooks/use-table-url-state'
 import { useNavigate, useSearch } from '@tanstack/react-router'
 
@@ -29,7 +29,7 @@ const RolesContext = createContext<RolesContextType | undefined>(undefined)
 export function RolesProvider({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate()
   const search = useSearch({ from: '/_authenticated/admin/rbac/roles' })
-  
+
   const tableUrl = useTableUrlState({
     search,
     navigate,

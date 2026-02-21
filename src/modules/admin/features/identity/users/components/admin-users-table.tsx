@@ -11,14 +11,13 @@ import { useVirtualizer } from '@tanstack/react-virtual'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import { cn } from '@/shared/lib/utils'
 import { type NavigateFn, useTableUrlState } from '@/shared/hooks/use-table-url-state'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Skeleton } from '@/components/ui/skeleton'
-import { DataTablePagination, DataTableToolbar, DataTable } from '@/components/data-table'
+import { AdminDataTable } from '@/modules/admin/shared/components/admin-data-table'
 import { banned } from '../data/schema'
 import { useAdminUsersListQuery } from '../hooks/use-admin-users-list-query'
 import { getSingleBooleanFromArrayFilter } from '../utils/table-filters'
 import { useAdminUsersColumns } from './admin-users-columns'
 import { DataTableBulkActions } from './data-table-bulk-actions'
+import { useTableColumnVisibility } from '@/shared/hooks/use-table-column-visibility'
 
 type AdminUsersTableProps = {
   search: Record<string, unknown>
@@ -57,7 +56,7 @@ export function AdminUsersTable({ search, navigate }: AdminUsersTableProps) {
     ],
   })
 
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+  const { columnVisibility, setColumnVisibility } = useTableColumnVisibility({ tableId: 'admin-users' })
 
   const columns = useAdminUsersColumns()
 
@@ -118,15 +117,16 @@ export function AdminUsersTable({ search, navigate }: AdminUsersTableProps) {
     overscan: 10,
   })
 
-  const virtualRows = rowVirtualizer.getVirtualItems()
-  const paddingTop = virtualRows.length > 0 ? virtualRows[0]!.start : 0
-  const paddingBottom =
-    virtualRows.length > 0 ? rowVirtualizer.getTotalSize() - virtualRows[virtualRows.length - 1]!.end : 0
-
   return (
     <div className={cn('max-sm:has-[div[role="toolbar"]]:mb-16', 'space-y-4')}>
-      <DataTableToolbar
+      <AdminDataTable
         table={table}
+        columnsLength={columns.length}
+        isLoading={isLoading}
+        skeletonCount={pagination.pageSize}
+        containerRef={tableContainerRef}
+        rowVirtualizer={rowVirtualizer}
+        emptyState={t('common.noResults')}
         searchPlaceholder={t('admin.user.table.searchPlaceholder')}
         onReload={() => void refetch()}
         isReloading={isRefetching}
@@ -140,18 +140,8 @@ export function AdminUsersTable({ search, navigate }: AdminUsersTableProps) {
             })),
           },
         ]}
+        bulkActions={<DataTableBulkActions table={table} />}
       />
-      <DataTable
-        table={table}
-        columnsLength={columns.length}
-        isLoading={isLoading}
-        skeletonCount={pagination.pageSize}
-        containerRef={tableContainerRef}
-        rowVirtualizer={rowVirtualizer}
-        emptyState={t('common.noResults')}
-      />
-      <DataTablePagination table={table} />
-      <DataTableBulkActions table={table} />
     </div>
   )
 }

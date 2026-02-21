@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { toast } from 'sonner'
 import { usePaymentOrdersContext } from './payment-orders-provider'
 import { useUpdatePaymentOrderStatus } from '../hooks/use-payment-orders'
-import type { PaymentStatus } from '~/generated/prisma/client'
+import type { PaymentStatus } from '~/generated/prisma/browser'
 
 export function UpdatePaymentOrderStatusDialog() {
     const { selectedOrder, updateStatusDialogOpen, setUpdateStatusDialogOpen } = usePaymentOrdersContext()

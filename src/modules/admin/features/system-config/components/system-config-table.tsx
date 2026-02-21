@@ -11,12 +11,11 @@ import {
   type VisibilityState,
 } from '@tanstack/react-table'
 import { cn } from '@/shared/lib/utils'
-import { DataTablePagination, DataTableToolbar, DataTable } from '@/components/data-table'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Skeleton } from '@/components/ui/skeleton'
+import { AdminDataTable } from '@/modules/admin/shared/components/admin-data-table'
 import { type NavigateFn, useTableUrlState } from '@/shared/hooks/use-table-url-state'
 import { CATEGORY_OPTIONS, VALUE_TYPE_OPTIONS, type SystemConfig } from '../data/schema'
 import { useSystemConfigColumns } from './system-config-columns'
+import { useTableColumnVisibility } from '@/shared/hooks/use-table-column-visibility'
 
 type Props = {
   readonly data: SystemConfig[]
@@ -27,7 +26,7 @@ type Props = {
 
 export function SystemConfigTable({ data, isLoading, search, navigate }: Props): React.ReactElement {
   const columns = useSystemConfigColumns()
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+  const { columnVisibility, setColumnVisibility } = useTableColumnVisibility({ tableId: 'admin-sysconfig' })
   const [columnSizing, setColumnSizing] = useState<Record<string, number>>({})
 
   const {
@@ -85,33 +84,26 @@ export function SystemConfigTable({ data, isLoading, search, navigate }: Props):
     ensurePageInRange(table.getPageCount())
   }, [table.getPageCount(), ensurePageInRange])
 
-  const rows = table.getRowModel().rows
   return (
-    <div className='space-y-4'>
-      <DataTableToolbar
-        table={table}
-        searchPlaceholder='搜索 key / 分类…'
-        filters={[
-          {
-            columnId: 'category',
-            title: '分类',
-            options: [...CATEGORY_OPTIONS],
-          },
-          {
-            columnId: 'valueType',
-            title: '类型',
-            options: [...VALUE_TYPE_OPTIONS],
-          },
-        ]}
-      />
-      <DataTable
-        table={table}
-        columnsLength={columns.length}
-        isLoading={isLoading}
-        skeletonCount={8}
-        emptyState='暂无数据'
-      />
-      <DataTablePagination table={table} />
-    </div>
+    <AdminDataTable
+      table={table}
+      columnsLength={columns.length}
+      isLoading={isLoading}
+      skeletonCount={8}
+      emptyState='暂无数据'
+      searchPlaceholder='搜索 key / 分类…'
+      filters={[
+        {
+          columnId: 'category',
+          title: '分类',
+          options: [...CATEGORY_OPTIONS],
+        },
+        {
+          columnId: 'valueType',
+          title: '类型',
+          options: [...VALUE_TYPE_OPTIONS],
+        },
+      ]}
+    />
   )
 }

@@ -4,6 +4,7 @@ import { RolesProvider } from './context/roles-context'
 import { RolesTable } from './components/roles-table'
 import { RolesPrimaryButtons } from './components/roles-primary-buttons'
 import { RolesDialogs } from './components/roles-dialogs'
+import { ErrorBoundary } from '@/shared/components/error-boundary'
 
 export default function RolesPage() {
   const { t } = useTranslation()
@@ -17,7 +18,9 @@ export default function RolesPage() {
           </div>
           <RolesPrimaryButtons />
         </div>
-        <RolesTable />
+        <ErrorBoundary fallbackMessage="角色表格渲染失败">
+          <RolesTable />
+        </ErrorBoundary>
         <RolesDialogs />
       </AppHeaderMain>
     </RolesProvider>

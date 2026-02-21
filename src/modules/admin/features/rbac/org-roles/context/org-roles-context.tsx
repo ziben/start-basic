@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, ReactNode, useMemo } from 'react'
-import type { OrganizationRole, Role } from '@/generated/prisma/client'
+import type { OrganizationRole, Role } from '@/generated/prisma/browser'
 import { useNavigate, useSearch } from '@tanstack/react-router'
 import { useTableUrlState } from '@/shared/hooks/use-table-url-state'
 

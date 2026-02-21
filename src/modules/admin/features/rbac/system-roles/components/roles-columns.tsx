@@ -12,7 +12,8 @@ import {
 import { MoreHorizontal, Shield, Users } from 'lucide-react'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import { useRolesContext } from '../context/roles-context'
-import type { Role } from '@/generated/prisma/client'
+import type { Role } from '@/generated/prisma/browser'
+import { PermissionGuard } from '@/shared/components/permission-guard'
 
 type RoleWithCount = Role & {
   rolePermissions: Array<{ permission: any }>
@@ -112,31 +113,48 @@ export function useRolesColumns() {
         const role = row.original
 
         return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">{t('admin.common.openMenu')}</span>
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>{t('admin.common.actions')}</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => openPermissionsDialog(role)}>
-                {t('admin.role.actions.permissions')}
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => openEditDialog(role)} disabled={role.isSystem}>
-                {t('admin.common.edit')}
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => openDeleteDialog(role)}
+          <div className="flex items-center justify-end gap-2">
+            <PermissionGuard permission="roles.update">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                onClick={() => openEditDialog(role)}
                 disabled={role.isSystem}
-                className="text-destructive"
               >
-                {t('admin.common.delete')}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                <Shield className="h-4 w-4 text-muted-foreground" />
+                <span className="sr-only">{t('admin.common.edit')}</span>
+              </Button>
+            </PermissionGuard>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="flex h-8 w-8 p-0 data-[state=open]:bg-muted">
+                  <span className="sr-only">{t('admin.common.openMenu')}</span>
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-[160px]">
+                <DropdownMenuLabel>{t('admin.common.actions')}</DropdownMenuLabel>
+                <PermissionGuard permission="roles.update">
+                  <DropdownMenuItem onClick={() => openPermissionsDialog(role)}>
+                    <Users className="mr-2 h-4 w-4 text-muted-foreground" />
+                    {t('admin.role.actions.permissions')}
+                  </DropdownMenuItem>
+                </PermissionGuard>
+                <DropdownMenuSeparator />
+                <PermissionGuard permission="roles.delete">
+                  <DropdownMenuItem
+                    onClick={() => openDeleteDialog(role)}
+                    disabled={role.isSystem}
+                    className="text-destructive focus:text-destructive"
+                  >
+                    {t('admin.common.delete')}
+                  </DropdownMenuItem>
+                </PermissionGuard>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         )
       },
     },

@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, ReactNode } from 'react'
-import type { Permission, Resource, Action } from '@/generated/prisma/client'
+import type { Permission, Resource, Action } from '@/generated/prisma/browser'
 
 type PermissionWithRelations = Permission & {
   resource: Resource
@@ -38,11 +38,11 @@ export function PermissionsProvider({ children }: { children: ReactNode }) {
   const openResourceDialog = (resource?: Resource) => setResourceDialog({ isOpen: true, data: resource })
   const closeResourceDialog = () => setResourceDialog({ isOpen: false })
 
-  const openActionDialog = (resourceId: string, action?: Action) => 
+  const openActionDialog = (resourceId: string, action?: Action) =>
     setActionDialog({ isOpen: true, data: { resourceId, action } })
   const closeActionDialog = () => setActionDialog({ isOpen: false })
 
-  const openPermissionDialog = (permission?: PermissionWithRelations) => 
+  const openPermissionDialog = (permission?: PermissionWithRelations) =>
     setPermissionDialog({ isOpen: true, data: permission })
   const closePermissionDialog = () => setPermissionDialog({ isOpen: false })
 
