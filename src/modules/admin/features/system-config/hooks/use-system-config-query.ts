@@ -4,6 +4,7 @@ import {
     deleteRuntimeConfigFn,
     getRuntimeConfigHistoryFn,
     listRuntimeConfigsFn,
+    getPublicRuntimeConfigsFn,
     refreshRuntimeConfigFn,
     updateRuntimeConfigFn,
 } from '../../../shared/server-fns/runtime-config.fn'
@@ -17,6 +18,16 @@ export function useSystemConfigs(): UseQueryResult<SystemConfig[], Error> {
         queryKey: runtimeConfigQueryKeys.list(),
         queryFn: async () => {
             const result = await listRuntimeConfigsFn()
+            return result as SystemConfig[]
+        },
+    })
+}
+
+export function usePublicConfigs(): UseQueryResult<SystemConfig[], Error> {
+    return useQuery<SystemConfig[]>({
+        queryKey: runtimeConfigQueryKeys.public(),
+        queryFn: async () => {
+            const result = await getPublicRuntimeConfigsFn()
             return result as SystemConfig[]
         },
     })
@@ -62,6 +73,8 @@ export function useSystemConfigHistory(configId?: string): UseQueryResult<System
     })
 }
 
+import { useSystemConfigsOptimisticUpdate, createSystemConfigUpdateFn, createSystemConfigDeleteFn } from './use-system-configs-optimistic-update'
+
 // ─── Update ───────────────────────────────────────────────────────────────────
 
 export type UpdateSystemConfigPayload = {
@@ -74,33 +87,40 @@ export type UpdateSystemConfigPayload = {
     note?: string
 }
 
-export function useUpdateSystemConfig(): UseMutationResult<SystemConfig, Error, UpdateSystemConfigPayload> {
+export function useUpdateSystemConfig() {
     const qc = useQueryClient()
-    return useMutation<SystemConfig, Error, UpdateSystemConfigPayload>({
-        mutationFn: async (payload) => {
+    const { getOptimisticMutationOptions } = useSystemConfigsOptimisticUpdate()
+
+    return useMutation({
+        mutationFn: async (payload: UpdateSystemConfigPayload) => {
             const result = await updateRuntimeConfigFn({ data: payload })
             return result as SystemConfig
         },
-        onSuccess: () => {
-            void qc.invalidateQueries({ queryKey: runtimeConfigQueryKeys.all })
-        },
+        ...getOptimisticMutationOptions({
+            queryKey: runtimeConfigQueryKeys.all,
+            updateFn: (configs, payload) => createSystemConfigUpdateFn(configs, payload),
+        }),
     })
 }
 
 // ─── Delete ───────────────────────────────────────────────────────────────────
 
-export function useDeleteSystemConfig(): UseMutationResult<{ success: true }, Error, { id: string }> {
+export function useDeleteSystemConfig() {
     const qc = useQueryClient()
-    return useMutation<{ success: true }, Error, { id: string }>({
-        mutationFn: async (payload) => {
+    const { getOptimisticMutationOptions } = useSystemConfigsOptimisticUpdate()
+
+    return useMutation({
+        mutationFn: async (payload: { id: string }) => {
             const result = await deleteRuntimeConfigFn({ data: payload })
             return result as { success: true }
         },
-        onSuccess: () => {
-            void qc.invalidateQueries({ queryKey: runtimeConfigQueryKeys.all })
-        },
+        ...getOptimisticMutationOptions({
+            queryKey: runtimeConfigQueryKeys.all,
+            updateFn: (configs, payload) => createSystemConfigDeleteFn(configs, payload.id),
+        }),
     })
 }
+
 
 // ─── Refresh ──────────────────────────────────────────────────────────────────
 

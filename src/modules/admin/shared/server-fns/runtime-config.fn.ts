@@ -55,6 +55,13 @@ export const listRuntimeConfigsFn = createServerFn({ method: 'GET' })
     return RuntimeConfigService.list()
   })
 
+export const getPublicRuntimeConfigsFn = createServerFn({ method: 'GET' })
+  .handler(async () => {
+    // Unauthenticated access for public configurations (e.g. login_title)
+    const { RuntimeConfigService } = await import('../services/runtime-config.service')
+    return RuntimeConfigService.listPublic()
+  })
+
 export const createRuntimeConfigFn = createServerFn({ method: 'POST' })
   .inputValidator((data: z.infer<typeof CreateRuntimeConfigSchema>) => CreateRuntimeConfigSchema.parse(data))
   .handler(async ({ data }: { data: z.infer<typeof CreateRuntimeConfigSchema> }) => {

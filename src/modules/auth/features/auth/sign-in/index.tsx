@@ -2,15 +2,22 @@ import { Link, useSearch } from '@tanstack/react-router'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { AuthLayout } from '../auth-layout'
 import { UserAuthForm } from './components/user-auth-form'
+import { usePublicConfigs } from '~/modules/admin/features/system-config/hooks/use-system-config-query'
+import { useMemo } from 'react'
 
 export default function SignIn() {
   const { redirect } = useSearch({ from: '/(auth)/sign-in' })
+  const { data: configs } = usePublicConfigs()
+
+  const loginTitle = useMemo(() => {
+    return configs?.find((c) => c.key === 'login_title')?.value || '登录'
+  }, [configs])
 
   return (
     <AuthLayout>
       <Card className='gap-4'>
         <CardHeader>
-          <CardTitle className='text-lg tracking-tight'>登录</CardTitle>
+          <CardTitle className='text-lg tracking-tight'>{loginTitle}</CardTitle>
           <CardDescription>
             请在下方输入您的邮箱和密码
             <br />

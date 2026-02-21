@@ -16,40 +16,38 @@ export function getAIConfig() {
   }
 }
 
-export const AI_CONFIG = {
-  get provider() {
-    return getRuntimeConfig('ai.provider')
-  },
-  get enabled() {
-    return getRuntimeConfig('ai.enabled')
-  },
-  get model() {
-    return getRuntimeConfig('ai.model')
-  },
-} as const
-
 type Provider = 'openai' | 'gemini'
 
-// Define adapters with their models - autocomplete works here!
-const adapters = {
-  openai: () => openaiText('gpt-5.2'),  // ✅ Autocomplete!
-  gemini: () => geminiText('gemini-3-flash-preview')
-}
-
 /**
- * 获取配置的 AI Provider
+ * 获取基于配置的 AI Provider Adapter 实例工厂
+ * 提供基础的配置提取、模型纠错及环境密钥鉴权
  */
-export function getAIAdapter(provider: Provider) {
+export function getAIAdapter(provider: Provider = 'gemini') {
   const config = getAIConfig()
 
-  if (!config.enabled) {
+  if (config.enabled && String(config.enabled).toLowerCase() === 'false') {
     throw new Error('AI features are disabled. Set ENABLE_AI=true in .env')
   }
 
-  const apiKey = process.env.GOOGLE_API_KEY
-  if (!apiKey) {
-    throw new Error('GOOGLE_API_KEY is required in .env')
+  // 1. Google Gemini Provider
+  if (provider === 'gemini') {
+    const apiKey = process.env.GOOGLE_API_KEY
+    if (!apiKey) {
+      throw new Error('GOOGLE_API_KEY is required in server environment.')
+    }
+    const defaultModel = 'gemini-1.5-flash' // 使用官方最新模型名之一
+    return () => geminiText((config.model as any) || defaultModel)
   }
 
-  return adapters[provider]
+  // 2. OpenAI Provider
+  if (provider === 'openai') {
+    const apiKey = process.env.OPENAI_API_KEY
+    if (!apiKey) {
+      throw new Error('OPENAI_API_KEY is required in server environment.')
+    }
+    const defaultModel = 'gpt-4o' // 修正旧的非法型号
+    return () => openaiText((config.model as any) || defaultModel)
+  }
+
+  throw new Error(`Unsupported AI provider: ${provider}`)
 }

@@ -3,9 +3,20 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { WeChatLoginButton } from '@/modules/auth/features/wechat'
 import { Smartphone, ArrowLeft } from 'lucide-react'
 import { Link, useNavigate } from '@tanstack/react-router'
+import { usePublicConfigs } from '~/modules/admin/features/system-config/hooks/use-system-config-query'
+import { useMemo } from 'react'
 
 export function MobileLoginPage() {
     const navigate = useNavigate()
+    const { data: configs } = usePublicConfigs()
+
+    const systemName = useMemo(() => {
+        return configs?.find((c) => c.key === 'system_name')?.value || 'Antigravity'
+    }, [configs])
+
+    const loginTitle = useMemo(() => {
+        return configs?.find((c) => c.key === 'login_title')?.value || '欢迎使用'
+    }, [configs])
 
     return (
         <div className="flex min-h-screen flex-col bg-background p-6">
@@ -20,9 +31,9 @@ export function MobileLoginPage() {
                     <div className="rounded-2xl bg-primary/10 p-4 ring-1 ring-primary/20">
                         <Smartphone className="h-10 w-10 text-primary" />
                     </div>
-                    <h1 className="text-2xl font-bold">欢迎使用</h1>
+                    <h1 className="text-2xl font-bold">{loginTitle}</h1>
                     <p className="text-muted-foreground px-8">
-                        请选择登录方式进入 Antigravity
+                        请选择登录方式进入 {systemName}
                     </p>
                 </div>
 

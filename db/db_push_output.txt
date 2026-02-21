@@ -1,0 +1,2 @@
+Prisma schema loaded from prisma\schema.prisma.
+Error: The datasource.url property is required in your Prisma config file when using prisma db push.

@@ -30,6 +30,9 @@ model User {
   // 支付订单
   paymentOrders PaymentOrder[]
 
+  // AI 聊天
+  aiConversations   AIConversation[]
+
   @@unique([email])
   @@unique([username])
   @@map("user")

@@ -161,6 +161,7 @@ export const sidebarQueryKeys = {
 
 export const systemConfigQueryKeys = {
   all: ['admin', 'system-config'] as const,
+  public: () => [...systemConfigQueryKeys.all, 'public'] as const,
   list: () => [...systemConfigQueryKeys.all, 'list'] as const,
   history: (configId: string) => [...systemConfigQueryKeys.all, 'history', configId] as const,
 }

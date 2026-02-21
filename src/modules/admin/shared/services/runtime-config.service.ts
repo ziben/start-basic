@@ -122,287 +122,147 @@ export const RuntimeConfigService = {
   async create(input: CreateRuntimeConfigInput): Promise<RuntimeConfigItem> {
     const prisma = await getDb()
     const id = randomUUID()
-    const now = new Date()
-
     const normalizedValue = normalizeValueByType(input.value, input.valueType)
 
-    await prisma.$executeRaw`
-      INSERT INTO "system_config" (
-        "id",
-        "key",
-        "value",
-        "category",
-        "valueType",
-        "isSecret",
-        "isPublic",
-        "isEnabled",
-        "version",
-        "description",
-        "updatedBy",
-        "createdAt",
-        "updatedAt"
-      )
-      VALUES (
-        ${id},
-        ${input.key},
-        ${normalizedValue},
-        ${input.category},
-        ${input.valueType}::"ConfigValueType",
-        ${input.isSecret ?? false},
-        ${input.isPublic ?? false},
-        ${input.isEnabled ?? true},
-        1,
-        ${input.description ?? null},
-        ${input.operatorId ?? null},
-        ${now},
-        ${now}
-      )
-    `
+    return await prisma.$transaction(async (tx) => {
+      const created = await tx.systemConfig.create({
+        data: {
+          id,
+          key: input.key,
+          value: normalizedValue,
+          category: input.category,
+          valueType: input.valueType,
+          isSecret: input.isSecret ?? false,
+          isPublic: input.isPublic ?? false,
+          isEnabled: input.isEnabled ?? true,
+          version: 1,
+          description: input.description ?? null,
+          updatedBy: input.operatorId ?? null,
+        }
+      })
 
-    await prisma.$executeRaw`
-      INSERT INTO "system_config_change" (
-        "id",
-        "configId",
-        "configKey",
-        "oldValue",
-        "newValue",
-        "valueType",
-        "changeType",
-        "operatorId",
-        "operatorName",
-        "note",
-        "createdAt"
-      )
-      VALUES (
-        ${randomUUID()},
-        ${id},
-        ${input.key},
-        NULL,
-        ${normalizedValue},
-        ${input.valueType}::"ConfigValueType",
-        'CREATE'::"ConfigChangeType",
-        ${input.operatorId ?? null},
-        ${input.operatorName ?? null},
-        NULL,
-        NOW()
-      )
-    `
+      await tx.systemConfigChange.create({
+        data: {
+          configId: id,
+          configKey: input.key,
+          newValue: normalizedValue,
+          valueType: input.valueType,
+          changeType: 'CREATE',
+          operatorId: input.operatorId ?? null,
+          operatorName: input.operatorName ?? null,
+        }
+      })
 
-    const rows = await prisma.$queryRaw<RuntimeConfigItem[]>`
-      SELECT
-        "id", "key", "value", "category", "valueType",
-        "isSecret", "isPublic", "isEnabled", "version",
-        "description", "updatedBy", "publishedAt", "createdAt", "updatedAt"
-      FROM "system_config"
-      WHERE "id" = ${id}
-      LIMIT 1
-    `
-
-    const created = rows[0]
-    if (!created) throw new Error('配置创建后读取失败')
-    return created
+      return created
+    })
   },
 
   async delete(input: DeleteRuntimeConfigInput): Promise<void> {
     const prisma = await getDb()
 
-    const rows = await prisma.$queryRaw<RuntimeConfigItem[]>`
-      SELECT "id", "key", "value", "valueType"
-      FROM "system_config"
-      WHERE "id" = ${input.id}
-      LIMIT 1
-    `
-    const current = rows[0]
-    if (!current) throw new Error('配置不存在')
+    await prisma.$transaction(async (tx) => {
+      const current = await tx.systemConfig.findUnique({
+        where: { id: input.id },
+        select: { id: true, key: true, value: true, valueType: true }
+      })
+      if (!current) throw new Error('配置不存在')
 
-    await prisma.$executeRaw`
-      INSERT INTO "system_config_change" (
-        "id",
-        "configId",
-        "configKey",
-        "oldValue",
-        "newValue",
-        "valueType",
-        "changeType",
-        "operatorId",
-        "operatorName",
-        "note",
-        "createdAt"
-      )
-      VALUES (
-        ${randomUUID()},
-        ${current.id},
-        ${current.key},
-        ${current.value},
-        NULL,
-        ${current.valueType}::"ConfigValueType",
-        'DELETE'::"ConfigChangeType",
-        ${input.operatorId ?? null},
-        ${input.operatorName ?? null},
-        NULL,
-        NOW()
-      )
-    `
+      await tx.systemConfigChange.create({
+        data: {
+          configId: current.id,
+          configKey: current.key,
+          oldValue: current.value,
+          valueType: current.valueType,
+          changeType: 'DELETE',
+          operatorId: input.operatorId ?? null,
+          operatorName: input.operatorName ?? null,
+        }
+      })
 
-    await prisma.$executeRaw`
-      DELETE FROM "system_config"
-      WHERE "id" = ${input.id}
-    `
+      await tx.systemConfig.delete({
+        where: { id: input.id }
+      })
+    })
   },
 
   async list(): Promise<RuntimeConfigItem[]> {
     const prisma = await getDb()
-    const rows = await prisma.$queryRaw<RuntimeConfigItem[]>`
-      SELECT
-        "id",
-        "key",
-        "value",
-        "category",
-        "valueType",
-        "isSecret",
-        "isPublic",
-        "isEnabled",
-        "version",
-        "description",
-        "updatedBy",
-        "publishedAt",
-        "createdAt",
-        "updatedAt"
-      FROM "system_config"
-      ORDER BY "category" ASC, "key" ASC
-    `
-    return rows
+    return prisma.systemConfig.findMany({
+      orderBy: [
+        { category: 'asc' },
+        { key: 'asc' }
+      ]
+    })
+  },
+
+  async listPublic(): Promise<RuntimeConfigItem[]> {
+    const prisma = await getDb()
+    return prisma.systemConfig.findMany({
+      where: {
+        isPublic: true,
+        isEnabled: true
+      },
+      orderBy: [
+        { category: 'asc' },
+        { key: 'asc' }
+      ]
+    })
   },
 
   async update(input: UpdateRuntimeConfigInput): Promise<RuntimeConfigItem> {
     const prisma = await getDb()
 
-    const currentRows = await prisma.$queryRaw<RuntimeConfigItem[]>`
-      SELECT
-        "id",
-        "key",
-        "value",
-        "category",
-        "valueType",
-        "isSecret",
-        "isPublic",
-        "isEnabled",
-        "version",
-        "description",
-        "updatedBy",
-        "publishedAt",
-        "createdAt",
-        "updatedAt"
-      FROM "system_config"
-      WHERE "id" = ${input.id}
-      LIMIT 1
-    `
+    return await prisma.$transaction(async (tx) => {
+      const current = await tx.systemConfig.findUnique({
+        where: { id: input.id }
+      })
+      if (!current) throw new Error('配置不存在')
 
-    const current = currentRows[0]
-    if (!current) {
-      throw new Error('配置不存在')
-    }
+      const nextValueType = input.valueType ?? current.valueType
+      const nextIsEnabled = input.isEnabled ?? current.isEnabled
+      const nextIsPublic = input.isPublic ?? current.isPublic
+      const nextDescription = input.description === undefined ? current.description : input.description
+      const nextValue = normalizeValueByType(input.value, nextValueType)
 
-    const nextValueType = input.valueType ?? current.valueType
-    const nextIsEnabled = input.isEnabled ?? current.isEnabled
-    const nextIsPublic = input.isPublic ?? current.isPublic
-    const nextDescription = input.description === undefined ? current.description : input.description
-    const nextValue = normalizeValueByType(input.value, nextValueType)
+      const updated = await tx.systemConfig.update({
+        where: { id: input.id },
+        data: {
+          value: nextValue,
+          valueType: nextValueType,
+          isEnabled: nextIsEnabled,
+          isPublic: nextIsPublic,
+          description: nextDescription,
+          version: { increment: 1 },
+          updatedBy: input.operatorId ?? current.updatedBy,
+          publishedAt: new Date(),
+        }
+      })
 
-    await prisma.$executeRaw`
-      UPDATE "system_config"
-      SET
-        "value" = ${nextValue},
-        "valueType" = ${nextValueType}::"ConfigValueType",
-        "isEnabled" = ${nextIsEnabled},
-        "isPublic" = ${nextIsPublic},
-        "description" = ${nextDescription},
-        "version" = "version" + 1,
-        "updatedBy" = ${input.operatorId ?? current.updatedBy},
-        "publishedAt" = NOW(),
-        "updatedAt" = NOW()
-      WHERE "id" = ${input.id}
-    `
+      await tx.systemConfigChange.create({
+        data: {
+          configId: current.id,
+          configKey: current.key,
+          oldValue: current.value,
+          newValue: nextValue,
+          valueType: nextValueType,
+          changeType: 'UPDATE',
+          operatorId: input.operatorId ?? null,
+          operatorName: input.operatorName ?? null,
+          note: input.note ?? null,
+        }
+      })
 
-    await prisma.$executeRaw`
-      INSERT INTO "system_config_change" (
-        "id",
-        "configId",
-        "configKey",
-        "oldValue",
-        "newValue",
-        "valueType",
-        "changeType",
-        "operatorId",
-        "operatorName",
-        "note",
-        "createdAt"
-      )
-      VALUES (
-        ${randomUUID()},
-        ${current.id},
-        ${current.key},
-        ${current.value},
-        ${nextValue},
-        ${nextValueType}::"ConfigValueType",
-        'UPDATE'::"ConfigChangeType",
-        ${input.operatorId ?? null},
-        ${input.operatorName ?? null},
-        ${input.note ?? null},
-        NOW()
-      )
-    `
-
-    const updatedRows = await prisma.$queryRaw<RuntimeConfigItem[]>`
-      SELECT
-        "id",
-        "key",
-        "value",
-        "category",
-        "valueType",
-        "isSecret",
-        "isPublic",
-        "isEnabled",
-        "version",
-        "description",
-        "updatedBy",
-        "publishedAt",
-        "createdAt",
-        "updatedAt"
-      FROM "system_config"
-      WHERE "id" = ${input.id}
-      LIMIT 1
-    `
-
-    const updated = updatedRows[0]
-    if (!updated) {
-      throw new Error('配置更新后读取失败')
-    }
-
-    return updated
+      return updated
+    })
   },
 
   async listChanges(configId: string, take = 50): Promise<RuntimeConfigChangeItem[]> {
     const prisma = await getDb()
-    const rows = await prisma.$queryRaw<RuntimeConfigChangeItem[]>`
-      SELECT
-        "id",
-        "configId",
-        "configKey",
-        "oldValue",
-        "newValue",
-        "valueType",
-        "changeType",
-        "operatorId",
-        "operatorName",
-        "note",
-        "createdAt"
-      FROM "system_config_change"
-      WHERE "configId" = ${configId}
-      ORDER BY "createdAt" DESC
-      LIMIT ${take}
-    `
-    return rows
+    return prisma.systemConfigChange.findMany({
+      where: { configId },
+      orderBy: { createdAt: 'desc' },
+      take,
+    })
   },
 
   async refresh(operatorId?: string | null, operatorName?: string | null): Promise<{ refreshedAt: number }> {
@@ -414,34 +274,17 @@ export const RuntimeConfigService = {
     const anchor = enabledConfigs[0]
 
     if (anchor) {
-      await prisma.$executeRaw`
-        INSERT INTO "system_config_change" (
-          "id",
-          "configId",
-          "configKey",
-          "oldValue",
-          "newValue",
-          "valueType",
-          "changeType",
-          "operatorId",
-          "operatorName",
-          "note",
-          "createdAt"
-        )
-        VALUES (
-          ${randomUUID()},
-          ${anchor.id},
-          '__system__.refresh',
-          NULL,
-          NULL,
-          'JSON'::"ConfigValueType",
-          'REFRESH'::"ConfigChangeType",
-          ${operatorId ?? null},
-          ${operatorName ?? null},
-          ${`manual refresh (${enabledConfigs.length} enabled configs)`},
-          NOW()
-        )
-      `
+      await prisma.systemConfigChange.create({
+        data: {
+          configId: anchor.id,
+          configKey: '__system__.refresh',
+          valueType: 'JSON',
+          changeType: 'REFRESH',
+          operatorId: operatorId ?? null,
+          operatorName: operatorName ?? null,
+          note: `manual refresh (${enabledConfigs.length} enabled configs)`,
+        }
+      })
     }
 
     return result
