@@ -1,5 +1,4 @@
 import { QueryClient } from '@tanstack/react-query'
-import { adminUsersQueryKeys, authQueryKeys, navgroupQueryKeys, translationQueryKeys } from './query-keys'
 
 export const CACHE_TIME = {
   SHORT: 1000 * 30, // 30 seconds - 用户数据等频繁变化的数据
@@ -21,21 +20,6 @@ export function createQueryClient() {
         retry: 0, // mutation 不重试
       },
     },
-  })
-
-  // 为不同类型的数据设置不同的缓存策略
-  queryClient.setQueryDefaults(navgroupQueryKeys.all, {
-    staleTime: CACHE_TIME.LONG, // 菜单组数据变化较少
-  })
-  queryClient.setQueryDefaults(translationQueryKeys.all, {
-    staleTime: CACHE_TIME.LONG, // 翻译数据变化较少
-  })
-  queryClient.setQueryDefaults(adminUsersQueryKeys.all, {
-    staleTime: CACHE_TIME.SHORT, // 用户数据变化较频繁
-  })
-  queryClient.setQueryDefaults(authQueryKeys.session, {
-    staleTime: CACHE_TIME.MEDIUM,
-    gcTime: CACHE_TIME.LONG,
   })
 
   return queryClient

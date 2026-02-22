@@ -1,8 +1,6 @@
 import * as React from 'react'
 import { type QueryClient } from '@tanstack/react-query'
 import { HeadContent, Outlet, Scripts, createRootRouteWithContext } from '@tanstack/react-router'
-import { createServerFn } from '@tanstack/react-start'
-import { getRequestHeaders } from '@tanstack/react-start/server'
 import Devtools from '~/components/devtools'
 import { NavigationProgress } from '~/components/navigation-progress'
 import { Toaster } from '~/components/ui/sonner'
@@ -18,6 +16,7 @@ import { composeSeoDescription, composeSeoTitle, seo } from '@/shared/utils/seo'
 import { GeneralError, NotFoundError } from '@/shared/components/errors'
 import { DynamicCSSLoader, useCSSReady } from '@/shared/components/dynamic-css-loader'
 import { Skeleton } from '@/components/ui/skeleton'
+import { getCurrentUserFn } from '~/shared/server-fns/auth.fn'
 
 // SSR 和初始渲染都使用原始 CSS，避免 hydration 不匹配
 // 客户端会根据浏览器能力动态替换为 legacy CSS（如果需要）
@@ -36,22 +35,14 @@ if (!Array.prototype.at) {
   })
 }
 
-const getUser = createServerFn({ method: 'GET' }).handler(async () => {
-  const { auth } = await import('../modules/auth/shared/lib/auth')
-  const headers = getRequestHeaders()
-  const session = await auth.api.getSession({ headers })
-
-  return session?.user || null
-})
-
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient
-  user: Awaited<ReturnType<typeof getUser>>
+  user: Awaited<ReturnType<typeof getCurrentUserFn>>
 }>()({
   beforeLoad: async ({ context }) => {
     const user = await context.queryClient.fetchQuery({
       queryKey: userQueryKeys.current,
-      queryFn: ({ signal }) => getUser({ signal }),
+      queryFn: ({ signal }) => getCurrentUserFn({ signal }),
     }) // we're using react-query for caching, see router.tsx
     return { user }
   },

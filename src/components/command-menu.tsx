@@ -1,7 +1,7 @@
 import React from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { ArrowRight, ChevronRight, Laptop, Moon, Sun, User, Building } from 'lucide-react'
-import { globalSearchFn } from '~/modules/admin/shared/sidebar/search-api'
+import { globalSearchFn } from '~/modules/admin/shared/sidebar/search-api.fn'
 import { useSidebar } from '~/modules/admin/shared/sidebar'
 import { iconResolver } from '@/shared/utils/icon-resolver'
 import { useSearch } from '@/shared/context/search-provider'

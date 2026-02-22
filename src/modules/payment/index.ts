@@ -18,11 +18,5 @@ export type {
     WxPayJSAPIResponse,
 } from './shared/lib/wechat-pay'
 
-// Server Functions (通过 createServerFn 包装，Vite 会 tree-shake 服务端代码)
-export {
-    createPrepayOrderFn,
-    queryOrderStatusFn,
-    syncOrderStatusFn,
-    closeOrderFn,
-} from './shared/server-fns/prepay'
-export { handleWeChatPayNotify, verifyWeChatPaySignature } from './shared/server-fns/notify'
+// Server Functions have been removed to prevent backend leak in barrel file.
+// Import them directly from './shared/server-fns/prepay' or './shared/server-fns/notify' when needed.

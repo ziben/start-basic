@@ -5,7 +5,7 @@
 
 import { betterAuth } from 'better-auth'
 import { prismaAdapter } from 'better-auth/adapters/prisma'
-import { admin, username, organization } from 'better-auth/plugins'
+import { admin, username, organization, jwt } from 'better-auth/plugins'
 import { getDb } from '@/shared/lib/db'
 import { getRuntimeConfig } from '~/shared/config/runtime-config'
 import { getAccessControl } from './auth-dynamic'
@@ -43,6 +43,7 @@ export async function initAuth() {
       requireEmailVerification: false,
     },
     plugins: [
+      jwt(),
       username(),
       organization({
         teams: { enabled: false }, // 禁用 teams，使用 OrganizationRole

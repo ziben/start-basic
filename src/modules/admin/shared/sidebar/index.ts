@@ -6,7 +6,7 @@ import type { SidebarData, NavItem, NavCollapsible, NavLink } from '~/components
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import { iconResolver as defaultIconResolver, type IconResolver } from '@/shared/utils/icon-resolver'
 import { sidebarQueryKeys } from '~/shared/lib/query-keys'
-import { getSidebarDataFn } from './api'
+import { getSidebarDataFn } from './api.fn'
 
 /**
  * 处理侧边栏数据的React Hook，包括数据获取、翻译和处理

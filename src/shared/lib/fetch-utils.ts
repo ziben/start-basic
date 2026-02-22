@@ -39,11 +39,13 @@ export async function fetchJson<T>(input: string, init?: RequestInit): Promise<T
   throw new ApiError(body || 'Request failed', res.status)
 }
 
-export async function fetchJsonWithSchema<T>(
-  schema: { parse: (data: unknown) => T },
+import { z } from 'zod'
+
+export async function fetchJsonWithSchema<T extends z.ZodTypeAny>(
+  schema: T,
   input: string,
   init?: RequestInit
-): Promise<T> {
+): Promise<z.infer<T>> {
   const raw = await fetchJson<unknown>(input, init)
   return schema.parse(raw)
 }
