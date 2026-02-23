@@ -130,7 +130,7 @@ export function AdminLogTable({ type, search, navigate }: AdminLogTableProps) {
   const rows = table.getRowModel().rows
 
   return (
-    <div className={cn('max-sm:has-[div[role="toolbar"]]:mb-16', 'space-y-4')}>
+    <div className={cn('max-sm:has-[div[role="toolbar"]]:mb-16', 'flex h-full flex-col space-y-4')}>
       <DataTableToolbar
         table={table}
         searchPlaceholder='搜索…'
@@ -160,6 +160,7 @@ export function AdminLogTable({ type, search, navigate }: AdminLogTableProps) {
         isLoading={isLoading}
         skeletonCount={pagination.pageSize}
         emptyState='暂无数据'
+        containerClassName='min-h-0 flex-1'
       />
       <DataTablePagination table={table} />
     </div>

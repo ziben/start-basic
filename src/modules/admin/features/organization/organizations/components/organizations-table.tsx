@@ -93,7 +93,7 @@ export function OrganizationsTable({ search, navigate }: OrganizationsTableProps
     virtualRows.length > 0 ? rowVirtualizer.getTotalSize() - virtualRows[virtualRows.length - 1]!.end : 0
 
   return (
-    <div className={cn('max-sm:has-[div[role="toolbar"]]:mb-16', 'flex flex-1 flex-col gap-4')}>
+    <div className={cn('max-sm:has-[div[role="toolbar"]]:mb-16', 'flex min-h-0 flex-1 flex-col gap-4')}>
       <DataTableToolbar
         table={table}
         searchPlaceholder={t('admin.organization.table.searchPlaceholder')}
@@ -108,6 +108,7 @@ export function OrganizationsTable({ search, navigate }: OrganizationsTableProps
         containerRef={tableContainerRef}
         rowVirtualizer={rowVirtualizer}
         emptyState={t('admin.common.noData')}
+        containerClassName='min-h-0 flex-1'
       />
       <DataTablePagination table={table} className='mt-auto' />
       <OrganizationsBulkActions table={table} />

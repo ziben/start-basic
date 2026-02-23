@@ -98,7 +98,7 @@ export function TranslationsTable({ data, search, navigate }: DataTableProps) {
     virtualRows.length > 0 ? rowVirtualizer.getTotalSize() - virtualRows[virtualRows.length - 1]!.end : 0
 
   return (
-    <div className='space-y-4 max-sm:has-[div[role="toolbar"]]:mb-16'>
+    <div className='flex min-h-0 flex-1 flex-col gap-4 max-sm:has-[div[role="toolbar"]]:mb-16'>
       <DataTableToolbar
         table={table}
         searchPlaceholder={t('admin.translation.searchPlaceholder')}
@@ -120,6 +120,7 @@ export function TranslationsTable({ data, search, navigate }: DataTableProps) {
         containerRef={tableContainerRef}
         rowVirtualizer={rowVirtualizer}
         emptyState={t('admin.common.noData')}
+        containerClassName='min-h-0 flex-1'
       />
       <DataTablePagination table={table} />
       <DataTableBulkActions table={table} />

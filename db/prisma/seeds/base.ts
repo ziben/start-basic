@@ -302,6 +302,12 @@ export async function seedBase() {
           update: {},
           create: { roleId: roles['superadmin'].id, permissionId: perm.id, dataScope: 'ALL' },
         })
+
+        await prisma.rolePermission.upsert({
+          where: { roleId_permissionId: { roleId: roles['admin'].id, permissionId: perm.id } },
+          update: {},
+          create: { roleId: roles['admin'].id, permissionId: perm.id, dataScope: 'ALL' },
+        })
       }
     }
 

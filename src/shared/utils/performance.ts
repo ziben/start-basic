@@ -2,7 +2,7 @@
  * 性能监控工具
  */
 
-const isDev = process.env.NODE_ENV === 'development'
+const isDev = import.meta.env.DEV
 
 interface PerformanceMetric {
   name: string
@@ -54,11 +54,17 @@ export function clearMetrics() {
  * 测量函数执行时间
  */
 export async function measureAsync<T>(name: string, fn: () => Promise<T>): Promise<T> {
+  const startMark = `${name}_start`
+  const endMark = `${name}_end`
+
+  mark(startMark)
   const start = performance.now()
   try {
     return await fn()
   } finally {
     const duration = performance.now() - start
+    mark(endMark)
+    measureBetweenMarks(name, startMark, endMark)
     recordMetric(name, duration)
   }
 }
@@ -67,11 +73,17 @@ export async function measureAsync<T>(name: string, fn: () => Promise<T>): Promi
  * 测量同步函数执行时间
  */
 export function measureSync<T>(name: string, fn: () => T): T {
+  const startMark = `${name}_start`
+  const endMark = `${name}_end`
+
+  mark(startMark)
   const start = performance.now()
   try {
     return fn()
   } finally {
     const duration = performance.now() - start
+    mark(endMark)
+    measureBetweenMarks(name, startMark, endMark)
     recordMetric(name, duration)
   }
 }

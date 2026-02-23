@@ -1,9 +1,10 @@
 import React, { createContext, useContext, useState, useCallback, useEffect, useMemo } from 'react'
 import { useNavigate, useLocation } from '@tanstack/react-router'
-import type { Tab, TabContextValue, TabScope } from '@/shared/types/tab-types'
+import type { Tab, TabStateContextValue, TabActionContextValue, TabScope } from '@/shared/types/tab-types'
 import { MAX_TABS } from '@/shared/types/tab-types'
 
-const TabContext = createContext<TabContextValue | undefined>(undefined)
+const TabStateContext = createContext<TabStateContextValue | undefined>(undefined)
+const TabActionContext = createContext<TabActionContextValue | undefined>(undefined)
 
 const STORAGE_KEY = 'admin-tabs'
 
@@ -301,10 +302,13 @@ export function TabProvider({ children }: { children: React.ReactNode }) {
         })
     }, [])
 
-    const value: TabContextValue = {
+    const stateValue: TabStateContextValue = useMemo(() => ({
         tabs: scopedTabs,
         activeTabId,
         maxTabs: MAX_TABS,
+    }), [scopedTabs, activeTabId])
+
+    const actionValue: TabActionContextValue = useMemo(() => ({
         openTab,
         closeTab,
         activateTab,
@@ -312,21 +316,41 @@ export function TabProvider({ children }: { children: React.ReactNode }) {
         closeTabsToRight,
         closeAllTabs,
         reorderTabs,
-    }
+    }), [openTab, closeTab, activateTab, closeOtherTabs, closeTabsToRight, closeAllTabs, reorderTabs])
 
-    return <TabContext.Provider value={value}>{children}</TabContext.Provider>
+
+    return (
+        <TabStateContext.Provider value={stateValue}>
+            <TabActionContext.Provider value={actionValue}>
+                {children}
+            </TabActionContext.Provider>
+        </TabStateContext.Provider>
+    )
 }
 
-export function useTabs() {
-    const context = useContext(TabContext)
-    return context ?? null
-}
-
-// Hook that throws error if context is missing (for components that require tabs)
-export function useTabsRequired() {
-    const context = useContext(TabContext)
+export function useTabState() {
+    const context = useContext(TabStateContext)
     if (context === undefined) {
-        throw new Error('useTabsRequired must be used within a TabProvider. Make sure TabProvider wraps your component tree.')
+        throw new Error('useTabState must be used within a TabProvider.')
     }
     return context
+}
+
+export function useTabActions() {
+    const context = useContext(TabActionContext)
+    if (context === undefined) {
+        throw new Error('useTabActions must be used within a TabProvider.')
+    }
+    return context
+}
+
+// Deprecated: Kept for backwards compatibility but shouldn't be used for new code
+export function useTabs() {
+    const state = useTabState()
+    const actions = useTabActions()
+    return { ...state, ...actions }
+}
+
+export function useTabsRequired() {
+    return useTabs()
 }

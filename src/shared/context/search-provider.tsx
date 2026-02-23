@@ -1,4 +1,8 @@
-import { createContext, useContext, useEffect, useState, useMemo } from 'react'
+import { createContext, useContext, useEffect, useState, useMemo, lazy, Suspense } from 'react'
+
+// Define the lazy loaded component outside the render cycle
+// Assuming default export or named export converted to default
+const CommandMenu = lazy(() => import('@/components/command-menu').then(m => ({ default: m.CommandMenu })))
 
 type SearchContextType = {
   open: boolean
@@ -13,14 +17,6 @@ type SearchProviderProps = Readonly<{
 
 export function SearchProvider({ children }: SearchProviderProps) {
   const [open, setOpen] = useState(false)
-  const [CommandMenu, setCommandMenu] = useState<React.ComponentType | null>(null)
-
-  useEffect(() => {
-    // 仅在客户端动态加载 CommandMenu
-    import('@/components/command-menu').then((mod) => {
-      setCommandMenu(() => mod.CommandMenu)
-    })
-  }, [])
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -38,7 +34,9 @@ export function SearchProvider({ children }: SearchProviderProps) {
   return (
     <SearchContext.Provider value={contextValue}>
       {children}
-      {CommandMenu && <CommandMenu />}
+      <Suspense fallback={null}>
+        <CommandMenu />
+      </Suspense>
     </SearchContext.Provider>
   )
 }

@@ -139,7 +139,7 @@ export function PaymentOrdersTable({ search, navigate }: PaymentOrdersTableProps
         virtualRows.length > 0 ? rowVirtualizer.getTotalSize() - virtualRows[virtualRows.length - 1]!.end : 0
 
     return (
-        <div className={cn('max-sm:has-[div[role="toolbar"]]:mb-16', 'flex flex-1 flex-col gap-4')}>
+        <div className={cn('max-sm:has-[div[role="toolbar"]]:mb-16', 'flex min-h-0 flex-1 flex-col gap-4')}>
             <DataTableToolbar
                 table={table}
                 searchPlaceholder="搜索订单号、用户邮箱..."
@@ -172,6 +172,7 @@ export function PaymentOrdersTable({ search, navigate }: PaymentOrdersTableProps
                 containerRef={tableContainerRef}
                 rowVirtualizer={rowVirtualizer}
                 emptyState={t('common.noResults')}
+                containerClassName='min-h-0 flex-1'
             />
             <DataTablePagination table={table} className="mt-auto" />
         </div>

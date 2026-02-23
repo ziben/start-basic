@@ -53,7 +53,7 @@ export function AdminDataTable<TData>({
     bulkActions,
 }: AdminDataTableProps<TData>) {
     return (
-        <div className='flex flex-1 flex-col gap-4'>
+        <div className='flex min-h-0 flex-1 flex-col gap-4'>
             <DataTableToolbar
                 table={table}
                 searchPlaceholder={searchPlaceholder}
@@ -71,6 +71,7 @@ export function AdminDataTable<TData>({
                 emptyState={emptyState}
                 rowVirtualizer={rowVirtualizer}
                 containerRef={containerRef}
+                containerClassName='min-h-0 flex-1'
             />
             <DataTablePagination table={table} className='mt-auto' />
             {bulkActions && <div>{bulkActions}</div>}

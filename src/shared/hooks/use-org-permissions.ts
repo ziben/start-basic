@@ -1,9 +1,4 @@
-/**
- * 组织权限控制 Hooks
- * 使用 better-auth 的 dynamic access control
- */
-
-import { useQuery } from '@tanstack/react-query'
+import { useQueries, useQuery } from '@tanstack/react-query'
 import { useAuth } from '~/modules/auth/shared/hooks/use-auth'
 import { orgPermissionQueryKeys } from '~/shared/lib/query-keys'
 import { checkOrgPermissionFn, getOrgRoleFn } from '~/shared/server-fns/org-permissions.fn'
@@ -70,20 +65,27 @@ export function useIsOrgAdmin(organizationId: string | undefined) {
 
 /**
  * Hook: 检查多个组织权限（任一满足）
- * 注意：由于 React Hooks 规则限制，permissions 数组长度不能动态变化
  */
 export function useAnyOrgPermission(
   organizationId: string | undefined,
   permissions: Array<{ resource: string; action: string }>
 ) {
-  // 为每个权限创建查询（最多支持 10 个）
-  const query0 = useOrgPermission(organizationId, permissions[0]?.resource || '', permissions[0]?.action || '')
-  const query1 = useOrgPermission(organizationId, permissions[1]?.resource || '', permissions[1]?.action || '')
-  const query2 = useOrgPermission(organizationId, permissions[2]?.resource || '', permissions[2]?.action || '')
-  const query3 = useOrgPermission(organizationId, permissions[3]?.resource || '', permissions[3]?.action || '')
-  const query4 = useOrgPermission(organizationId, permissions[4]?.resource || '', permissions[4]?.action || '')
+  const { data: session } = useAuth()
+  const user = session?.user
 
-  const queries = [query0, query1, query2, query3, query4].slice(0, permissions.length)
+  const queries = useQueries({
+    queries: permissions.map(({ resource, action }) => ({
+      queryKey: orgPermissionQueryKeys.check(user?.id, organizationId, resource, action),
+      queryFn: () => {
+        if (!organizationId) return false
+        return checkOrgPermissionFn({
+          data: { organizationId, resource, action }
+        })
+      },
+      enabled: !!user && !!organizationId && !!resource && !!action,
+      staleTime: 5 * 60 * 1000,
+    })),
+  })
 
   const isLoading = queries.some(q => q.isLoading)
   const hasPermission = queries.some(q => q.data === true)
@@ -93,20 +95,27 @@ export function useAnyOrgPermission(
 
 /**
  * Hook: 检查多个组织权限（全部满足）
- * 注意：由于 React Hooks 规则限制，permissions 数组长度不能动态变化
  */
 export function useAllOrgPermissions(
   organizationId: string | undefined,
   permissions: Array<{ resource: string; action: string }>
 ) {
-  // 为每个权限创建查询（最多支持 10 个）
-  const query0 = useOrgPermission(organizationId, permissions[0]?.resource || '', permissions[0]?.action || '')
-  const query1 = useOrgPermission(organizationId, permissions[1]?.resource || '', permissions[1]?.action || '')
-  const query2 = useOrgPermission(organizationId, permissions[2]?.resource || '', permissions[2]?.action || '')
-  const query3 = useOrgPermission(organizationId, permissions[3]?.resource || '', permissions[3]?.action || '')
-  const query4 = useOrgPermission(organizationId, permissions[4]?.resource || '', permissions[4]?.action || '')
+  const { data: session } = useAuth()
+  const user = session?.user
 
-  const queries = [query0, query1, query2, query3, query4].slice(0, permissions.length)
+  const queries = useQueries({
+    queries: permissions.map(({ resource, action }) => ({
+      queryKey: orgPermissionQueryKeys.check(user?.id, organizationId, resource, action),
+      queryFn: () => {
+        if (!organizationId) return false
+        return checkOrgPermissionFn({
+          data: { organizationId, resource, action }
+        })
+      },
+      enabled: !!user && !!organizationId && !!resource && !!action,
+      staleTime: 5 * 60 * 1000,
+    })),
+  })
 
   const isLoading = queries.some(q => q.isLoading)
   const hasPermission = queries.every(q => q.data === true)

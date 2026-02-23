@@ -13,10 +13,13 @@ export interface Tab {
     scope: TabScope // 标签作用域
 }
 
-export interface TabContextValue {
+export interface TabStateContextValue {
     tabs: Tab[]
     activeTabId: string | null
     maxTabs: number
+}
+
+export interface TabActionContextValue {
     openTab: (path: string | undefined, title: string, icon?: React.ElementType | string) => boolean
     closeTab: (tabId: string) => void
     activateTab: (tabId: string) => void

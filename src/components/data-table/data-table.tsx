@@ -89,8 +89,8 @@ export function DataTable<TData>({
             : 0
 
     return (
-        <div className={cn('relative overflow-x-auto rounded-md border', containerClassName)}>
-            <div ref={containerRef} className={cn('max-h-[70vh] overflow-auto', rowVirtualizer ? 'w-full' : '')}>
+        <div className={cn('relative flex min-h-0 flex-col rounded-md border', containerClassName)}>
+            <div ref={containerRef} className={cn('min-h-0 flex-1 overflow-auto', rowVirtualizer ? 'w-full' : '')}>
                 <Table
                     className={tableClassName}
                     style={

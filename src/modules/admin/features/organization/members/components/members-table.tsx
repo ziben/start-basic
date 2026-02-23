@@ -97,7 +97,7 @@ export function MembersTable({ search, navigate }: MembersTableProps) {
     virtualRows.length > 0 ? rowVirtualizer.getTotalSize() - virtualRows[virtualRows.length - 1]!.end : 0
 
   return (
-    <div className={cn('max-sm:has-[div[role="toolbar"]]:mb-16', 'flex flex-1 flex-col gap-4')}>
+    <div className={cn('max-sm:has-[div[role="toolbar"]]:mb-16', 'flex min-h-0 flex-1 flex-col gap-4')}>
       <DataTableToolbar
         table={table}
         searchPlaceholder='按用户名、邮箱、组织或角色搜索...'
@@ -112,6 +112,7 @@ export function MembersTable({ search, navigate }: MembersTableProps) {
         containerRef={tableContainerRef}
         rowVirtualizer={rowVirtualizer}
         emptyState='暂无数据'
+        containerClassName='min-h-0 flex-1'
       />
       <DataTablePagination table={table} className='mt-auto' />
       <MembersBulkActions table={table} />

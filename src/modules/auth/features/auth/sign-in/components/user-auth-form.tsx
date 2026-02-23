@@ -30,7 +30,7 @@ interface UserAuthFormProps extends React.HTMLAttributes<HTMLFormElement> {
 
 export function UserAuthForm({ className, redirectTo, ...props }: UserAuthFormProps) {
   const [isLoading, setIsLoading] = useState(false)
-  const isDev = isDevelopment()
+  const isDev = import.meta.env.DEV
   const navigate = useNavigate()
   // const { auth } = useAuthStore()
   const { queryClient } = Route.useRouteContext()

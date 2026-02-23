@@ -25,8 +25,8 @@ export default function AdminNavItemPage() {
 
   return (
     <AdminNavItemProvider initialNavGroupId={navGroupId}>
-      
-      <AppHeaderMain>
+
+      <AppHeaderMain fixed>
         {/* 导航路径 */}
         {navGroupId && (
           <div className='mb-4 flex items-center text-sm text-muted-foreground'>
@@ -48,8 +48,8 @@ export default function AdminNavItemPage() {
             <h2 className='text-2xl font-bold tracking-tight'>
               {navGroupId && navGroup
                 ? t('admin.navitem.titleForGroup', {
-                    title: t(navGroup.title, { defaultMessage: navGroup.title }),
-                  })
+                  title: t(navGroup.title, { defaultMessage: navGroup.title }),
+                })
                 : t('admin.navitem.title')}
             </h2>
             <p className='text-muted-foreground'>
@@ -58,7 +58,7 @@ export default function AdminNavItemPage() {
           </div>
           <AdminNavItemPrimaryButtons navGroupId={navGroupId} />
         </div>
-        <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-y-0 lg:space-x-12'>
+        <div className='-mx-4 flex flex-1 flex-col overflow-hidden px-4 py-1'>
           <AdminNavItemTable data={navItemList} isLoading={isLoading} error={error} navGroupId={navGroupId} />
         </div>
       </AppHeaderMain>

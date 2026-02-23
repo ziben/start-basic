@@ -48,14 +48,14 @@ export function ThemeProvider({
     return theme as ResolvedTheme
   }, [theme])
 
-  useEffect(() => {
+  const applyTheme = useCallback((currentResolvedTheme: ResolvedTheme) => {
     const root = window.document.documentElement
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+    root.classList.remove('light', 'dark')
+    root.classList.add(currentResolvedTheme)
+  }, [])
 
-    const applyTheme = (currentResolvedTheme: ResolvedTheme) => {
-      root.classList.remove('light', 'dark') // Remove existing theme classes
-      root.classList.add(currentResolvedTheme) // Add the new theme class
-    }
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
 
     const handleChange = () => {
       if (theme === 'system') {
@@ -69,7 +69,7 @@ export function ThemeProvider({
     mediaQuery.addEventListener('change', handleChange)
 
     return () => mediaQuery.removeEventListener('change', handleChange)
-  }, [theme, resolvedTheme])
+  }, [theme, resolvedTheme, applyTheme])
 
   const setTheme = useCallback(
     (theme: Theme) => {

@@ -4,10 +4,7 @@ import { HeadContent, Outlet, Scripts, createRootRouteWithContext } from '@tanst
 import Devtools from '~/components/devtools'
 import { NavigationProgress } from '~/components/navigation-progress'
 import { Toaster } from '~/components/ui/sonner'
-import { AuthProvider } from '~/shared/context/auth-context'
-import { DirectionProvider } from '~/shared/context/direction-provider'
-import { LocaleProvider } from '~/shared/context/locale-context'
-import { ThemeProvider } from '~/shared/context/theme-provider'
+import { AppProviders } from '~/shared/context/app-providers'
 import { useRouteSeoSync } from '~/shared/hooks/use-route-seo-sync'
 import { userQueryKeys } from '~/shared/lib/query-keys'
 import appCss from '~/styles/index.css?url'
@@ -95,46 +92,40 @@ function RootComponent(): React.ReactElement {
   return (
     <React.StrictMode>
       <DynamicCSSLoader modernUrl={appCss} legacyUrl={appCssLegacy} onReady={handleReady} />
-      <ThemeProvider defaultTheme='light' storageKey='vite-ui-theme'>
-        <DirectionProvider>
-          <LocaleProvider>
-            <AuthProvider>
-              <RootDocument>
-                {!isReady && (
-                  <div className="fixed inset-0 z-[9999] bg-white">
-                    <div className="mx-auto flex h-full max-w-5xl flex-col gap-6 px-6 py-10">
-                      <div className="flex items-center gap-3">
-                        <Skeleton className="h-10 w-10 rounded-lg" />
-                        <div className="flex-1 space-y-2">
-                          <Skeleton className="h-5 w-48" />
-                          <Skeleton className="h-4 w-32" />
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                        <Skeleton className="h-28 w-full" />
-                        <Skeleton className="h-28 w-full" />
-                        <Skeleton className="h-28 w-full" />
-                        <Skeleton className="h-28 w-full" />
-                      </div>
-                      <div className="space-y-3">
-                        <Skeleton className="h-4 w-3/5" />
-                        <Skeleton className="h-4 w-4/5" />
-                        <Skeleton className="h-4 w-2/5" />
-                      </div>
-                    </div>
+      <AppProviders>
+        <RootDocument>
+          {!isReady && (
+            <div className="fixed inset-0 z-[9999] bg-white dark:bg-zinc-950">
+              <div className="mx-auto flex h-full max-w-5xl flex-col gap-6 px-6 py-10">
+                <div className="flex items-center gap-3">
+                  <Skeleton className="h-10 w-10 rounded-lg" />
+                  <div className="flex-1 space-y-2">
+                    <Skeleton className="h-5 w-48" />
+                    <Skeleton className="h-4 w-32" />
                   </div>
-                )}
-                <div style={{ visibility: isReady ? 'visible' : 'hidden' }}>
-                  <NavigationProgress />
-                  <Outlet />
-                  <Toaster duration={5000} />
-                  <Devtools />
                 </div>
-              </RootDocument>
-            </AuthProvider>
-          </LocaleProvider>
-        </DirectionProvider>
-      </ThemeProvider>
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <Skeleton className="h-28 w-full" />
+                  <Skeleton className="h-28 w-full" />
+                  <Skeleton className="h-28 w-full" />
+                  <Skeleton className="h-28 w-full" />
+                </div>
+                <div className="space-y-3">
+                  <Skeleton className="h-4 w-3/5" />
+                  <Skeleton className="h-4 w-4/5" />
+                  <Skeleton className="h-4 w-2/5" />
+                </div>
+              </div>
+            </div>
+          )}
+          <div style={{ visibility: isReady ? 'visible' : 'hidden' }}>
+            <NavigationProgress />
+            <Outlet />
+            <Toaster duration={5000} />
+            <Devtools />
+          </div>
+        </RootDocument>
+      </AppProviders>
     </React.StrictMode>
   )
 }
@@ -144,6 +135,23 @@ function RootDocument({ children }: { children: React.ReactNode }): React.ReactE
     <html suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: `if(!Object.hasOwn){Object.hasOwn=function(o,p){return Object.prototype.hasOwnProperty.call(o,p)}}` }} />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var theme = document.cookie.match(/vite-ui-theme=([^;]+)/)?.[1] || 'system';
+                  var isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+                  if (isDark) {
+                    document.documentElement.classList.add('dark');
+                  } else {
+                    document.documentElement.classList.add('light');
+                  }
+                } catch (e) {}
+              })();
+            `
+          }}
+        />
         <HeadContent />
       </head>
       <body className='group/body'>

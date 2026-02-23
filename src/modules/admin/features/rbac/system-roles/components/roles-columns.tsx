@@ -114,7 +114,7 @@ export function useRolesColumns() {
 
         return (
           <div className="flex items-center justify-end gap-2">
-            <PermissionGuard permission="roles.update">
+            <PermissionGuard permission="role:update">
               <Button
                 variant="ghost"
                 size="icon"
@@ -136,14 +136,14 @@ export function useRolesColumns() {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-[160px]">
                 <DropdownMenuLabel>{t('admin.common.actions')}</DropdownMenuLabel>
-                <PermissionGuard permission="roles.update">
+                <PermissionGuard permission="role:update">
                   <DropdownMenuItem onClick={() => openPermissionsDialog(role)}>
                     <Users className="mr-2 h-4 w-4 text-muted-foreground" />
                     {t('admin.role.actions.permissions')}
                   </DropdownMenuItem>
                 </PermissionGuard>
                 <DropdownMenuSeparator />
-                <PermissionGuard permission="roles.delete">
+                <PermissionGuard permission="role:delete">
                   <DropdownMenuItem
                     onClick={() => openDeleteDialog(role)}
                     disabled={role.isSystem}

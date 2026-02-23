@@ -1,10 +1,14 @@
 import { Main } from "./main";
 
-export function AppHeaderMain({ children }: { children: React.ReactNode }) {
+type AppHeaderMainProps = React.HTMLAttributes<HTMLElement> & {
+    fixed?: boolean
+    fluid?: boolean
+}
+
+export function AppHeaderMain({ children, ...props }: AppHeaderMainProps) {
     return (
         <>
-            <Main>{children}</Main>
+            <Main {...props}>{children}</Main>
         </>
     )
 }
-

@@ -71,6 +71,8 @@ export function PermissionGuard(props: PermissionGuardProps) {
 
   if (props.requireAdmin) {
     hasAccess = isAdmin
+  } else if (isAdmin) {
+    hasAccess = true
   } else if (props.permission) {
     hasAccess = !!resolvedMap[props.permission]
   } else if (props.anyPermissions && props.anyPermissions.length > 0) {

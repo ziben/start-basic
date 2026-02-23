@@ -13,8 +13,8 @@ interface LogEntry {
   context?: string
 }
 
-const isDev = process.env.NODE_ENV === 'development'
-const isProd = process.env.NODE_ENV === 'production'
+const isDev = import.meta.env.DEV
+const isProd = import.meta.env.PROD
 
 // 日志级别权重
 const LOG_LEVELS: Record<LogLevel, number> = {

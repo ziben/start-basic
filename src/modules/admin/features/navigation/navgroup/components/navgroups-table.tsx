@@ -91,7 +91,7 @@ function NavGroupsTableInner({ data, search, navigate, onReload, isReloading }: 
   const rows = table.getRowModel().rows
 
   return (
-    <div className='space-y-4 max-sm:has-[div[role="toolbar"]]:mb-16'>
+    <div className='flex min-h-0 flex-1 flex-col gap-4 max-sm:has-[div[role="toolbar"]]:mb-16'>
       <DataTableToolbar
         table={table}
         searchPlaceholder={t('admin.navgroup.table.searchPlaceholder')}
@@ -109,6 +109,7 @@ function NavGroupsTableInner({ data, search, navigate, onReload, isReloading }: 
         table={table}
         columnsLength={columns.length}
         emptyState={t('admin.common.noData')}
+        containerClassName='min-h-0 flex-1'
       />
       <DataTablePagination table={table} />
       <DataTableBulkActions table={table} />

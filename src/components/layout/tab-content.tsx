@@ -30,7 +30,7 @@ export function TabContent() {
     // 只渲染激活的标签页内容，提高性能
     return (
         <div
-            className="relative h-full overflow-auto transition-opacity duration-150 ease-in-out"
+            className="relative flex h-full flex-col transition-opacity duration-150 ease-in-out"
             style={{ opacity: isAnimating ? 0.7 : 1 }}
         >
             <Outlet />

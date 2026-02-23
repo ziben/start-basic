@@ -128,7 +128,7 @@ export default function AdminNavItemTable({ data, isLoading, error, navGroupId, 
     // For react-table, data should be root nodes of the current view
     const treeData = currentVisibleFlatTree.filter((item) => {
       // 如果没有父级，它就是根节点
-      if (!item.parentId) return true 
+      if (!item.parentId) return true
       // 如果有父级，但父级不在当前可见列表中，它也作为根节点显示
       return !currentVisibleFlatTree.find((parentCandidate) => parentCandidate.id === item.parentId)
     })
@@ -140,10 +140,10 @@ export default function AdminNavItemTable({ data, isLoading, error, navGroupId, 
       return currentVisibleFlatTree.filter((item) => item.parentId === row.id)
     }
 
-    return { 
-      tableData: treeData, 
-      getSubRowsFunction: subRowsFunc, 
-      allVisibleItemsById: allVisibleItemsMap 
+    return {
+      tableData: treeData,
+      getSubRowsFunction: subRowsFunc,
+      allVisibleItemsById: allVisibleItemsMap
     }
   }, [data, titleFilterValue, depthMap])
 
@@ -214,7 +214,7 @@ export default function AdminNavItemTable({ data, isLoading, error, navGroupId, 
     )
 
   return (
-    <div className='space-y-4'>
+    <div className='flex min-h-0 flex-1 flex-col gap-4'>
       <DataTableToolbar
         table={table}
         searchPlaceholder={t('admin.navitem.search')}
@@ -228,7 +228,7 @@ export default function AdminNavItemTable({ data, isLoading, error, navGroupId, 
           },
         ]}
       />
-      <div className='rounded-md border'>
+      <div className='min-h-0 flex-1 overflow-auto rounded-md border'>
         <div>
           <Table>
             <TableHeader>

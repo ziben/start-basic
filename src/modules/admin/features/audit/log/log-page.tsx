@@ -13,7 +13,7 @@ function AdminLogContent() {
   const navigate = route.useNavigate()
 
   return (
-    <AppHeaderMain>
+    <AppHeaderMain fixed>
       <div className='mb-2 flex flex-wrap items-center justify-between gap-x-4 space-y-2'>
         <div>
           <h2 className='text-2xl font-bold tracking-tight'>日志管理</h2>
@@ -21,7 +21,7 @@ function AdminLogContent() {
         </div>
         <AdminLogTypeSwitcher />
       </div>
-      <div className='-mx-4 flex-1 overflow-auto px-4 py-1'>
+      <div className='-mx-4 flex flex-1 flex-col overflow-hidden px-4 py-1'>
         <AdminLogTable type={type} search={search} navigate={navigate as unknown as NavigateFn} />
       </div>
     </AppHeaderMain>

@@ -15,7 +15,7 @@ export default function AdminUsers() {
 
   return (
     <AdminUsersProvider>
-      <AppHeaderMain>
+      <AppHeaderMain fixed>
         <div className='mb-2 flex flex-wrap items-center justify-between gap-x-4 space-y-2'>
           <div>
             <h2 className='text-2xl font-bold tracking-tight'>用户管理</h2>
@@ -23,7 +23,7 @@ export default function AdminUsers() {
           </div>
           <AdminUsersPrimaryButtons />
         </div>
-        <div className='-mx-4 flex-1 overflow-auto px-4 py-1'>
+        <div className='-mx-4 flex flex-1 flex-col overflow-hidden px-4 py-1'>
           <ErrorBoundary fallbackMessage="用户表格渲染失败">
             <AdminUsersTable search={search} navigate={navigate as unknown as NavigateFn} />
           </ErrorBoundary>

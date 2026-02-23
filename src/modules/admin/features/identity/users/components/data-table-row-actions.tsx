@@ -56,7 +56,7 @@ export function DataTableRowActions<TData>({ row }: DataTableRowActionsProps<TDa
 
   return (
     <div className='flex items-center justify-end gap-2'>
-      <PermissionGuard permission="users.update">
+      <PermissionGuard permission="user:update">
         <Button
           variant='ghost'
           size='icon'
@@ -72,7 +72,7 @@ export function DataTableRowActions<TData>({ row }: DataTableRowActionsProps<TDa
         </Button>
       </PermissionGuard>
 
-      <PermissionGuard permission="users.delete">
+      <PermissionGuard permission="user:delete">
         <Button
           variant='ghost'
           size='icon'
@@ -88,7 +88,7 @@ export function DataTableRowActions<TData>({ row }: DataTableRowActionsProps<TDa
         </Button>
       </PermissionGuard>
 
-      <PermissionGuard permission="users.update">
+      <PermissionGuard permission="user:update">
         <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
             <Button variant='ghost' className='flex h-8 w-8 p-0 data-[state=open]:bg-muted' onClick={(e) => e.stopPropagation()}>

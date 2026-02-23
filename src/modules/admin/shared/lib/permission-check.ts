@@ -138,6 +138,16 @@ export async function requirePermission(
         departmentId?: string
     }
 ) {
+    // 快速通道：如果用户具有超级管理员或管理员角色，直接放行
+    const userRole = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { role: true }
+    })
+    const isSuperAdminOrAdmin = userRole?.role && ['admin', 'superadmin'].some(r => userRole.role!.includes(r))
+    if (isSuperAdminOrAdmin) {
+        return
+    }
+
     const hasPermission = await checkPermission(userId, permissionName, options)
 
     if (!hasPermission) {
@@ -154,13 +164,13 @@ export async function getUserPermissions(
 ): Promise<string[]> {
     try {
         const permissions: string[] = []
-        
+
         // 1. 获取全局角色权限
         const user = await prisma.user.findUnique({
             where: { id: userId },
             select: { role: true }
         })
-        
+
         if (user?.role) {
             const roles = user.role.split(',').map((r) => r.trim())
             for (const role of roles) {
@@ -168,19 +178,19 @@ export async function getUserPermissions(
                 permissions.push(...rolePerms)
             }
         }
-        
+
         // 2. 如果指定了组织，获取组织角色权限
         if (organizationId) {
             const member = await prisma.member.findFirst({
                 where: { userId, organizationId }
             })
-            
+
             if (member) {
                 const orgRolePerms = await getRolePermissions(member.role, 'ORGANIZATION')
                 permissions.push(...orgRolePerms)
             }
         }
-        
+
         // 去重
         return [...new Set(permissions)]
     } catch (error) {

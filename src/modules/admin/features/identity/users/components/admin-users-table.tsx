@@ -118,7 +118,7 @@ export function AdminUsersTable({ search, navigate }: AdminUsersTableProps) {
   })
 
   return (
-    <div className={cn('max-sm:has-[div[role="toolbar"]]:mb-16', 'space-y-4')}>
+    <div className={cn('max-sm:has-[div[role="toolbar"]]:mb-16', 'flex min-h-0 flex-1 flex-col gap-4')}>
       <AdminDataTable
         table={table}
         columnsLength={columns.length}
