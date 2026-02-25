@@ -20,10 +20,13 @@ export function getAIConfig() {
 }
 
 /**
- * 国产大模型兼容 OpenAI API 的服务商配置
+ * 国产大模型服务商配置
  *
- * 这些服务商均提供兼容 OpenAI Chat Completions API 的接口，
- * 因此可以直接通过修改 baseURL 来接入。
+ * 接口兼容情况（@tanstack/ai-openai 使用 OpenAI Responses API）：
+ *   - qwen：支持 Responses API，使用 defaultBaseURL 即可
+ *   - deepseek / zhipu / ernie：仅支持 Chat Completions API（暂不兼容，待确认）
+ *
+ * 如需覆盖 baseURL（接入代理/私有部署），设置对应的 XXXX_BASE_URL 环境变量。
  */
 const CHINA_PROVIDERS: Record<
   'deepseek' | 'qwen' | 'zhipu' | 'ernie',
@@ -46,7 +49,8 @@ const CHINA_PROVIDERS: Record<
     description: 'DeepSeek（深度求索）',
   },
   qwen: {
-    defaultBaseURL: 'https://dashscope.aliyuncs.com/compatible-mode/v1',
+    // 此地址兼容 OpenAI Responses API，与 @tanstack/ai-openai 直接适配
+    defaultBaseURL: 'https://dashscope.aliyuncs.com/api/v2/apps/protocols/compatible-mode/v1',
     baseURLEnvKey: 'QWEN_BASE_URL',
     envKey: 'QWEN_API_KEY',
     defaultModel: 'qwen-plus',
