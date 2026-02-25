@@ -7,7 +7,7 @@ export type RuntimeConfigShape = {
   'log.system.sampleLevels': string[]
   'log.maxBodyBytes': number
   'ai.enabled': boolean
-  'ai.provider': 'gemini' | 'openai'
+  'ai.provider': 'gemini' | 'openai' | 'deepseek' | 'qwen' | 'zhipu' | 'ernie'
   'ai.model': string
   'auth.trustedOrigins': string[]
 }
@@ -55,8 +55,14 @@ function parseStringArray(value: string | undefined, fallback: string[]): string
     .filter(Boolean)
 }
 
+const VALID_PROVIDERS = ['gemini', 'openai', 'deepseek', 'qwen', 'zhipu', 'ernie'] as const
+type ValidProvider = (typeof VALID_PROVIDERS)[number]
+
 function getDefaultsFromEnv(): RuntimeConfigShape {
-  const provider = process.env.AI_PROVIDER === 'openai' ? 'openai' : 'gemini'
+  const rawProvider = process.env.AI_PROVIDER ?? 'gemini'
+  const provider: ValidProvider = (VALID_PROVIDERS as readonly string[]).includes(rawProvider)
+    ? (rawProvider as ValidProvider)
+    : 'gemini'
 
   return {
     'log.requestBody.enabled': parseBoolean(process.env.LOG_REQUEST_BODY, false),
@@ -102,7 +108,7 @@ function normalizeValue<K extends RuntimeConfigKey>(key: K, raw: unknown): Runti
       return fallback as RuntimeConfigShape[K]
     }
     case 'ai.provider': {
-      if (raw === 'openai' || raw === 'gemini') return raw as RuntimeConfigShape[K]
+      if ((VALID_PROVIDERS as readonly unknown[]).includes(raw)) return raw as RuntimeConfigShape[K]
       return defaults[key]
     }
     case 'log.dir':

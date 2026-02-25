@@ -1,11 +1,11 @@
 import { createFileRoute } from '@tanstack/react-router'
 /**
  * Chat API Route
- * 
- * 处理 AI 聊天的 API 端点
+ *
+ * 处理 AI 聊天的 API 端点，支持持久化流式处理
  */
-import { chat, toServerSentEventsResponse } from "@tanstack/ai";
-import { getAIAdapter } from '~/modules/ai/shared/lib/ai-config'
+import { chat, toServerSentEventsResponse } from '@tanstack/ai'
+import { type AIProvider, getAIAdapter } from '~/modules/ai/shared/lib/ai-config'
 import { auth } from '~/modules/auth/shared/lib/auth'
 import { AiChatService } from '~/modules/ai/shared/services/ai-chat.service'
 
@@ -45,7 +45,7 @@ export const Route = createFileRoute('/api/chat')({
                     await AiChatService.saveMessage(activeConversationId, latestMessage.role, latestMessage.content)
 
                     // 4. 调用底层大模型获取流
-                    const adapter = getAIAdapter(modelProvider || 'gemini')
+                    const adapter = getAIAdapter(modelProvider as AIProvider | undefined)
                     const aiStream = chat({
                         adapter: adapter(),
                         messages,

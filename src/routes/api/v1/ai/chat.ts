@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { chat, toServerSentEventsResponse } from '@tanstack/ai'
 import { z } from 'zod'
-import { getAIAdapter } from '~/modules/ai/shared/lib/ai-config'
-import { chat, toServerSentEventsResponse } from "@tanstack/ai"
+import { type AIProvider, getAIAdapter } from '~/modules/ai/shared/lib/ai-config'
 import { auth } from '~/modules/auth/shared/lib/auth'
 
 const ChatRequestSchema = z.object({
@@ -12,7 +12,9 @@ const ChatRequestSchema = z.object({
         })
     ),
     conversationId: z.string().optional(),
-    modelProvider: z.enum(['openai', 'gemini']).optional(),
+    modelProvider: z
+        .enum(['openai', 'gemini', 'deepseek', 'qwen', 'zhipu', 'ernie'])
+        .optional(),
     temperature: z.number().optional()
 })
 
@@ -52,7 +54,7 @@ export const Route = createFileRoute('/api/v1/ai/chat')({
                     const data = parsed.data
 
                     // 3. Obtain AI Adapter and Stream 
-                    const adapter = getAIAdapter(data.modelProvider || 'gemini')
+                    const adapter = getAIAdapter(data.modelProvider as AIProvider | undefined)
                     const stream = chat({
                         adapter: adapter(),
                         messages: data.messages as any,

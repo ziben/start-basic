@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react'
+import type { AIProvider } from '../lib/ai-config'
+
+export type { AIProvider }
 
 export interface AIConfig {
     systemPrompt: string;
     temperature: number;
-    modelProvider: string;
+    modelProvider: AIProvider;
 }
 
 const DEFAULT_CONFIG: AIConfig = {
@@ -11,6 +14,7 @@ const DEFAULT_CONFIG: AIConfig = {
     temperature: 0.7,
     modelProvider: 'gemini',
 }
+
 
 const CONFIG_KEY = 'ai_user_config'
 
