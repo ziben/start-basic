@@ -9,6 +9,7 @@ export type RuntimeConfigShape = {
   'ai.enabled': boolean
   'ai.provider': 'gemini' | 'openai' | 'deepseek' | 'qwen' | 'zhipu' | 'ernie'
   'ai.model': string
+  'ai.systemPrompt': string
   'auth.trustedOrigins': string[]
 }
 
@@ -73,6 +74,9 @@ function getDefaultsFromEnv(): RuntimeConfigShape {
     'ai.enabled': parseBoolean(process.env.ENABLE_AI, false),
     'ai.provider': provider,
     'ai.model': process.env.GEMINI_MODEL || 'gemini-3-flash-preview',
+    'ai.systemPrompt':
+      process.env.AI_SYSTEM_PROMPT ||
+      '你是一个有帮助的 AI 助手，可以解答各类问题并在必要时使用中文进行回复。',
     'auth.trustedOrigins': parseStringArray(process.env.BETTER_AUTH_TRUSTED_ORIGINS, []),
   }
 }
@@ -112,7 +116,8 @@ function normalizeValue<K extends RuntimeConfigKey>(key: K, raw: unknown): Runti
       return defaults[key]
     }
     case 'log.dir':
-    case 'ai.model': {
+    case 'ai.model':
+    case 'ai.systemPrompt': {
       if (typeof raw === 'string' && raw.length > 0) return raw as RuntimeConfigShape[K]
       return defaults[key]
     }
@@ -181,11 +186,12 @@ export async function refreshRuntimeConfig(): Promise<{ refreshedAt: number }> {
 
 export function getPublicRuntimeConfig(): Pick<
   RuntimeConfigShape,
-  'ai.enabled' | 'ai.provider' | 'ai.model'
+  'ai.enabled' | 'ai.provider' | 'ai.model' | 'ai.systemPrompt'
 > {
   return {
     'ai.enabled': getRuntimeConfig('ai.enabled'),
     'ai.provider': getRuntimeConfig('ai.provider'),
     'ai.model': getRuntimeConfig('ai.model'),
+    'ai.systemPrompt': getRuntimeConfig('ai.systemPrompt'),
   }
 }

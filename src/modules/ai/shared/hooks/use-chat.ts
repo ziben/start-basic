@@ -46,16 +46,6 @@ export function useChat({ conversationId, initialMessages }: UseChatOptions = {}
         [conversationId],
     )
 
-    // 系统 prompt 首条消息
-    const systemMessage: UIMessage = useMemo(
-        () => ({
-            id: 'system',
-            role: 'system' as const,
-            parts: [{ type: 'text' as const, content: config.systemPrompt }],
-        }),
-        [config.systemPrompt],
-    )
-
     return useAIChat({
         connection,
         // ↓ 这里的 body 会被 ChatClient.updateOptions({ body }) 实时同步
@@ -63,9 +53,9 @@ export function useChat({ conversationId, initialMessages }: UseChatOptions = {}
         body: {
             temperature: config.temperature,
             modelProvider: config.modelProvider,
+            systemPrompt: config.systemPrompt,
         },
-        initialMessages:
-            initialMessages && initialMessages.length > 0 ? initialMessages : [systemMessage],
+        initialMessages: initialMessages && initialMessages.length > 0 ? initialMessages : [],
         onError: (error) => {
             console.error('[useChat] Chat error:', error)
         },

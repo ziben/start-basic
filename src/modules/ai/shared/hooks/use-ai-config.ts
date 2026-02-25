@@ -27,7 +27,7 @@ export interface AIConfig {
 // ─── 默认值 ───────────────────────────────────────────────────────────────────
 
 const DEFAULT_CONFIG: AIConfig = {
-    systemPrompt: '你是一个有帮助的 AI 助手，可以解答各类问题并在必要时使用中文进行回复。',
+    systemPrompt: '', // 空字符串 = 使用服务端 system_config / AI_SYSTEM_PROMPT 的配置
     temperature: 0.7,
     modelProvider: 'gemini',
 }

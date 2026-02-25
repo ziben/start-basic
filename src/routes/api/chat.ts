@@ -6,6 +6,7 @@
 import { chat, toServerSentEventsResponse } from '@tanstack/ai'
 import { createFileRoute } from '@tanstack/react-router'
 import { type AIProvider, getAIAdapter } from '~/modules/ai/shared/lib/ai-config'
+import { initRuntimeConfig, getRuntimeConfig } from '~/shared/config/runtime-config'
 import { AiChatService } from '~/modules/ai/shared/services/ai-chat.service'
 import { auth } from '~/modules/auth/shared/lib/auth'
 
@@ -94,6 +95,12 @@ export const Route = createFileRoute('/api/chat')({
                     }
                     const userId = session.user.id
 
+                    // ── 2. 初始化运行时配置（加载 system_config 表） ──────────────────
+                    // getRuntimeConfig 是同步的，依赖 store.values 已被填充。
+                    // 如果不先 await initRuntimeConfig()，store 可能为空，
+                    // getRuntimeConfig 只能读到 .env 的默认值，忽略 system_config 表的设置。
+                    await initRuntimeConfig()
+
                     // ── 2. 解析请求体 ─────────────────────────────────────────────────
                     // TanStack AI 发送的请求体结构：
                     // {
@@ -114,9 +121,22 @@ export const Route = createFileRoute('/api/chat')({
                     const messages = rawBody.messages
                     // ✅ 从顶层 dbConversationId 读取（避免被 ChatClient 的 uniqueId 覆盖）
                     const conversationId: string | undefined = rawBody.dbConversationId
-                    // temperature / modelProvider 由 useAIChat body 传入，在 data 字段里
+                    // temperature / modelProvider / systemPrompt 由 useAIChat body 传入，在 data 字段里
                     const temperature = rawBody.data?.temperature ?? rawBody.temperature
-                    const modelProvider = rawBody.data?.modelProvider ?? rawBody.modelProvider
+                    const systemPrompt: string | undefined = rawBody.data?.systemPrompt
+
+                    // modelProvider 优先级：
+                    //   1. 前端用户选择的值（data.modelProvider）
+                    //   2. system_config 表或 AI_PROVIDER 环境变量（兜底）
+                    const clientProvider = rawBody.data?.modelProvider ?? rawBody.modelProvider
+                    const systemProvider = getRuntimeConfig('ai.provider')
+                    const modelProvider: AIProvider = (clientProvider as AIProvider) ?? systemProvider
+
+                    aiLog.debug('Provider resolution', {
+                        clientSent: clientProvider ?? '(none)',
+                        systemConfig: systemProvider,
+                        resolved: modelProvider,
+                    })
 
                     if (!Array.isArray(messages) || messages.length === 0) {
                         aiLog.warn('Invalid request: messages array is empty or missing', { userId })
@@ -128,12 +148,11 @@ export const Route = createFileRoute('/api/chat')({
                     // 同时兼容普通 OpenAI 格式（content 字符串）
                     const latestText = extractTextContent(latestMessage?.content)
                         || extractPartsContent(latestMessage?.parts)
-                    const resolvedProvider: AIProvider = modelProvider ?? 'gemini'
                     const resolvedTemp = temperature !== undefined ? Number(temperature) : 0.7
 
                     aiLog.info('Chat request received', {
                         userId,
-                        provider: resolvedProvider,
+                        provider: modelProvider,
                         temperature: resolvedTemp,
                         messageCount: messages.length,
                         conversationId: conversationId ?? '(new)',
@@ -191,25 +210,35 @@ export const Route = createFileRoute('/api/chat')({
                     // ── 5. 构建 AI Adapter 并发起流式请求 ────────────────────────────
                     let adapter
                     try {
-                        adapter = getAIAdapter(resolvedProvider)
-                    } catch (adapterErr) {
-                        aiLog.error('Failed to initialize AI adapter', adapterErr, {
-                            provider: resolvedProvider,
+                        adapter = getAIAdapter(modelProvider)
+                    } catch (error_) {
+                        aiLog.error('Failed to initialize AI adapter', error_, {
+                            provider: modelProvider,
                             userId,
                         })
-                        throw adapterErr
+                        throw error_
                     }
 
                     aiLog.info('Starting AI stream', {
                         conversationId: activeConversationId,
-                        provider: resolvedProvider,
+                        provider: modelProvider,
                         temperature: resolvedTemp,
                     })
 
                     const streamStart = Date.now()
+
+                    // 过滤掉客户端异常传入的 role=system 消息（防止重复注入）
+                    const chatMessages = messages.filter((m: any) => m.role !== 'system')
+
+                    // systemPrompts 是 TanStack AI chat() 的官方入口，由 adapter 内部注入为 system message
+                    // 优先级：前端自定义 systemPrompt > system_config 表 / AI_SYSTEM_PROMPT 环境变量
+                    const resolvedSystemPrompt =
+                        systemPrompt?.trim() || getRuntimeConfig('ai.systemPrompt')
+
                     const aiStream = chat({
                         adapter: adapter(),
-                        messages,
+                        messages: chatMessages,
+                        systemPrompts: [resolvedSystemPrompt],
                         conversationId: activeConversationId,
                         temperature: resolvedTemp,
                     })
@@ -233,8 +262,9 @@ export const Route = createFileRoute('/api/chat')({
                                 }
                                 chunkCount++
 
-                                if (chunk.type === 'TEXT_MESSAGE_CONTENT' && 'delta' in chunk) {
-                                    fullResponse += (chunk as any).delta
+                                if (chunk.type === 'TEXT_MESSAGE_CONTENT') {
+                                    const textDelta = (chunk as any).delta || (chunk as any).text || (chunk as any).content || ''
+                                    fullResponse += textDelta
                                 }
 
                                 // RUN_ERROR 事件记录错误
@@ -258,7 +288,7 @@ export const Route = createFileRoute('/api/chat')({
                         const totalMs = Date.now() - streamStart
                         aiLog.info('AI stream completed', {
                             conversationId: activeConversationId,
-                            provider: resolvedProvider,
+                            provider: modelProvider,
                             totalChunks: chunkCount,
                             responseLength: fullResponse.length,
                             ttfbMs: firstChunkMs,
