@@ -1,7 +1,7 @@
 import React from 'react'
 import { ColumnDef, FilterFn, Row } from '@tanstack/react-table'
 import { ChevronDown, ChevronRight } from 'lucide-react'
-import { useNavgroups } from '~/modules/admin/shared/hooks/use-navgroup-api'
+import { useNavgroups } from '~/modules/admin/features/navigation/navgroup/hooks/use-navgroup-api'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import { iconResolver } from '@/shared/utils/icon-resolver'
 import { cn } from '@/shared/lib/utils'

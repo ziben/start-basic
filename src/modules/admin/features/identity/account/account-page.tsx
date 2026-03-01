@@ -10,8 +10,8 @@ import {
   getAdminAccountFn,
   setAdminPasswordFn,
   unlinkAdminAccountFn,
-} from '~/modules/admin/shared/server-fns/account.fn'
-import { type AdminAccountOverview } from '~/modules/admin/shared/services/account.service'
+} from './server-fns/account.fn'
+import { type AdminAccountOverview } from './services/account.service'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'

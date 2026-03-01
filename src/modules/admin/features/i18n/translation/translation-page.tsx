@@ -1,7 +1,7 @@
 import { getRouteApi } from '@tanstack/react-router'
 import { ConfigDrawer } from '~/components/config-drawer'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
-import { useTranslations } from '~/modules/admin/shared/hooks/use-translation-api'
+import { useTranslations } from '~/modules/admin/features/i18n/translation/hooks/use-translation-api'
 import { type NavigateFn } from '@/shared/hooks/use-table-url-state'
 import { AppHeaderMain } from '~/components/layout/app-header-main'
 import { TranslationsDialogs } from './components/translations-dialogs'

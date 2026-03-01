@@ -3,7 +3,7 @@ import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import { Button } from '@/components/ui/button'
 import { useTranslations } from './translations-provider'
 
-// import { useTranslations } from '~/modules/admin/shared/hooks/use-translation-api'
+// import { useTranslations } from '~/modules/admin/features/i18n/translation/hooks/use-translation-api'
 
 export function TranslationsPrimaryButtons() {
   const { setOpen } = useTranslations()

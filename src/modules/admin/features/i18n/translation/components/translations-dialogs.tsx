@@ -1,6 +1,6 @@
 import { toast } from 'sonner'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
-import { useDeleteTranslation } from '~/modules/admin/shared/hooks/use-translation-api'
+import { useDeleteTranslation } from '~/modules/admin/features/i18n/translation/hooks/use-translation-api'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { TranslationsImportDialog } from './translations-import-dialog'
 import { TranslationsMutateDrawer } from './translations-mutate-drawer'

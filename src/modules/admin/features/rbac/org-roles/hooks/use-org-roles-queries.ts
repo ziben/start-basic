@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { getOrganizationRolesFn, getRoleTemplatesFn } from '@/modules/admin/shared/server-fns/organization-role.fn'
+import { getOrganizationRolesFn, getRoleTemplatesFn } from '../server-fns/organization-role.fn'
 import { rbacOrgRolesQueryKeys } from '~/shared/lib/query-keys'
 
 interface UseOrgRolesQueryProps {

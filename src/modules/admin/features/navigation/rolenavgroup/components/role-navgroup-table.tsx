@@ -9,7 +9,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Loader2, Settings2 } from 'lucide-react'
-import { useAllRoles } from '@/modules/admin/shared/hooks/use-role-api'
+import { useAllRoles } from '~/modules/admin/features/rbac/system-roles/hooks/use-role-api'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 
 interface RoleNavGroupTableProps {

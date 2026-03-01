@@ -13,7 +13,7 @@ import { type NavigateFn, useTableUrlState } from '@/shared/hooks/use-table-url-
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Skeleton } from '@/components/ui/skeleton'
 import { DataTablePagination, DataTableToolbar, DataTable } from '@/components/data-table'
-import { type AdminAuditLog, type AdminSystemLog } from '~/modules/admin/shared/hooks/use-admin-log-api'
+import { type AdminAuditLog, type AdminSystemLog } from '~/modules/admin/features/audit/log/hooks/use-admin-log-api'
 import { auditResults, logLevels, type LogType } from '../data/schema'
 import { useAdminLogsQuery } from '../hooks/use-admin-logs-query'
 import { getSingleBooleanFromArrayFilter, getSingleStringFromArrayFilter } from '../utils/table-filters'

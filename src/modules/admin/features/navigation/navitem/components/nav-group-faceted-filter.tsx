@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { CheckIcon, PlusCircledIcon } from '@radix-ui/react-icons'
 import { Column } from '@tanstack/react-table'
-import { useNavgroups, type NavGroup } from '~/modules/admin/shared/hooks/use-navgroup-api'
+import { useNavgroups, type NavGroup } from '~/modules/admin/features/navigation/navgroup/hooks/use-navgroup-api'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import { cn } from '@/shared/lib/utils'
 import { Badge } from '@/components/ui/badge'

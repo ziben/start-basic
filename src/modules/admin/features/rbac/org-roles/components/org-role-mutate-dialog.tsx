@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { createOrganizationRoleFn, updateOrganizationRoleFn } from "@/modules/admin/shared/server-fns/organization-role.fn"
+import { createOrganizationRoleFn, updateOrganizationRoleFn } from "../server-fns/organization-role.fn"
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import {
   Dialog,

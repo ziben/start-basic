@@ -2,7 +2,7 @@ import { useEffect, useMemo } from 'react'
 import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query'
 import { type SortingState } from '@tanstack/react-table'
 import { adminUsersQueryKeys } from '~/shared/lib/query-keys'
-import { getUsersFn } from '../../../../shared/server-fns/user.fn'
+import { getUsersFn } from '../server-fns/user.fn'
 import { type AdminUser } from '../data/schema'
 
 type PageData = {

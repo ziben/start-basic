@@ -1,5 +1,5 @@
 import React from 'react'
-import type { Translation } from '~/modules/admin/shared/types/translation'
+import type { Translation } from '~/modules/admin/features/i18n/translation/types/translation'
 import { useDialogRowState } from '@/shared/hooks/use-dialog-row-state'
 
 type TranslationsDialogType = 'create' | 'update' | 'delete' | 'import'

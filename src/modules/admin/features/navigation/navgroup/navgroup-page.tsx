@@ -1,5 +1,5 @@
 import { ConfigDrawer } from '~/components/config-drawer'
-import { useNavgroups } from '~/modules/admin/shared/hooks/use-navgroup-api'
+import { useNavgroups } from '~/modules/admin/features/navigation/navgroup/hooks/use-navgroup-api'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import { NavGroupsDialogs } from './components/navgroups-dialogs'
 import { NavGroupsPrimaryButtons } from './components/navgroups-primary-buttons'

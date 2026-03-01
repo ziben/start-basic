@@ -9,7 +9,7 @@ import {
     getPaymentOrderStatsFn,
     updatePaymentOrderStatusFn,
     updatePaymentOrderFn,
-} from '~/modules/admin/shared/server-fns/payment-order.fn'
+} from '../server-fns/payment-order.fn'
 import type { PaymentStatus, PaymentMethod } from '~/generated/prisma/browser'
 
 // ============ Query Keys ============

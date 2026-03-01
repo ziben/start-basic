@@ -3,7 +3,7 @@ import { useMutation } from '@tanstack/react-query'
 import { type Row } from '@tanstack/react-table'
 import { Trash2, UserPen, Ban } from 'lucide-react'
 import { toast } from 'sonner'
-import { bulkBanUsersFn } from '../../../../shared/server-fns/user.fn'
+import { bulkBanUsersFn } from '~/modules/admin/features/identity/users/server-fns/user.fn'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import { Button } from '@/components/ui/button'
 import {

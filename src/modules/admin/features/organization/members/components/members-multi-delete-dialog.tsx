@@ -3,7 +3,7 @@ import { type Table, type Row } from '@tanstack/react-table'
 import { useMutation } from '@tanstack/react-query'
 import { Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
-import { bulkDeleteMembersFn } from '../../../../shared/server-fns/member.fn'
+import { bulkDeleteMembersFn } from '~/modules/admin/features/organization/members/server-fns/member.fn'
 import { Button } from '@/components/ui/button'
 import {
   AlertDialog,

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { assignOrganizationRolePermissionsFn, getOrganizationRolePermissionsFn } from '@/modules/admin/shared/server-fns/organization-role.fn'
+import { assignOrganizationRolePermissionsFn, getOrganizationRolePermissionsFn } from '../server-fns/organization-role.fn'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import {
   Dialog,

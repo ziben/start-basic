@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { getRolesFn } from '@/modules/admin/shared/server-fns/rbac.fn'
+import { getRolesFn } from '../../server-fns/rbac.fn'
 import { roleQueryKeys } from '~/shared/lib/query-keys'
 
 interface UseRolesQueryProps {

@@ -1,5 +1,5 @@
 import { toast } from 'sonner'
-import { useDeleteNavgroup } from '~/modules/admin/shared/hooks/use-navgroup-api'
+import { useDeleteNavgroup } from '~/modules/admin/features/navigation/navgroup/hooks/use-navgroup-api'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import { showSubmittedData } from '@/shared/utils/show-submitted-data'
 import { ConfirmDialog } from '@/components/confirm-dialog'

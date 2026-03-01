@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query'
 import { type SortingState } from '@tanstack/react-table'
 import { memberQueryKeys } from '~/shared/lib/query-keys'
-import { getMembersFn } from '../../../../shared/server-fns/member.fn'
+import { getMembersFn } from '../server-fns/member.fn'
 import { type Member } from '../data/schema'
 
 type UseMembersListQueryProps = {

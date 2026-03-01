@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { createDepartmentFn, updateDepartmentFn } from '../../../../shared/server-fns/department.fn'
+import { createDepartmentFn, updateDepartmentFn } from '~/modules/admin/features/organization/departments/server-fns/department.fn'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,

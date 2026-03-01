@@ -4,7 +4,7 @@ import { toast } from 'sonner'
 import { getErrorMessage } from '@/shared/lib/error-handler'
 import { ConfirmDeleteDialog } from '@/components/confirm-delete-dialog'
 import { adminUsersQueryKeys } from '~/shared/lib/query-keys'
-import { bulkDeleteUsersFn } from '../../../../shared/server-fns/user.fn'
+import { bulkDeleteUsersFn } from '~/modules/admin/features/identity/users/server-fns/user.fn'
 import { useUsersOptimisticUpdate, createBulkDeleteUpdateFn } from '../hooks/use-users-optimistic-update'
 import { type AdminUser } from '../data/schema'
 

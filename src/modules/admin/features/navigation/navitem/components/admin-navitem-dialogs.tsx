@@ -4,8 +4,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { toast } from 'sonner'
 import { IconPicker } from '~/components/icon-picker'
-import { useNavgroups } from '~/modules/admin/shared/hooks/use-navgroup-api'
-import { useCreateNavitem, useUpdateNavitem, useDeleteNavitem, useNavitems } from '~/modules/admin/shared/hooks/use-navitem-api'
+import { useNavgroups } from '~/modules/admin/features/navigation/navgroup/hooks/use-navgroup-api'
+import { useCreateNavitem, useUpdateNavitem, useDeleteNavitem, useNavitems } from '~/modules/admin/features/navigation/navitem/hooks/use-navitem-api'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import {
   AlertDialog,

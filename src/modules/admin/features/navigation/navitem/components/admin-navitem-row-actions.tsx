@@ -1,7 +1,7 @@
 import { Row } from '@tanstack/react-table'
 import { Eye, EyeOff, Pencil, Trash, MoreHorizontal } from 'lucide-react'
 import { toast } from 'sonner'
-import { useToggleNavItemVisibility } from '~/modules/admin/shared/hooks/use-navitem-api'
+import { useToggleNavItemVisibility } from '~/modules/admin/features/navigation/navitem/hooks/use-navitem-api'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'

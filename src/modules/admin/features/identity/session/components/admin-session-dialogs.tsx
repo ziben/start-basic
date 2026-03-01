@@ -11,7 +11,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { format } from 'date-fns'
 import { zhCN } from 'date-fns/locale'
-import type { AdminSessionInfo } from '~/modules/admin/shared/hooks/use-admin-session-api'
+import type { AdminSessionInfo } from '~/modules/admin/features/identity/session/hooks/use-admin-session-api'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 
 interface AdminSessionDialogsProps {

@@ -1,5 +1,5 @@
 import { type ColumnDef } from '@tanstack/react-table'
-import type { Translation } from '~/modules/admin/shared/types/translation'
+import type { Translation } from '~/modules/admin/features/i18n/translation/types/translation'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import { Checkbox } from '@/components/ui/checkbox'
 import { DataTableRowActions } from './data-table-row-actions'

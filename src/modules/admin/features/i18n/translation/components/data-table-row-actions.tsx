@@ -1,7 +1,7 @@
 import { DotsHorizontalIcon } from '@radix-ui/react-icons'
 import { type Row } from '@tanstack/react-table'
 import { Trash2, Pen } from 'lucide-react'
-import type { Translation } from '~/modules/admin/shared/types/translation'
+import type { Translation } from '~/modules/admin/features/i18n/translation/types/translation'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import { Button } from '@/components/ui/button'
 import {

@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { departmentQueryKeys } from '~/shared/lib/query-keys'
-import { getDepartmentsFn } from '../../../../shared/server-fns/department.fn'
+import { getDepartmentsFn } from '../server-fns/department.fn'
 import { type Department } from '../data/schema'
 
 type UseDepartmentsQueryProps = {

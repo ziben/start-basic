@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { bulkDeleteOrganizationsFn } from '../../../../shared/server-fns/organization.fn'
+import { bulkDeleteOrganizationsFn } from '../server-fns/organization.fn'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { organizationQueryKeys } from '~/shared/lib/query-keys'

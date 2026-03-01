@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { bulkDeleteMembersFn } from '../../../../shared/server-fns/member.fn'
+import { bulkDeleteMembersFn } from '~/modules/admin/features/organization/members/server-fns/member.fn'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { memberQueryKeys } from '~/shared/lib/query-keys'
 import { useMembersOptimisticUpdate, createBulkDeleteUpdateFn } from '../hooks/use-members-optimistic-update'

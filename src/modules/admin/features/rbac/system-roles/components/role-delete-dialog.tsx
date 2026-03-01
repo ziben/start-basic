@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { deleteRoleFn } from '@/modules/admin/shared/server-fns/rbac.fn'
+import { deleteRoleFn } from '../../server-fns/rbac.fn'
 import { ConfirmDeleteDialog } from '@/components/confirm-delete-dialog'
 import { toast } from 'sonner'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'

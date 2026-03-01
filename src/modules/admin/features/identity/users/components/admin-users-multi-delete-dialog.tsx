@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { type Table } from '@tanstack/react-table'
 import { toast } from 'sonner'
-import { bulkDeleteUsersFn } from '../../../../shared/server-fns/user.fn'
+import { bulkDeleteUsersFn } from '~/modules/admin/features/identity/users/server-fns/user.fn'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import { ConfirmDeleteDialog } from '@/components/confirm-delete-dialog'
 import { type AdminUser } from '../data/schema'

@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { deleteOrganizationRoleFn } from '@/modules/admin/shared/server-fns/organization-role.fn'
+import { deleteOrganizationRoleFn } from '../server-fns/organization-role.fn'
 import {
   AlertDialog,
   AlertDialogAction,

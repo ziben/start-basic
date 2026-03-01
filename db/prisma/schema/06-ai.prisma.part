@@ -23,8 +23,12 @@ model AIMessage {
   conversation   AIConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   role           String         // "user", "assistant", "system"
   content        String
+  inputTokens    Int?           // 输入 token 数量
+  outputTokens   Int?           // 输出 token 数量
+  totalTokens    Int?           // 总 token 数量
+  model          String?        // 使用的模型名称
   createdAt      DateTime       @default(now())
-  
+
   @@index([conversationId])
   @@index([createdAt])
   @@map("ai_message")

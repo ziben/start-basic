@@ -2,7 +2,7 @@ import { useEffect, useMemo } from 'react'
 import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query'
 import { type SortingState } from '@tanstack/react-table'
 import { organizationQueryKeys } from '~/shared/lib/query-keys'
-import { getOrganizationsFn } from '../../../../shared/server-fns/organization.fn'
+import { getOrganizationsFn } from '../server-fns/organization.fn'
 import { type Organization } from '../data/schema'
 
 type PageData = {

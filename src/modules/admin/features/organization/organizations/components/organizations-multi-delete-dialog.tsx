@@ -3,7 +3,7 @@ import { type Table } from '@tanstack/react-table'
 import { toast } from 'sonner'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import { organizationQueryKeys } from '~/shared/lib/query-keys'
-import { bulkDeleteOrganizationsFn } from '../../../../shared/server-fns/organization.fn'
+import { bulkDeleteOrganizationsFn } from '../server-fns/organization.fn'
 import { ConfirmDeleteDialog } from '@/components/confirm-delete-dialog'
 import { type Organization } from '../data/schema'
 

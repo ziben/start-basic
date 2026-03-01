@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { deleteDepartmentFn } from '../../../../shared/server-fns/department.fn'
+import { deleteDepartmentFn } from '~/modules/admin/features/organization/departments/server-fns/department.fn'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { departmentQueryKeys } from '~/shared/lib/query-keys'
 import { useDepartmentsOptimisticUpdate } from '../hooks/use-departments-optimistic-update'

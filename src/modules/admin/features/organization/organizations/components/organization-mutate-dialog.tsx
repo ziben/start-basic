@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { createOrganizationFn, updateOrganizationFn } from '../../../../shared/server-fns/organization.fn'
+import { createOrganizationFn, updateOrganizationFn } from '../server-fns/organization.fn'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import { Button } from '@/components/ui/button'
 import {

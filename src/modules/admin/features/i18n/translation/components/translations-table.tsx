@@ -10,7 +10,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import { useVirtualizer } from '@tanstack/react-virtual'
-import type { Translation } from '~/modules/admin/shared/types/translation'
+import type { Translation } from '~/modules/admin/features/i18n/translation/types/translation'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import { type NavigateFn, useTableUrlState } from '@/shared/hooks/use-table-url-state'
 import { DataTable, DataTablePagination, DataTableToolbar } from '@/components/data-table'

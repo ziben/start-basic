@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { getPermissionsFn } from '@/modules/admin/shared/server-fns/rbac.fn'
+import { getPermissionsFn } from '../../server-fns/rbac.fn'
 import { rbacPermissionsQueryKeys } from '~/shared/lib/query-keys'
 
 export function usePermissionsQuery() {

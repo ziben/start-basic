@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { assignPermissionsFn } from '@/modules/admin/shared/server-fns/rbac.fn'
+import { assignPermissionsFn } from '../../server-fns/rbac.fn'
 import {
   Dialog,
   DialogContent,

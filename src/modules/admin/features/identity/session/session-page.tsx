@@ -18,7 +18,7 @@ import {
   useBulkDeleteAdminSessions,
   useDeleteAdminSession,
   type AdminSessionInfo,
-} from '~/modules/admin/shared/hooks/use-admin-session-api'
+} from '~/modules/admin/features/identity/session/hooks/use-admin-session-api'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import { useUrlSyncedSorting } from '@/shared/hooks/use-url-synced-sorting'
 import { Badge } from '@/components/ui/badge'

@@ -235,6 +235,7 @@ export const Route = createFileRoute('/api/chat')({
                     const resolvedSystemPrompt =
                         systemPrompt?.trim() || getRuntimeConfig('ai.systemPrompt')
 
+                    aiLog.info('System Prompt', { resolvedSystemPrompt })
                     const aiStream = chat({
                         adapter: adapter(),
                         messages: chatMessages,
@@ -243,11 +244,13 @@ export const Route = createFileRoute('/api/chat')({
                         temperature: resolvedTemp,
                     })
 
-                    // ── 6. 拦截流，收集完整回复并入库 ────────────────────────────────
+                    // ── 6. 拦截流，收集完整回复并入库 ───────────────────────────────
                     async function* interceptStream() {
                         let fullResponse = ''
                         let chunkCount = 0
                         let firstChunkMs: number | null = null
+                        let usage: { promptTokens?: number; completionTokens?: number; totalTokens?: number } | null = null
+                        let modelName: string | undefined
 
                         try {
                             for await (const chunk of aiStream) {
@@ -265,6 +268,24 @@ export const Route = createFileRoute('/api/chat')({
                                 if (chunk.type === 'TEXT_MESSAGE_CONTENT') {
                                     const textDelta = (chunk as any).delta || (chunk as any).text || (chunk as any).content || ''
                                     fullResponse += textDelta
+                                }
+
+                                // 提取 usage 信息（通常在 finish chunk 中）
+                                if (chunk.type === 'RUN_FINISHED') {
+                                    const chunkUsage = (chunk as any).usage
+                                    if (chunkUsage) {
+                                        usage = {
+                                            promptTokens: chunkUsage.promptTokens ?? chunkUsage.inputTokens,
+                                            completionTokens: chunkUsage.completionTokens ?? chunkUsage.outputTokens,
+                                            totalTokens: chunkUsage.totalTokens,
+                                        }
+                                        modelName = (chunk as any).model
+                                        aiLog.debug('Usage data extracted from finish chunk', {
+                                            conversationId: activeConversationId,
+                                            usage,
+                                            model: modelName,
+                                        })
+                                    }
                                 }
 
                                 // RUN_ERROR 事件记录错误
@@ -293,18 +314,30 @@ export const Route = createFileRoute('/api/chat')({
                             responseLength: fullResponse.length,
                             ttfbMs: firstChunkMs,
                             totalMs,
+                            usage: usage ?? 'N/A',
+                            model: modelName ?? 'N/A',
                         })
 
-                        // 异步存库
+                        // 异步存库，包含 token 统计
                         if (fullResponse) {
-                            AiChatService.saveMessage(activeConversationId!, 'assistant', fullResponse).catch(
-                                (saveErr) => {
-                                    aiLog.error('Failed to save assistant response to DB', saveErr, {
-                                        conversationId: activeConversationId,
-                                        responseLength: fullResponse.length,
-                                    })
-                                },
-                            )
+                            AiChatService.saveMessage(
+                                activeConversationId!,
+                                'assistant',
+                                fullResponse,
+                                usage
+                                    ? {
+                                          inputTokens: usage.promptTokens,
+                                          outputTokens: usage.completionTokens,
+                                          totalTokens: usage.totalTokens,
+                                          model: modelName,
+                                      }
+                                    : undefined,
+                            ).catch((saveErr) => {
+                                aiLog.error('Failed to save assistant response to DB', saveErr, {
+                                    conversationId: activeConversationId,
+                                    responseLength: fullResponse.length,
+                                })
+                            })
                         } else {
                             aiLog.warn('Stream ended with empty response, skipping DB save', {
                                 conversationId: activeConversationId,

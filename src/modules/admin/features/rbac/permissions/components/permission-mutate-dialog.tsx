@@ -3,7 +3,7 @@ import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { createPermissionFn, updatePermissionFn, deletePermissionFn } from '@/modules/admin/shared/server-fns/rbac.fn'
+import { createPermissionFn, updatePermissionFn, deletePermissionFn } from '../../server-fns/rbac.fn'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import {
   Dialog,
