@@ -15,14 +15,14 @@ export default defineConfig({
     allowedHosts: true,
   },
   plugins: [
-    devtools({
+    /* devtools({
       eventBusConfig: {
         debug: false,
       },
       enhancedLogs: {
         enabled: true,
       },
-    }),
+    }), */
     Inspect(),
     tsconfigPaths({
       projects: ['./tsconfig.json'],

@@ -15,7 +15,8 @@ import type { UIMessage } from '@tanstack/ai'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
-import { Bot, ChevronDown, Check, Copy, Loader2, Send, Sparkles, User } from 'lucide-react'
+import { Bot, ChevronDown, Check, Copy, Loader2, Send, Sparkles, Square, User, Volume2 } from 'lucide-react'
+import { useTTSPlayer } from '~/shared/hooks/use-tts-player'
 import { useChat } from '~/modules/ai/shared/hooks/use-chat'
 import { cn } from '~/shared/lib/utils'
 
@@ -87,6 +88,9 @@ function MessageBubble({ message }: { message: UIMessage }) {
         setTimeout(() => setCopied(false), 2000)
     }, [plainText])
 
+    // TTS 朗读：只对 assistant 消息启用
+    const tts = useTTSPlayer(!isUser ? message.id : null)
+
     return (
         <div className={cn('flex gap-3 group', isUser ? 'flex-row-reverse' : 'flex-row')}>
             {/* 头像 */}
@@ -144,9 +148,32 @@ function MessageBubble({ message }: { message: UIMessage }) {
                         )}
                 </div>
 
-                {/* 复制按钮（仅 assistant） */}
+                {/* 工具栏：复制 + 朗读（仅 assistant，hover 显示） */}
                 {!isUser && plainText && (
-                    <div className="absolute -bottom-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="absolute -bottom-1 right-1 flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                        {/* 朗读按钮 */}
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className={cn(
+                                'h-6 w-6 rounded-full bg-background border border-border shadow-sm hover:bg-muted',
+                                tts.isPlaying && 'text-primary border-primary/40',
+                                tts.error && 'text-destructive border-destructive/40',
+                            )}
+                            onClick={() => (tts.isPlaying ? tts.stop() : tts.play())}
+                            disabled={tts.isLoading}
+                            title={tts.error ?? (tts.isPlaying ? '停止朗读' : '朗读消息')}
+                        >
+                            {tts.isLoading ? (
+                                <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />
+                            ) : tts.isPlaying ? (
+                                <Square className="h-3 w-3" />
+                            ) : (
+                                <Volume2 className="h-3 w-3 text-muted-foreground" />
+                            )}
+                        </Button>
+
+                        {/* 复制按钮 */}
                         <Button
                             variant="ghost"
                             size="icon"

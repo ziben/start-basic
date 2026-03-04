@@ -11,6 +11,14 @@ export type RuntimeConfigShape = {
   'ai.model': string
   'ai.systemPrompt': string
   'auth.trustedOrigins': string[]
+  'tts.enabled': boolean
+  'tts.model': string
+  'tts.voice': string
+  'tts.format': 'mp3' | 'wav' | 'pcm'
+  'tts.sampleRate': number
+  'tts.speed': number
+  'tts.enableInstruct': boolean
+  'tts.instructPrefix': string
 }
 
 export type RuntimeConfigKey = keyof RuntimeConfigShape
@@ -78,6 +86,16 @@ function getDefaultsFromEnv(): RuntimeConfigShape {
       process.env.AI_SYSTEM_PROMPT ||
       '你是一个有帮助的 AI 助手，可以解答各类问题并在必要时使用中文进行回复。',
     'auth.trustedOrigins': parseStringArray(process.env.BETTER_AUTH_TRUSTED_ORIGINS, []),
+    'tts.enabled': parseBoolean(process.env.ENABLE_TTS, false),
+    'tts.model': process.env.TTS_MODEL || 'qwen3-tts-instruct-flash',
+    'tts.voice': process.env.TTS_VOICE || 'Serena',
+    'tts.format': (process.env.TTS_FORMAT || 'mp3') as 'mp3' | 'wav' | 'pcm',
+    'tts.sampleRate': parseNumber(process.env.TTS_SAMPLE_RATE, 16000),
+    'tts.speed': parseNumber(process.env.TTS_SPEED, 1.0),
+    'tts.enableInstruct': process.env.TTS_ENABLE_INSTRUCT !== 'false',
+    'tts.instructPrefix':
+      process.env.TTS_INSTRUCT_PREFIX ||
+      '语速偏慢，音调温柔平静，语气治愈温暖，像一位智者在娓娓道来。',
   }
 }
 
@@ -86,11 +104,15 @@ function normalizeValue<K extends RuntimeConfigKey>(key: K, raw: unknown): Runti
 
   switch (key) {
     case 'log.requestBody.enabled':
+    case 'tts.enabled':
+    case 'tts.enableInstruct':
     case 'ai.enabled': {
       if (typeof raw === 'boolean') return raw as RuntimeConfigShape[K]
       if (typeof raw === 'string') return (raw === 'true') as RuntimeConfigShape[K]
       return defaults[key]
     }
+    case 'tts.sampleRate':
+    case 'tts.speed':
     case 'log.system.sampleRate':
     case 'log.maxBodyBytes': {
       if (typeof raw === 'number' && Number.isFinite(raw)) return raw as RuntimeConfigShape[K]
@@ -115,6 +137,10 @@ function normalizeValue<K extends RuntimeConfigKey>(key: K, raw: unknown): Runti
       if ((VALID_PROVIDERS as readonly unknown[]).includes(raw)) return raw as RuntimeConfigShape[K]
       return defaults[key]
     }
+    case 'tts.model':
+    case 'tts.voice':
+    case 'tts.format':
+    case 'tts.instructPrefix':
     case 'log.dir':
     case 'ai.model':
     case 'ai.systemPrompt': {

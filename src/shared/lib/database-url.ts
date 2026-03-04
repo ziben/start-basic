@@ -24,7 +24,7 @@ export function getDatabaseUrl(options?: { cwd?: string }): string {
   }
 
   return normalizeDatabaseUrl(
-    'postgresql://zc:7ESAfHjx8NzA@58.87.66.50:5432/zc?schema=public',
+    'postgresql://user_sQMkPE:password_FydR5W@8.140.242.230:15432/start-basic?schema=public',
     cwd
   )
 }

@@ -111,12 +111,12 @@ export class AiChatService {
         const q = filter.trim()
         const whereClause: Prisma.AIConversationWhereInput = q
             ? {
-                  OR: [
-                      { title: { contains: q } },
-                      { user: { name: { contains: q } } },
-                      { user: { email: { contains: q } } },
-                  ],
-              }
+                OR: [
+                    { title: { contains: q } },
+                    { user: { name: { contains: q } } },
+                    { user: { email: { contains: q } } },
+                ],
+            }
             : {}
 
         const orderBy: Prisma.AIConversationOrderByWithRelationInput =
@@ -206,5 +206,45 @@ export class AiChatService {
         const db = await getDb()
         await db.aIConversation.delete({ where: { id: conversationId } })
         return { success: true }
+    }
+
+    // ============ TTS 方法 ============
+
+    /**
+     * 通过 messageId 获取消息内容用于 TTS 合成
+     * 同时校验该消息所属对话是否属于 userId，防止越权访问
+     *
+     * @param messageId  AIMessage 的主键 ID
+     * @param userId     当前登录用户 ID（用于权限校验）
+     * @returns          消息的文本内容
+     * @throws           消息不存在或无权访问时抛出错误
+     */
+    static async getMessageForTTS(messageId: string, userId: string): Promise<string> {
+        const db = await getDb()
+
+        // 联表查询：通过消息 → 对话 → 校验 userId
+        const message = await db.aIMessage.findUnique({
+            where: { id: messageId },
+            select: {
+                content: true,
+                conversation: {
+                    select: { userId: true },
+                },
+            },
+        })
+
+        if (!message) {
+            throw new Error('消息不存在')
+        }
+
+        if (message.conversation.userId !== userId) {
+            throw new Error('无权访问该消息')
+        }
+
+        if (!message.content?.trim()) {
+            throw new Error('消息内容为空，无法合成语音')
+        }
+
+        return message.content
     }
 }

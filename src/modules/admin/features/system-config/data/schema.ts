@@ -56,9 +56,9 @@ export type SystemConfigChange = z.infer<typeof systemConfigChangeSchema>
 export const CATEGORY_OPTIONS = [
     { label: 'General', value: 'general' },
     { label: 'Security', value: 'security' },
-    { label: 'Performance', value: 'performance' },
     { label: 'Logging', value: 'logging' },
-    { label: 'Monitoring', value: 'monitoring' },
+    { label: 'AI', value: 'ai' },
+    { label: 'TTS', value: 'tts' },
 ] as const
 
 export const VALUE_TYPE_OPTIONS = CONFIG_VALUE_TYPES.map((v) => ({ label: v, value: v }))
