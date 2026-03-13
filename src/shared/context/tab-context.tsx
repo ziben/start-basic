@@ -151,10 +151,14 @@ export function TabProvider({ children }: { children: React.ReactNode }) {
         if (targetScope !== currentScope) return
 
         const existingTab = tabs.find((tab) => tab.path === path)
-        if (!existingTab) {
-            const title = getTitleForPath(path)
+        if (existingTab) return
+
+        const title = getTitleForPath(path)
+        const frame = requestAnimationFrame(() => {
             openTab(path, title)
-        }
+        })
+
+        return () => cancelAnimationFrame(frame)
     }, [location.pathname, tabs, openTab, currentScope, getTitleForPath])
 
     // 客户端从 localStorage 恢复 tabs

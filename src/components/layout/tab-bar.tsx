@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useCallback, memo } from 'react'
+import React, { useRef, useCallback, memo } from 'react'
 import { X, RefreshCcw, ArrowRightToLine, MinusCircle } from 'lucide-react'
 import {
     DndContext,
@@ -124,12 +124,7 @@ const SortableTab = memo(function SortableTab({ tab, isActive, onActivate, onClo
 
 export function TabBar() {
     const tabContext = useTabs()
-    const [isMounted, setIsMounted] = useState(false)
     const scrollRef = useRef<HTMLDivElement>(null)
-
-    useEffect(() => {
-        setIsMounted(true)
-    }, [])
 
     const sensors = useSensors(
         useSensor(PointerSensor, {
@@ -168,7 +163,7 @@ export function TabBar() {
         }
     }, [])
 
-    if (!isMounted || !tabContext || tabContext.tabs.length === 0) {
+    if (!tabContext || tabContext.tabs.length === 0) {
         // 返回与内容高度一致的空结构维持高度，防止闪烁 (Layout Shift)
         return <div className="hidden h-11 border-b bg-muted/30 backdrop-blur-sm md:block" />
     }
