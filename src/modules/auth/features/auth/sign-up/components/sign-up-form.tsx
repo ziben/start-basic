@@ -10,6 +10,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/password-input'
 import { authClient } from '~/modules/auth/shared/lib/auth-client'
+import { sanitizeRedirectTarget } from '~/modules/auth/shared/lib/safe-redirect'
 
 const formSchema = z
   .object({
@@ -40,6 +41,7 @@ interface SignUpFormProps extends React.HTMLAttributes<HTMLFormElement> {
 
 export function SignUpForm({ className, redirectTo, ...props }: SignUpFormProps) {
   const [isLoading, setIsLoading] = useState(false)
+  const safeRedirect = sanitizeRedirectTarget(redirectTo)
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -63,7 +65,7 @@ export function SignUpForm({ className, redirectTo, ...props }: SignUpFormProps)
       // 注册成功后重定向到登录页面或首页，并透传 redirect 参数
       navigate({
         to: '/sign-in',
-        search: { redirect: redirectTo },
+        search: { redirect: safeRedirect },
         replace: true,
       })
     } catch (error) {
@@ -141,6 +143,5 @@ export function SignUpForm({ className, redirectTo, ...props }: SignUpFormProps)
     </Form>
   )
 }
-
 
 

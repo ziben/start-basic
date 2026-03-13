@@ -5,11 +5,13 @@ import dashboardDark from './assets/dashboard-dark.png'
 import dashboardLight from './assets/dashboard-light.png'
 import { UserAuthForm } from './components/user-auth-form'
 import { usePublicConfigs } from '~/modules/admin/features/system-config/hooks/use-system-config-query'
+import { sanitizeRedirectTarget } from '~/modules/auth/shared/lib/safe-redirect'
 import { useMemo } from 'react'
 
 export function SignIn2() {
   const { redirect } = useSearch({ from: '/(auth)/sign-in-2' })
   const { data: configs } = usePublicConfigs()
+  const safeRedirect = sanitizeRedirectTarget(redirect)
 
   const systemName = useMemo(() => {
     return configs?.find((c) => c.key === 'system_name')?.value || 'Shadcn Admin'
@@ -36,7 +38,7 @@ export function SignIn2() {
               to log into your account
             </p>
           </div>
-          <UserAuthForm redirectTo={redirect} />
+          <UserAuthForm redirectTo={safeRedirect} />
           <p className='px-8 text-center text-sm text-muted-foreground'>
             By clicking sign in, you agree to our{' '}
             <a href='/terms' className='underline underline-offset-4 hover:text-primary'>
@@ -63,6 +65,5 @@ export function SignIn2() {
     </div>
   )
 }
-
 
 

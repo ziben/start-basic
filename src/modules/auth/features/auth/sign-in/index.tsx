@@ -3,11 +3,13 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { AuthLayout } from '../auth-layout'
 import { UserAuthForm } from './components/user-auth-form'
 import { usePublicConfigs } from '~/modules/admin/features/system-config/hooks/use-system-config-query'
+import { sanitizeRedirectTarget } from '~/modules/auth/shared/lib/safe-redirect'
 import { useMemo } from 'react'
 
 export default function SignIn() {
   const { redirect } = useSearch({ from: '/(auth)/sign-in' })
   const { data: configs } = usePublicConfigs()
+  const safeRedirect = sanitizeRedirectTarget(redirect)
 
   const loginTitle = useMemo(() => {
     return configs?.find((c) => c.key === 'login_title')?.value || '登录'
@@ -26,7 +28,7 @@ export default function SignIn() {
             没有账号？{' '}
             <Link
               to='/sign-up'
-              search={{ redirect }}
+              search={{ redirect: safeRedirect }}
               className='underline underline-offset-4 hover:text-primary'
             >
               立即注册
@@ -34,7 +36,7 @@ export default function SignIn() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <UserAuthForm redirectTo={redirect} />
+          <UserAuthForm redirectTo={safeRedirect} />
         </CardContent>
         <CardFooter>
           <p className='px-8 text-center text-sm text-muted-foreground'>
@@ -53,4 +55,3 @@ export default function SignIn() {
     </AuthLayout>
   )
 }
-

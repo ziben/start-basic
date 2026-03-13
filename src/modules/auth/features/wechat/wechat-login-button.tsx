@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button'
 import { Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { authClient } from '../../shared/lib/auth-client'
+import { resolveRedirectTarget, sanitizeRedirectTarget } from '../../shared/lib/safe-redirect'
 
 interface WeChatLoginButtonProps {
     /** 登录成功后的回调 URL */
@@ -44,6 +45,9 @@ export function WeChatLoginButton({
     className,
 }: WeChatLoginButtonProps) {
     const [isLoading, setIsLoading] = useState(false)
+    const safeCallbackUrl = resolveRedirectTarget(callbackUrl, '/')
+    const safeErrorCallbackUrl = sanitizeRedirectTarget(errorCallbackUrl)
+    const safeNewUserCallbackUrl = sanitizeRedirectTarget(newUserCallbackUrl)
 
     // 监听 URL 中的错误参数，处理登录失败的情况
     useEffect(() => {
@@ -52,9 +56,6 @@ export function WeChatLoginButton({
         const errorDescription = params.get('error_description')
 
         if (error) {
-            // 重置加载状态
-            setIsLoading(false)
-
             // 显示错误提示
             const errorMessage = getErrorMessage(error, errorDescription)
             toast.error('微信登录失败', {
@@ -81,9 +82,9 @@ export function WeChatLoginButton({
             // 使用 Better-Auth 客户端 API
             // 服务端 /sign-in/wechat 自动转换为 signIn.wechat
             const response = await authClient.signIn.wechat({
-                callbackURL: callbackUrl || '/',
-                errorCallbackURL: errorCallbackUrl,
-                newUserCallbackURL: newUserCallbackUrl,
+                callbackURL: safeCallbackUrl,
+                errorCallbackURL: safeErrorCallbackUrl,
+                newUserCallbackURL: safeNewUserCallbackUrl,
                 disableRedirect: false,
             })
 
@@ -108,7 +109,7 @@ export function WeChatLoginButton({
 
             onError?.(error instanceof Error ? error : new Error(errorMessage))
         }
-    }, [callbackUrl, errorCallbackUrl, newUserCallbackUrl, onError])
+    }, [onError, safeCallbackUrl, safeErrorCallbackUrl, safeNewUserCallbackUrl])
 
     return (
         <Button

@@ -7,6 +7,7 @@ import { Loader2, LogIn } from 'lucide-react'
 import { toast } from 'sonner'
 import { Route } from '~/routes/(auth)/sign-in'
 import { authClient } from '@/modules/auth/shared/lib/auth-client'
+import { resolveRedirectTarget } from '@/modules/auth/shared/lib/safe-redirect'
 import { cn } from '@/shared/lib/utils'
 import { userQueryKeys } from '~/shared/lib/query-keys'
 import { Button } from '@/components/ui/button'
@@ -14,7 +15,6 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/password-input'
-import { isDevelopment } from '@/shared/lib/env'
 
 const formSchema = z.object({
   email: z.email({
@@ -32,10 +32,9 @@ export function UserAuthForm({ className, redirectTo, ...props }: UserAuthFormPr
   const [isLoading, setIsLoading] = useState(false)
   const isDev = import.meta.env.DEV
   const navigate = useNavigate()
-  // const { auth } = useAuthStore()
   const { queryClient } = Route.useRouteContext()
+  const safeRedirect = resolveRedirectTarget(redirectTo, '/dashboard')
 
-  // include rememberMe in inferred type to satisfy controlled checkbox
   type FormType = z.infer<typeof formSchema>
   const form = useForm<FormType>({
     resolver: zodResolver(formSchema),
@@ -44,49 +43,32 @@ export function UserAuthForm({ className, redirectTo, ...props }: UserAuthFormPr
       password: isDev ? 'admin123' : '',
       rememberMe: false,
     },
-  } as any)
+  })
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
     setIsLoading(true)
     await authClient.signIn.email(
       {
-        /**
-         * The user email
-         */
         email: data.email,
-        /**
-         * The user password
-         */
         password: data.password,
-        /**
-         * remember the user session after the browser is closed.
-         * @default true
-         */
         rememberMe: data.rememberMe,
-        callbackURL: redirectTo || '/dashboard',
+        callbackURL: safeRedirect,
       },
       {
         onSuccess: async () => {
           await queryClient.invalidateQueries({ queryKey: userQueryKeys.current })
-          if (redirectTo) {
-            // If it's a full URL, we might want to just use window.location.href
-            // but if it's an internal path, navigate is better.
-            if (redirectTo.startsWith('http')) {
-              window.location.href = redirectTo
-            } else {
-              navigate({ to: redirectTo as any })
-            }
-          } else {
+          if (safeRedirect === '/dashboard') {
             navigate({ to: '/dashboard' })
+            return
           }
+
+          window.location.assign(safeRedirect)
         },
         onError: (ctx) => {
           setIsLoading(false)
-          // Handle the error
           if (ctx.error.status === 403) {
             toast.error('Please verify your email address')
           }
-          //you can also show the original error message
           toast.error(ctx.error.message)
         },
       }
@@ -148,5 +130,3 @@ export function UserAuthForm({ className, redirectTo, ...props }: UserAuthFormPr
     </Form>
   )
 }
-
-

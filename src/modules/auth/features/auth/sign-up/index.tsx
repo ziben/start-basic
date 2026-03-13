@@ -2,9 +2,11 @@ import { Link, useSearch } from '@tanstack/react-router'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { AuthLayout } from '../auth-layout'
 import { SignUpForm } from './components/sign-up-form'
+import { sanitizeRedirectTarget } from '~/modules/auth/shared/lib/safe-redirect'
 
 export default function SignUp() {
   const { redirect } = useSearch({ from: '/(auth)/sign-up' })
+  const safeRedirect = sanitizeRedirectTarget(redirect)
 
   return (
     <AuthLayout>
@@ -16,7 +18,7 @@ export default function SignUp() {
             Already have an account?{' '}
             <Link
               to='/sign-in'
-              search={{ redirect }}
+              search={{ redirect: safeRedirect }}
               className='underline underline-offset-4 hover:text-primary'
             >
               Sign In
@@ -24,7 +26,7 @@ export default function SignUp() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <SignUpForm redirectTo={redirect} />
+          <SignUpForm redirectTo={safeRedirect} />
         </CardContent>
         <CardFooter>
           <p className='px-8 text-center text-sm text-muted-foreground'>
@@ -43,4 +45,3 @@ export default function SignUp() {
     </AuthLayout>
   )
 }
-
