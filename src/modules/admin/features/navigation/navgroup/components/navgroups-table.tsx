@@ -1,5 +1,5 @@
 import { DataTable, DataTablePagination, DataTableToolbar } from '@/components/data-table'
-import { type NavigateFn, useTableUrlState } from '@/shared/hooks/use-table-url-state'
+import { type NavigateFn, type SearchRecord, toTableNavigate, useTableUrlState } from '@/shared/hooks/use-table-url-state'
 import { getRouteApi } from '@tanstack/react-router'
 import {
   type VisibilityState,
@@ -21,7 +21,7 @@ const route = getRouteApi('/_authenticated/admin/navigation')
 
 type DataTableProps = {
   data: AdminNavgroup[]
-  search?: Record<string, unknown>
+  search?: SearchRecord
   navigate?: NavigateFn
   onReload?: () => void
   isReloading?: boolean
@@ -42,8 +42,8 @@ function NavGroupsTableInner({ data, search, navigate, onReload, isReloading }: 
     onPaginationChange,
     ensurePageInRange,
   } = useTableUrlState({
-    search: search as any,
-    navigate: navigate as any,
+    search,
+    navigate,
     pagination: { defaultPage: 1, defaultPageSize: 10 },
     globalFilter: { enabled: true, key: 'filter' },
     columnFilters: [
@@ -119,7 +119,7 @@ function NavGroupsTableInner({ data, search, navigate, onReload, isReloading }: 
 
 export function NavGroupsTable({ data, search, navigate, onReload, isReloading }: DataTableProps) {
   const resolvedSearch = search ?? route.useSearch()
-  const resolvedNavigate = navigate ?? route.useNavigate()
+  const resolvedNavigate = navigate ?? toTableNavigate(route.useNavigate())
 
   return (
     <NavGroupsTableInner
@@ -131,7 +131,6 @@ export function NavGroupsTable({ data, search, navigate, onReload, isReloading }
     />
   )
 }
-
 
 
 
