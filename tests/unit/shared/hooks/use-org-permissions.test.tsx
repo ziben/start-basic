@@ -11,60 +11,41 @@ import {
 } from '@/shared/hooks/use-org-permissions'
 
 const useAuthMock = vi.fn()
-const getSessionMock = vi.fn()
 const hasOrgPermissionMock = vi.fn()
-const memberFindFirstMock = vi.fn()
+const getOrgRoleMock = vi.fn()
 
-vi.mock('~/modules/identity/shared/hooks/use-auth', () => ({
+vi.mock('~/modules/auth/shared/hooks/use-auth', () => ({
   useAuth: () => useAuthMock(),
 }))
 
-vi.mock('~/modules/identity/shared/lib/auth', () => ({
-  auth: {
-    api: {
-      getSession: (...args: unknown[]) => getSessionMock(...args),
-      hasOrgPermission: (...args: unknown[]) => hasOrgPermissionMock(...args),
-    },
-  },
-}))
-
-vi.mock('@/shared/lib/db', () => ({
-  default: {
-    member: {
-      findFirst: (...args: unknown[]) => memberFindFirstMock(...args),
-    },
-  },
-}))
-
-vi.mock('@tanstack/react-start/server', () => ({
-  getRequest: () => ({ headers: {} as Record<string, string> }),
-}))
-
-vi.mock('@tanstack/react-start', () => ({
-  createServerFn: () => {
-    const api = {
-      inputValidator: () => api,
-      handler: (handler: (payload: unknown) => unknown) => (payload: unknown) => handler(payload),
-    }
-    return api
-  },
+vi.mock('@/shared/server-fns/org-permissions.fn', () => ({
+  checkOrgPermissionFn: (...args: unknown[]) => hasOrgPermissionMock(...args),
+  getOrgRoleFn: (...args: unknown[]) => getOrgRoleMock(...args),
 }))
 
 const createWrapper = (client: QueryClient) => ({ children }: { children: React.ReactNode }) => (
   <QueryClientProvider client={client}>{children}</QueryClientProvider>
 )
 
+const createClient = () =>
+  new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false,
+      },
+    },
+  })
+
 beforeEach(() => {
   vi.clearAllMocks()
   useAuthMock.mockReturnValue({ data: { user: { id: 'user-1' } } })
-  getSessionMock.mockResolvedValue({ user: { id: 'user-1' } })
   hasOrgPermissionMock.mockResolvedValue(true)
-  memberFindFirstMock.mockResolvedValue({ role: 'admin' })
+  getOrgRoleMock.mockResolvedValue('admin')
 })
 
 describe('use-org-permissions hooks', () => {
   it('useOrgPermission returns permission result', async () => {
-    const client = new QueryClient()
+    const client = createClient()
     const { result } = renderHook(() => useOrgPermission('org-1', 'user', 'read'), {
       wrapper: createWrapper(client),
     })
@@ -78,7 +59,7 @@ describe('use-org-permissions hooks', () => {
 
   it('does not query when unauthenticated', async () => {
     useAuthMock.mockReturnValue({ data: null })
-    const client = new QueryClient()
+    const client = createClient()
     const { result } = renderHook(() => useOrgPermission('org-1', 'user', 'read'), {
       wrapper: createWrapper(client),
     })
@@ -91,7 +72,7 @@ describe('use-org-permissions hooks', () => {
   })
 
   it('does not query when organizationId is missing', async () => {
-    const client = new QueryClient()
+    const client = createClient()
     const { result } = renderHook(() => useOrgPermission(undefined, 'user', 'read'), {
       wrapper: createWrapper(client),
     })
@@ -104,7 +85,7 @@ describe('use-org-permissions hooks', () => {
   })
 
   it('returns role from useOrgRole', async () => {
-    const client = new QueryClient()
+    const client = createClient()
     const { result } = renderHook(() => useOrgRole('org-1'), { wrapper: createWrapper(client) })
 
     await waitFor(() => {
@@ -113,8 +94,8 @@ describe('use-org-permissions hooks', () => {
   })
 
   it('useIsOrgOwner/useIsOrgAdmin reflect role', async () => {
-    memberFindFirstMock.mockResolvedValue({ role: 'owner' })
-    const client = new QueryClient()
+    getOrgRoleMock.mockResolvedValue('owner')
+    const client = createClient()
 
     const { result: ownerResult } = renderHook(() => useIsOrgOwner('org-1'), { wrapper: createWrapper(client) })
     const { result: adminResult } = renderHook(() => useIsOrgAdmin('org-1'), { wrapper: createWrapper(client) })
@@ -126,7 +107,7 @@ describe('use-org-permissions hooks', () => {
   })
 
   it('handles empty permission list for any/all', async () => {
-    const client = new QueryClient()
+    const client = createClient()
     const { result: anyResult } = renderHook(() => useAnyOrgPermission('org-1', []), {
       wrapper: createWrapper(client),
     })
@@ -141,7 +122,7 @@ describe('use-org-permissions hooks', () => {
   })
 
   it('does not query when resource or action is missing', async () => {
-    const client = new QueryClient()
+    const client = createClient()
     const { result: emptyResource } = renderHook(() => useOrgPermission('org-1', '', 'read'), {
       wrapper: createWrapper(client),
     })
@@ -159,7 +140,7 @@ describe('use-org-permissions hooks', () => {
 
   it('exposes error when org permission server fn fails', async () => {
     hasOrgPermissionMock.mockRejectedValueOnce(new Error('boom'))
-    const client = new QueryClient()
+    const client = createClient()
     const { result } = renderHook(() => useOrgPermission('org-1', 'user', 'read'), {
       wrapper: createWrapper(client),
     })
@@ -170,8 +151,8 @@ describe('use-org-permissions hooks', () => {
   })
 
   it('exposes error when org role server fn fails', async () => {
-    memberFindFirstMock.mockRejectedValueOnce(new Error('boom'))
-    const client = new QueryClient()
+    getOrgRoleMock.mockRejectedValueOnce(new Error('boom'))
+    const client = createClient()
     const { result } = renderHook(() => useOrgRole('org-1'), { wrapper: createWrapper(client) })
 
     await waitFor(() => {

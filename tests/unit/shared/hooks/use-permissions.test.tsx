@@ -15,40 +15,27 @@ const getUserPermissionsMock = vi.fn()
 const checkPermissionMock = vi.fn()
 const useAuthMock = vi.fn()
 
-vi.mock('~/modules/identity/shared/hooks/use-auth', () => ({
+vi.mock('~/modules/auth/shared/hooks/use-auth', () => ({
   useAuth: () => useAuthMock(),
 }))
 
-vi.mock('@tanstack/react-start/server', () => ({
-  getRequest: () => ({ headers: new Headers() }),
-}))
-
-vi.mock('~/modules/identity/shared/lib/auth', () => ({
-  auth: {
-    api: {
-      getSession: () => Promise.resolve({ user: { id: 'user-1' } }),
-    },
-  },
-}))
-
-vi.mock('~/modules/system-admin/shared/lib/permission-check', () => ({
-  getUserPermissions: (...args: unknown[]) => getUserPermissionsMock(...args),
-  checkPermission: (...args: unknown[]) => checkPermissionMock(...args),
-}))
-
-vi.mock('@tanstack/react-start', () => ({
-  createServerFn: () => {
-    const api = {
-      inputValidator: () => api,
-      handler: (handler: (payload: unknown) => unknown) => (payload: unknown) => handler(payload),
-    }
-    return api
-  },
+vi.mock('@/shared/server-fns/permissions.fn', () => ({
+  getUserPermissionsFn: (...args: unknown[]) => getUserPermissionsMock(...args),
+  checkPermissionFn: (...args: unknown[]) => checkPermissionMock(...args),
 }))
 
 const createWrapper = (client: QueryClient) => ({ children }: { children: React.ReactNode }) => (
   <QueryClientProvider client={client}>{children}</QueryClientProvider>
 )
+
+const createClient = () =>
+  new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false,
+      },
+    },
+  })
 
 beforeEach(() => {
   vi.clearAllMocks()
@@ -59,7 +46,7 @@ beforeEach(() => {
 
 describe('use-permissions hooks', () => {
   it('usePermissions returns permission list', async () => {
-    const client = new QueryClient()
+    const client = createClient()
     const { result } = renderHook(() => usePermissions(), { wrapper: createWrapper(client) })
 
     await waitFor(() => {
@@ -68,7 +55,7 @@ describe('use-permissions hooks', () => {
   })
 
   it('usePermission returns single permission result', async () => {
-    const client = new QueryClient()
+    const client = createClient()
     const { result } = renderHook(() => usePermission('user:read'), { wrapper: createWrapper(client) })
 
     await waitFor(() => {
@@ -77,7 +64,7 @@ describe('use-permissions hooks', () => {
   })
 
   it('usePermissionsMap returns map', async () => {
-    const client = new QueryClient()
+    const client = createClient()
     const { result } = renderHook(() => usePermissionsMap(['user:read', 'user:delete']), {
       wrapper: createWrapper(client),
     })
@@ -88,7 +75,7 @@ describe('use-permissions hooks', () => {
   })
 
   it('useAnyPermission uses permissions list', async () => {
-    const client = new QueryClient()
+    const client = createClient()
     const { result } = renderHook(() => useAnyPermission(['user:read', 'user:delete']), {
       wrapper: createWrapper(client),
     })
@@ -99,7 +86,7 @@ describe('use-permissions hooks', () => {
   })
 
   it('useAllPermissions uses permissions list', async () => {
-    const client = new QueryClient()
+    const client = createClient()
     const { result } = renderHook(() => useAllPermissions(['user:read', 'user:delete']), {
       wrapper: createWrapper(client),
     })
@@ -110,7 +97,7 @@ describe('use-permissions hooks', () => {
   })
 
   it('uses shared query keys', async () => {
-    const client = new QueryClient()
+    const client = createClient()
     renderHook(() => usePermissions(), { wrapper: createWrapper(client) })
 
     await waitFor(() => {
@@ -121,7 +108,7 @@ describe('use-permissions hooks', () => {
 
   it('does not query when unauthenticated', async () => {
     useAuthMock.mockReturnValue({ data: null })
-    const client = new QueryClient()
+    const client = createClient()
     const { result } = renderHook(() => usePermissions(), { wrapper: createWrapper(client) })
 
     await waitFor(() => {
@@ -133,7 +120,7 @@ describe('use-permissions hooks', () => {
 
   it('returns empty map when permissions list is empty', async () => {
     getUserPermissionsMock.mockResolvedValue([])
-    const client = new QueryClient()
+    const client = createClient()
     const { result } = renderHook(() => usePermissionsMap([]), { wrapper: createWrapper(client) })
 
     await waitFor(() => {
@@ -142,7 +129,7 @@ describe('use-permissions hooks', () => {
   })
 
   it('handles empty permission list for any/all', async () => {
-    const client = new QueryClient()
+    const client = createClient()
     const { result: anyResult } = renderHook(() => useAnyPermission([]), { wrapper: createWrapper(client) })
     const { result: allResult } = renderHook(() => useAllPermissions([]), { wrapper: createWrapper(client) })
 
@@ -153,7 +140,7 @@ describe('use-permissions hooks', () => {
   })
 
   it('does not query single permission when permission is empty', async () => {
-    const client = new QueryClient()
+    const client = createClient()
     const { result } = renderHook(() => usePermission(''), { wrapper: createWrapper(client) })
 
     await waitFor(() => {
@@ -164,7 +151,7 @@ describe('use-permissions hooks', () => {
   })
 
   it('useIsAdmin reflects admin roles and unauthenticated state', async () => {
-    const client = new QueryClient()
+    const client = createClient()
 
     useAuthMock.mockReturnValue({ data: { user: { id: 'user-1', role: 'admin' } } })
     const { result: adminResult } = renderHook(() => useIsAdmin(), { wrapper: createWrapper(client) })
@@ -184,7 +171,7 @@ describe('use-permissions hooks', () => {
 
   it('usePermissions exposes error when server fn fails', async () => {
     getUserPermissionsMock.mockRejectedValueOnce(new Error('boom'))
-    const client = new QueryClient()
+    const client = createClient()
     const { result } = renderHook(() => usePermissions(), { wrapper: createWrapper(client) })
 
     await waitFor(() => {
@@ -194,7 +181,7 @@ describe('use-permissions hooks', () => {
 
   it('usePermission exposes error when server fn fails', async () => {
     checkPermissionMock.mockRejectedValueOnce(new Error('boom'))
-    const client = new QueryClient()
+    const client = createClient()
     const { result } = renderHook(() => usePermission('user:read'), { wrapper: createWrapper(client) })
 
     await waitFor(() => {
