@@ -11,7 +11,7 @@ import {
     updateDepartmentFn,
     deleteDepartmentFn,
     getSubDepartmentsFn,
-} from '../server-fns/department.fn'
+} from '../../features/organization/departments/server-fns/department.fn'
 import { departmentQueryKeys } from '~/shared/lib/query-keys'
 
 // ============ 类型定义 ============
