@@ -19,13 +19,28 @@ import {
 import type { NavCollapsible, NavGroup, NavLink, NavItem } from '@/components/layout/types'
 import { ScrollArea } from './ui/scroll-area'
 
+type GlobalSearchUser = {
+  id: string
+  name: string | null
+  email: string
+}
+
+type GlobalSearchOrg = {
+  id: string
+  name: string
+  slug: string
+}
+
 export function CommandMenu() {
   const navigate = useNavigate()
   const { setTheme } = useTheme()
   const { open, setOpen } = useSearch()
 
   const [search, setSearch] = React.useState('')
-  const [searchResults, setSearchResults] = React.useState<{ users: any[], orgs: any[] }>({ users: [], orgs: [] })
+  const [searchResults, setSearchResults] = React.useState<{
+    users: GlobalSearchUser[]
+    orgs: GlobalSearchOrg[]
+  }>({ users: [], orgs: [] })
 
   React.useEffect(() => {
     if (!search || search.length < 2) {
@@ -150,7 +165,12 @@ export function CommandMenu() {
                   key={user.id}
                   value={`user ${user.name} ${user.email}`}
                   onSelect={() => {
-                    runCommand(() => navigate({ to: `/_authenticated/admin/users?filter=${user.id}` as any }))
+                    runCommand(() =>
+                      navigate({
+                        to: '/_authenticated/admin/users',
+                        search: (prev) => ({ ...prev, filter: user.id }),
+                      })
+                    )
                   }}
                 >
                   <User className='size-4' />
@@ -170,7 +190,12 @@ export function CommandMenu() {
                   key={org.id}
                   value={`org ${org.name} ${org.slug}`}
                   onSelect={() => {
-                    runCommand(() => navigate({ to: `/_authenticated/admin/organization?filter=${org.id}` as any }))
+                    runCommand(() =>
+                      navigate({
+                        to: '/_authenticated/admin/organizations',
+                        search: (prev) => ({ ...prev, filter: org.id }),
+                      })
+                    )
                   }}
                 >
                   <Building className='size-4' />
@@ -202,7 +227,6 @@ export function CommandMenu() {
     </CommandDialog>
   )
 }
-
 
 
 
