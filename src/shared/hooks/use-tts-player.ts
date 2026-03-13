@@ -64,10 +64,19 @@ export function useTTSPlayer(messageId: string | null | undefined): UseTTSPlayer
 
     // 已解析的音频 URL（缓存用，避免重复请求接口）
     const resolvedUrlRef = useRef<string | null>(null)
+    // 进行中的 URL 请求（用于 preload/play 之间去重）
+    const pendingUrlRef = useRef<Promise<string> | null>(null)
+    const abortControllerRef = useRef<AbortController | null>(null)
     // Native Audio 实例
     const audioRef = useRef<HTMLAudioElement | null>(null)
     // 组件卸载标志，防止异步回调操作已卸载的组件
     const unmountedRef = useRef(false)
+
+    const clearPendingRequest = useCallback(() => {
+        abortControllerRef.current?.abort()
+        abortControllerRef.current = null
+        pendingUrlRef.current = null
+    }, [])
 
     // ── 清理 Audio 实例 ──────────────────────────────────────────────────────
     const destroyAudio = useCallback(() => {
@@ -80,39 +89,70 @@ export function useTTSPlayer(messageId: string | null | undefined): UseTTSPlayer
         }
     }, [])
 
+    const resetPlayer = useCallback(() => {
+        clearPendingRequest()
+        destroyAudio()
+        resolvedUrlRef.current = null
+        setState('idle')
+        setError(null)
+    }, [clearPendingRequest, destroyAudio])
+
+    const isAbortError = useCallback((err: unknown) => {
+        return err instanceof DOMException && err.name === 'AbortError'
+    }, [])
+
     // ── 组件 unmount 时清理 ──────────────────────────────────────────────────
     useEffect(() => {
         unmountedRef.current = false
         return () => {
             unmountedRef.current = true
+            clearPendingRequest()
             destroyAudio()
         }
-    }, [destroyAudio])
+    }, [clearPendingRequest, destroyAudio])
 
     // ── messageId 变化时重置状态（切换到不同消息） ───────────────────────────
     useEffect(() => {
-        destroyAudio()
-        resolvedUrlRef.current = null
-        setState('idle')
-        setError(null)
-    }, [messageId, destroyAudio])
+        resetPlayer()
+    }, [messageId, resetPlayer])
 
     // ── 获取音频 URL（含接口请求和缓存） ────────────────────────────────────
     const getAudioUrl = useCallback(async (): Promise<string> => {
         // 已有缓存 URL，直接复用
         if (resolvedUrlRef.current) return resolvedUrlRef.current
+        if (pendingUrlRef.current) return pendingUrlRef.current
 
         if (!messageId) throw new Error('messageId 不能为空')
 
-        const res = await fetch(`/api/tts?messageId=${encodeURIComponent(messageId)}`)
-        const data: TTSApiResponse = await res.json()
+        const controller = new AbortController()
+        abortControllerRef.current = controller
 
-        if (!res.ok || !data.success) {
-            throw new Error(data.error ?? '获取音频失败')
+        const request = (async () => {
+            const res = await fetch(`/api/tts?messageId=${encodeURIComponent(messageId)}`, {
+                signal: controller.signal,
+            })
+            const data: TTSApiResponse = await res.json()
+
+            if (!res.ok || !data.success) {
+                throw new Error(data.error ?? '获取音频失败')
+            }
+
+            resolvedUrlRef.current = data.audioUrl
+            return data.audioUrl
+        })()
+
+        pendingUrlRef.current = request
+
+        try {
+            return await request
+        } finally {
+            if (pendingUrlRef.current === request) {
+                pendingUrlRef.current = null
+            }
+            if (abortControllerRef.current === controller) {
+                abortControllerRef.current = null
+            }
         }
-
-        resolvedUrlRef.current = data.audioUrl
-        return data.audioUrl
     }, [messageId])
 
     // ── 创建并配置 Audio 实例 ────────────────────────────────────────────────
@@ -135,6 +175,18 @@ export function useTTSPlayer(messageId: string | null | undefined): UseTTSPlayer
         return audio
     }, [destroyAudio])
 
+    const ensureAudio = useCallback((url: string, { preload = false }: { preload?: boolean } = {}) => {
+        const currentAudio = audioRef.current
+        if (currentAudio && currentAudio.src === url) {
+            if (preload) currentAudio.preload = 'auto'
+            return currentAudio
+        }
+
+        const audio = createAudio(url)
+        if (preload) audio.preload = 'auto'
+        return audio
+    }, [createAudio])
+
     // ── play ─────────────────────────────────────────────────────────────────
     const play = useCallback(async () => {
         if (!messageId) return
@@ -146,25 +198,18 @@ export function useTTSPlayer(messageId: string | null | undefined): UseTTSPlayer
             const url = await getAudioUrl()
             if (unmountedRef.current) return
 
-            // 如果已有 Audio 实例（preload 过），直接播；否则新建
-            const audio = audioRef.current?.src ? audioRef.current : createAudio(url)
-            if (!audioRef.current?.src) {
-                // 刚创建的实例没有 src，重新赋值
-                createAudio(url)
-            }
-
-            audioRef.current!.src = url
-            await audioRef.current!.play()
+            const audio = ensureAudio(url)
+            await audio.play()
 
             if (!unmountedRef.current) setState('playing')
         } catch (err) {
-            if (!unmountedRef.current) {
+            if (!unmountedRef.current && !isAbortError(err)) {
                 const msg = err instanceof Error ? err.message : '播放失败'
                 setError(msg)
                 setState('error')
             }
         }
-    }, [messageId, getAudioUrl, createAudio])
+    }, [messageId, getAudioUrl, ensureAudio, isAbortError])
 
     // ── stop ─────────────────────────────────────────────────────────────────
     const stop = useCallback(() => {
@@ -189,13 +234,12 @@ export function useTTSPlayer(messageId: string | null | undefined): UseTTSPlayer
         try {
             const url = await getAudioUrl()
             if (unmountedRef.current) return
-            // 预创建 Audio 实例以触发浏览器预缓冲
-            const audio = createAudio(url)
-            audio.preload = 'auto'
-        } catch {
+            ensureAudio(url, { preload: true })
+        } catch (err) {
+            if (isAbortError(err)) return
             // preload 失败静默处理，不影响主流程
         }
-    }, [messageId, getAudioUrl, createAudio])
+    }, [messageId, getAudioUrl, ensureAudio, isAbortError])
 
     return {
         state,
