@@ -1,5 +1,5 @@
 import { getRouteApi } from '@tanstack/react-router'
-import { type NavigateFn } from '@/shared/hooks/use-table-url-state'
+import { toTableNavigate } from '@/shared/hooks/use-table-url-state'
 import { AppHeaderMain } from '~/components/layout/app-header-main'
 import { AdminUsersDialogs } from './components/admin-users-dialogs'
 import { AdminUsersPrimaryButtons } from './components/admin-users-primary-buttons'
@@ -25,7 +25,7 @@ export default function AdminUsers() {
         </div>
         <div className='-mx-4 flex flex-1 flex-col overflow-hidden px-4 py-1'>
           <ErrorBoundary fallbackMessage="用户表格渲染失败">
-            <AdminUsersTable search={search} navigate={navigate as unknown as NavigateFn} />
+            <AdminUsersTable search={search} navigate={toTableNavigate(navigate)} />
           </ErrorBoundary>
         </div>
       </AppHeaderMain>

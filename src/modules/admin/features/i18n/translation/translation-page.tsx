@@ -2,7 +2,7 @@ import { getRouteApi } from '@tanstack/react-router'
 import { ConfigDrawer } from '~/components/config-drawer'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import { useTranslations } from '~/modules/admin/features/i18n/translation/hooks/use-translation-api'
-import { type NavigateFn } from '@/shared/hooks/use-table-url-state'
+import { toTableNavigate } from '@/shared/hooks/use-table-url-state'
 import { AppHeaderMain } from '~/components/layout/app-header-main'
 import { TranslationsDialogs } from './components/translations-dialogs'
 import { TranslationsPrimaryButtons } from './components/translations-primary-buttons'
@@ -31,7 +31,7 @@ export function AdminTranslations() {
         </div>
 
         <div className='-mx-4 flex flex-1 flex-col overflow-hidden px-4 py-1'>
-          <TranslationsTable data={translationList} search={search} navigate={navigate as unknown as NavigateFn} />
+          <TranslationsTable data={translationList} search={search} navigate={toTableNavigate(navigate)} />
         </div>
       </AppHeaderMain>
 
@@ -41,7 +41,6 @@ export function AdminTranslations() {
 }
 
 export default AdminTranslations
-
 
 
 

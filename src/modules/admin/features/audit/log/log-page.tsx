@@ -1,5 +1,5 @@
 import { getRouteApi } from '@tanstack/react-router'
-import { type NavigateFn } from '@/shared/hooks/use-table-url-state'
+import { toTableNavigate } from '@/shared/hooks/use-table-url-state'
 import { AppHeaderMain } from '~/components/layout/app-header-main'
 import { AdminLogProvider, useAdminLogContext } from './components/admin-log-provider'
 import { AdminLogTable } from './components/admin-log-table'
@@ -22,7 +22,7 @@ function AdminLogContent() {
         <AdminLogTypeSwitcher />
       </div>
       <div className='-mx-4 flex flex-1 flex-col overflow-hidden px-4 py-1'>
-        <AdminLogTable type={type} search={search} navigate={navigate as unknown as NavigateFn} />
+        <AdminLogTable type={type} search={search} navigate={toTableNavigate(navigate)} />
       </div>
     </AppHeaderMain>
   )

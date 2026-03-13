@@ -1,6 +1,6 @@
 import { getRouteApi } from '@tanstack/react-router'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
-import { type NavigateFn } from '@/shared/hooks/use-table-url-state'
+import { toTableNavigate } from '@/shared/hooks/use-table-url-state'
 import { PaymentOrdersProvider } from './payment-orders-provider'
 import { PaymentOrdersTable } from './payment-orders-table'
 import { PaymentOrdersDialogs } from './payment-orders-dialogs'
@@ -23,7 +23,7 @@ export default function PaymentOrdersPage() {
                     </div>
                 </div>
                 <div className="-mx-4 flex flex-1 flex-col overflow-hidden px-4 py-1">
-                    <PaymentOrdersTable search={search} navigate={navigate as unknown as NavigateFn} />
+                    <PaymentOrdersTable search={search} navigate={toTableNavigate(navigate)} />
                 </div>
             </AppHeaderMain>
 

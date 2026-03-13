@@ -1,9 +1,28 @@
 import { useMemo, useState } from 'react'
 import type { ColumnFiltersState, OnChangeFn, PaginationState } from '@tanstack/react-table'
 
-type SearchRecord = Record<string, unknown>
+export type SearchRecord = Record<string, unknown>
 
-export type NavigateFn = (opts: any) => void
+export type NavigateOptions = {
+  search?: SearchRecord | ((prev: SearchRecord) => SearchRecord)
+  replace?: boolean
+}
+
+export type NavigateFn = (opts: NavigateOptions) => void
+
+export function toTableNavigate<TSearch extends SearchRecord>(
+  navigate: (opts: { search?: TSearch | ((prev: TSearch) => TSearch); replace?: boolean }) => unknown
+): NavigateFn {
+  return ({ search, replace }) => {
+    void navigate({
+      replace,
+      search:
+        typeof search === 'function'
+          ? ((prev: TSearch) => search(prev) as TSearch)
+          : (search as TSearch | undefined),
+    })
+  }
+}
 
 export type UseTableUrlStateParams = {
   search: SearchRecord
@@ -107,8 +126,8 @@ export function useTableUrlState(params: UseTableUrlStateParams): UseTableUrlSta
     const nextPage = next.pageIndex + 1
     const nextPageSize = next.pageSize
     navigate({
-      search: (prev) => ({
-        ...(prev as SearchRecord),
+      search: (prev: SearchRecord) => ({
+        ...prev,
         [pageKey]: nextPage <= defaultPage ? undefined : nextPage,
         [pageSizeKey]: nextPageSize === defaultPageSize ? undefined : nextPageSize,
       }),
@@ -127,8 +146,8 @@ export function useTableUrlState(params: UseTableUrlStateParams): UseTableUrlSta
         const value = trimGlobal ? next.trim() : next
         setGlobalFilter(value)
         navigate({
-          search: (prev) => ({
-            ...(prev as SearchRecord),
+          search: (prev: SearchRecord) => ({
+            ...prev,
             [pageKey]: undefined,
             [globalFilterKey]: value ? value : undefined,
           }),
@@ -155,8 +174,8 @@ export function useTableUrlState(params: UseTableUrlStateParams): UseTableUrlSta
     }
 
     navigate({
-      search: (prev) => ({
-        ...(prev as SearchRecord),
+      search: (prev: SearchRecord) => ({
+        ...prev,
         [pageKey]: undefined,
         ...patch,
       }),
@@ -169,8 +188,8 @@ export function useTableUrlState(params: UseTableUrlStateParams): UseTableUrlSta
     if (pageCount > 0 && pageNum > pageCount) {
       navigate({
         replace: true,
-        search: (prev) => ({
-          ...(prev as SearchRecord),
+        search: (prev: SearchRecord) => ({
+          ...prev,
           [pageKey]: opts.resetTo === 'last' ? pageCount : undefined,
         }),
       })
@@ -187,4 +206,3 @@ export function useTableUrlState(params: UseTableUrlStateParams): UseTableUrlSta
     ensurePageInRange,
   }
 }
-

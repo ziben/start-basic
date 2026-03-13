@@ -1,6 +1,6 @@
 import { getRouteApi } from '@tanstack/react-router'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
-import { type NavigateFn } from '@/shared/hooks/use-table-url-state'
+import { toTableNavigate } from '@/shared/hooks/use-table-url-state'
 import { AppHeaderMain } from '~/components/layout/app-header-main'
 import { MembersDialogs } from './components/members-dialogs'
 import { MembersPrimaryButtons } from './components/members-primary-buttons'
@@ -29,7 +29,7 @@ export default function MembersPage() {
           <MembersPrimaryButtons />
         </div>
         <div className='-mx-4 flex flex-1 flex-col overflow-hidden px-4 py-1'>
-          <MembersTable search={search} navigate={navigate as unknown as NavigateFn} />
+          <MembersTable search={search} navigate={toTableNavigate(navigate)} />
         </div>
       </AppHeaderMain>
 
