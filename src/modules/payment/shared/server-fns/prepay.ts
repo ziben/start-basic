@@ -1,128 +1,34 @@
-/**
- * 创建预支付订单 Server Function
- */
-
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
+import { PrepayRequestSchema } from '../schemas/prepay'
+import { createPrepayOrder } from '../services/create-prepay-order.service'
 
-// 请求参数校验
-const prepaySchema = z.object({
-    amount: z.number().int().positive(),
-    description: z.string().min(1).max(127),
-    paymentMethod: z.enum(['WECHAT_JSAPI', 'WECHAT_NATIVE', 'WECHAT_H5']),
-    openid: z.string().optional(), // JSAPI 必须
-    attach: z.string().optional(), // 附加数据
-})
+export async function handleCreatePrepayOrder(
+    data: z.infer<typeof PrepayRequestSchema>,
+    headers: Headers,
+) {
+    const { auth } = await import('../../../auth/shared/lib/auth')
+    const { getDb } = await import('~/shared/lib/db')
+    const { getWeChatPayClient } = await import('../lib/wechat-pay')
 
-/**
- * 创建微信支付预订单
- */
+    const session = await auth.api.getSession({ headers })
+    const prisma = await getDb()
+    const wechatPayClient = await getWeChatPayClient()
+
+    return createPrepayOrder(data, {
+        sessionUserId: session?.user?.id ?? null,
+        notifyUrl: process.env.WECHAT_PAY_NOTIFY_URL!,
+        prisma,
+        wechatPayClient,
+    })
+}
+
 export const createPrepayOrderFn = createServerFn({ method: 'POST' })
-    .inputValidator((data: unknown) => prepaySchema.parse(data))
-    .handler(async ({ data }: { data: z.infer<typeof prepaySchema> }) => {
+    .inputValidator((data: unknown) => PrepayRequestSchema.parse(data))
+    .handler(async ({ data }: { data: z.infer<typeof PrepayRequestSchema> }) => {
         const { getRequest } = await import('@tanstack/react-start/server')
-        const { auth } = await import('../../../auth/shared/lib/auth')
-        const { getDb } = await import('../../../../shared/lib/db')
-
-        // 获取当前用户
         const { headers } = getRequest()!
-        const session = await auth.api.getSession({ headers })
-
-        if (!session?.user?.id) {
-            throw new Error('Unauthorized')
-        }
-
-        const prisma = await getDb()
-        const { getWeChatPayClient } = await import('../lib/wechat-pay')
-        const client = await getWeChatPayClient()
-
-        // 生成商户订单号 (格式: 时间戳 + 随机字符)
-        const outTradeNo = `${Date.now()}${Math.random().toString(36).substring(2, 8).toUpperCase()}`
-
-        // 创建数据库订单记录
-        const order = await prisma.paymentOrder.create({
-            data: {
-                userId: session.user.id,
-                outTradeNo,
-                amount: data.amount,
-                description: data.description,
-                paymentMethod: data.paymentMethod,
-                status: 'PENDING',
-                metadata: data.attach ? { attach: data.attach } : undefined,
-            },
-        })
-
-        try {
-            // 根据支付方式调用不同的 API
-            if (data.paymentMethod === 'WECHAT_NATIVE') {
-                // PC 扫码支付
-                const result = await client.transactionsNative({
-                    description: data.description,
-                    out_trade_no: outTradeNo,
-                    notify_url: process.env.WECHAT_PAY_NOTIFY_URL!,
-                    amount: { total: data.amount, currency: 'CNY' },
-                    attach: data.attach,
-                })
-
-                return {
-                    orderId: order.id,
-                    outTradeNo,
-                    codeUrl: result.code_url, // 用于生成二维码
-                }
-            } else {
-                // JSAPI 支付 (公众号/小程序)
-                // 优先使用前端传入的 openid，否则从 account 表查（idToken 字段存储了 openid）
-                let openid = data.openid
-                if (!openid) {
-                    const wechatAccount = await prisma.account.findFirst({
-                        where: { userId: session.user.id, providerId: 'wechat' },
-                        select: { idToken: true },
-                    })
-                    openid = wechatAccount?.idToken ?? undefined
-                }
-                if (!openid) {
-                    throw new Error('openid is required for JSAPI payment')
-                }
-
-                const result = await client.transactionsJSAPI({
-                    description: data.description,
-                    out_trade_no: outTradeNo,
-                    notify_url: process.env.WECHAT_PAY_NOTIFY_URL!,
-                    amount: { total: data.amount, currency: 'CNY' },
-                    payer: { openid },
-                    attach: data.attach,
-                })
-
-                // SDK 返回 { status, data: { appId, timeStamp, nonceStr, package, signType, paySign } }
-                const jsapiData = result.data || result
-                const jsapiParams = {
-                    appId: jsapiData.appId,
-                    timeStamp: jsapiData.timeStamp,
-                    nonceStr: jsapiData.nonceStr,
-                    package: jsapiData.package,
-                    signType: jsapiData.signType || 'RSA' as const,
-                    paySign: jsapiData.paySign,
-                }
-
-                return {
-                    orderId: order.id,
-                    outTradeNo,
-                    prepayId: jsapiData.package?.replace('prepay_id=', ''),
-                    jsapiParams,
-                }
-            }
-        } catch (error) {
-            // 支付请求失败，更新订单状态
-            await prisma.paymentOrder.update({
-                where: { id: order.id },
-                data: { status: 'FAILED' },
-            })
-
-            console.error('[WeChatPay] Prepay failed:', error)
-            throw new Error(
-                `Payment request failed: ${error instanceof Error ? error.message : 'Unknown error'}`
-            )
-        }
+        return handleCreatePrepayOrder(data, headers)
     })
 
 /**

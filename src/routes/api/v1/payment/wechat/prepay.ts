@@ -1,22 +1,15 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { z } from 'zod'
 import { auth } from '~/modules/auth/shared/lib/auth'
-import { createPrepayOrderFn } from '~/modules/payment/shared/server-fns/prepay'
-
-const PrepayRequestSchema = z.object({
-    amount: z.number().int().positive('Amount must be positive'),
-    description: z.string().min(1, 'Description is required').max(127),
-    paymentMethod: z.enum(['WECHAT_JSAPI', 'WECHAT_NATIVE', 'WECHAT_H5']),
-    openid: z.string().optional(),
-    attach: z.string().optional(),
-})
+import { getWeChatPayClient } from '~/modules/payment/shared/lib/wechat-pay'
+import { PrepayRequestSchema } from '~/modules/payment/shared/schemas/prepay'
+import { createPrepayOrder } from '~/modules/payment/shared/services/create-prepay-order.service'
+import { getDb } from '~/shared/lib/db'
 
 export const Route = createFileRoute('/api/v1/payment/wechat/prepay')({
     server: {
         handlers: {
             POST: async ({ request }) => {
                 try {
-                    // 1. Authentication Check
                     const session = await auth.api.getSession({ headers: request.headers })
 
                     if (!session?.user) {
@@ -45,28 +38,22 @@ export const Route = createFileRoute('/api/v1/payment/wechat/prepay')({
                         })
                     }
 
-                    const { amount, description, paymentMethod, openid, attach } = parsed.data
-
-                    // 3. Call the existing prepay server function logic
-                    // Server functions expect `data` as input
-                    const result = await createPrepayOrderFn({
-                        data: {
-                            amount,
-                            description,
-                            paymentMethod,
-                            openid,
-                            attach
-                        }
+                    const prisma = await getDb()
+                    const wechatPayClient = await getWeChatPayClient()
+                    const result = await createPrepayOrder(parsed.data, {
+                        sessionUserId: session.user.id,
+                        notifyUrl: process.env.WECHAT_PAY_NOTIFY_URL!,
+                        prisma,
+                        wechatPayClient,
                     })
 
-                    // 4. Return standard JSON response
                     return new Response(JSON.stringify(result), {
                         status: 200,
                         headers: { 'Content-Type': 'application/json' },
                     })
-                } catch (error: any) {
+                } catch (error) {
                     console.error('[API prepay error]:', error)
-                    return new Response(JSON.stringify({ error: error?.message || 'Internal Server Error' }), {
+                    return new Response(JSON.stringify({ error: error instanceof Error ? error.message : 'Internal Server Error' }), {
                         status: 500,
                         headers: { 'Content-Type': 'application/json' },
                     })
