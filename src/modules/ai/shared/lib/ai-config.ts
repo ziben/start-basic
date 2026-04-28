@@ -7,7 +7,7 @@
 
 import { geminiText } from '@tanstack/ai-gemini'
 import { createOpenaiChat } from '@tanstack/ai-openai'
-import { getRuntimeConfig } from '~/shared/config/runtime-config'
+import { getRuntimeConfig } from '~/infrastructure/config/runtime-config'
 
 export type AIProvider = 'gemini' | 'openai' | 'deepseek' | 'qwen' | 'zhipu' | 'ernie'
 

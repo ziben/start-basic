@@ -6,7 +6,7 @@
 import { chat, toServerSentEventsResponse } from '@tanstack/ai'
 import { createFileRoute } from '@tanstack/react-router'
 import { type AIProvider, getAIAdapter } from '~/modules/ai/shared/lib/ai-config'
-import { initRuntimeConfig, getRuntimeConfig } from '~/shared/config/runtime-config'
+import { initRuntimeConfig, getRuntimeConfig } from '~/infrastructure/config/runtime-config'
 import { AiChatService } from '~/modules/ai/shared/services/ai-chat.service'
 import { auth } from '~/modules/auth/shared/lib/auth'
 

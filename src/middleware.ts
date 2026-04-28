@@ -10,7 +10,7 @@ import {
   writeSystemLog,
   getFriendlyFunctionName,
 } from '~/modules/admin/shared/services/server-log-writer'
-import { getRuntimeConfig } from '~/shared/config/runtime-config'
+import { getRuntimeConfig } from '~/infrastructure/config/runtime-config'
 
 // 类型定义
 type SessionUser = NonNullable<Awaited<ReturnType<typeof auth.api.getSession>>>['user']
@@ -276,7 +276,6 @@ export function withAdminAuth<T extends HandlerContext>(handler: Handler<T & Aut
 
 // 导出类型供其他模块使用
 export type { SessionUser, AuthenticatedContext, HandlerContext }
-
 
 
 

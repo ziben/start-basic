@@ -17,7 +17,7 @@
 import crypto from 'node:crypto'
 import fs from 'fs'
 import path from 'path'
-import { getRuntimeConfig } from '~/shared/config/runtime-config'
+import { getRuntimeConfig } from '~/infrastructure/config/runtime-config'
 
 // ─── 配置读取 ──────────────────────────────────────────────────────────────────
 

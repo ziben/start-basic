@@ -3,7 +3,7 @@ import path from 'node:path'
 import { randomUUID } from 'node:crypto'
 import type { Prisma } from '~/generated/prisma/client'
 import prisma from '@/shared/lib/db'
-import { getRuntimeConfig } from '~/shared/config/runtime-config'
+import { getRuntimeConfig } from '~/infrastructure/config/runtime-config'
 
 export type SystemLogLevel = 'debug' | 'info' | 'warn' | 'error'
 
