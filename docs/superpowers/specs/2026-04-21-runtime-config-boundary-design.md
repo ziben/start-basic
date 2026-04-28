@@ -218,6 +218,24 @@ src/
 - 在文档中明确 `infrastructure/config` 才是正式入口
 - 后续 `auth init` 计划直接依赖新入口
 
+## 9. 实施状态
+
+2026-04-28 已按方案 B 完成读取侧收口：
+
+- 新增 `src/infrastructure/config/runtime-config-defaults.ts`，承载默认值与类型归一化。
+- 新增 `src/infrastructure/config/runtime-config-store.ts`，承载进程缓存、DB 覆盖读取与 refresh。
+- 新增 `src/infrastructure/config/runtime-config.ts`，作为正式读取入口。
+- `src/shared/config/runtime-config.ts` 已改为 compatibility shim。
+- admin 手动刷新继续保留审计逻辑，但调用入口已切到 `~/infrastructure/config/runtime-config`。
+
+验证记录：
+
+- `pnpm vitest run src/infrastructure/config/runtime-config-store.test.ts` 通过。
+- `pnpm vitest run src/infrastructure/db/database-url.test.ts src/modules/payment/shared/services/create-prepay-order.service.test.ts src/modules/payment/shared/server-fns/prepay.test.ts src/infrastructure/config/runtime-config-store.test.ts` 通过。
+- `pnpm vitest run src/modules/auth/shared/lib/safe-redirect.test.ts` 通过。
+- `pnpm exec eslint` 针对本次改动文件通过。
+- `pnpm exec tsc --noEmit --pretty false` 仍返回既有全仓错误，但未匹配到本次改动路径相关错误。
+
 ## 9. 验收标准
 
 完成后应满足：

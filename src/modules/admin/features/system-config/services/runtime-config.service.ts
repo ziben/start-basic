@@ -1,5 +1,5 @@
 import { getDb } from '~/shared/lib/db'
-import { refreshRuntimeConfig } from '~/shared/config/runtime-config'
+import { refreshRuntimeConfig } from '~/infrastructure/config/runtime-config'
 import { randomUUID } from 'node:crypto'
 
 export type ConfigValueType = 'STRING' | 'NUMBER' | 'BOOLEAN' | 'JSON' | 'STRING_ARRAY'

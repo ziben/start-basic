@@ -287,3 +287,22 @@ Expected: 不出现本轮新增文件相关错误；若仓库仍有既有全量 
 git add docs/superpowers/specs/2026-04-21-runtime-config-boundary-design.md docs/superpowers/plans/2026-04-21-phase-1b-runtime-config-boundary.md
 git commit -m "docs(plan): 补充运行时配置收口方案"
 ```
+
+## 2026-04-28 执行记录
+
+本轮已完成 Phase 1B runtime config 读取侧收口：
+
+- `src/infrastructure/config/runtime-config-defaults.ts`：拆出 `RuntimeConfigShape`、`RuntimeConfigKey`、env 默认值构建与单值归一化。
+- `src/infrastructure/config/runtime-config-store.ts`：拆出缓存、TTL、DB 覆盖读取、缺表 fallback 和 refresh。
+- `src/infrastructure/config/runtime-config.ts`：作为新的正式读取 facade。
+- `src/shared/config/runtime-config.ts`：保留为 compatibility shim，对外 contract 不变。
+- `src/modules/admin/features/system-config/services/runtime-config.service.ts`：刷新入口改为调用 infrastructure facade，审计逻辑仍保留在 admin service。
+- `src/infrastructure/config/runtime-config-store.test.ts`：覆盖 defaults、normalize、DB 覆盖、fallback 和 shared shim。
+
+验证结果：
+
+- `pnpm vitest run src/infrastructure/config/runtime-config-store.test.ts`：5 tests passed。
+- `pnpm vitest run src/infrastructure/db/database-url.test.ts src/modules/payment/shared/services/create-prepay-order.service.test.ts src/modules/payment/shared/server-fns/prepay.test.ts src/infrastructure/config/runtime-config-store.test.ts`：11 tests passed。
+- `pnpm vitest run src/modules/auth/shared/lib/safe-redirect.test.ts`：4 tests passed。
+- `pnpm exec eslint src/infrastructure/config/runtime-config-defaults.ts src/infrastructure/config/runtime-config-store.ts src/infrastructure/config/runtime-config.ts src/infrastructure/config/runtime-config-store.test.ts src/shared/config/runtime-config.ts src/modules/admin/features/system-config/services/runtime-config.service.ts`：0 errors。
+- `pnpm exec tsc --noEmit --pretty false`：exit code 2；过滤本轮改动路径后无匹配错误，属于既有全仓 typecheck 基线未清理。
