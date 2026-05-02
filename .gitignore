@@ -4,6 +4,8 @@ yarn.lock
 
 .DS_Store
 .cache
+.cursor/
+.workbuddy/
 .env
 .vercel
 .output
