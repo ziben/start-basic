@@ -4,6 +4,7 @@
  */
 
 import prisma from '@/shared/lib/db'
+import type { Prisma } from '~/generated/prisma/client'
 
 export interface ListPermissionsInput {
     page?: number
@@ -13,15 +14,17 @@ export interface ListPermissionsInput {
 }
 
 export interface CreatePermissionInput {
-    resource: string
-    action: string
-    label: string
+    resourceId: string
+    actionId: string
+    displayName: string
+    category?: string
     description?: string
 }
 
 export interface UpdatePermissionInput {
-    label?: string
-    description?: string | null
+    displayName?: string
+    category?: string
+    description?: string
 }
 
 export const PermissionService = {
@@ -32,21 +35,19 @@ export const PermissionService = {
         resource?: string
         action?: string
     }) {
-        const where: { resource?: string; action?: string } = {}
+        const where: Prisma.PermissionWhereInput = {}
 
         if (options?.resource) {
-            where.resource = options.resource
+            where.resource = { name: options.resource }
         }
         if (options?.action) {
-            where.action = options.action
+            where.action = { name: options.action }
         }
 
         return await prisma.permission.findMany({
             where,
-            orderBy: [
-                { resource: 'asc' },
-                { action: 'asc' }
-            ]
+            include: { resource: true, action: true },
+            orderBy: { code: 'asc' },
         })
     },
 
@@ -57,21 +58,21 @@ export const PermissionService = {
         try {
             const { page = 1, pageSize = 20, filter, resource } = input
 
-            const where: {
-                OR?: Array<{ name?: { contains: string }; label?: { contains: string }; resource?: { contains: string } }>
-                resource?: string
-            } = {}
+            const where: Prisma.PermissionWhereInput = {}
 
             if (filter) {
                 where.OR = [
-                    { name: { contains: filter } },
-                    { label: { contains: filter } },
-                    { resource: { contains: filter } },
+                    { code: { contains: filter } },
+                    { displayName: { contains: filter } },
+                    { description: { contains: filter } },
+                    { category: { contains: filter } },
+                    { resource: { name: { contains: filter } } },
+                    { action: { name: { contains: filter } } },
                 ]
             }
 
             if (resource) {
-                where.resource = resource
+                where.resource = { name: resource }
             }
 
             const [total, items] = await Promise.all([
@@ -80,10 +81,8 @@ export const PermissionService = {
                     where,
                     skip: (page - 1) * pageSize,
                     take: pageSize,
-                    orderBy: [
-                        { resource: 'asc' },
-                        { action: 'asc' }
-                    ]
+                    include: { resource: true, action: true },
+                    orderBy: { code: 'asc' },
                 })
             ])
 
@@ -132,11 +131,20 @@ export const PermissionService = {
      */
     async create(data: CreatePermissionInput) {
         try {
-            const name = `${data.resource}:${data.action}`
+            const [resource, action] = await Promise.all([
+                prisma.resource.findUnique({ where: { id: data.resourceId } }),
+                prisma.action.findUnique({ where: { id: data.actionId } }),
+            ])
+
+            if (!resource || !action) {
+                throw new Error('资源或操作不存在')
+            }
+
+            const code = `${resource.name}:${action.name}`
 
             // 检查是否已存在
             const existing = await prisma.permission.findUnique({
-                where: { name }
+                where: { code }
             })
 
             if (existing) {
@@ -146,8 +154,10 @@ export const PermissionService = {
             return await prisma.permission.create({
                 data: {
                     ...data,
-                    name
-                }
+                    code,
+                    isSystem: false,
+                },
+                include: { resource: true, action: true },
             })
         } catch (error) {
             console.error('创建权限失败:', error)

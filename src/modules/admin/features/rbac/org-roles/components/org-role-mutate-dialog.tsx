@@ -53,13 +53,14 @@ export function OrgRoleMutateDialog() {
     isActive: z.boolean().default(true),
   })
 
-  type FormValues = z.input<typeof formSchema>
+  type FormInput = z.input<typeof formSchema>
+  type FormValues = z.output<typeof formSchema>
 
   const organizationId = (tableUrl.columnFilters.find(f => f.id === "organizationId")?.value as string) || ""
   const role = mutateDialog.data
   const isEdit = !!role?.id
 
-  const form = useForm<FormValues>({
+  const form = useForm<FormInput, unknown, FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       role: "",

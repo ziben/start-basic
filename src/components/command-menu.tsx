@@ -28,7 +28,7 @@ type GlobalSearchUser = {
 type GlobalSearchOrg = {
   id: string
   name: string
-  slug: string
+  slug: string | null
 }
 
 export function CommandMenu() {
@@ -167,7 +167,7 @@ export function CommandMenu() {
                   onSelect={() => {
                     runCommand(() =>
                       navigate({
-                        to: '/_authenticated/admin/users',
+                        to: '/admin/users',
                         search: (prev) => ({ ...prev, filter: user.id }),
                       })
                     )
@@ -192,7 +192,7 @@ export function CommandMenu() {
                   onSelect={() => {
                     runCommand(() =>
                       navigate({
-                        to: '/_authenticated/admin/organizations',
+                        to: '/admin/organizations',
                         search: (prev) => ({ ...prev, filter: org.id }),
                       })
                     )
@@ -227,8 +227,6 @@ export function CommandMenu() {
     </CommandDialog>
   )
 }
-
-
 
 
 

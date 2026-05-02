@@ -29,6 +29,8 @@ type DataTableProps = {
 
 function NavGroupsTableInner({ data, search, navigate, onReload, isReloading }: DataTableProps) {
   const { t } = useTranslation()
+  const routeSearch = route.useSearch()
+  const routeNavigate = route.useNavigate()
   const columns = useNavGroupColumns()
   const [rowSelection, setRowSelection] = useState({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
@@ -42,8 +44,8 @@ function NavGroupsTableInner({ data, search, navigate, onReload, isReloading }: 
     onPaginationChange,
     ensurePageInRange,
   } = useTableUrlState({
-    search,
-    navigate,
+    search: search ?? (routeSearch as SearchRecord),
+    navigate: navigate ?? toTableNavigate(routeNavigate),
     pagination: { defaultPage: 1, defaultPageSize: 10 },
     globalFilter: { enabled: true, key: 'filter' },
     columnFilters: [
@@ -131,7 +133,6 @@ export function NavGroupsTable({ data, search, navigate, onReload, isReloading }
     />
   )
 }
-
 
 
 

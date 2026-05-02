@@ -1,6 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { getRuntimeConfig } from '~/shared/config/runtime-config'
-import db from '~/shared/lib/db'
+import { getRuntimeConfig } from '~/infrastructure/config/runtime-config'
 
 export const Route = createFileRoute('/api/v1/home/data')({
     server: {
@@ -13,21 +12,13 @@ export const Route = createFileRoute('/api/v1/home/data')({
                     // 1. Get mobile home layout config (if any) from system config
                     const mobileHomeConfig = getRuntimeConfig('homeRoute_mobile') || '/m'
 
-                    // 2. Mock or fetch real resources
-                    // e.g. Recent posts/announcements
-                    const posts = await db.post.findMany({
-                        take: 5,
-                        orderBy: { createdAt: 'desc' },
-                        select: { id: true, title: true, summary: true, createdAt: true },
-                    })
-
                     const homeData = {
                         bannerUrls: [
                             'https://picsum.photos/seed/slide1/800/400',
                             'https://picsum.photos/seed/slide2/800/400'
                         ],
                         layout: mobileHomeConfig,
-                        recentPosts: posts,
+                        recentPosts: [],
                         quickLinks: [
                             { id: 'ai', title: 'AI Assistant', icon: 'Bot' },
                             { id: 'payment', title: 'Top-up center', icon: 'CreditCard' },

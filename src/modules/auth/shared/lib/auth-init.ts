@@ -3,7 +3,7 @@
  * 使用动态加载的权限配置
  */
 
-import { betterAuth } from 'better-auth'
+import { betterAuth, type Auth } from 'better-auth'
 import { prismaAdapter } from 'better-auth/adapters/prisma'
 import { admin, username, organization, bearer } from 'better-auth/plugins'
 import { getDb } from '@/shared/lib/db'
@@ -12,7 +12,7 @@ import { getAccessControl } from './auth-dynamic'
 import { wechatOAuth } from './plugins/wechat-oauth'
 import { userCreatedPlugin } from './plugins/user-created-plugin'
 
-let authInstance: ReturnType<typeof betterAuth> | null = null
+let authInstance: Auth<any> | null = null
 
 /**
  * 初始化 better-auth 实例

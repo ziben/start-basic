@@ -31,7 +31,7 @@ export function AdminLogProvider({ children }: { children: ReactNode }) {
 
   const setType = useCallback(
     (newType: LogType) => {
-      void navigate({ search: (prev: RouteSearch) => ({ ...prev, type: newType, page: undefined }) })
+      void navigate({ search: (prev) => ({ ...prev, type: newType, page: undefined }) })
     },
     [navigate],
   )

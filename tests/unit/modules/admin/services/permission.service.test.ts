@@ -5,7 +5,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 
 // 使用 vi.hoisted() 解决 mock 提升问题
-const { mockPermission, mockRolePermission } = vi.hoisted(() => ({
+const { mockPermission, mockRolePermission, mockResource, mockAction } = vi.hoisted(() => ({
     mockPermission: {
         findMany: vi.fn(),
         findUnique: vi.fn(),
@@ -17,12 +17,20 @@ const { mockPermission, mockRolePermission } = vi.hoisted(() => ({
     mockRolePermission: {
         count: vi.fn(),
     },
+    mockResource: {
+        findUnique: vi.fn(),
+    },
+    mockAction: {
+        findUnique: vi.fn(),
+    },
 }))
 
 vi.mock('@/shared/lib/db', () => ({
     default: {
         permission: mockPermission,
         rolePermission: mockRolePermission,
+        resource: mockResource,
+        action: mockAction,
     },
 }))
 
@@ -51,7 +59,8 @@ describe('PermissionService', () => {
             expect(result).toEqual(mockData)
             expect(mockPermission.findMany).toHaveBeenCalledWith({
                 where: {},
-                orderBy: [{ resource: 'asc' }, { action: 'asc' }]
+                include: { resource: true, action: true },
+                orderBy: { code: 'asc' }
             })
         })
 
@@ -61,8 +70,9 @@ describe('PermissionService', () => {
             await PermissionService.getAll({ resource: 'user' })
 
             expect(mockPermission.findMany).toHaveBeenCalledWith({
-                where: { resource: 'user' },
-                orderBy: [{ resource: 'asc' }, { action: 'asc' }]
+                where: { resource: { name: 'user' } },
+                include: { resource: true, action: true },
+                orderBy: { code: 'asc' }
             })
         })
 
@@ -72,8 +82,9 @@ describe('PermissionService', () => {
             await PermissionService.getAll({ action: 'create' })
 
             expect(mockPermission.findMany).toHaveBeenCalledWith({
-                where: { action: 'create' },
-                orderBy: [{ resource: 'asc' }, { action: 'asc' }]
+                where: { action: { name: 'create' } },
+                include: { resource: true, action: true },
+                orderBy: { code: 'asc' }
             })
         })
     })
@@ -115,9 +126,12 @@ describe('PermissionService', () => {
                 expect.objectContaining({
                     where: {
                         OR: [
-                            { name: { contains: 'user' } },
-                            { label: { contains: 'user' } },
-                            { resource: { contains: 'user' } },
+                            { code: { contains: 'user' } },
+                            { displayName: { contains: 'user' } },
+                            { description: { contains: 'user' } },
+                            { category: { contains: 'user' } },
+                            { resource: { name: { contains: 'user' } } },
+                            { action: { name: { contains: 'user' } } },
                         ]
                     }
                 })
@@ -148,9 +162,13 @@ describe('PermissionService', () => {
 
     describe('create', () => {
         it('应该创建新权限', async () => {
-            const input = { resource: 'user', action: 'create', label: '创建用户' }
-            const mockCreated = { id: '1', name: 'user:create', ...input }
+            const input = { resourceId: 'resource-1', actionId: 'action-1', displayName: '创建用户' }
+            const mockResourceData = { id: 'resource-1', name: 'user' }
+            const mockActionData = { id: 'action-1', name: 'create' }
+            const mockCreated = { id: '1', code: 'user:create', ...input }
 
+            mockResource.findUnique.mockResolvedValue(mockResourceData)
+            mockAction.findUnique.mockResolvedValue(mockActionData)
             mockPermission.findUnique.mockResolvedValue(null)
             mockPermission.create.mockResolvedValue(mockCreated)
 
@@ -158,12 +176,15 @@ describe('PermissionService', () => {
 
             expect(result).toEqual(mockCreated)
             expect(mockPermission.create).toHaveBeenCalledWith({
-                data: { ...input, name: 'user:create' }
+                data: { ...input, code: 'user:create', isSystem: false },
+                include: { resource: true, action: true },
             })
         })
 
         it('权限已存在时应该抛出错误', async () => {
-            const input = { resource: 'user', action: 'create', label: '创建用户' }
+            const input = { resourceId: 'resource-1', actionId: 'action-1', displayName: '创建用户' }
+            mockResource.findUnique.mockResolvedValue({ id: 'resource-1', name: 'user' })
+            mockAction.findUnique.mockResolvedValue({ id: 'action-1', name: 'create' })
             mockPermission.findUnique.mockResolvedValue({ id: '1' })
 
             await expect(PermissionService.create(input)).rejects.toThrow('权限已存在')
@@ -172,13 +193,13 @@ describe('PermissionService', () => {
 
     describe('update', () => {
         it('应该更新权限', async () => {
-            const mockExisting = { id: '1', name: 'user:create' }
-            const mockUpdated = { ...mockExisting, label: '新标签' }
+            const mockExisting = { id: '1', code: 'user:create' }
+            const mockUpdated = { ...mockExisting, displayName: '新标签' }
 
             mockPermission.findUnique.mockResolvedValue(mockExisting)
             mockPermission.update.mockResolvedValue(mockUpdated)
 
-            const result = await PermissionService.update('1', { label: '新标签' })
+            const result = await PermissionService.update('1', { displayName: '新标签' })
 
             expect(result).toEqual(mockUpdated)
         })
@@ -186,7 +207,7 @@ describe('PermissionService', () => {
         it('权限不存在时应该抛出错误', async () => {
             mockPermission.findUnique.mockResolvedValue(null)
 
-            await expect(PermissionService.update('nonexistent', { label: '新标签' })).rejects.toThrow('权限不存在')
+            await expect(PermissionService.update('nonexistent', { displayName: '新标签' })).rejects.toThrow('权限不存在')
         })
     })
 

@@ -207,9 +207,9 @@ export type PrismaPaymentOrder = {
   outTradeNo: string
   transactionId: string | null
   amount: number
-  status: string
+  status: 'PENDING' | 'SUCCESS' | 'FAILED' | 'REFUNDED' | 'CLOSED'
   description: string
-  paymentMethod: string
+  paymentMethod: 'WECHAT_JSAPI' | 'WECHAT_NATIVE' | 'WECHAT_H5' | 'ALIPAY'
   createdAt: Date
   updatedAt: Date
   paidAt: Date | null
@@ -233,13 +233,13 @@ export type SerializedPaymentOrder = {
   transactionId: string | null
   amount: number
   amountYuan: string // 金额（元）
-  status: string
+  status: 'PENDING' | 'SUCCESS' | 'FAILED' | 'REFUNDED' | 'CLOSED'
   description: string
-  paymentMethod: string
+  paymentMethod: 'WECHAT_JSAPI' | 'WECHAT_NATIVE' | 'WECHAT_H5' | 'ALIPAY'
   createdAt: string
   updatedAt: string
   paidAt: string | null
-  metadata: unknown
+  metadata: Record<string, string | number | boolean | object> | null
   user?: {
     id: string
     name: string
@@ -266,7 +266,10 @@ export function serializePaymentOrder(order: PrismaPaymentOrder): SerializedPaym
     createdAt: order.createdAt.toISOString(),
     updatedAt: order.updatedAt.toISOString(),
     paidAt: order.paidAt?.toISOString() ?? null,
-    metadata: order.metadata,
+    metadata:
+      order.metadata && typeof order.metadata === 'object' && !Array.isArray(order.metadata)
+        ? (order.metadata as Record<string, string | number | boolean | object>)
+        : null,
     user: order.user
       ? {
         id: order.user.id,
@@ -285,4 +288,3 @@ export function serializePaymentOrder(order: PrismaPaymentOrder): SerializedPaym
 export function serializePaymentOrders(orders: PrismaPaymentOrder[]): SerializedPaymentOrder[] {
   return orders.map(serializePaymentOrder)
 }
-

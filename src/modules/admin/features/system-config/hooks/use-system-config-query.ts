@@ -61,10 +61,13 @@ export function useCreateSystemConfig(): UseMutationResult<SystemConfig, Error, 
 
 // ─── History ──────────────────────────────────────────────────────────────────
 
-export function useSystemConfigHistory(configId?: string): UseQueryResult<SystemConfigChange[], Error> {
+export function useSystemConfigHistory(
+    configId?: string,
+    options?: { enabled?: boolean },
+): UseQueryResult<SystemConfigChange[], Error> {
     return useQuery<SystemConfigChange[]>({
         queryKey: runtimeConfigQueryKeys.history(configId ?? 'none'),
-        enabled: Boolean(configId),
+        enabled: Boolean(configId) && (options?.enabled ?? true),
         queryFn: async () => {
             if (!configId) return []
             const result = await getRuntimeConfigHistoryFn({ data: { configId } })

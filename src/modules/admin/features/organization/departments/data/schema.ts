@@ -11,7 +11,6 @@ export const departmentSchema = z.object({
   email: z.string().nullable(),
   sort: z.number(),
   level: z.number(),
-  path: z.string(),
   status: z.enum(['ACTIVE', 'INACTIVE']),
   createdAt: z.string(),
   updatedAt: z.string(),

@@ -40,7 +40,7 @@ export const RolePermissionService = {
     ) {
         try {
             // 验证角色是否存在
-            const role = await prisma.systemRole.findUnique({
+            const role = await prisma.role.findUnique({
                 where: { id: roleId }
             })
 

@@ -21,7 +21,7 @@ export interface CreateDepartmentInput {
 export interface UpdateDepartmentInput {
     name?: string
     code?: string
-    parentId?: string
+    parentId?: string | null
     leader?: string
     phone?: string
     email?: string
@@ -244,7 +244,10 @@ export const DepartmentService = {
                 level: number
                 parentId: string | null
                 children: DepartmentTreeNode[]
-                [key: string]: unknown
+                members?: object[]
+                parent?: object | null
+                sort?: number
+                status?: string
             }
 
             // 构建树形结构

@@ -6,7 +6,7 @@
 import type { BetterAuthClientPlugin } from 'better-auth/client'
 import type { wechatOAuth } from './wechat-oauth'
 
-export const wechatOAuthClient = (): BetterAuthClientPlugin => {
+export const wechatOAuthClient = () => {
   return {
     id: 'wechat-oauth',
     $InferServerPlugin: {} as ReturnType<typeof wechatOAuth>,
@@ -25,5 +25,5 @@ export const wechatOAuthClient = (): BetterAuthClientPlugin => {
         },
       },
     }),
-  }
+  } satisfies BetterAuthClientPlugin
 }

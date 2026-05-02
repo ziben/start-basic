@@ -2,6 +2,7 @@ import { useNavgroups } from '~/modules/admin/features/navigation/navgroup/hooks
 import { useNavitems } from '~/modules/admin/features/navigation/navitem/hooks/use-navitem-api'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import { Route as NavigationRoute } from '~/routes/_authenticated/admin/navigation'
+import { toTableNavigate } from '@/shared/hooks/use-table-url-state'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { NavGroupsDialogs } from '../navgroup/components/navgroups-dialogs'
 import { NavGroupsPrimaryButtons } from '../navgroup/components/navgroups-primary-buttons'
@@ -19,6 +20,7 @@ export default function AdminNavigationPage() {
   const { tab, navGroupId } = NavigationRoute.useSearch()
   const navigate = NavigationRoute.useNavigate()
   const search = NavigationRoute.useSearch()
+  const tableNavigate = toTableNavigate(navigate)
 
   const { data: navgroupList = [], error: navgroupsError, refetch: refetchGroups, isRefetching: isRefetchingGroups } = useNavgroups()
 
@@ -50,7 +52,7 @@ export default function AdminNavigationPage() {
             <NavGroupsTable 
               data={navgroupList} 
               search={search as Record<string, unknown>} 
-              navigate={navigate}
+              navigate={tableNavigate}
               onReload={() => void refetchGroups()}
               isReloading={isRefetchingGroups}
             />

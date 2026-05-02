@@ -12,7 +12,7 @@ export function useDepartmentsQuery({ organizationId }: UseDepartmentsQueryProps
     queryKey: departmentQueryKeys.byOrg(organizationId),
     queryFn: async () => {
       const result = await getDepartmentsFn({ data: { organizationId } })
-      return result as Department[]
+      return result as unknown as Department[]
     },
     enabled: !!organizationId,
   })

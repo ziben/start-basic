@@ -39,8 +39,8 @@ export function RoleNavGroupManageDialog({
             key={role?.id ?? 'empty'}
             t={t}
             roleId={roleId}
-            roleLabel={role?.label || role?.name}
-            roleNavGroupIds={role?.roleNavGroups?.map((rng: any) => rng.navGroupId) ?? []}
+            roleLabel={role?.displayName || role?.name}
+            roleNavGroupIds={role?.navGroupLinks?.map((link) => link.navGroupId) ?? []}
             navGroups={navGroups}
             open={open}
             onOpenChange={onOpenChange}

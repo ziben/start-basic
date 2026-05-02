@@ -167,7 +167,7 @@ export function useHasPermission(permission: [string, string]) {
         queryKey: orgPermissionQueryKeys.has(permission),
         queryFn: async () => {
             const { data, error } = await authClient.organization.hasPermission({
-                permission: { [permission[0]]: [permission[1]] }
+                permissions: { [permission[0]]: [permission[1]] }
             })
             if (error) return false
             return data?.success ?? false

@@ -428,7 +428,7 @@ export function wechatOAuth(options: WeChatOAuthOptions): BetterAuthPlugin {
           // 尝试清理 verification 记录（不影响主流程）
           const stateParam = ctx.query.state
           if (stateParam) {
-            ctx.context.internalAdapter.deleteVerificationValue(stateParam).catch(() => { })
+            ctx.context.internalAdapter.deleteVerificationByIdentifier(stateParam).catch(() => { })
           }
 
           const buildErrorRedirect = (err: string): string => {

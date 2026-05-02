@@ -31,7 +31,9 @@ export function usePermissions(params?: {
     return useQuery({
         queryKey: rbacPermissionsQueryKeys.list(params),
         queryFn: async () => {
-            return await getPermissionsFn({ data: params })
+            const permissions = (await getPermissionsFn()) as PermissionListItem[]
+            if (!params?.resource) return permissions
+            return permissions.filter((permission) => permission.resource?.name === params.resource)
         }
     })
 }
@@ -79,9 +81,10 @@ export function useCreatePermission() {
 
     return useMutation({
         mutationFn: async (data: {
-            resource: string
-            action: string
-            label: string
+            resourceId: string
+            actionId: string
+            displayName: string
+            category?: string
             description?: string
         }) => {
             return await createPermissionFn({ data })
@@ -106,8 +109,9 @@ export function useUpdatePermission() {
     return useMutation({
         mutationFn: async (data: {
             id: string
-            label?: string
-            description?: string | null
+            displayName?: string
+            category?: string
+            description?: string
         }) => {
             return await updatePermissionFn({ data })
         },

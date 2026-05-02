@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, ReactNode, useMemo } from 'react'
 import type { OrganizationRole, Role } from '@/generated/prisma/browser'
 import { useNavigate, useSearch } from '@tanstack/react-router'
-import { useTableUrlState } from '@/shared/hooks/use-table-url-state'
+import { toTableNavigate, useTableUrlState } from '@/shared/hooks/use-table-url-state'
 
 type OrgRoleWithRelations = OrganizationRole & {
   templateRole?: Role | null
@@ -43,7 +43,7 @@ export function OrgRolesProvider({ children }: { children: ReactNode }) {
 
   const tableUrl = useTableUrlState({
     search,
-    navigate,
+    navigate: toTableNavigate(navigate),
     pagination: { defaultPage: 1, defaultPageSize: 10 },
     globalFilter: { enabled: true, key: 'filter' },
     columnFilters: [

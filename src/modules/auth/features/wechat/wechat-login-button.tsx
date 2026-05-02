@@ -87,10 +87,11 @@ export function WeChatLoginButton({
                 newUserCallbackURL: safeNewUserCallbackUrl,
                 disableRedirect: false,
             })
+            const responseData = response.data as { url?: string } | null | undefined
 
             // 跳转到微信授权页面
-            if (response.data?.url) {
-                window.location.href = response.data.url
+            if (responseData?.url) {
+                window.location.href = responseData.url
             } else {
                 // 如果没有返回 URL，重置加载状态
                 setIsLoading(false)

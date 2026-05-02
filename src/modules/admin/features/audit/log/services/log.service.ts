@@ -91,7 +91,10 @@ export const LogService = {
 
                 return {
                     type: 'audit' as const,
-                    items,
+                    items: items.map((item) => ({
+                        ...item,
+                        createdAt: item.createdAt.toISOString(),
+                    })),
                     total,
                     page,
                     pageSize,
@@ -138,7 +141,10 @@ export const LogService = {
 
             return {
                 type: 'system' as const,
-                items,
+                items: items.map((item) => ({
+                    ...item,
+                    createdAt: item.createdAt.toISOString(),
+                })),
                 total,
                 page,
                 pageSize,

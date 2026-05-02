@@ -13,11 +13,7 @@ type Session = NonNullable<Awaited<ReturnType<typeof auth.api.getSession>>>
 type SessionUser = Session['user']
 type AuthContext = { user: SessionUser | null }
 
-type AuthMiddlewareCtx = {
-  next: (opts?: { context?: AuthContext }) => Promise<{ context?: AuthContext }>
-}
-
-export const authMiddleware = createMiddleware({ type: 'function' }).server(async ({ next }: AuthMiddlewareCtx) => {
+export const authMiddleware = createMiddleware({ type: 'request' }).server(async ({ next }) => {
   const request = getRequest()
   const headers = request?.headers
 

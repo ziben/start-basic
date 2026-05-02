@@ -148,13 +148,22 @@ export function DepartmentMutateDialog({
   }
 
   // 过滤可选的父部门（不能选择自己或自己的子部门）
+  const isDescendantOfCurrent = (deptId: string): boolean => {
+    let parentId = departments.find((dept) => dept.id === deptId)?.parentId
+    while (parentId) {
+      if (parentId === currentRow?.id) return true
+      parentId = departments.find((dept) => dept.id === parentId)?.parentId
+    }
+    return false
+  }
+
   const availableParents = departments.filter((dept) => {
     if (!isEdit) return true
     if (!currentRow) return true
     // 不能选择自己
     if (dept.id === currentRow.id) return false
     // 不能选择自己的子部门
-    if (dept.path.includes(currentRow.id)) return false
+    if (isDescendantOfCurrent(dept.id)) return false
     return true
   })
 

@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useMemo } from 'react'
 import type { Role } from '@/generated/prisma/browser'
-import { useTableUrlState } from '@/shared/hooks/use-table-url-state'
+import { toTableNavigate, useTableUrlState } from '@/shared/hooks/use-table-url-state'
 import { useNavigate, useSearch } from '@tanstack/react-router'
 
 type DialogState = {
@@ -32,7 +32,7 @@ export function RolesProvider({ children }: { children: React.ReactNode }) {
 
   const tableUrl = useTableUrlState({
     search,
-    navigate,
+    navigate: toTableNavigate(navigate),
     pagination: { defaultPage: 1, defaultPageSize: 10 },
     globalFilter: { enabled: true, key: 'filter' },
     columnFilters: [

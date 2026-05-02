@@ -1,6 +1,11 @@
 {
   "include": ["**/*.ts", "**/*.tsx"],
-  "exclude": ["src/modules/system-admin/shared/utils/init-admin.ts", "scripts/**"],
+  "exclude": [
+    "db/drizzle/**",
+    "scripts/**",
+    "src/db/drizzle/**",
+    "src/modules/system-admin/shared/utils/init-admin.ts"
+  ],
   "compilerOptions": {
     "strict": true,
     "esModuleInterop": true,

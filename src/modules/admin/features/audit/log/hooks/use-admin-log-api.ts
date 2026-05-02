@@ -72,7 +72,7 @@ export function useAdminLogs(params: {
     placeholderData: keepPreviousData,
     queryFn: async () => {
       const result = await getLogsFn({ data: params })
-      return result as AdminLogsPage
+      return result as unknown as AdminLogsPage
     },
   })
 }

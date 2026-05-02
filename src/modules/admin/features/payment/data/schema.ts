@@ -31,7 +31,7 @@ export const paymentOrderSchema = z.object({
     createdAt: z.string().or(z.date()),
     updatedAt: z.string().or(z.date()),
     paidAt: z.string().or(z.date()).nullable(),
-    metadata: z.unknown().optional(),
+    metadata: z.record(z.string(), z.any()).nullable().optional(),
     user: z
         .object({
             id: z.string(),

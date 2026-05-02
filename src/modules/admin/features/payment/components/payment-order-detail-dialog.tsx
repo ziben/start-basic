@@ -29,6 +29,10 @@ export function PaymentOrderDetailDialog() {
     }
 
     const config = statusConfig[selectedOrder.status] || statusConfig.PENDING
+    const metadataText =
+        typeof selectedOrder.metadata === 'string'
+            ? selectedOrder.metadata
+            : JSON.stringify(selectedOrder.metadata, null, 2) ?? ''
 
     return (
         <Dialog open={detailDialogOpen} onOpenChange={setDetailDialogOpen}>
@@ -129,9 +133,7 @@ export function PaymentOrderDetailDialog() {
                             <div className="space-y-3">
                                 <h3 className="font-medium">元数据</h3>
                                 <pre className="text-xs bg-muted p-3 rounded-md overflow-x-auto">
-                                    {typeof selectedOrder.metadata === 'string'
-                                        ? selectedOrder.metadata
-                                        : JSON.stringify(selectedOrder.metadata, null, 2)}
+                                    {metadataText}
                                 </pre>
                             </div>
                         </>

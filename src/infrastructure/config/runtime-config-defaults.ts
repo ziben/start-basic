@@ -17,6 +17,7 @@ export type RuntimeConfigShape = {
   'tts.speed': number
   'tts.enableInstruct': boolean
   'tts.instructPrefix': string
+  homeRoute_mobile: string
 }
 
 export type RuntimeConfigKey = keyof RuntimeConfigShape
@@ -72,6 +73,7 @@ export function buildRuntimeConfigDefaults(
     'tts.instructPrefix':
       env.TTS_INSTRUCT_PREFIX ||
       '语速偏慢，音调温柔平静，语气治愈温暖，像一位智者在娓娓道来。',
+    homeRoute_mobile: env.HOME_ROUTE_MOBILE || '/m',
   }
 }
 
@@ -121,7 +123,8 @@ export function normalizeRuntimeConfigValue<K extends RuntimeConfigKey>(
     case 'tts.instructPrefix':
     case 'log.dir':
     case 'ai.model':
-    case 'ai.systemPrompt': {
+    case 'ai.systemPrompt':
+    case 'homeRoute_mobile': {
       if (typeof raw === 'string' && raw.length > 0) return raw as RuntimeConfigShape[K]
       return defaults[key]
     }

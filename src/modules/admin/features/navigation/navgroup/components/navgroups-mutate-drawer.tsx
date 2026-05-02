@@ -174,7 +174,7 @@ export function NavGroupsMutateDrawer({ open, onOpenChange, currentRow }: NavGro
 
             <FormField
               control={form.control}
-              name='roleName'
+              name='roles'
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t('admin.navgroup.fields.roles') || 'Roles'}</FormLabel>
@@ -222,7 +222,6 @@ export function NavGroupsMutateDrawer({ open, onOpenChange, currentRow }: NavGro
     </Sheet>
   )
 }
-
 
 
 

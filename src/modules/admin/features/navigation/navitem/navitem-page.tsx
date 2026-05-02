@@ -30,7 +30,7 @@ export default function AdminNavItemPage() {
         {/* 导航路径 */}
         {navGroupId && (
           <div className='mb-4 flex items-center text-sm text-muted-foreground'>
-            <Link to='/admin/navigation' search={(prev) => ({ ...prev, tab: 'groups' })} className='hover:text-primary'>
+            <Link to='/admin/navigation' search={(prev) => ({ ...prev, tab: 'groups', navGroupId: undefined })} className='hover:text-primary'>
               <Home className='mr-1 inline h-4 w-4' />
               {t('admin.navitem.breadcrumb.navgroups')}
             </Link>
@@ -67,7 +67,6 @@ export default function AdminNavItemPage() {
     </AdminNavItemProvider>
   )
 }
-
 
 
 

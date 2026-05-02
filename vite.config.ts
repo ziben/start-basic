@@ -1,7 +1,6 @@
 import { normalizePath } from 'vite'
 import viteReact from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
-import { devtools } from '@tanstack/devtools-vite'
 import { tanstackStart } from '@tanstack/react-start/plugin/vite'
 import { fileURLToPath } from 'node:url'
 import Inspect from 'vite-plugin-inspect'
@@ -15,22 +14,12 @@ export default defineConfig({
     allowedHosts: true,
   },
   plugins: [
-    /* devtools({
-      eventBusConfig: {
-        debug: false,
-      },
-      enhancedLogs: {
-        enabled: true,
-      },
-    }), */
     Inspect(),
     tsconfigPaths({
       projects: ['./tsconfig.json'],
     }),
     tailwindcss(),
-    tanstackStart({
-      customViteReactPlugin: true,
-    }),
+    tanstackStart(),
     viteReact(),
   ],
   define: {
@@ -71,8 +60,10 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],
     globals: true,
-    deps: {
-      inline: ['react', 'react-dom', 'react/jsx-runtime', 'react/jsx-dev-runtime'],
+    server: {
+      deps: {
+        inline: ['react', 'react-dom', 'react/jsx-runtime', 'react/jsx-dev-runtime'],
+      },
     },
     coverage: {
       provider: 'v8',
