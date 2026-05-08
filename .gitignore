@@ -4,6 +4,7 @@ yarn.lock
 
 .DS_Store
 .cache
+.tanstack/tmp/
 .cursor/
 .workbuddy/
 .env

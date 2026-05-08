@@ -17,13 +17,14 @@ vi.mock('@tanstack/react-start/client', () => ({
   createServerFn: createServerFnMock,
 }))
 
-Object.defineProperty(HTMLElement.prototype, 'clientHeight', {
-  configurable: true,
-  value: 600,
-})
+if (typeof HTMLElement !== 'undefined') {
+  Object.defineProperty(HTMLElement.prototype, 'clientHeight', {
+    configurable: true,
+    value: 600,
+  })
 
-Object.defineProperty(HTMLElement.prototype, 'clientWidth', {
-  configurable: true,
-  value: 800,
-})
-
+  Object.defineProperty(HTMLElement.prototype, 'clientWidth', {
+    configurable: true,
+    value: 800,
+  })
+}
