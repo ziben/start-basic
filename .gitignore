@@ -24,6 +24,8 @@ yarn.lock
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+/.playwright-mcp/
+start-basic-home.png
 /src/generated/prisma
 /src/routeTree.gen.ts
 /db/*.db
