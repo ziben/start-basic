@@ -6,7 +6,7 @@
  * @see https://developers.weixin.qq.com/doc/oplatform/Website_App/WeChat_Login/Wechat_Login.html
  */
 
-import { useEffect, useRef, useCallback } from 'react'
+import { useCallback, useEffect, useId, useMemo, useRef } from 'react'
 import { cn } from '@/shared/lib/utils'
 
 interface WeChatQRCodeProps {
@@ -61,7 +61,8 @@ export function WeChatQRCode({
     className,
 }: WeChatQRCodeProps) {
     const containerRef = useRef<HTMLDivElement>(null)
-    const containerId = useRef(`wechat-qr-${Math.random().toString(36).substring(2, 9)}`)
+    const reactId = useId()
+    const containerId = useMemo(() => `wechat-qr-${reactId.replace(/[^a-zA-Z0-9_-]/g, '')}`, [reactId])
 
     // 加载微信 JS SDK
     const loadWxLoginScript = useCallback(() => {
@@ -96,7 +97,7 @@ export function WeChatQRCode({
                 // 创建微信登录对象
                 new window.WxLogin!({
                     self_redirect: false,
-                    id: containerId.current,
+                    id: containerId,
                     appid: appId,
                     scope: 'snsapi_login',
                     redirect_uri: encodeURIComponent(redirectUri),
@@ -135,12 +136,12 @@ export function WeChatQRCode({
         return () => {
             mounted = false
         }
-    }, [appId, redirectUri, href, loadWxLoginScript, onSuccess, onError])
+    }, [appId, redirectUri, href, loadWxLoginScript, onSuccess, onError, containerId])
 
     return (
         <div
             ref={containerRef}
-            id={containerId.current}
+            id={containerId}
             className={cn('flex items-center justify-center overflow-hidden rounded-lg bg-white', className)}
             style={{ width, height }}
         />

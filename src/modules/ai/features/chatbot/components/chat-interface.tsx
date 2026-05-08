@@ -270,7 +270,9 @@ export function ChatInterface({
     const hasSentFirstRef = useRef(false)
 
     // 保持 callback ref 最新
-    onFirstMessageRef.current = onFirstMessage
+    useEffect(() => {
+        onFirstMessageRef.current = onFirstMessage
+    }, [onFirstMessage])
 
     const visibleMessages = messages.filter((m) => m.role !== 'system')
 

@@ -71,6 +71,7 @@ export function useTTSPlayer(messageId: string | null | undefined): UseTTSPlayer
     const audioRef = useRef<HTMLAudioElement | null>(null)
     // 组件卸载标志，防止异步回调操作已卸载的组件
     const unmountedRef = useRef(false)
+    const activeMessageIdRef = useRef(messageId)
 
     const clearPendingRequest = useCallback(() => {
         abortControllerRef.current?.abort()
@@ -113,7 +114,11 @@ export function useTTSPlayer(messageId: string | null | undefined): UseTTSPlayer
 
     // ── messageId 变化时重置状态（切换到不同消息） ───────────────────────────
     useEffect(() => {
-        resetPlayer()
+        if (activeMessageIdRef.current === messageId) return
+
+        activeMessageIdRef.current = messageId
+        const handle = window.setTimeout(resetPlayer, 0)
+        return () => window.clearTimeout(handle)
     }, [messageId, resetPlayer])
 
     // ── 获取音频 URL（含接口请求和缓存） ────────────────────────────────────

@@ -44,7 +44,6 @@ export function CommandMenu() {
 
   React.useEffect(() => {
     if (!search || search.length < 2) {
-      setSearchResults({ users: [], orgs: [] })
       return
     }
 
@@ -110,6 +109,7 @@ export function CommandMenu() {
   }, [appSidebar, adminSidebar, tabs])
 
   const isNavLink = (item: NavItem): item is NavLink => 'url' in item
+  const displayedSearchResults = search.length < 2 ? { users: [], orgs: [] } : searchResults
 
   return (
     <CommandDialog modal open={open} onOpenChange={setOpen}>
@@ -158,9 +158,9 @@ export function CommandMenu() {
             </CommandGroup>
           ))}
 
-          {searchResults.users.length > 0 && (
+          {displayedSearchResults.users.length > 0 && (
             <CommandGroup heading='Users'>
-              {searchResults.users.map((user) => (
+              {displayedSearchResults.users.map((user) => (
                 <CommandItem
                   key={user.id}
                   value={`user ${user.name} ${user.email}`}
@@ -183,9 +183,9 @@ export function CommandMenu() {
             </CommandGroup>
           )}
 
-          {searchResults.orgs.length > 0 && (
+          {displayedSearchResults.orgs.length > 0 && (
             <CommandGroup heading='Organizations'>
-              {searchResults.orgs.map((org) => (
+              {displayedSearchResults.orgs.map((org) => (
                 <CommandItem
                   key={org.id}
                   value={`org ${org.name} ${org.slug}`}
