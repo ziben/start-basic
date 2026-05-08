@@ -33,6 +33,9 @@ model User {
   // AI 聊天
   aiConversations   AIConversation[]
 
+  // 健康管理
+  healthReports HealthReport[]
+
   @@unique([email])
   @@unique([username])
   @@map("user")

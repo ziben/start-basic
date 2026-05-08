@@ -1,4 +1,5 @@
-import { LayoutDashboard, ListTodo, Package, MessagesSquare, Users } from 'lucide-react'
+import type { ReactElement } from 'react'
+import { Activity, LayoutDashboard, ListTodo, MessagesSquare, Package, Users } from 'lucide-react'
 import { useLayout } from '~/shared/context/layout-provider'
 import { useSidebar } from '~/modules/admin/shared/sidebar'
 import { iconResolver } from '@/shared/utils/icon-resolver'
@@ -10,7 +11,7 @@ import { SidebarSkeleton } from './sidebar-skeleton'
 import type { NavGroup as NavGroupType } from './types'
 
 // 应用程序专用侧边栏默认数据（回退或初始状态用）
-function createDefaultAppSidebarData() {
+function createDefaultAppSidebarData(): { navGroups: NavGroupType[] } {
   return {
     navGroups: [
       {
@@ -41,13 +42,18 @@ function createDefaultAppSidebarData() {
             url: '/users',
             icon: Users,
           },
+          {
+            title: '健康管理',
+            url: '/health/reports',
+            icon: Activity,
+          },
         ],
       },
     ] as NavGroupType[],
   }
 }
 
-export function AppSidebar() {
+export function AppSidebar(): ReactElement {
   const { collapsible, variant } = useLayout()
 
   // 从API获取作用域为 'APP' 的侧边栏数据
@@ -78,11 +84,4 @@ export function AppSidebar() {
     </Sidebar>
   )
 }
-
-
-
-
-
-
-
 

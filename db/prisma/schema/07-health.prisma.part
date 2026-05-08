@@ -1,0 +1,71 @@
+enum HealthReportStatus {
+  DRAFT
+  OCR_TEXT_READY
+  PARSED
+  FAILED
+}
+
+enum HealthMetricFlag {
+  LOW
+  NORMAL
+  HIGH
+  ABNORMAL
+  UNKNOWN
+}
+
+model HealthReport {
+  id             String             @id @default(cuid())
+  userId         String
+  user           User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title          String
+  examDate       DateTime?
+  sourceFileName String?
+  ocrText        String
+  status         HealthReportStatus @default(DRAFT)
+  parseError     String?
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  metrics        HealthMetricResult[]
+
+  @@index([userId])
+  @@index([examDate])
+  @@index([createdAt])
+  @@map("health_report")
+}
+
+model HealthMetricCatalog {
+  id           String                @id @default(cuid())
+  code         String                @unique
+  name         String
+  category     String?
+  defaultUnit  String?
+  aliases      Json?
+  createdAt    DateTime              @default(now())
+  updatedAt    DateTime              @updatedAt
+  metricResults HealthMetricResult[]
+
+  @@index([name])
+  @@map("health_metric_catalog")
+}
+
+model HealthMetricResult {
+  id             String              @id @default(cuid())
+  reportId       String
+  report         HealthReport        @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  metricId       String?
+  metric         HealthMetricCatalog? @relation(fields: [metricId], references: [id], onDelete: SetNull)
+  rawName        String
+  valueText      String
+  numericValue   Float?
+  unit           String?
+  referenceRange String?
+  flag           HealthMetricFlag    @default(UNKNOWN)
+  rawLine        String
+  orderIndex     Int                 @default(0)
+  createdAt      DateTime            @default(now())
+
+  @@index([reportId])
+  @@index([metricId])
+  @@index([rawName])
+  @@map("health_metric_result")
+}

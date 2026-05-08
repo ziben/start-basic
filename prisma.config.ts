@@ -1,6 +1,6 @@
 import 'dotenv/config'
 import { defineConfig } from 'prisma/config'
-import { getDatabaseUrl } from './src/shared/lib/database-url'
+import { getDatabaseUrl } from './src/infrastructure/db/database-url'
 
 const DATABASE_URL = getDatabaseUrl()
 
