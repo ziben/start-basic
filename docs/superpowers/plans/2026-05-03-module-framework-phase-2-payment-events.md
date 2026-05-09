@@ -16,7 +16,7 @@
 - Create: `src/modules/events.ts`
 - Test: `src/modules/events.test.ts`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```ts
 import { describe, expect, it, vi } from 'vitest'
@@ -45,13 +45,13 @@ describe('app events', () => {
 })
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `pnpm vitest run src/modules/events.test.ts`
 
 Expected: FAIL because `src/modules/events.ts` does not exist.
 
-- [ ] **Step 3: Implement event types and bus factory**
+- [x] **Step 3: Implement event types and bus factory**
 
 ```ts
 import { createEventBus, type EventBus } from '~/core/event-bus'
@@ -79,7 +79,7 @@ export function createAppEventBus(): AppEventBus {
 export const appEventBus = createAppEventBus()
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `pnpm vitest run src/modules/events.test.ts`
 
@@ -92,7 +92,7 @@ Expected: PASS.
 - Modify: `src/modules/index.ts`
 - Test: `src/modules/payment/module.test.ts`, `src/modules/index.test.ts`
 
-- [ ] **Step 1: Write failing module tests**
+- [x] **Step 1: Write failing module tests**
 
 ```ts
 import { describe, expect, it } from 'vitest'
@@ -119,7 +119,7 @@ describe('paymentModule', () => {
 })
 ```
 
-- [ ] **Step 2: Write failing registry test**
+- [x] **Step 2: Write failing registry test**
 
 ```ts
 import { describe, expect, it } from 'vitest'
@@ -134,13 +134,13 @@ describe('moduleRegistry', () => {
 })
 ```
 
-- [ ] **Step 3: Run tests to verify they fail**
+- [x] **Step 3: Run tests to verify they fail**
 
 Run: `pnpm vitest run src/modules/payment/module.test.ts src/modules/index.test.ts`
 
 Expected: FAIL because `paymentModule` is not implemented or registered.
 
-- [ ] **Step 4: Implement payment module and registry update**
+- [x] **Step 4: Implement payment module and registry update**
 
 ```ts
 import { defineModule } from '~/core/module-registry'
@@ -169,7 +169,7 @@ export const paymentModule = defineModule({
 
 Update `src/modules/index.ts` to pass `[authModule, paymentModule] as const` to `createModuleRegistry`.
 
-- [ ] **Step 5: Run tests to verify they pass**
+- [x] **Step 5: Run tests to verify they pass**
 
 Run: `pnpm vitest run src/modules/events.test.ts src/modules/payment/module.test.ts src/modules/index.test.ts`
 
@@ -180,7 +180,7 @@ Expected: PASS.
 **Files:**
 - Verify only.
 
-- [ ] **Step 1: Run focused module and payment tests**
+- [x] **Step 1: Run focused module and payment tests**
 
 Run:
 
@@ -190,7 +190,7 @@ pnpm vitest run src/modules/events.test.ts src/modules/index.test.ts src/modules
 
 Expected: PASS.
 
-- [ ] **Step 2: Run typecheck if practical**
+- [x] **Step 2: Run typecheck if practical**
 
 Run: `pnpm run typecheck`
 
