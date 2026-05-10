@@ -3,47 +3,21 @@ import { Boxes, GitBranch, KeyRound, PackageCheck, ShieldCheck } from 'lucide-re
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
-import { moduleRegistry } from '~/modules'
-import type { AppModule } from '~/core/module-registry'
-
-type ExportGroup = {
-  name: string
-  keys: string[]
-}
-
-function getExportGroups(exportsRecord: Record<string, unknown> | undefined): ExportGroup[] {
-  if (!exportsRecord) return []
-
-  return Object.entries(exportsRecord).map(([name, value]) => ({
-    name,
-    keys:
-      value && typeof value === 'object'
-        ? Object.keys(value as Record<string, unknown>)
-        : ['default'],
-  }))
-}
-
-function getModuleCapabilityCount(module: AppModule): number {
-  return getExportGroups(module.exports).reduce((sum, group) => sum + group.keys.length, 0)
-}
-
-function getModulePluginIds(module: AppModule): string[] {
-  return [
-    ...(module.betterAuth?.serverPluginIds ?? []),
-    ...(module.betterAuth?.clientPluginIds ?? []),
-  ]
-}
+import { moduleDiagnostics } from '~/modules/module-diagnostics'
 
 export function ModuleDiagnosticsPage(): ReactElement {
-  const modules: readonly AppModule[] = moduleRegistry.modules
+  const modules = moduleDiagnostics
   const dependencyCount = modules.reduce(
     (count, module) => count + (module.dependencies?.length ?? 0),
     0
   )
-  const serverPluginIds = moduleRegistry.getBetterAuthServerPluginIds()
-  const clientPluginIds = moduleRegistry.getBetterAuthClientPluginIds()
+  const authPluginCount = modules.reduce(
+    (count, module) => count + module.betterAuthPluginIds.length,
+    0
+  )
   const capabilityCount = modules.reduce(
-    (count, module) => count + getModuleCapabilityCount(module),
+    (count, module) =>
+      count + module.exports.reduce((sum, group) => sum + group.keys.length, 0),
     0
   )
 
@@ -103,7 +77,7 @@ export function ModuleDiagnosticsPage(): ReactElement {
             <ShieldCheck className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent className="px-4 pb-4">
-            <div className="text-2xl font-bold">{serverPluginIds.length + clientPluginIds.length}</div>
+            <div className="text-2xl font-bold">{authPluginCount}</div>
             <p className="text-xs text-muted-foreground">server/client plugin IDs</p>
           </CardContent>
         </Card>
@@ -118,9 +92,6 @@ export function ModuleDiagnosticsPage(): ReactElement {
         </CardHeader>
         <CardContent className="p-0">
           {modules.map((module) => {
-            const exportGroups = getExportGroups(module.exports)
-            const pluginIds = getModulePluginIds(module)
-
             return (
               <div key={module.key} className="border-b px-4 py-4 last:border-b-0">
                 <div className="grid gap-4 xl:grid-cols-[220px_minmax(0,1fr)_minmax(260px,0.7fr)]">
@@ -145,8 +116,8 @@ export function ModuleDiagnosticsPage(): ReactElement {
                   <div>
                     <div className="text-xs font-medium uppercase text-muted-foreground">exports</div>
                     <div className="mt-2 space-y-2">
-                      {exportGroups.length > 0 ? (
-                        exportGroups.map((group) => (
+                      {module.exports.length > 0 ? (
+                        module.exports.map((group) => (
                           <div key={group.name} className="flex flex-wrap items-center gap-2 text-sm">
                             <span className="min-w-20 font-medium">{group.name}</span>
                             <div className="flex flex-wrap gap-1.5">
@@ -167,9 +138,9 @@ export function ModuleDiagnosticsPage(): ReactElement {
                   <div>
                     <div className="text-xs font-medium uppercase text-muted-foreground">better auth</div>
                     <div className="mt-2 flex flex-wrap gap-1.5">
-                      {pluginIds.length > 0 ? (
-                        pluginIds.map((pluginId) => (
-                          <Badge key={pluginId} variant="outline" className="font-mono">
+                      {module.betterAuthPluginIds.length > 0 ? (
+                        module.betterAuthPluginIds.map((pluginId, index) => (
+                          <Badge key={`${pluginId}-${index}`} variant="outline" className="font-mono">
                             <KeyRound className="h-3 w-3" />
                             {pluginId}
                           </Badge>
