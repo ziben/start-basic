@@ -1,14 +1,24 @@
-import { useRouteContext } from '@tanstack/react-router'
 import type { ReactElement } from 'react'
-import { Boxes, LayoutDashboard, ScrollText } from 'lucide-react'
-import { useLayout } from '~/shared/context/layout-provider'
-import { useSidebar as useDynamicSidebar } from '~/modules/admin/shared/sidebar'
+import { useRouteContext } from '@tanstack/react-router'
 import { iconResolver } from '@/shared/utils/icon-resolver'
+import {
+  Bot,
+  Boxes,
+  Building2,
+  Languages,
+  LayoutDashboard,
+  Menu,
+  ScrollText,
+  Settings,
+  Shield,
+  Users,
+} from 'lucide-react'
+import { useSidebar as useDynamicSidebar } from '~/modules/admin/shared/sidebar'
+import { useLayout } from '~/shared/context/layout-provider'
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from '@/components/ui/sidebar'
 import { NavGroup as NavGroupComponent } from '@/components/layout/nav-group'
 import { NavUser } from '@/components/layout/nav-user'
 import { AdminTitle } from './admin-title'
-import { SidebarSkeleton } from './sidebar-skeleton'
 import type { NavGroup as NavGroupType } from './types'
 
 // 管理后台专用侧边栏数据
@@ -25,6 +35,51 @@ function createAdminSidebarData(): { navGroups: NavGroupType[] } {
           },
         ],
       },
+      {
+        title: '配置',
+        items: [
+          {
+            title: '系统设置',
+            url: '/admin/system-config',
+            icon: Settings,
+          },
+          {
+            title: 'AI',
+            url: '/admin/ai-chat',
+            icon: Bot,
+          },
+          {
+            title: '菜单管理',
+            url: '/admin/navigation',
+            icon: Menu,
+          },
+          {
+            title: 'I18N管理',
+            url: '/admin/translation',
+            icon: Languages,
+          },
+        ],
+      },
+      {
+        title: '身份与组织',
+        items: [
+          {
+            title: '用户管理',
+            url: '/admin/users',
+            icon: Users,
+          },
+          {
+            title: '系统角色',
+            url: '/admin/rbac/roles',
+            icon: Shield,
+          },
+          {
+            title: '组织管理',
+            url: '/admin/organizations',
+            icon: Building2,
+          },
+        ],
+      },
     ] as NavGroupType[],
   }
 }
@@ -34,11 +89,6 @@ export function AdminSidebar(): ReactElement {
   const { user } = useRouteContext({ from: '__root__' })
 
   const { data: sidebarData, isLoading } = useDynamicSidebar(iconResolver, 'ADMIN')
-
-  // 加载中时显示骨架屏
-  if (isLoading) {
-    return <SidebarSkeleton collapsible={collapsible} variant={variant} />
-  }
 
   const fallbackData = createAdminSidebarData()
 
@@ -53,7 +103,7 @@ export function AdminSidebar(): ReactElement {
   const groupsWithLogs: NavGroupType[] = [
     ...baseGroups,
     {
-      title: '系统',
+      title: '诊断',
       items: [
         {
           title: '模块诊断',
@@ -86,9 +136,3 @@ export function AdminSidebar(): ReactElement {
     </Sidebar>
   )
 }
-
-
-
-
-
-
