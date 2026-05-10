@@ -1,12 +1,117 @@
+import type { ElementType } from 'react'
 import prisma from '@/shared/lib/db'
 import { createAdminSidebarData, createSidebarData } from '~/components/layout/data/sidebar-data'
 import type { SidebarData, NavGroup as NavGroupType, NavItem, NavCollapsible, NavLink } from '~/components/layout/types'
+
+type SidebarScope = 'APP' | 'ADMIN'
+
+type DbNavItem = {
+  title: string
+  url?: string | null
+  icon?: string | null
+  badge?: string | null
+  isCollapsible?: boolean
+  children?: DbNavItem[]
+}
+
+type DbNavGroup = {
+  title: string
+  navItems?: DbNavItem[]
+}
+
+type SerializableNavItem = NavItem & {
+  icon?: string | ElementType
+}
+
+function isNavLink(item: NavItem): item is NavLink {
+  return 'url' in item
+}
+
+function hasAdminUrl(item: NavItem): boolean {
+  if (isNavLink(item)) return item.url?.includes('/admin') ?? false
+  return item.items?.some(hasAdminUrl) ?? false
+}
+
+function serializeIcon(val: unknown): string {
+  if (!val) return ''
+  if (typeof val === 'string') return val
+  if (typeof val === 'function') {
+    const fn = val as { displayName?: string; name?: string }
+    return fn.displayName || fn.name || ''
+  }
+  if (val && typeof val === 'object' && ('displayName' in val || 'name' in val)) {
+    const obj = val as { displayName?: string; name?: string }
+    return obj.displayName || obj.name || ''
+  }
+  return String(val || '')
+}
+
+function serializeNavItems(items: NavItem[]): NavItem[] {
+  return (items || []).map((item) => {
+    const serializable = item as SerializableNavItem
+    const base = {
+      ...item,
+      icon: serializeIcon(serializable.icon),
+    }
+
+    if ('items' in item && item.items) {
+      return {
+        ...base,
+        items: serializeNavItems(item.items),
+      } as NavCollapsible
+    }
+
+    return base as NavLink
+  })
+}
+
+function findItemUrl(item: NavItem): string | null {
+  return isNavLink(item) ? (item.url ?? null) : null
+}
+
+function hasNavItemUrl(items: NavItem[], url: string): boolean {
+  return items.some((item) => {
+    const itemUrl = findItemUrl(item)
+    if (itemUrl === url) return true
+    if ('items' in item) return item.items?.some((child) => findItemUrl(child) === url) ?? false
+    return false
+  })
+}
+
+function mergeRequiredAdminGroups(
+  groups: NavGroupType[],
+  fallbackGroups: NavGroupType[],
+  scope: SidebarScope
+): NavGroupType[] {
+  if (scope !== 'ADMIN') return groups
+
+  const requiredGroup = fallbackGroups.find((group) => group.title === '诊断')
+  if (!requiredGroup) return groups
+
+  const existingIndex = groups.findIndex((group) => group.title === requiredGroup.title)
+  if (existingIndex === -1) return [...groups, requiredGroup]
+
+  return groups.map((group, index) => {
+    if (index !== existingIndex) return group
+
+    const missingItems = requiredGroup.items.filter((item) => {
+      const url = findItemUrl(item)
+      return url ? !hasNavItemUrl(group.items, url) : false
+    })
+
+    if (missingItems.length === 0) return group
+    return {
+      ...group,
+      items: [...group.items, ...missingItems],
+    }
+  })
+}
 
 // 从数据库获取侧边栏数据并转换为前端需要的格式
 export async function getSidebarData(
   userId?: string,
   role?: string,
-  scope: 'APP' | 'ADMIN' = 'APP'
+  scope: SidebarScope = 'APP'
 ): Promise<SidebarData> {
   try {
     // 获取菜单组
@@ -85,20 +190,8 @@ export async function getSidebarData(
       : null
 
     // 创建空的侧边栏数据
-    const t = (key: string) => key // 占位翻译函数
+    const t = (key: string): string => key // 占位翻译函数
     const defaultData = scope === 'ADMIN' ? createAdminSidebarData(t) : createSidebarData(t)
-
-    // 为避免将 React 组件/函数（可能包含 Symbol）序列化到响应中，
-    // 我们在服务器端将 logo/icon 等非可序列化值转换为字符串标识。
-    const serializeIcon = (val: unknown): string => {
-      if (!val) return ''
-      if (typeof val === 'string') return val
-      if (val && typeof val === 'object' && ('displayName' in val || 'name' in val)) {
-        const obj = val as { displayName?: string; name?: string }
-        return obj.displayName || obj.name || ''
-      }
-      return String(val || '')
-    }
 
     // 获取动态 Teams (Organizations)
     const organizations = await prisma.organization.findMany({
@@ -125,30 +218,12 @@ export async function getSidebarData(
           }))
 
     const serializedNavGroups = (defaultData.navGroups || [])
-      .filter((group) => {
+      .filter((group): boolean => {
         if (scope !== 'APP') return true
 
-        return !group.items.some((item: any) =>
-          'url' in item ? item.url?.includes('/admin') : item.items?.some((sub: any) => sub.url?.includes('/admin'))
-        )
+        return !group.items.some(hasAdminUrl)
       })
-      .map((group) => {
-        // 递归序列化导航项中的图标
-        const serializeNavItems = (items: any[]): NavItem[] => {
-          return (items || []).map((it) => {
-            const base = {
-              ...it,
-              icon: serializeIcon(it.icon),
-            }
-            if (it.items) {
-              return {
-                ...base,
-                items: serializeNavItems(it.items),
-              } as NavCollapsible
-            }
-            return base as NavLink
-          })
-        }
+      .map((group): NavGroupType => {
         return {
           ...group,
           items: serializeNavItems(group.items || []),
@@ -165,27 +240,30 @@ export async function getSidebarData(
           }
         : defaultData.user,
       teams: serializedTeams,
-      navGroups: adaptedGroups.length > 0 ? adaptedGroups : serializedNavGroups,
+      navGroups:
+        adaptedGroups.length > 0
+          ? mergeRequiredAdminGroups(adaptedGroups, serializedNavGroups, scope)
+          : serializedNavGroups,
     }
   } catch (error) {
     console.error('Error fetching sidebar data:', error)
     // 发生错误时返回默认数据
-    const t = (key: string) => key
+    const t = (key: string): string => key
     return scope === 'ADMIN' ? createAdminSidebarData(t) : createSidebarData(t)
   }
 }
 
 // 将数据库模型转换为前端需要的格式
-function mapNavGroupsToFrontend(dbGroups: any[]): NavGroupType[] {
-  return dbGroups.map((group: any) => ({
+function mapNavGroupsToFrontend(dbGroups: DbNavGroup[]): NavGroupType[] {
+  return dbGroups.map((group) => ({
     title: group.title,
     items: mapNavItemsToFrontend(group.navItems || []),
   }))
 }
 
 // 递归转换导航项
-function mapNavItemsToFrontend(dbItems: any[]): NavItem[] {
-  return (dbItems || []).map((item: any) => {
+function mapNavItemsToFrontend(dbItems: DbNavItem[]): NavItem[] {
+  return (dbItems || []).map((item) => {
     // 基础项目信息
     const baseItem = {
       title: item.title,
@@ -210,38 +288,41 @@ function mapNavItemsToFrontend(dbItems: any[]): NavItem[] {
 }
 
 // 初始化数据库中的侧边栏数据
-export async function initSidebarData() {
+export async function initSidebarData(): Promise<void> {
   const count = await prisma.navGroup.count()
   if (count > 0) {
+    await ensureAdminDiagnosticsNavGroup()
     console.log('Sidebar data already exists, skipping initialization')
     return
   }
 
   // 获取默认数据作为初始化数据源
-  const t = (key: string) => key
-  const defaultData = createSidebarData(t)
+  const t = (key: string): string => key
+  const sidebarSeeds: Array<{ scope: SidebarScope; data: SidebarData }> = [
+    { scope: 'APP', data: createSidebarData(t) },
+    { scope: 'ADMIN', data: createAdminSidebarData(t) },
+  ]
 
   try {
     // 事务中处理所有创建操作
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx): Promise<void> => {
       // 为每个菜单组创建数据
-      for (let i = 0; i < defaultData.navGroups.length; i++) {
-        const group = defaultData.navGroups[i]
-        const createdGroup = await tx.navGroup.create({
-          data: {
-            title: group.title,
-            orderIndex: i,
-            // 创建角色关联 - 默认为所有人可见
-            roleNavGroups: {
-              create: [{ roleName: 'user' }, { roleName: 'admin' }],
+      for (const seed of sidebarSeeds) {
+        for (let i = 0; i < seed.data.navGroups.length; i++) {
+          const group = seed.data.navGroups[i]
+          const createdGroup = await tx.navGroup.create({
+            data: {
+              title: group.title,
+              scope: seed.scope,
+              orderIndex: i,
             },
-          },
-        })
+          })
 
-        // 为每个分组下的项目创建数据
-        for (let j = 0; j < group.items.length; j++) {
-          const item = group.items[j]
-          await createNavItem(tx, item, j, createdGroup.id)
+          // 为每个分组下的项目创建数据
+          for (let j = 0; j < group.items.length; j++) {
+            const item = group.items[j]
+            await createNavItem(tx, item, j, createdGroup.id)
+          }
         }
       }
     })
@@ -260,7 +341,7 @@ async function createNavItem(
   orderIndex: number,
   navGroupId: string,
   parentId?: string
-) {
+): Promise<unknown> {
   // 确定是否为可折叠菜单
   const isCollapsible = 'items' in item && !!item.items && item.items.length > 0
 
@@ -269,7 +350,7 @@ async function createNavItem(
     data: {
       title: item.title,
       url: !isCollapsible ? String((item as NavLink).url || '') : null,
-      icon: item.icon ? (typeof item.icon === 'string' ? item.icon : 'IconPackages') : null,
+      icon: item.icon ? serializeIcon(item.icon) : null,
       badge: item.badge,
       orderIndex,
       isCollapsible,
@@ -286,4 +367,45 @@ async function createNavItem(
   }
 
   return navItem
+}
+
+async function ensureAdminDiagnosticsNavGroup(): Promise<void> {
+  const t = (key: string): string => key
+  const diagnosticsGroup = createAdminSidebarData(t).navGroups.find((group) => group.title === '诊断')
+  if (!diagnosticsGroup) return
+
+  await prisma.$transaction(async (tx): Promise<void> => {
+    const existingGroup = await tx.navGroup.findFirst({
+      where: {
+        scope: 'ADMIN',
+        title: diagnosticsGroup.title,
+      },
+      include: {
+        navItems: true,
+      },
+    })
+
+    const navGroup =
+      existingGroup ??
+      (await tx.navGroup.create({
+        data: {
+          title: diagnosticsGroup.title,
+          scope: 'ADMIN',
+          orderIndex: await tx.navGroup.count({ where: { scope: 'ADMIN' } }),
+        },
+        include: {
+          navItems: true,
+        },
+      }))
+
+    for (let i = 0; i < diagnosticsGroup.items.length; i++) {
+      const item = diagnosticsGroup.items[i]
+      if (!isNavLink(item)) continue
+
+      const exists = navGroup.navItems.some((navItem) => navItem.url === item.url)
+      if (exists) continue
+
+      await createNavItem(tx, item, navGroup.navItems.length + i, navGroup.id)
+    }
+  })
 }

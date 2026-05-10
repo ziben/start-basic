@@ -8,12 +8,18 @@ import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import { sidebarQueryKeys } from '~/shared/lib/query-keys'
 import { getSidebarDataFn } from './api.fn'
 
+type UseSidebarResult = {
+  data: SidebarData
+  isLoading: boolean
+  error: unknown
+}
+
 /**
  * 处理侧边栏数据的React Hook，包括数据获取、翻译和处理
  * @param iconResolver 可选的图标解析器，将字符串转换为组件
  * @returns 处理后的侧边栏数据和加载状态
  */
-export function useSidebar(iconResolver?: IconResolver, scope: 'APP' | 'ADMIN' = 'APP') {
+export function useSidebar(iconResolver?: IconResolver, scope: 'APP' | 'ADMIN' = 'APP'): UseSidebarResult {
   const { t } = useTranslation()
 
   // 从API获取侧边栏数据

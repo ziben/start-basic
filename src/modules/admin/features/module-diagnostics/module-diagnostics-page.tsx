@@ -2,7 +2,19 @@
 
 import type { ReactElement } from 'react'
 import { useMemo, useState } from 'react'
-import { Boxes, Copy, GitBranch, KeyRound, PackageCheck, Search, ShieldCheck, X } from 'lucide-react'
+import {
+  AlertTriangle,
+  Boxes,
+  Copy,
+  Download,
+  GitBranch,
+  KeyRound,
+  Network,
+  PackageCheck,
+  Search,
+  ShieldCheck,
+  X,
+} from 'lucide-react'
 import { toast } from 'sonner'
 import { moduleDiagnostics } from '~/modules/module-diagnostics'
 import { Badge } from '@/components/ui/badge'
@@ -11,14 +23,27 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 
-type ModuleFilter = 'all' | 'dependencies' | 'exports' | 'auth'
+type ModuleFilter = 'all' | 'dependencies' | 'exports' | 'auth' | 'issues'
 
 const moduleFilters: Array<{ label: string; value: ModuleFilter }> = [
   { label: '全部', value: 'all' },
   { label: '有依赖', value: 'dependencies' },
   { label: '有 exports', value: 'exports' },
   { label: 'Auth 插件', value: 'auth' },
+  { label: '有问题', value: 'issues' },
 ]
+
+function findDuplicates(items: string[]): string[] {
+  const seen = new Set<string>()
+  const duplicates = new Set<string>()
+
+  for (const item of items) {
+    if (seen.has(item)) duplicates.add(item)
+    seen.add(item)
+  }
+
+  return Array.from(duplicates)
+}
 
 export function ModuleDiagnosticsPage(): ReactElement {
   const modules = moduleDiagnostics
@@ -30,15 +55,46 @@ export function ModuleDiagnosticsPage(): ReactElement {
     (count, module) => count + module.exports.reduce((sum, group) => sum + group.keys.length, 0),
     0
   )
+  const diagnosticsIssues = useMemo(() => {
+    const moduleKeys = new Set(modules.map((module) => module.key))
+    const exportKeys = modules.flatMap((module) =>
+      module.exports.flatMap((group) => group.keys.map((key) => `${group.name}.${key}`))
+    )
+
+    return {
+      duplicateExportKeys: findDuplicates(exportKeys),
+      duplicatePluginIds: modules.flatMap((module) =>
+        findDuplicates(module.betterAuthPluginIds).map((pluginId) => `${module.key}:${pluginId}`)
+      ),
+      missingDependencies: modules.flatMap((module) =>
+        module.dependencies
+          .filter((dependency) => !moduleKeys.has(dependency))
+          .map((dependency) => `${module.key}:${dependency}`)
+      ),
+    }
+  }, [modules])
+  const issueCount =
+    diagnosticsIssues.duplicateExportKeys.length +
+    diagnosticsIssues.duplicatePluginIds.length +
+    diagnosticsIssues.missingDependencies.length
   const normalizedQuery = query.trim().toLowerCase()
   const filteredModules = useMemo(
     () =>
       modules.filter((module) => {
+        const hasIssue =
+          module.dependencies.some((dependency) =>
+            diagnosticsIssues.missingDependencies.some((item) => item === `${module.key}:${dependency}`)
+          ) ||
+          findDuplicates(module.betterAuthPluginIds).length > 0 ||
+          module.exports.some((group) =>
+            group.keys.some((key) => diagnosticsIssues.duplicateExportKeys.includes(`${group.name}.${key}`))
+          )
         const matchesFilter =
           filter === 'all' ||
           (filter === 'dependencies' && module.dependencies.length > 0) ||
           (filter === 'exports' && module.exports.length > 0) ||
-          (filter === 'auth' && module.betterAuthPluginIds.length > 0)
+          (filter === 'auth' && module.betterAuthPluginIds.length > 0) ||
+          (filter === 'issues' && hasIssue)
 
         if (!matchesFilter) return false
         if (!normalizedQuery) return true
@@ -53,7 +109,7 @@ export function ModuleDiagnosticsPage(): ReactElement {
 
         return searchable.some((item) => item.toLowerCase().includes(normalizedQuery))
       }),
-    [filter, modules, normalizedQuery]
+    [diagnosticsIssues, filter, modules, normalizedQuery]
   )
   const resetFilters = (): void => {
     setQuery('')
@@ -66,6 +122,18 @@ export function ModuleDiagnosticsPage(): ReactElement {
     } catch {
       toast.error(`${label} 复制失败`)
     }
+  }
+  const exportJson = async (): Promise<void> => {
+    const blob = new Blob([JSON.stringify({ modules, issues: diagnosticsIssues }, null, 2)], {
+      type: 'application/json',
+    })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = 'module-diagnostics.json'
+    link.click()
+    URL.revokeObjectURL(url)
+    toast.success('模块诊断 JSON 已导出')
   }
 
   return (
@@ -84,7 +152,7 @@ export function ModuleDiagnosticsPage(): ReactElement {
         </div>
       </div>
 
-      <div className='grid gap-3 p-4 md:grid-cols-2 xl:grid-cols-4'>
+      <div className='grid gap-3 p-4 md:grid-cols-2 xl:grid-cols-5'>
         <Card>
           <CardHeader className='flex flex-row items-center justify-between space-y-0 px-4 pt-4 pb-2'>
             <CardTitle className='text-sm font-medium'>注册模块</CardTitle>
@@ -128,6 +196,17 @@ export function ModuleDiagnosticsPage(): ReactElement {
             <p className='text-xs text-muted-foreground'>server/client plugin IDs</p>
           </CardContent>
         </Card>
+
+        <Card>
+          <CardHeader className='flex flex-row items-center justify-between space-y-0 px-4 pt-4 pb-2'>
+            <CardTitle className='text-sm font-medium'>检查项</CardTitle>
+            <AlertTriangle className='h-4 w-4 text-muted-foreground' />
+          </CardHeader>
+          <CardContent className='px-4 pb-4'>
+            <div className='text-2xl font-bold'>{issueCount}</div>
+            <p className='text-xs text-muted-foreground'>重复 ID / 缺失依赖</p>
+          </CardContent>
+        </Card>
       </div>
 
       <Card className='mx-4'>
@@ -140,6 +219,10 @@ export function ModuleDiagnosticsPage(): ReactElement {
               </span>
             </div>
             <div className='flex flex-col gap-2 md:flex-row md:items-center'>
+              <Button type='button' variant='outline' size='sm' onClick={() => void exportJson()}>
+                <Download className='h-4 w-4' />
+                导出 JSON
+              </Button>
               <div className='relative md:w-72'>
                 <Search className='pointer-events-none absolute top-2.5 left-2.5 h-4 w-4 text-muted-foreground' />
                 <Input
@@ -215,6 +298,16 @@ export function ModuleDiagnosticsPage(): ReactElement {
                           ? `${module.dependencies.join(' -> ')} -> ${module.key}`
                           : module.key}
                       </p>
+                      {module.dependencies.length > 0 ? (
+                        <div className='flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground'>
+                          <Network className='h-3.5 w-3.5' />
+                          {module.dependencies.map((dependency) => (
+                            <span key={dependency} className='rounded border bg-background px-1.5 py-0.5'>
+                              {dependency} {'->'} {module.key}
+                            </span>
+                          ))}
+                        </div>
+                      ) : null}
                     </div>
 
                     <div>
@@ -277,6 +370,11 @@ export function ModuleDiagnosticsPage(): ReactElement {
                           <p className='text-sm text-muted-foreground'>未声明 Better Auth 插件</p>
                         )}
                       </div>
+                      {findDuplicates(module.betterAuthPluginIds).length > 0 ? (
+                        <p className='mt-2 text-xs text-amber-600 dark:text-amber-400'>
+                          重复插件：{findDuplicates(module.betterAuthPluginIds).join(', ')}
+                        </p>
+                      ) : null}
                     </div>
                   </div>
                 </div>
@@ -295,9 +393,36 @@ export function ModuleDiagnosticsPage(): ReactElement {
 
       <Card className='m-4 mt-3'>
         <CardHeader className='px-4 py-3'>
-          <CardTitle className='text-sm font-medium'>边界说明</CardTitle>
+          <CardTitle className='text-sm font-medium'>检查摘要</CardTitle>
         </CardHeader>
         <CardContent className='space-y-3 px-4 pb-4 text-sm text-muted-foreground'>
+          <div className='grid gap-2 md:grid-cols-3'>
+            <div>
+              <div className='text-xs font-medium text-foreground'>重复 exports</div>
+              <p>
+                {diagnosticsIssues.duplicateExportKeys.length
+                  ? diagnosticsIssues.duplicateExportKeys.join(', ')
+                  : '未发现'}
+              </p>
+            </div>
+            <div>
+              <div className='text-xs font-medium text-foreground'>重复插件 ID</div>
+              <p>
+                {diagnosticsIssues.duplicatePluginIds.length
+                  ? diagnosticsIssues.duplicatePluginIds.join(', ')
+                  : '未发现'}
+              </p>
+            </div>
+            <div>
+              <div className='text-xs font-medium text-foreground'>缺失依赖</div>
+              <p>
+                {diagnosticsIssues.missingDependencies.length
+                  ? diagnosticsIssues.missingDependencies.join(', ')
+                  : '未发现'}
+              </p>
+            </div>
+          </div>
+          <Separator />
           <p>模块注册表用于能力发现和诊断，不参与业务运行时依赖注入。</p>
           <Separator />
           <p>新增模块应显式注册，并用 module contract 测试锁定 key、dependencies 和 exports。</p>

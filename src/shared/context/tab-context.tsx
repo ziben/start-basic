@@ -2,40 +2,14 @@ import React, { createContext, useContext, useState, useCallback, useEffect, use
 import { useNavigate, useLocation } from '@tanstack/react-router'
 import type { Tab, TabStateContextValue, TabActionContextValue, TabScope } from '@/shared/types/tab-types'
 import { MAX_TABS } from '@/shared/types/tab-types'
+import { dedupeTabs, getTabScope, getTitleForPath, normalizeTabPath } from './tab-utils'
 
 const TabStateContext = createContext<TabStateContextValue | undefined>(undefined)
 const TabActionContext = createContext<TabActionContextValue | undefined>(undefined)
 
 const STORAGE_KEY = 'admin-tabs'
 
-function normalizeTabPath(path: string): string {
-  if (path === '/admin') return '/admin/dashboard'
-  if (path.startsWith('/admin/profile/settings')) return '/admin/profile/settings'
-  return path
-}
-
-function getTabScope(path: string): TabScope {
-  return path.startsWith('/admin') ? 'ADMIN' : 'APP'
-}
-
-function dedupeTabs(tabs: Tab[]): Tab[] {
-  const byScopeAndPath = new Map<string, Tab>()
-
-  for (const tab of tabs) {
-    const path = normalizeTabPath(tab.path)
-    const scope = tab.scope ?? getTabScope(path)
-    const key = `${scope}:${path}`
-    const existing = byScopeAndPath.get(key)
-
-    if (!existing || (existing.closable !== false && tab.closable === false)) {
-      byScopeAndPath.set(key, { ...tab, path, scope })
-    }
-  }
-
-  return Array.from(byScopeAndPath.values()).sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
-}
-
-export function TabProvider({ children }: { children: React.ReactNode }) {
+export function TabProvider({ children }: { children: React.ReactNode }): React.ReactElement {
   const navigate = useNavigate()
   const location = useLocation()
   type NavigateTo = Parameters<typeof navigate>[0]['to']
@@ -149,61 +123,6 @@ export function TabProvider({ children }: { children: React.ReactNode }) {
     return null
   }, [scopedTabs, location.pathname])
 
-  // 辅助函数：根据路径推断标题
-  const getTitleForPath = useCallback((path: string): string => {
-    // 常规路径映射
-    const titleMap: Record<string, string> = {
-      '/admin/dashboard': '系统概览',
-      '/admin/modules': '模块诊断',
-      '/admin/users': '用户管理',
-      '/admin/rbac/roles': '系统角色',
-      '/admin/rbac/org-roles': '组织角色',
-      '/admin/rbac/permissions': '权限定义',
-      '/admin/log': '系统日志',
-      '/admin/profile/settings': '账号设置',
-      '/admin/system-config': '系统设置',
-      '/admin/ai-chat': 'AI',
-      '/admin/navigation': '菜单管理',
-      '/admin/translation': 'I18N管理',
-      '/admin/organizations': '组织管理',
-      '/admin/members': '成员管理',
-      '/admin/department': '部门管理',
-    }
-
-    if (titleMap[path]) return titleMap[path]
-
-    // 智能推断：提取路径最后一段
-    const segments = path.split('/').filter(Boolean)
-    const lastSegment = segments[segments.length - 1]
-
-    if (lastSegment) {
-      // 常见词库翻译
-      const segmentMap: Record<string, string> = {
-        settings: '设置',
-        profile: '个人资料',
-        dashboard: '概览',
-        users: '用户',
-        roles: '角色',
-        permissions: '权限',
-        log: '日志',
-        audit: '审计',
-        account: '账户',
-        security: '安全',
-        identity: '身份认证',
-        system: '系统',
-      }
-
-      if (segmentMap[lastSegment.toLowerCase()]) {
-        return segmentMap[lastSegment.toLowerCase()]
-      }
-
-      // 兜底：首字母大写
-      return lastSegment.charAt(0).toUpperCase() + lastSegment.slice(1)
-    }
-
-    return '详情页'
-  }, [])
-
   // 自动打开标签页逻辑
   useEffect(() => {
     const path = normalizeTabPath(location.pathname)
@@ -231,7 +150,7 @@ export function TabProvider({ children }: { children: React.ReactNode }) {
     })
 
     return () => cancelAnimationFrame(frame)
-  }, [location.pathname, tabs, openTab, currentScope, getTitleForPath])
+  }, [location.pathname, tabs, openTab, currentScope])
 
   // 客户端从 localStorage 恢复 tabs
   useEffect(() => {
@@ -412,7 +331,7 @@ export function TabProvider({ children }: { children: React.ReactNode }) {
   )
 }
 
-export function useTabState() {
+export function useTabState(): TabStateContextValue {
   const context = useContext(TabStateContext)
   if (context === undefined) {
     throw new Error('useTabState must be used within a TabProvider.')
@@ -420,7 +339,7 @@ export function useTabState() {
   return context
 }
 
-export function useTabActions() {
+export function useTabActions(): TabActionContextValue {
   const context = useContext(TabActionContext)
   if (context === undefined) {
     throw new Error('useTabActions must be used within a TabProvider.')
@@ -429,12 +348,12 @@ export function useTabActions() {
 }
 
 // Deprecated: Kept for backwards compatibility but shouldn't be used for new code
-export function useTabs() {
+export function useTabs(): TabStateContextValue & TabActionContextValue {
   const state = useTabState()
   const actions = useTabActions()
   return { ...state, ...actions }
 }
 
-export function useTabsRequired() {
+export function useTabsRequired(): TabStateContextValue & TabActionContextValue {
   return useTabs()
 }
