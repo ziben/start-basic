@@ -2,7 +2,8 @@
 
 import type { ReactElement } from 'react'
 import { useMemo, useState } from 'react'
-import { Boxes, GitBranch, KeyRound, PackageCheck, Search, ShieldCheck, X } from 'lucide-react'
+import { Boxes, Copy, GitBranch, KeyRound, PackageCheck, Search, ShieldCheck, X } from 'lucide-react'
+import { toast } from 'sonner'
 import { moduleDiagnostics } from '~/modules/module-diagnostics'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -54,6 +55,18 @@ export function ModuleDiagnosticsPage(): ReactElement {
       }),
     [filter, modules, normalizedQuery]
   )
+  const resetFilters = (): void => {
+    setQuery('')
+    setFilter('all')
+  }
+  const copyText = async (label: string, value: string): Promise<void> => {
+    try {
+      await navigator.clipboard.writeText(value)
+      toast.success(`${label} 已复制`)
+    } catch {
+      toast.error(`${label} 复制失败`)
+    }
+  }
 
   return (
     <div className='flex h-full flex-col overflow-auto bg-muted/20'>
@@ -173,6 +186,16 @@ export function ModuleDiagnosticsPage(): ReactElement {
                     <div className='space-y-2'>
                       <div className='flex flex-wrap items-center gap-2'>
                         <h2 className='font-mono text-sm font-semibold'>{module.key}</h2>
+                        <Button
+                          type='button'
+                          variant='ghost'
+                          size='icon-sm'
+                          className='h-6 w-6'
+                          aria-label={`复制模块 ${module.key}`}
+                          onClick={() => void copyText('模块 key', module.key)}
+                        >
+                          <Copy className='h-3.5 w-3.5' />
+                        </Button>
                         {module.version ? <Badge variant='outline'>v{module.version}</Badge> : null}
                       </div>
                       <div className='flex flex-wrap gap-1.5'>
@@ -186,6 +209,12 @@ export function ModuleDiagnosticsPage(): ReactElement {
                           <Badge variant='outline'>root module</Badge>
                         )}
                       </div>
+                      <p className='text-xs text-muted-foreground'>
+                        依赖链：
+                        {module.dependencies.length > 0
+                          ? `${module.dependencies.join(' -> ')} -> ${module.key}`
+                          : module.key}
+                      </p>
                     </div>
 
                     <div>
@@ -197,9 +226,21 @@ export function ModuleDiagnosticsPage(): ReactElement {
                               <span className='min-w-20 font-medium'>{group.name}</span>
                               <div className='flex flex-wrap gap-1.5'>
                                 {group.keys.map((key) => (
-                                  <Badge key={key} variant='outline' className='font-mono'>
-                                    {key}
-                                  </Badge>
+                                  <span key={key} className='inline-flex items-center gap-1'>
+                                    <Badge variant='outline' className='font-mono'>
+                                      {key}
+                                    </Badge>
+                                    <Button
+                                      type='button'
+                                      variant='ghost'
+                                      size='icon-sm'
+                                      className='h-6 w-6'
+                                      aria-label={`复制 ${group.name}.${key}`}
+                                      onClick={() => void copyText('exports key', `${module.key}.${group.name}.${key}`)}
+                                    >
+                                      <Copy className='h-3.5 w-3.5' />
+                                    </Button>
+                                  </span>
                                 ))}
                               </div>
                             </div>
@@ -215,10 +256,22 @@ export function ModuleDiagnosticsPage(): ReactElement {
                       <div className='mt-2 flex flex-wrap gap-1.5'>
                         {module.betterAuthPluginIds.length > 0 ? (
                           module.betterAuthPluginIds.map((pluginId, index) => (
-                            <Badge key={`${pluginId}-${index}`} variant='outline' className='font-mono'>
-                              <KeyRound className='h-3 w-3' />
-                              {pluginId}
-                            </Badge>
+                            <span key={`${pluginId}-${index}`} className='inline-flex items-center gap-1'>
+                              <Badge variant='outline' className='font-mono'>
+                                <KeyRound className='h-3 w-3' />
+                                {pluginId}
+                              </Badge>
+                              <Button
+                                type='button'
+                                variant='ghost'
+                                size='icon-sm'
+                                className='h-6 w-6'
+                                aria-label={`复制 Better Auth 插件 ${pluginId}`}
+                                onClick={() => void copyText('插件 ID', pluginId)}
+                              >
+                                <Copy className='h-3.5 w-3.5' />
+                              </Button>
+                            </span>
                           ))
                         ) : (
                           <p className='text-sm text-muted-foreground'>未声明 Better Auth 插件</p>
@@ -230,7 +283,12 @@ export function ModuleDiagnosticsPage(): ReactElement {
               )
             })
           ) : (
-            <div className='px-4 py-10 text-center text-sm text-muted-foreground'>没有匹配的模块。</div>
+            <div className='flex flex-col items-center gap-3 px-4 py-10 text-center text-sm text-muted-foreground'>
+              <span>没有匹配的模块。</span>
+              <Button type='button' variant='outline' size='sm' onClick={resetFilters}>
+                重置筛选
+              </Button>
+            </div>
           )}
         </CardContent>
       </Card>

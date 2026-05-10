@@ -1,14 +1,19 @@
+import type { ReactElement } from 'react'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 import { ReactQueryDevtoolsPanel } from '@tanstack/react-query-devtools'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import ClientPlugin from './client-plugin'
 
-export default function DevtoolsExample() {
+const enableTanStackDevtools = import.meta.env.VITE_ENABLE_TANSTACK_DEVTOOLS === 'true'
+
+export default function DevtoolsExample(): ReactElement | null {
+  if (!enableTanStackDevtools) return null
+
   return (
     <TanStackDevtools
       eventBusConfig={{
         debug: false,
-        connectToServerBus: true,
+        connectToServerBus: enableTanStackDevtools,
       }}
       plugins={[
         {
@@ -27,4 +32,3 @@ export default function DevtoolsExample() {
     />
   )
 }
-

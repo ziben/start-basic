@@ -1,10 +1,10 @@
 import { useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import { iconResolver as defaultIconResolver, type IconResolver } from '@/shared/utils/icon-resolver'
 import { Menu } from 'lucide-react'
-import { createSidebarData } from '~/components/layout/data/sidebar-data'
+import { createAdminSidebarData, createSidebarData } from '~/components/layout/data/sidebar-data'
 import type { SidebarData, NavItem, NavCollapsible, NavLink } from '~/components/layout/types'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
-import { iconResolver as defaultIconResolver, type IconResolver } from '@/shared/utils/icon-resolver'
 import { sidebarQueryKeys } from '~/shared/lib/query-keys'
 import { getSidebarDataFn } from './api.fn'
 
@@ -35,7 +35,7 @@ export function useSidebar(iconResolver?: IconResolver, scope: 'APP' | 'ADMIN' =
   // 如果出错或加载中且没有本地数据，使用默认数据
   if ((error || isLoading) && !processedData) {
     // 创建默认的侧边栏数据
-    const defaultData = createSidebarData(t)
+    const defaultData = createDefaultSidebarData(t, scope)
     return {
       data: defaultData,
       isLoading,
@@ -44,10 +44,25 @@ export function useSidebar(iconResolver?: IconResolver, scope: 'APP' | 'ADMIN' =
   }
 
   return {
-    data: processedData || data || createSidebarData(t),
+    data: processedData || data || createDefaultSidebarData(t, scope),
     isLoading,
     error,
   }
+}
+
+function createDefaultSidebarData(translate: (key: string) => string, scope: 'APP' | 'ADMIN'): SidebarData {
+  if (scope === 'ADMIN') return createAdminSidebarData(translate)
+
+  const data = createSidebarData(translate)
+  return {
+    ...data,
+    navGroups: data.navGroups.filter((group) => !group.items.some(hasAdminUrl)),
+  }
+}
+
+function hasAdminUrl(item: NavItem): boolean {
+  if ('url' in item) return item.url?.includes('/admin') ?? false
+  return item.items?.some(hasAdminUrl) ?? false
 }
 
 /**
@@ -78,11 +93,7 @@ function processSidebarData(
 /**
  * 递归处理导航项
  */
-function processNavItems(
-  items: NavItem[],
-  translate: (key: string) => string,
-  iconResolver: IconResolver
-): NavItem[] {
+function processNavItems(items: NavItem[], translate: (key: string) => string, iconResolver: IconResolver): NavItem[] {
   return items.map((item) => {
     // 处理基本属性：入参可能是从后端直接来的原始结构（icon 可能是字符串），这里做一次映射
     const title = translate(item.title)
@@ -117,10 +128,3 @@ function processIcon(iconName: string | null | undefined, iconResolver: IconReso
   const resolved = iconResolver(iconName)
   return resolved ?? Menu
 }
-
-
-
-
-
-
-

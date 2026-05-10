@@ -25,8 +25,12 @@ import {
   Menu,
   UserCheck,
   AudioWaveform,
+  Bot,
+  Boxes,
   Command,
   GalleryVerticalEnd,
+  Languages,
+  ScrollText,
   Shield,
 } from 'lucide-react'
 import { type SidebarData } from '../types'
@@ -280,6 +284,113 @@ export const createSidebarData = (t: (key: string) => string): SidebarData => ({
   ],
 })
 
+export const createAdminSidebarData = (_t: (key: string) => string): SidebarData => ({
+  user: {
+    name: 'Admin',
+    email: 'admin@example.com',
+    avatar: '/avatars/admin.jpg',
+  },
+  teams: [
+    {
+      name: '管理后台',
+      logo: Command,
+      plan: 'Admin Console',
+    },
+  ],
+  navGroups: [
+    {
+      title: '概览',
+      items: [
+        {
+          title: '仪表盘',
+          url: '/admin/dashboard',
+          icon: LayoutDashboard,
+        },
+      ],
+    },
+    {
+      title: '配置',
+      items: [
+        {
+          title: '系统设置',
+          url: '/admin/system-config',
+          icon: Settings,
+        },
+        {
+          title: 'AI',
+          url: '/admin/ai-chat',
+          icon: Bot,
+        },
+        {
+          title: '菜单管理',
+          url: '/admin/navigation',
+          icon: Menu,
+        },
+        {
+          title: 'I18N管理',
+          url: '/admin/translation',
+          icon: Languages,
+        },
+      ],
+    },
+    {
+      title: '身份与组织',
+      items: [
+        {
+          title: '用户管理',
+          url: '/admin/users',
+          icon: Users,
+        },
+        {
+          title: '系统角色',
+          url: '/admin/rbac/roles',
+          icon: Shield,
+        },
+        {
+          title: '组织角色',
+          url: '/admin/rbac/org-roles',
+          icon: Building,
+        },
+        {
+          title: '权限定义',
+          url: '/admin/rbac/permissions',
+          icon: Key,
+        },
+        {
+          title: '组织管理',
+          url: '/admin/organizations',
+          icon: Building,
+        },
+        {
+          title: '成员管理',
+          url: '/admin/members',
+          icon: Users,
+        },
+        {
+          title: '部门管理',
+          url: '/admin/department',
+          icon: Building,
+        },
+      ],
+    },
+    {
+      title: '诊断',
+      items: [
+        {
+          title: '模块诊断',
+          url: '/admin/modules',
+          icon: Boxes,
+        },
+        {
+          title: '日志',
+          url: '/admin/log',
+          icon: ScrollText,
+        },
+      ],
+    },
+  ],
+})
+
 // 导出一个空的初始数据结构，将在组件中填充
 export const sidebarData: SidebarData = {
   user: {
@@ -290,4 +401,3 @@ export const sidebarData: SidebarData = {
   teams: [],
   navGroups: [],
 }
-

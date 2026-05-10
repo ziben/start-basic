@@ -1,6 +1,6 @@
-import { createSidebarData } from '~/components/layout/data/sidebar-data'
-import type { SidebarData, NavGroup as NavGroupType, NavItem, NavCollapsible, NavLink } from '~/components/layout/types'
 import prisma from '@/shared/lib/db'
+import { createAdminSidebarData, createSidebarData } from '~/components/layout/data/sidebar-data'
+import type { SidebarData, NavGroup as NavGroupType, NavItem, NavCollapsible, NavLink } from '~/components/layout/types'
 
 // 从数据库获取侧边栏数据并转换为前端需要的格式
 export async function getSidebarData(
@@ -31,8 +31,8 @@ export async function getSidebarData(
         roleNavGroups: true,
         userRoleNavGroups: userId
           ? {
-            where: { userId, visible: true },
-          }
+              where: { userId, visible: true },
+            }
           : undefined,
       },
     })
@@ -40,12 +40,12 @@ export async function getSidebarData(
     // 获取当前用户的完整信息
     const currentUser = userId
       ? await prisma.user.findUnique({
-        where: { id: userId },
-        select: {
-          id: true,
-          role: true,
-        },
-      })
+          where: { id: userId },
+          select: {
+            id: true,
+            role: true,
+          },
+        })
       : null
 
     // 如果有角色或用户ID限制，过滤可见的菜单组
@@ -56,9 +56,7 @@ export async function getSidebarData(
       }
 
       // 2. 如果菜单组没有任何角色限制（或角色为空），则所有人可见
-      const validRoleRestrictions = (group.roleNavGroups || [])
-        .map((rg) => rg.roleName)
-        .filter((r): r is string => !!r)
+      const validRoleRestrictions = (group.roleNavGroups || []).map((rg) => rg.roleName).filter((r): r is string => !!r)
 
       if (validRoleRestrictions.length === 0) {
         return true
@@ -68,7 +66,7 @@ export async function getSidebarData(
       // 获取用户角色（支持多角色，逗号分隔）
       const userRoles = new Set<string>()
       if (currentUser?.role) {
-        currentUser.role.split(',').forEach(r => userRoles.add(r.trim()))
+        currentUser.role.split(',').forEach((r) => userRoles.add(r.trim()))
       }
       if (role) userRoles.add(role)
 
@@ -81,14 +79,14 @@ export async function getSidebarData(
     // 获取用户数据
     const user = userId
       ? await prisma.user.findUnique({
-        where: { id: userId },
-        select: { name: true, email: true, image: true },
-      })
+          where: { id: userId },
+          select: { name: true, email: true, image: true },
+        })
       : null
 
     // 创建空的侧边栏数据
     const t = (key: string) => key // 占位翻译函数
-    const defaultData = createSidebarData(t)
+    const defaultData = scope === 'ADMIN' ? createAdminSidebarData(t) : createSidebarData(t)
 
     // 为避免将 React 组件/函数（可能包含 Symbol）序列化到响应中，
     // 我们在服务器端将 logo/icon 等非可序列化值转换为字符串标识。
@@ -104,34 +102,35 @@ export async function getSidebarData(
 
     // 获取动态 Teams (Organizations)
     const organizations = await prisma.organization.findMany({
-      where: userId ? {
-        members: {
-          some: { userId }
-        }
-      } : {},
+      where: userId
+        ? {
+            members: {
+              some: { userId },
+            },
+          }
+        : {},
       take: 10,
     })
 
-    const serializedTeams = organizations.length > 0
-      ? organizations.map(org => ({
-        name: org.name,
-        logo: org.logo || 'IconCommand', // 默认图标
-        plan: org.slug || 'Free',
-      }))
-      : (defaultData.teams || []).map((team) => ({
-        ...team,
-        logo: serializeIcon(team.logo),
-      }))
+    const serializedTeams =
+      organizations.length > 0
+        ? organizations.map((org) => ({
+            name: org.name,
+            logo: org.logo || 'IconCommand', // 默认图标
+            plan: org.slug || 'Free',
+          }))
+        : (defaultData.teams || []).map((team) => ({
+            ...team,
+            logo: serializeIcon(team.logo),
+          }))
 
     const serializedNavGroups = (defaultData.navGroups || [])
       .filter((group) => {
-        if (scope === 'APP') {
-          const hasAdminUrl = group.items.some((item: any) =>
-            'url' in item ? item.url?.includes('/admin') : item.items?.some((sub: any) => sub.url?.includes('/admin'))
-          )
-          return !hasAdminUrl
-        }
-        return true
+        if (scope !== 'APP') return true
+
+        return !group.items.some((item: any) =>
+          'url' in item ? item.url?.includes('/admin') : item.items?.some((sub: any) => sub.url?.includes('/admin'))
+        )
       })
       .map((group) => {
         // 递归序列化导航项中的图标
@@ -160,10 +159,10 @@ export async function getSidebarData(
     return {
       user: user
         ? {
-          name: user.name,
-          email: user.email,
-          avatar: user.image || '/avatars/shadcn.jpg',
-        }
+            name: user.name,
+            email: user.email,
+            avatar: user.image || '/avatars/shadcn.jpg',
+          }
         : defaultData.user,
       teams: serializedTeams,
       navGroups: adaptedGroups.length > 0 ? adaptedGroups : serializedNavGroups,
@@ -172,7 +171,7 @@ export async function getSidebarData(
     console.error('Error fetching sidebar data:', error)
     // 发生错误时返回默认数据
     const t = (key: string) => key
-    return createSidebarData(t)
+    return scope === 'ADMIN' ? createAdminSidebarData(t) : createSidebarData(t)
   }
 }
 
@@ -288,8 +287,3 @@ async function createNavItem(
 
   return navItem
 }
-
-
-
-
-
