@@ -25,6 +25,13 @@ export type AppEvents = {
     reason?: string
     failedAt: Date
   }
+  'config.runtime.updated': {
+    refreshedAt: number
+    operatorId: string | null
+    operatorName: string | null
+    enabledConfigCount: number
+    emittedAt: Date
+  }
 }
 
 export type AppEventBus = EventBus<AppEvents>

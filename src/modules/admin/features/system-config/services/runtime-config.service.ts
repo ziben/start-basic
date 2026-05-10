@@ -1,5 +1,6 @@
 import { getDb } from '~/shared/lib/db'
 import { refreshRuntimeConfig } from '~/infrastructure/config/runtime-config'
+import { appEventBus } from '~/modules/events'
 import { randomUUID } from 'node:crypto'
 
 export type ConfigValueType = 'STRING' | 'NUMBER' | 'BOOLEAN' | 'JSON' | 'STRING_ARRAY'
@@ -286,6 +287,14 @@ export const RuntimeConfigService = {
         }
       })
     }
+
+    await appEventBus.emit('config.runtime.updated', {
+      refreshedAt: result.refreshedAt,
+      operatorId: operatorId ?? null,
+      operatorName: operatorName ?? null,
+      enabledConfigCount: enabledConfigs.length,
+      emittedAt: new Date(),
+    })
 
     return result
   },

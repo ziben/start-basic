@@ -1,5 +1,6 @@
 import { useRouteContext } from '@tanstack/react-router'
-import { LayoutDashboard, ScrollText } from 'lucide-react'
+import type { ReactElement } from 'react'
+import { Boxes, LayoutDashboard, ScrollText } from 'lucide-react'
 import { useLayout } from '~/shared/context/layout-provider'
 import { useSidebar as useDynamicSidebar } from '~/modules/admin/shared/sidebar'
 import { iconResolver } from '@/shared/utils/icon-resolver'
@@ -11,7 +12,7 @@ import { SidebarSkeleton } from './sidebar-skeleton'
 import type { NavGroup as NavGroupType } from './types'
 
 // 管理后台专用侧边栏数据
-function createAdminSidebarData() {
+function createAdminSidebarData(): { navGroups: NavGroupType[] } {
   return {
     navGroups: [
       {
@@ -28,7 +29,7 @@ function createAdminSidebarData() {
   }
 }
 
-export function AdminSidebar() {
+export function AdminSidebar(): ReactElement {
   const { collapsible, variant } = useLayout()
   const { user } = useRouteContext({ from: '__root__' })
 
@@ -54,6 +55,11 @@ export function AdminSidebar() {
     {
       title: '系统',
       items: [
+        {
+          title: '模块诊断',
+          url: '/admin/modules',
+          icon: Boxes,
+        },
         {
           title: '日志',
           url: '/admin/log',

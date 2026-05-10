@@ -21,4 +21,24 @@ describe('app events', () => {
       transactionId: 'tx_1',
     }))
   })
+
+  it('emits typed runtime config update events', async () => {
+    const bus = createAppEventBus()
+    const handler = vi.fn()
+
+    bus.on('config.runtime.updated', handler)
+
+    await bus.emit('config.runtime.updated', {
+      refreshedAt: 123,
+      operatorId: 'user_1',
+      operatorName: 'Admin',
+      enabledConfigCount: 2,
+      emittedAt: new Date('2026-01-01T00:00:00.000Z'),
+    })
+
+    expect(handler).toHaveBeenCalledWith(expect.objectContaining({
+      refreshedAt: 123,
+      enabledConfigCount: 2,
+    }))
+  })
 })

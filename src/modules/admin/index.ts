@@ -6,5 +6,6 @@ export * from './features/audit'
 export * from './features/rbac'
 export * from './features/system-config'
 export * from './features/ai-chat'
+export * from './features/module-diagnostics'
 export * from './shared/hooks/use-translation'
 
