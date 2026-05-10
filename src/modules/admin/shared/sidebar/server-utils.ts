@@ -78,7 +78,7 @@ function hasNavItemUrl(items: NavItem[], url: string): boolean {
   })
 }
 
-function mergeRequiredAdminGroups(
+export function mergeRequiredAdminGroups(
   groups: NavGroupType[],
   fallbackGroups: NavGroupType[],
   scope: SidebarScope

@@ -45,12 +45,16 @@ function findDuplicates(items: string[]): string[] {
   return Array.from(duplicates)
 }
 
+function getBetterAuthPluginIds(module: (typeof moduleDiagnostics)[number]): string[] {
+  return [...module.betterAuthServerPluginIds, ...module.betterAuthClientPluginIds]
+}
+
 export function ModuleDiagnosticsPage(): ReactElement {
   const modules = moduleDiagnostics
   const [query, setQuery] = useState('')
   const [filter, setFilter] = useState<ModuleFilter>('all')
   const dependencyCount = modules.reduce((count, module) => count + (module.dependencies?.length ?? 0), 0)
-  const authPluginCount = modules.reduce((count, module) => count + module.betterAuthPluginIds.length, 0)
+  const authPluginCount = modules.reduce((count, module) => count + getBetterAuthPluginIds(module).length, 0)
   const capabilityCount = modules.reduce(
     (count, module) => count + module.exports.reduce((sum, group) => sum + group.keys.length, 0),
     0
@@ -63,9 +67,10 @@ export function ModuleDiagnosticsPage(): ReactElement {
 
     return {
       duplicateExportKeys: findDuplicates(exportKeys),
-      duplicatePluginIds: modules.flatMap((module) =>
-        findDuplicates(module.betterAuthPluginIds).map((pluginId) => `${module.key}:${pluginId}`)
-      ),
+      duplicatePluginIds: modules.flatMap((module) => [
+        ...findDuplicates(module.betterAuthServerPluginIds).map((pluginId) => `${module.key}:server:${pluginId}`),
+        ...findDuplicates(module.betterAuthClientPluginIds).map((pluginId) => `${module.key}:client:${pluginId}`),
+      ]),
       missingDependencies: modules.flatMap((module) =>
         module.dependencies
           .filter((dependency) => !moduleKeys.has(dependency))
@@ -85,7 +90,8 @@ export function ModuleDiagnosticsPage(): ReactElement {
           module.dependencies.some((dependency) =>
             diagnosticsIssues.missingDependencies.some((item) => item === `${module.key}:${dependency}`)
           ) ||
-          findDuplicates(module.betterAuthPluginIds).length > 0 ||
+          findDuplicates(module.betterAuthServerPluginIds).length > 0 ||
+          findDuplicates(module.betterAuthClientPluginIds).length > 0 ||
           module.exports.some((group) =>
             group.keys.some((key) => diagnosticsIssues.duplicateExportKeys.includes(`${group.name}.${key}`))
           )
@@ -93,7 +99,7 @@ export function ModuleDiagnosticsPage(): ReactElement {
           filter === 'all' ||
           (filter === 'dependencies' && module.dependencies.length > 0) ||
           (filter === 'exports' && module.exports.length > 0) ||
-          (filter === 'auth' && module.betterAuthPluginIds.length > 0) ||
+          (filter === 'auth' && getBetterAuthPluginIds(module).length > 0) ||
           (filter === 'issues' && hasIssue)
 
         if (!matchesFilter) return false
@@ -103,7 +109,7 @@ export function ModuleDiagnosticsPage(): ReactElement {
           module.key,
           module.version ?? '',
           ...module.dependencies,
-          ...module.betterAuthPluginIds,
+          ...getBetterAuthPluginIds(module),
           ...module.exports.flatMap((group) => [group.name, ...group.keys]),
         ]
 
@@ -347,32 +353,48 @@ export function ModuleDiagnosticsPage(): ReactElement {
                     <div>
                       <div className='text-xs font-medium text-muted-foreground uppercase'>better auth</div>
                       <div className='mt-2 flex flex-wrap gap-1.5'>
-                        {module.betterAuthPluginIds.length > 0 ? (
-                          module.betterAuthPluginIds.map((pluginId, index) => (
-                            <span key={`${pluginId}-${index}`} className='inline-flex items-center gap-1'>
-                              <Badge variant='outline' className='font-mono'>
-                                <KeyRound className='h-3 w-3' />
-                                {pluginId}
-                              </Badge>
-                              <Button
-                                type='button'
-                                variant='ghost'
-                                size='icon-sm'
-                                className='h-6 w-6'
-                                aria-label={`复制 Better Auth 插件 ${pluginId}`}
-                                onClick={() => void copyText('插件 ID', pluginId)}
-                              >
-                                <Copy className='h-3.5 w-3.5' />
-                              </Button>
-                            </span>
+                        {getBetterAuthPluginIds(module).length > 0 ? (
+                          [
+                            { label: 'server', ids: module.betterAuthServerPluginIds },
+                            { label: 'client', ids: module.betterAuthClientPluginIds },
+                          ].map((group) => (
+                            <div key={group.label} className='flex flex-wrap items-center gap-1.5'>
+                              <span className='w-10 text-xs text-muted-foreground'>{group.label}</span>
+                              {group.ids.map((pluginId, index) => (
+                                <span
+                                  key={`${group.label}-${pluginId}-${index}`}
+                                  className='inline-flex items-center gap-1'
+                                >
+                                  <Badge variant='outline' className='font-mono'>
+                                    <KeyRound className='h-3 w-3' />
+                                    {pluginId}
+                                  </Badge>
+                                  <Button
+                                    type='button'
+                                    variant='ghost'
+                                    size='icon-sm'
+                                    className='h-6 w-6'
+                                    aria-label={`复制 Better Auth ${group.label} 插件 ${pluginId}`}
+                                    onClick={() => void copyText('插件 ID', pluginId)}
+                                  >
+                                    <Copy className='h-3.5 w-3.5' />
+                                  </Button>
+                                </span>
+                              ))}
+                            </div>
                           ))
                         ) : (
                           <p className='text-sm text-muted-foreground'>未声明 Better Auth 插件</p>
                         )}
                       </div>
-                      {findDuplicates(module.betterAuthPluginIds).length > 0 ? (
+                      {findDuplicates(module.betterAuthServerPluginIds).length > 0 ||
+                      findDuplicates(module.betterAuthClientPluginIds).length > 0 ? (
                         <p className='mt-2 text-xs text-amber-600 dark:text-amber-400'>
-                          重复插件：{findDuplicates(module.betterAuthPluginIds).join(', ')}
+                          重复插件：
+                          {[
+                            ...findDuplicates(module.betterAuthServerPluginIds),
+                            ...findDuplicates(module.betterAuthClientPluginIds),
+                          ].join(', ')}
                         </p>
                       ) : null}
                     </div>

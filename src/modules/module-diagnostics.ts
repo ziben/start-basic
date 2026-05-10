@@ -8,7 +8,8 @@ export type ModuleDiagnosticsItem = {
   version?: string
   dependencies: string[]
   exports: ModuleDiagnosticsExportGroup[]
-  betterAuthPluginIds: string[]
+  betterAuthServerPluginIds: string[]
+  betterAuthClientPluginIds: string[]
 }
 
 export const moduleDiagnostics: ModuleDiagnosticsItem[] = [
@@ -22,18 +23,8 @@ export const moduleDiagnostics: ModuleDiagnosticsItem[] = [
         keys: ['auth', 'getAuth'],
       },
     ],
-    betterAuthPluginIds: [
-      'bearer',
-      'username',
-      'organization',
-      'admin',
-      'wechat-oauth',
-      'user-created-hooks',
-      'username',
-      'admin',
-      'organization',
-      'wechat-oauth',
-    ],
+    betterAuthServerPluginIds: ['bearer', 'username', 'organization', 'admin', 'wechat-oauth', 'user-created-hooks'],
+    betterAuthClientPluginIds: ['username', 'admin', 'organization', 'wechat-oauth'],
   },
   {
     key: 'payment',
@@ -42,19 +33,15 @@ export const moduleDiagnostics: ModuleDiagnosticsItem[] = [
     exports: [
       {
         name: 'services',
-        keys: [
-          'createPrepayOrder',
-          'queryPaymentOrderStatus',
-          'syncPaymentOrderStatus',
-          'closePaymentOrder',
-        ],
+        keys: ['createPrepayOrder', 'queryPaymentOrderStatus', 'syncPaymentOrderStatus', 'closePaymentOrder'],
       },
       {
         name: 'events',
         keys: ['orderPaid', 'orderClosed', 'orderFailed'],
       },
     ],
-    betterAuthPluginIds: [],
+    betterAuthServerPluginIds: [],
+    betterAuthClientPluginIds: [],
   },
   {
     key: 'health',
@@ -66,6 +53,7 @@ export const moduleDiagnostics: ModuleDiagnosticsItem[] = [
         keys: ['HealthReportService'],
       },
     ],
-    betterAuthPluginIds: [],
+    betterAuthServerPluginIds: [],
+    betterAuthClientPluginIds: [],
   },
 ]
