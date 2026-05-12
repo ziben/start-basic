@@ -1,26 +1,9 @@
 import { z } from 'zod'
 import { createServerFn } from '@tanstack/react-start'
 import { createAdminSidebarData, createSidebarData } from '~/components/layout/data/sidebar-data'
-import type { NavGroup, NavItem, SidebarData } from '~/components/layout/types'
+import type { NavItem, SerializableNavItem, SerializableSidebarData, SidebarData } from '~/components/layout/types'
 
 type SidebarScope = 'APP' | 'ADMIN'
-type SerializedNavLink = {
-  title: string
-  url: string
-  badge?: string
-  icon?: string
-}
-type SerializedNavCollapsible = {
-  title: string
-  badge?: string
-  icon?: string
-  items: SerializedNavLink[]
-}
-type SerializedNavItem = SerializedNavLink | SerializedNavCollapsible
-type SerializedSidebarData = Omit<SidebarData, 'teams' | 'navGroups'> & {
-  teams: Array<Omit<SidebarData['teams'][number], 'logo'> & { logo: string }>
-  navGroups: Array<Omit<NavGroup, 'items'> & { items: SerializedNavItem[] }>
-}
 
 function serializeIcon(value: unknown): string {
   if (!value) return ''
@@ -36,7 +19,7 @@ function serializeIcon(value: unknown): string {
   return String(value)
 }
 
-function serializeNavItems(items: NavItem[]): SerializedNavItem[] {
+function serializeNavItems(items: NavItem[]): SerializableNavItem[] {
   return items.map((item) => {
     if ('items' in item && item.items) {
       return {
@@ -61,7 +44,7 @@ function serializeNavItems(items: NavItem[]): SerializedNavItem[] {
   })
 }
 
-function serializeSidebarData(data: SidebarData): SerializedSidebarData {
+function serializeSidebarData(data: SidebarData): SerializableSidebarData {
   return {
     ...data,
     teams: data.teams.map((team) => ({
@@ -75,12 +58,12 @@ function serializeSidebarData(data: SidebarData): SerializedSidebarData {
   }
 }
 
-function createFallbackSidebarData(scope: SidebarScope): SerializedSidebarData {
+function createFallbackSidebarData(scope: SidebarScope): SerializableSidebarData {
   const t = (key: string): string => key
   return serializeSidebarData(scope === 'ADMIN' ? createAdminSidebarData(t) : createSidebarData(t))
 }
 
-export async function loadSidebarData(scope: SidebarScope): Promise<SerializedSidebarData> {
+export async function loadSidebarData(scope: SidebarScope): Promise<SerializableSidebarData> {
   const { getRequest } = await import('@tanstack/react-start/server')
   const { auth } = await import('../../../auth/shared/lib/auth')
   const { getSidebarData } = await import('./server-utils')
@@ -100,7 +83,7 @@ export async function loadSidebarData(scope: SidebarScope): Promise<SerializedSi
 
 export const getSidebarDataFn = createServerFn({ method: 'GET' })
   .inputValidator(z.enum(['APP', 'ADMIN']).optional())
-  .handler(async ({ data }): Promise<SerializedSidebarData> => {
+  .handler(async ({ data }): Promise<SerializableSidebarData> => {
     const scope: SidebarScope = data === 'ADMIN' ? 'ADMIN' : 'APP'
     return loadSidebarData(scope)
   })

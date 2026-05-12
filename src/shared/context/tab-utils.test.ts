@@ -100,7 +100,17 @@ describe('tab utils', () => {
   })
 
   it('returns stable Chinese titles for known admin routes', () => {
-    expect(getTitleForPath('/admin/modules')).toBe('模块诊断')
-    expect(getTitleForPath('/admin/rbac/permissions')).toBe('权限定义')
+    expect(
+      ['/admin/system-config', '/admin/users', '/admin/rbac/roles', '/admin/modules', '/admin/log'].map((path) => [
+        path,
+        getTitleForPath(path),
+      ])
+    ).toEqual([
+      ['/admin/system-config', '系统设置'],
+      ['/admin/users', '用户管理'],
+      ['/admin/rbac/roles', '系统角色'],
+      ['/admin/modules', '模块诊断'],
+      ['/admin/log', '系统日志'],
+    ])
   })
 })

@@ -4,6 +4,21 @@ import type { NavGroup } from '~/components/layout/types'
 import { mergeRequiredAdminGroups } from './required-groups'
 
 describe('sidebar server utils', () => {
+  it('keeps core admin navigation targets available from fallback data', () => {
+    const fallbackGroups = createAdminSidebarData((key) => key).navGroups
+    const links = fallbackGroups.flatMap((group) => group.items).filter((item) => 'url' in item)
+
+    expect(links).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ title: '系统设置', url: '/admin/system-config' }),
+        expect.objectContaining({ title: '用户管理', url: '/admin/users' }),
+        expect.objectContaining({ title: '系统角色', url: '/admin/rbac/roles' }),
+        expect.objectContaining({ title: '模块诊断', url: '/admin/modules' }),
+        expect.objectContaining({ title: '日志', url: '/admin/log' }),
+      ])
+    )
+  })
+
   it('adds diagnostics links to existing admin sidebar groups', () => {
     const groups: NavGroup[] = [
       {

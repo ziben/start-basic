@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest'
 import { moduleRegistry } from './index'
 import { moduleDiagnostics } from './module-diagnostics'
+import {
+  getModuleDiagnosticsIssues,
+  getModuleDiagnosticsRecommendations,
+  getModuleIssueCount,
+} from './module-diagnostics-logic'
 
 describe('moduleDiagnostics', () => {
   it('keeps client-safe module diagnostics aligned with the registered modules', () => {
@@ -16,5 +21,29 @@ describe('moduleDiagnostics', () => {
     expect(authDiagnostics?.betterAuthClientPluginIds).toEqual(
       moduleRegistry.getModule('auth').betterAuth?.clientPluginIds
     )
+  })
+
+  it('reports actionable recommendations for broken module contracts', () => {
+    const issues = getModuleDiagnosticsIssues([
+      {
+        key: 'broken',
+        dependencies: ['missing'],
+        exports: [
+          {
+            name: 'services',
+            keys: ['run', 'run'],
+          },
+        ],
+        betterAuthServerPluginIds: ['admin', 'admin'],
+        betterAuthClientPluginIds: [],
+      },
+    ])
+
+    expect(getModuleIssueCount(issues)).toBe(3)
+    expect(getModuleDiagnosticsRecommendations(issues).map((item) => item.id)).toEqual([
+      'missing-dependencies',
+      'duplicate-exports',
+      'duplicate-plugin-ids',
+    ])
   })
 })

@@ -3,7 +3,14 @@ import { useQuery } from '@tanstack/react-query'
 import { iconResolver as defaultIconResolver, type IconResolver } from '@/shared/utils/icon-resolver'
 import { Menu } from 'lucide-react'
 import { createAdminSidebarData, createSidebarData } from '~/components/layout/data/sidebar-data'
-import type { SidebarData, NavItem, NavCollapsible, NavLink } from '~/components/layout/types'
+import type {
+  SidebarData,
+  NavItem,
+  NavCollapsible,
+  NavLink,
+  SerializableNavItem,
+  SerializableSidebarData,
+} from '~/components/layout/types'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import { sidebarQueryKeys } from '~/shared/lib/query-keys'
 import { getSidebarDataFn } from './api.fn'
@@ -33,7 +40,7 @@ export function useSidebar(iconResolver?: IconResolver, scope: 'APP' | 'ADMIN' =
 
   const processedData = useMemo(() => {
     if (!data) return null
-    return processSidebarData(data as SidebarData, t, iconResolver ?? defaultIconResolver)
+    return processSidebarData(data, t, iconResolver ?? defaultIconResolver)
   }, [data, t, iconResolver])
 
   // console.info('Sidebar hook data:', { data, localData, isLoading, error })
@@ -50,7 +57,7 @@ export function useSidebar(iconResolver?: IconResolver, scope: 'APP' | 'ADMIN' =
   }
 
   return {
-    data: processedData || data || createDefaultSidebarData(t, scope),
+    data: processedData || createDefaultSidebarData(t, scope),
     isLoading,
     error,
   }
@@ -75,7 +82,7 @@ function hasAdminUrl(item: NavItem): boolean {
  * 处理侧边栏数据，将字符串翻译和解析图标
  */
 function processSidebarData(
-  data: SidebarData,
+  data: SerializableSidebarData,
   translate: (key: string) => string,
   iconResolver: IconResolver
 ): SidebarData {
@@ -99,7 +106,11 @@ function processSidebarData(
 /**
  * 递归处理导航项
  */
-function processNavItems(items: NavItem[], translate: (key: string) => string, iconResolver: IconResolver): NavItem[] {
+function processNavItems(
+  items: Array<NavItem | SerializableNavItem>,
+  translate: (key: string) => string,
+  iconResolver: IconResolver
+): NavItem[] {
   return items.map((item) => {
     // 处理基本属性：入参可能是从后端直接来的原始结构（icon 可能是字符串），这里做一次映射
     const title = translate(item.title)

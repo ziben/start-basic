@@ -13,6 +13,10 @@ type Team = {
   plan: string
 }
 
+type SerializableTeam = Omit<Team, 'logo'> & {
+  logo: string
+}
+
 type BaseNavItem = {
   title: string
   badge?: string
@@ -32,9 +36,30 @@ type NavCollapsible = BaseNavItem & {
 
 type NavItem = NavCollapsible | NavLink
 
+type SerializableNavLink = {
+  title: string
+  url: string
+  badge?: string
+  icon?: string
+}
+
+type SerializableNavCollapsible = {
+  title: string
+  badge?: string
+  icon?: string
+  items: SerializableNavLink[]
+}
+
+type SerializableNavItem = SerializableNavLink | SerializableNavCollapsible
+
 type NavGroup = {
   title: string
   items: NavItem[]
+}
+
+type SerializableNavGroup = {
+  title: string
+  items: SerializableNavItem[]
 }
 
 type SidebarData = {
@@ -43,5 +68,21 @@ type SidebarData = {
   navGroups: NavGroup[]
 }
 
-export type { SidebarData, NavGroup, NavItem, NavCollapsible, NavLink }
+type SerializableSidebarData = {
+  user: User
+  teams: SerializableTeam[]
+  navGroups: SerializableNavGroup[]
+}
 
+export type {
+  SidebarData,
+  SerializableSidebarData,
+  SerializableNavGroup,
+  SerializableNavItem,
+  SerializableNavCollapsible,
+  SerializableNavLink,
+  NavGroup,
+  NavItem,
+  NavCollapsible,
+  NavLink,
+}

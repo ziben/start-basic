@@ -5,6 +5,7 @@ import { useMemo, useState } from 'react'
 import {
   AlertTriangle,
   Boxes,
+  CheckCircle2,
   Copy,
   Download,
   GitBranch,
@@ -13,10 +14,18 @@ import {
   PackageCheck,
   Search,
   ShieldCheck,
+  Wrench,
   X,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { moduleDiagnostics } from '~/modules/module-diagnostics'
+import {
+  findDuplicates,
+  getBetterAuthPluginIds,
+  getModuleDiagnosticsIssues,
+  getModuleDiagnosticsRecommendations,
+  getModuleIssueCount,
+} from '~/modules/module-diagnostics-logic'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -33,22 +42,6 @@ const moduleFilters: Array<{ label: string; value: ModuleFilter }> = [
   { label: '有问题', value: 'issues' },
 ]
 
-function findDuplicates(items: string[]): string[] {
-  const seen = new Set<string>()
-  const duplicates = new Set<string>()
-
-  for (const item of items) {
-    if (seen.has(item)) duplicates.add(item)
-    seen.add(item)
-  }
-
-  return Array.from(duplicates)
-}
-
-function getBetterAuthPluginIds(module: (typeof moduleDiagnostics)[number]): string[] {
-  return [...module.betterAuthServerPluginIds, ...module.betterAuthClientPluginIds]
-}
-
 export function ModuleDiagnosticsPage(): ReactElement {
   const modules = moduleDiagnostics
   const [query, setQuery] = useState('')
@@ -59,29 +52,9 @@ export function ModuleDiagnosticsPage(): ReactElement {
     (count, module) => count + module.exports.reduce((sum, group) => sum + group.keys.length, 0),
     0
   )
-  const diagnosticsIssues = useMemo(() => {
-    const moduleKeys = new Set(modules.map((module) => module.key))
-    const exportKeys = modules.flatMap((module) =>
-      module.exports.flatMap((group) => group.keys.map((key) => `${group.name}.${key}`))
-    )
-
-    return {
-      duplicateExportKeys: findDuplicates(exportKeys),
-      duplicatePluginIds: modules.flatMap((module) => [
-        ...findDuplicates(module.betterAuthServerPluginIds).map((pluginId) => `${module.key}:server:${pluginId}`),
-        ...findDuplicates(module.betterAuthClientPluginIds).map((pluginId) => `${module.key}:client:${pluginId}`),
-      ]),
-      missingDependencies: modules.flatMap((module) =>
-        module.dependencies
-          .filter((dependency) => !moduleKeys.has(dependency))
-          .map((dependency) => `${module.key}:${dependency}`)
-      ),
-    }
-  }, [modules])
-  const issueCount =
-    diagnosticsIssues.duplicateExportKeys.length +
-    diagnosticsIssues.duplicatePluginIds.length +
-    diagnosticsIssues.missingDependencies.length
+  const diagnosticsIssues = useMemo(() => getModuleDiagnosticsIssues(modules), [modules])
+  const recommendations = useMemo(() => getModuleDiagnosticsRecommendations(diagnosticsIssues), [diagnosticsIssues])
+  const issueCount = getModuleIssueCount(diagnosticsIssues)
   const normalizedQuery = query.trim().toLowerCase()
   const filteredModules = useMemo(
     () =>
@@ -410,6 +383,41 @@ export function ModuleDiagnosticsPage(): ReactElement {
               </Button>
             </div>
           )}
+        </CardContent>
+      </Card>
+
+      <Card className='mx-4 mt-3'>
+        <CardHeader className='border-b px-4 py-3'>
+          <div className='flex items-center justify-between gap-3'>
+            <div>
+              <CardTitle className='text-sm font-medium'>行动建议</CardTitle>
+              <p className='mt-1 text-xs text-muted-foreground'>按检查项直接给出下一步处理方向。</p>
+            </div>
+            <Badge variant={issueCount > 0 ? 'secondary' : 'outline'} className='shrink-0'>
+              {issueCount > 0 ? `${issueCount} 项待处理` : '无需处理'}
+            </Badge>
+          </div>
+        </CardHeader>
+        <CardContent className='grid gap-2 p-3 md:grid-cols-2 xl:grid-cols-3'>
+          {recommendations.map((item) => {
+            const Icon = item.severity === 'ok' ? CheckCircle2 : Wrench
+            return (
+              <div key={item.id} className='rounded-md border bg-background p-3'>
+                <div className='flex items-start gap-2'>
+                  <Icon
+                    className={
+                      item.severity === 'ok' ? 'mt-0.5 h-4 w-4 text-emerald-600' : 'mt-0.5 h-4 w-4 text-amber-600'
+                    }
+                  />
+                  <div className='min-w-0 space-y-1'>
+                    <div className='text-sm font-medium'>{item.title}</div>
+                    <p className='line-clamp-2 text-xs text-muted-foreground'>{item.detail}</p>
+                    <p className='text-xs text-foreground'>{item.action}</p>
+                  </div>
+                </div>
+              </div>
+            )
+          })}
         </CardContent>
       </Card>
 
