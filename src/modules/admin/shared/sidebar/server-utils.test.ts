@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { createAdminSidebarData } from '~/components/layout/data/sidebar-data'
 import type { NavGroup } from '~/components/layout/types'
-import { mergeRequiredAdminGroups } from './server-utils'
+import { mergeRequiredAdminGroups } from './required-groups'
 
 describe('sidebar server utils', () => {
   it('adds diagnostics links to existing admin sidebar groups', () => {

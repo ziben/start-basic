@@ -2,6 +2,7 @@ import type { ElementType } from 'react'
 import prisma from '@/shared/lib/db'
 import { createAdminSidebarData, createSidebarData } from '~/components/layout/data/sidebar-data'
 import type { SidebarData, NavGroup as NavGroupType, NavItem, NavCollapsible, NavLink } from '~/components/layout/types'
+import { mergeRequiredAdminGroups } from './required-groups'
 
 type SidebarScope = 'APP' | 'ADMIN'
 
@@ -62,48 +63,6 @@ function serializeNavItems(items: NavItem[]): NavItem[] {
     }
 
     return base as NavLink
-  })
-}
-
-function findItemUrl(item: NavItem): string | null {
-  return isNavLink(item) ? (item.url ?? null) : null
-}
-
-function hasNavItemUrl(items: NavItem[], url: string): boolean {
-  return items.some((item) => {
-    const itemUrl = findItemUrl(item)
-    if (itemUrl === url) return true
-    if ('items' in item) return item.items?.some((child) => findItemUrl(child) === url) ?? false
-    return false
-  })
-}
-
-export function mergeRequiredAdminGroups(
-  groups: NavGroupType[],
-  fallbackGroups: NavGroupType[],
-  scope: SidebarScope
-): NavGroupType[] {
-  if (scope !== 'ADMIN') return groups
-
-  const requiredGroup = fallbackGroups.find((group) => group.title === '诊断')
-  if (!requiredGroup) return groups
-
-  const existingIndex = groups.findIndex((group) => group.title === requiredGroup.title)
-  if (existingIndex === -1) return [...groups, requiredGroup]
-
-  return groups.map((group, index) => {
-    if (index !== existingIndex) return group
-
-    const missingItems = requiredGroup.items.filter((item) => {
-      const url = findItemUrl(item)
-      return url ? !hasNavItemUrl(group.items, url) : false
-    })
-
-    if (missingItems.length === 0) return group
-    return {
-      ...group,
-      items: [...group.items, ...missingItems],
-    }
   })
 }
 
