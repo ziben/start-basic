@@ -2,7 +2,7 @@
 import { withAuth, withAdminAuth } from '@/middleware'
 import { getRequest } from '@tanstack/react-start/server'
 import { describe, expect, it, vi, beforeEach } from 'vitest'
-import * as logWriter from '~/modules/admin/shared/services/server-log-writer'
+import * as logWriter from '~/modules/audit/shared/services/server-log-writer'
 import { auth } from '~/modules/auth/shared/lib/auth'
 
 // Mock dependencies
@@ -18,7 +18,7 @@ vi.mock('~/modules/auth/shared/lib/auth', () => ({
   },
 }))
 
-vi.mock('~/modules/admin/shared/services/server-log-writer', () => ({
+vi.mock('~/modules/audit/shared/services/server-log-writer', () => ({
   createRequestId: vi.fn(() => 'test-request-id'),
   getIpFromRequest: vi.fn(() => '127.0.0.1'),
   getUserAgentFromRequest: vi.fn(() => 'test-user-agent'),

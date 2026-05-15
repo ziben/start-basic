@@ -1,6 +1,6 @@
 import { createContext, useContext, type ReactNode, useMemo, useCallback, useState } from 'react'
 import { getRouteApi } from '@tanstack/react-router'
-import { type LogType, type SystemLog, type AuditLog } from '../data/schema'
+import { type LogType, type SystemLog, type AuditLog } from '~/modules/audit/shared/data/schema'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -33,15 +33,12 @@ export function AdminLogProvider({ children }: { children: ReactNode }) {
     (newType: LogType) => {
       void navigate({ search: (prev) => ({ ...prev, type: newType, page: undefined }) })
     },
-    [navigate],
+    [navigate]
   )
 
   const [selectedLog, setSelectedLog] = useState<AdminLog | null>(null)
 
-  const value = useMemo(
-    () => ({ type, setType, selectedLog, setSelectedLog }),
-    [type, setType, selectedLog],
-  )
+  const value = useMemo(() => ({ type, setType, selectedLog, setSelectedLog }), [type, setType, selectedLog])
 
   return <AdminLogContext value={value}>{children}</AdminLogContext>
 }

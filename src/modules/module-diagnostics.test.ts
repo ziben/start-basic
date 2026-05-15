@@ -23,6 +23,18 @@ describe('moduleDiagnostics', () => {
     )
   })
 
+  it('registers audit as the shared log capability module', () => {
+    const auditDiagnostics = moduleDiagnostics.find((module) => module.key === 'audit')
+
+    expect(auditDiagnostics?.dependencies).toEqual(moduleRegistry.getModule('audit').dependencies)
+    expect(auditDiagnostics?.exports).toEqual([
+      {
+        name: 'services',
+        keys: ['LogService', 'writeAuditLog', 'writeSystemLog'],
+      },
+    ])
+  })
+
   it('reports actionable recommendations for broken module contracts', () => {
     const issues = getModuleDiagnosticsIssues([
       {

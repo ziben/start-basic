@@ -1,4 +1,4 @@
-export * from '../features/audit/log/hooks/use-admin-log-api'
+export * from '~/modules/audit/shared/hooks/use-admin-log-api'
 export * from '../features/organization/members/hooks/use-admin-member-api'
 export * from '../features/organization/organizations/hooks/use-admin-organization-api'
 export * from '../features/identity/session/hooks/use-admin-session-api'

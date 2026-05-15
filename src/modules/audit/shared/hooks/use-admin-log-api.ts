@@ -4,10 +4,9 @@
  * 使用 ServerFn 替代 REST API 调用
  * [迁移自 admin/shared/hooks/use-admin-log-api.ts]
  */
-
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
-import { getLogsFn } from '../server-fns/log.fn'
 import { logQueryKeys } from '~/shared/lib/query-keys'
+import { getLogsFn } from '../server-fns/log.fn'
 
 export type AdminSystemLog = {
   id: string

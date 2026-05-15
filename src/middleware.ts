@@ -1,5 +1,5 @@
 import { getRequest } from '@tanstack/react-start/server'
-import { auth } from '~/modules/auth/shared/lib/auth'
+import { getRuntimeConfig } from '~/infrastructure/config/runtime-config'
 import {
   createRequestId,
   getIpFromRequest,
@@ -9,8 +9,8 @@ import {
   writeAuditLog,
   writeSystemLog,
   getFriendlyFunctionName,
-} from '~/modules/admin/shared/services/server-log-writer'
-import { getRuntimeConfig } from '~/infrastructure/config/runtime-config'
+} from '~/modules/audit/shared/services/server-log-writer'
+import { auth } from '~/modules/auth/shared/lib/auth'
 
 // 类型定义
 type SessionUser = NonNullable<Awaited<ReturnType<typeof auth.api.getSession>>>['user']
@@ -25,10 +25,7 @@ interface AuthenticatedContext extends HandlerContext {
   requestId: string
   audit: {
     log: (
-      input: Omit<
-        Parameters<typeof writeAuditLog>[0],
-        'actorUserId' | 'actorRole' | 'ip' | 'userAgent'
-      > & {
+      input: Omit<Parameters<typeof writeAuditLog>[0], 'actorUserId' | 'actorRole' | 'ip' | 'userAgent'> & {
         actorUserId?: string | null
         actorRole?: string | null
         ip?: string | null
@@ -53,7 +50,6 @@ function hasAdminRole(role: unknown): boolean {
     .map((r) => r.trim())
     .some((r) => ADMIN_ROLES.has(r))
 }
-
 
 // 普通用户鉴权中间件（登录即可）
 export function withAuth<T extends HandlerContext>(handler: Handler<T & AuthenticatedContext>) {
@@ -94,10 +90,7 @@ export function withAuth<T extends HandlerContext>(handler: Handler<T & Authenti
 
       const audit = {
         log: async (
-          input: Omit<
-            Parameters<typeof writeAuditLog>[0],
-            'actorUserId' | 'actorRole' | 'ip' | 'userAgent'
-          > & {
+          input: Omit<Parameters<typeof writeAuditLog>[0], 'actorUserId' | 'actorRole' | 'ip' | 'userAgent'> & {
             actorUserId?: string | null
             actorRole?: string | null
             ip?: string | null
@@ -203,10 +196,7 @@ export function withAdminAuth<T extends HandlerContext>(handler: Handler<T & Aut
 
       const audit = {
         log: async (
-          input: Omit<
-            Parameters<typeof writeAuditLog>[0],
-            'actorUserId' | 'actorRole' | 'ip' | 'userAgent'
-          > & {
+          input: Omit<Parameters<typeof writeAuditLog>[0], 'actorUserId' | 'actorRole' | 'ip' | 'userAgent'> & {
             actorUserId?: string | null
             actorRole?: string | null
             ip?: string | null
@@ -276,8 +266,3 @@ export function withAdminAuth<T extends HandlerContext>(handler: Handler<T & Aut
 
 // 导出类型供其他模块使用
 export type { SessionUser, AuthenticatedContext, HandlerContext }
-
-
-
-
-

@@ -1,9 +1,9 @@
 import { useMemo } from 'react'
 import { type ColumnDef } from '@tanstack/react-table'
 import { cn } from '@/shared/lib/utils'
+import { type SystemLog, type AuditLog } from '~/modules/audit/shared/data/schema'
 import { Badge } from '@/components/ui/badge'
 import { DataTableColumnHeader } from '@/components/data-table'
-import { type SystemLog, type AuditLog } from '../data/schema'
 
 // ─── Level Badge ──────────────────────────────────────────────────────────────
 
@@ -50,12 +50,12 @@ export function useSystemLogColumns(): ColumnDef<SystemLog>[] {
         cell: ({ row }) => (
           <div className='space-y-0.5'>
             <div className='font-mono text-xs text-muted-foreground'>{row.original.requestId || '-'}</div>
-            <div className='font-medium text-sm'>
+            <div className='text-sm font-medium'>
               <span className='mr-1.5 rounded bg-muted px-1 py-0.5 font-mono text-xs'>{row.original.method}</span>
               {row.original.path}
             </div>
             {row.original.query && (
-              <div className='font-mono text-xs text-muted-foreground truncate max-w-xs'>{row.original.query}</div>
+              <div className='max-w-xs truncate font-mono text-xs text-muted-foreground'>{row.original.query}</div>
             )}
           </div>
         ),
@@ -71,7 +71,7 @@ export function useSystemLogColumns(): ColumnDef<SystemLog>[] {
                 'font-mono text-sm font-medium',
                 s >= 500 && 'text-destructive',
                 s >= 400 && s < 500 && 'text-amber-600',
-                s >= 200 && s < 300 && 'text-green-600',
+                s >= 200 && s < 300 && 'text-green-600'
               )}
             >
               {s}
@@ -86,7 +86,13 @@ export function useSystemLogColumns(): ColumnDef<SystemLog>[] {
         cell: ({ row }) => {
           const ms = row.original.durationMs
           return (
-            <span className={cn('font-mono text-sm', ms > 1000 && 'text-amber-600 font-medium', ms > 5000 && 'text-destructive font-medium')}>
+            <span
+              className={cn(
+                'font-mono text-sm',
+                ms > 1000 && 'font-medium text-amber-600',
+                ms > 5000 && 'font-medium text-destructive'
+              )}
+            >
               {ms}
             </span>
           )
@@ -106,13 +112,13 @@ export function useSystemLogColumns(): ColumnDef<SystemLog>[] {
         header: '错误',
         cell: ({ row }) =>
           row.original.error ? (
-            <span className='text-xs text-destructive line-clamp-2'>{row.original.error}</span>
+            <span className='line-clamp-2 text-xs text-destructive'>{row.original.error}</span>
           ) : (
             <span className='text-muted-foreground'>-</span>
           ),
       },
     ],
-    [],
+    []
   )
 }
 
@@ -173,10 +179,10 @@ export function useAuditLogColumns(): ColumnDef<AuditLog>[] {
         accessorKey: 'message',
         header: '信息',
         cell: ({ row }) => (
-          <span className='text-sm text-muted-foreground line-clamp-2'>{row.original.message || '-'}</span>
+          <span className='line-clamp-2 text-sm text-muted-foreground'>{row.original.message || '-'}</span>
         ),
       },
     ],
-    [],
+    []
   )
 }

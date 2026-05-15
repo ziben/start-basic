@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { type SortingState } from '@tanstack/react-table'
-import { useAdminLogs } from '~/modules/admin/features/audit/log/hooks/use-admin-log-api'
+import { useAdminLogs } from '~/modules/audit/shared/hooks/use-admin-log-api'
 
 type UseAdminLogsQueryProps = {
   type: 'system' | 'audit'
@@ -12,15 +12,14 @@ type UseAdminLogsQueryProps = {
   success?: boolean
 }
 
-export function useAdminLogsQuery({
-  type,
-  pageIndex,
-  pageSize,
-  filter,
-  level,
-  success,
-}: UseAdminLogsQueryProps) {
-  const { data: pageData, isLoading, error, refetch, isRefetching } = useAdminLogs({
+export function useAdminLogsQuery({ type, pageIndex, pageSize, filter, level, success }: UseAdminLogsQueryProps) {
+  const {
+    data: pageData,
+    isLoading,
+    error,
+    refetch,
+    isRefetching,
+  } = useAdminLogs({
     type,
     page: pageIndex + 1,
     pageSize,
@@ -41,7 +40,3 @@ export function useAdminLogsQuery({
     isRefetching,
   }
 }
-
-
-
-

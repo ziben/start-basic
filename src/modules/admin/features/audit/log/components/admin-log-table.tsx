@@ -1,24 +1,20 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo } from 'react'
 import {
   type ColumnDef,
-  type VisibilityState,
-  flexRender,
   getCoreRowModel,
   getFacetedRowModel,
   getFacetedUniqueValues,
   useReactTable,
 } from '@tanstack/react-table'
-import { cn } from '@/shared/lib/utils'
+import { useTableColumnVisibility } from '@/shared/hooks/use-table-column-visibility'
 import { type NavigateFn, useTableUrlState } from '@/shared/hooks/use-table-url-state'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Skeleton } from '@/components/ui/skeleton'
+import { cn } from '@/shared/lib/utils'
+import { auditResults, logLevels, type LogType } from '~/modules/audit/shared/data/schema'
+import { type AdminAuditLog, type AdminSystemLog } from '~/modules/audit/shared/hooks/use-admin-log-api'
 import { DataTablePagination, DataTableToolbar, DataTable } from '@/components/data-table'
-import { type AdminAuditLog, type AdminSystemLog } from '~/modules/admin/features/audit/log/hooks/use-admin-log-api'
-import { auditResults, logLevels, type LogType } from '../data/schema'
 import { useAdminLogsQuery } from '../hooks/use-admin-logs-query'
 import { getSingleBooleanFromArrayFilter, getSingleStringFromArrayFilter } from '../utils/table-filters'
 import { useAuditLogColumns, useSystemLogColumns } from './admin-log-columns'
-import { useTableColumnVisibility } from '@/shared/hooks/use-table-column-visibility'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -74,19 +70,11 @@ export function AdminLogTable({ type, search, navigate }: AdminLogTableProps) {
 
   const systemColumns = useSystemLogColumns()
   const auditColumns = useAuditLogColumns()
-  const columns = (type === 'system' ? systemColumns : auditColumns) as ColumnDef<
-    AdminSystemLog | AdminAuditLog
-  >[]
+  const columns = (type === 'system' ? systemColumns : auditColumns) as ColumnDef<AdminSystemLog | AdminAuditLog>[]
 
   const level = useMemo(
-    () =>
-      getSingleStringFromArrayFilter(columnFilters, 'level') as
-      | 'debug'
-      | 'info'
-      | 'warn'
-      | 'error'
-      | undefined,
-    [columnFilters],
+    () => getSingleStringFromArrayFilter(columnFilters, 'level') as 'debug' | 'info' | 'warn' | 'error' | undefined,
+    [columnFilters]
   )
 
   const success = useMemo(() => getSingleBooleanFromArrayFilter(columnFilters, 'success'), [columnFilters])
@@ -127,8 +115,6 @@ export function AdminLogTable({ type, search, navigate }: AdminLogTableProps) {
     ensurePageInRange(serverPageCount)
   }, [serverPageCount, ensurePageInRange])
 
-  const rows = table.getRowModel().rows
-
   return (
     <div className={cn('max-sm:has-[div[role="toolbar"]]:mb-16', 'flex h-full flex-col space-y-4')}>
       <DataTableToolbar
@@ -139,19 +125,19 @@ export function AdminLogTable({ type, search, navigate }: AdminLogTableProps) {
         filters={
           type === 'system'
             ? [
-              {
-                columnId: 'level',
-                title: '级别',
-                options: logLevels.map((o) => ({ label: o.label, value: o.value })),
-              },
-            ]
+                {
+                  columnId: 'level',
+                  title: '级别',
+                  options: logLevels.map((o) => ({ label: o.label, value: o.value })),
+                },
+              ]
             : [
-              {
-                columnId: 'success',
-                title: '结果',
-                options: auditResults.map((o) => ({ label: o.label, value: o.value })),
-              },
-            ]
+                {
+                  columnId: 'success',
+                  title: '结果',
+                  options: auditResults.map((o) => ({ label: o.label, value: o.value })),
+                },
+              ]
         }
       />
       <DataTable
