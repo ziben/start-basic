@@ -1,6 +1,7 @@
 import { getRouteApi } from '@tanstack/react-router'
 import { toTableNavigate } from '@/shared/hooks/use-table-url-state'
 import { AppHeaderMain } from '~/components/layout/app-header-main'
+import { Badge } from '@/components/ui/badge'
 import { AdminLogProvider, useAdminLogContext } from './components/admin-log-provider'
 import { AdminLogTable } from './components/admin-log-table'
 import { AdminLogTypeSwitcher } from './components/admin-log-type-switcher'
@@ -18,6 +19,10 @@ function AdminLogContent() {
         <div>
           <h2 className='text-2xl font-bold tracking-tight'>日志管理</h2>
           <p className='text-muted-foreground'>系统日志与操作审计记录</p>
+          <div className='mt-2 flex flex-wrap gap-1.5'>
+            <Badge variant='outline'>audit module</Badge>
+            <Badge variant='secondary'>{type === 'system' ? '系统日志' : '操作审计'}</Badge>
+          </div>
         </div>
         <AdminLogTypeSwitcher />
       </div>

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { toast } from 'sonner'
-import { useNavgroups } from '~/modules/admin/features/navigation/navgroup/hooks/use-navgroup-api'
+import { useNavgroups } from '~/modules/navigation/shared/navgroup/hooks/use-navgroup-api'
 import { useAssignRoleNavGroups, useRole } from '~/modules/admin/features/rbac/system-roles/hooks/use-role-api'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import {

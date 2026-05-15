@@ -2,7 +2,7 @@ import { useMemo, useEffect, useState } from 'react'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
-import { AdminNavItem } from '../data/schema'
+import { AdminNavItem } from '~/modules/navigation/shared/navitem/data/schema'
 import { useAdminNavItemColumns } from './admin-navitem-columns'
 import {
   ColumnFiltersState,

@@ -4,8 +4,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { toast } from 'sonner'
 import { IconPicker } from '~/components/icon-picker'
-import { useNavgroups } from '~/modules/admin/features/navigation/navgroup/hooks/use-navgroup-api'
-import { useCreateNavitem, useUpdateNavitem, useDeleteNavitem, useNavitems } from '~/modules/admin/features/navigation/navitem/hooks/use-navitem-api'
+import { useNavgroups } from '~/modules/navigation/shared/navgroup/hooks/use-navgroup-api'
+import { useCreateNavitem, useUpdateNavitem, useDeleteNavitem, useNavitems } from '~/modules/navigation/shared/navitem/hooks/use-navitem-api'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import {
   AlertDialog,
@@ -31,7 +31,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useAdminNavItemContext } from '../context/admin-navitem-context'
-import { CreateNavItemData, UpdateNavItemData } from '../data/schema'
+import { CreateNavItemData, UpdateNavItemData } from '~/modules/navigation/shared/navitem/data/schema'
 
 // 创建导航项对话框组件
 const CreateNavItemDialog = () => {

@@ -1,14 +1,14 @@
 import React from 'react'
 import { ColumnDef, FilterFn, Row } from '@tanstack/react-table'
 import { ChevronDown, ChevronRight } from 'lucide-react'
-import { useNavgroups } from '~/modules/admin/features/navigation/navgroup/hooks/use-navgroup-api'
+import { useNavgroups } from '~/modules/navigation/shared/navgroup/hooks/use-navgroup-api'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import { iconResolver } from '@/shared/utils/icon-resolver'
 import { cn } from '@/shared/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import { AdminNavItem } from '../data/schema'
+import { AdminNavItem } from '~/modules/navigation/shared/navitem/data/schema'
 import { DataTableRowActions } from './admin-navitem-row-actions'
 
 interface UseAdminNavItemColumnsProps {

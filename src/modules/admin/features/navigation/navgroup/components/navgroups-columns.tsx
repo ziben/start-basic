@@ -2,7 +2,7 @@ import { type ColumnDef } from '@tanstack/react-table'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
-import { type AdminNavgroup } from '../data/schema'
+import { type AdminNavgroup } from '~/modules/navigation/shared/navgroup/data/schema'
 import { DataTableRowActions } from './data-table-row-actions'
 
 const formatDate = (date: string | Date | null | undefined) => {

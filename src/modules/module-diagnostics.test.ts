@@ -35,6 +35,18 @@ describe('moduleDiagnostics', () => {
     ])
   })
 
+  it('registers navigation as the shared menu capability module', () => {
+    const navigationDiagnostics = moduleDiagnostics.find((module) => module.key === 'navigation')
+
+    expect(navigationDiagnostics?.dependencies).toEqual(moduleRegistry.getModule('navigation').dependencies)
+    expect(navigationDiagnostics?.exports).toEqual([
+      {
+        name: 'services',
+        keys: ['NavGroupService', 'NavItemService'],
+      },
+    ])
+  })
+
   it('reports actionable recommendations for broken module contracts', () => {
     const issues = getModuleDiagnosticsIssues([
       {

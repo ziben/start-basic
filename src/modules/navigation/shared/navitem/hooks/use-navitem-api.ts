@@ -20,7 +20,7 @@ import type {
   AdminNavItemList,
   CreateNavItemData,
   UpdateNavItemData as SchemaUpdateNavItemData,
-} from '@/modules/admin/features/navigation/navitem'
+} from '../data/schema'
 import { navitemQueryKeys, sidebarQueryKeys } from '~/shared/lib/query-keys'
 
 type SuccessIdResponse = { success: true; id: string }

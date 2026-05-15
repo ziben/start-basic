@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode, useMemo } from 'react'
-import { AdminNavItem } from '../data/schema'
+import { AdminNavItem } from '~/modules/navigation/shared/navitem/data/schema'
 
 interface AdminNavItemContextType {
   isCreateDialogOpen: boolean

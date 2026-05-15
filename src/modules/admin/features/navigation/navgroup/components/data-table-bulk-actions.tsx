@@ -7,7 +7,7 @@ import { sleep } from '@/shared/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { DataTableBulkActions as BulkActionsToolbar } from '@/components/data-table'
-import { type AdminNavgroup } from '../data/schema'
+import { type AdminNavgroup } from '~/modules/navigation/shared/navgroup/data/schema'
 import { NavGroupsMultiDeleteDialog } from './navgroups-multi-delete-dialog'
 
 type DataTableBulkActionsProps<TData> = {

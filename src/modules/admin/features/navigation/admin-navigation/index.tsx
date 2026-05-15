@@ -1,5 +1,5 @@
-import { useNavgroups } from '~/modules/admin/features/navigation/navgroup/hooks/use-navgroup-api'
-import { useNavitems } from '~/modules/admin/features/navigation/navitem/hooks/use-navitem-api'
+import { useNavgroups } from '~/modules/navigation/shared/navgroup/hooks/use-navgroup-api'
+import { useNavitems } from '~/modules/navigation/shared/navitem/hooks/use-navitem-api'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import { Route as NavigationRoute } from '~/routes/_authenticated/admin/navigation'
 import { toTableNavigate } from '@/shared/hooks/use-table-url-state'
@@ -18,6 +18,7 @@ import { PageHeader } from '@/components/layout/page-header'
 export default function AdminNavigationPage() {
   const { t } = useTranslation()
   const { tab, navGroupId } = NavigationRoute.useSearch()
+  const activeTab = tab ?? 'groups'
   const navigate = NavigationRoute.useNavigate()
   const search = NavigationRoute.useSearch()
   const tableNavigate = toTableNavigate(navigate)
@@ -34,7 +35,7 @@ export default function AdminNavigationPage() {
       />
 
       <Tabs
-        value={tab}
+        value={activeTab}
         onValueChange={(value) => {
           navigate({ search: (prev) => ({ ...prev, tab: value as 'groups' | 'items' }) })
         }}

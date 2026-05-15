@@ -11,7 +11,7 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { adminNavgroupSchema } from '../data/schema'
+import { adminNavgroupSchema } from '~/modules/navigation/shared/navgroup/data/schema'
 import { useNavGroups } from './navgroups-provider'
 import { logger } from '~/shared/utils/logger'
 

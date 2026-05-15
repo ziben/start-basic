@@ -1,6 +1,6 @@
 import React from 'react'
 import { useDialogRowState } from '@/shared/hooks/use-dialog-row-state'
-import { type AdminNavgroup } from '../data/schema'
+import { type AdminNavgroup } from '~/modules/navigation/shared/navgroup/data/schema'
 
 type NavGroupsDialogType = 'create' | 'update' | 'delete' | 'import'
 

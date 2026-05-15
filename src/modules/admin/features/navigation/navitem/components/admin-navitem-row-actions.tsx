@@ -1,7 +1,7 @@
 import { Row } from '@tanstack/react-table'
 import { Eye, EyeOff, Pencil, Trash, MoreHorizontal } from 'lucide-react'
 import { toast } from 'sonner'
-import { useToggleNavItemVisibility } from '~/modules/admin/features/navigation/navitem/hooks/use-navitem-api'
+import { useToggleNavItemVisibility } from '~/modules/navigation/shared/navitem/hooks/use-navitem-api'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
@@ -14,7 +14,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { useAdminNavItemContext } from '../context/admin-navitem-context'
-import { AdminNavItem } from '../data/schema'
+import { AdminNavItem } from '~/modules/navigation/shared/navitem/data/schema'
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>

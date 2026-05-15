@@ -21,7 +21,7 @@ import type {
   CreateNavgroupData,
   UpdateNavgroupData,
   UserRoleNavGroup,
-} from '@/modules/admin/features/navigation/navgroup'
+} from '../data/schema'
 import { navgroupQueryKeys, sidebarQueryKeys } from '~/shared/lib/query-keys'
 
 type SuccessIdResponse = { success: true; id: string }

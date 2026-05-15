@@ -128,6 +128,9 @@ export function ModuleDiagnosticsPage(): ReactElement {
           <Badge variant='outline' className='w-fit'>
             moduleRegistry
           </Badge>
+          <Badge variant={issueCount > 0 ? 'secondary' : 'outline'} className='w-fit'>
+            boundary guard {issueCount > 0 ? 'needs review' : 'clean'}
+          </Badge>
         </div>
       </div>
 
@@ -188,7 +191,7 @@ export function ModuleDiagnosticsPage(): ReactElement {
         </Card>
       </div>
 
-      <Card className='mx-4'>
+      <Card className='mx-4 shadow-sm'>
         <CardHeader className='border-b px-4 py-3'>
           <div className='flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between'>
             <div className='flex items-center gap-3'>
@@ -243,7 +246,7 @@ export function ModuleDiagnosticsPage(): ReactElement {
           {filteredModules.length > 0 ? (
             filteredModules.map((module) => {
               return (
-                <div key={module.key} className='border-b px-4 py-4 last:border-b-0'>
+                <div key={module.key} className='border-b px-4 py-4 transition-colors hover:bg-muted/30 last:border-b-0'>
                   <div className='grid gap-4 xl:grid-cols-[220px_minmax(0,1fr)_minmax(260px,0.7fr)]'>
                     <div className='space-y-2'>
                       <div className='flex flex-wrap items-center gap-2'>

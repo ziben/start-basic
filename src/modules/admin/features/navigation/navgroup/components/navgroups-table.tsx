@@ -13,7 +13,7 @@ import {
 } from '@tanstack/react-table'
 import { useEffect, useState } from 'react'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
-import { type AdminNavgroup } from '../data/schema'
+import { type AdminNavgroup } from '~/modules/navigation/shared/navgroup/data/schema'
 import { DataTableBulkActions } from './data-table-bulk-actions'
 import { useNavGroupColumns } from './navgroups-columns'
 

@@ -2,7 +2,7 @@ import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
-import { useCreateNavgroup, useUpdateNavgroup } from '~/modules/admin/features/navigation/navgroup/hooks/use-navgroup-api'
+import { useCreateNavgroup, useUpdateNavgroup } from '~/modules/navigation/shared/navgroup/hooks/use-navgroup-api'
 import { useAllRoles } from '~/modules/admin/features/rbac/system-roles/hooks/use-role-api'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import { Button } from '@/components/ui/button'
@@ -19,8 +19,8 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet'
-import { type AdminNavgroup, createNavgroupSchema } from '../data/schema'
-import type { CreateNavgroupData } from '../data/schema'
+import { type AdminNavgroup, createNavgroupSchema } from '~/modules/navigation/shared/navgroup/data/schema'
+import type { CreateNavgroupData } from '~/modules/navigation/shared/navgroup/data/schema'
 
 type NavGroupsMutateDrawerProps = {
   open: boolean

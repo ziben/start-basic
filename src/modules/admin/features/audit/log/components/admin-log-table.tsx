@@ -117,6 +117,16 @@ export function AdminLogTable({ type, search, navigate }: AdminLogTableProps) {
 
   return (
     <div className={cn('max-sm:has-[div[role="toolbar"]]:mb-16', 'flex h-full flex-col space-y-4')}>
+      <div className='flex flex-wrap items-center justify-between gap-2 rounded-md border bg-muted/25 px-3 py-2 text-xs text-muted-foreground'>
+        <span>
+          当前视图：
+          <span className='ml-1 font-medium text-foreground'>{type === 'system' ? '系统日志' : '操作审计'}</span>
+        </span>
+        <span>
+          已加载 {data?.length ?? 0} 条，分页 {serverPageCount || 1} 页
+          {isRefetching ? '，正在刷新' : ''}
+        </span>
+      </div>
       <DataTableToolbar
         table={table}
         searchPlaceholder='搜索…'
