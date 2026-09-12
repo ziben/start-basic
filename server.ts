@@ -75,6 +75,14 @@ const SERVER_ENTRY_POINT = './dist/server/server.js'
 const ENABLE_PERF_LOGGING = process.env.ENABLE_PERF_LOGGING === 'true'
 const SLOW_REQUEST_THRESHOLD_MS = Number(process.env.SLOW_REQUEST_THRESHOLD_MS ?? 1000)
 
+function validateStartupConfig(): void {
+  const missing = ['BETTER_AUTH_SECRET', 'DATABASE_URL'].filter((key) => !process.env[key]?.trim())
+  if (missing.length > 0) throw new Error(`Missing required environment variables: ${missing.join(', ')}`)
+  if (process.env.NODE_ENV === 'production' && (process.env.BETTER_AUTH_SECRET?.length ?? 0) < 32) {
+    throw new Error('BETTER_AUTH_SECRET must be at least 32 characters in production')
+  }
+}
+
 // Logging utilities for professional output
 const log = {
   info: (message: string) => {
@@ -538,6 +546,8 @@ function withPerfMonitoring(
 async function initializeServer() {
   log.header('🚀 Starting Production Server')
 
+  validateStartupConfig()
+
   await initRuntimeConfig()
 
   // Load TanStack Start server handler
@@ -568,8 +578,9 @@ async function initializeServer() {
 
     fetch: ENABLE_PERF_LOGGING
       ? withPerfMonitoring((req: Request) => {
-        // Check if it's a static asset
         const url = new URL(req.url)
+        if (url.pathname === '/healthz') return Response.json({ status: 'ok' })
+        if (url.pathname === '/readyz') return Response.json({ status: 'ready' })
         const staticHandler = routes[url.pathname]
         if (staticHandler) {
           return staticHandler(req)
@@ -584,8 +595,9 @@ async function initializeServer() {
         }
       })
       : (req: Request) => {
-        // Check if it's a static asset
         const url = new URL(req.url)
+        if (url.pathname === '/healthz') return Response.json({ status: 'ok' })
+        if (url.pathname === '/readyz') return Response.json({ status: 'ready' })
         const staticHandler = routes[url.pathname]
         if (staticHandler) {
           return staticHandler(req)
