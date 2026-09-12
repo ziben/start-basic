@@ -58,7 +58,7 @@ export async function handleCreatePrepayOrder(
 }
 
 export const createPrepayOrderFn = createServerFn({ method: 'POST' })
-    .inputValidator((data: unknown) => PrepayRequestSchema.parse(data))
+    .validator((data: unknown) => PrepayRequestSchema.parse(data))
     .handler(async ({ data }: { data: z.infer<typeof PrepayRequestSchema> }) => {
         const { getRequest } = await import('@tanstack/react-start/server')
         const headers = getServerRequestHeaders(getRequest)
@@ -124,7 +124,7 @@ export async function handleCloseOrder(
  * 查询订单状态
  */
 export const queryOrderStatusFn = createServerFn({ method: 'GET' })
-    .inputValidator((data: unknown) => z.object({ orderId: z.string() }).parse(data))
+    .validator((data: unknown) => z.object({ orderId: z.string() }).parse(data))
     .handler(async ({ data }: { data: { orderId: string } }) => {
         const { getRequest } = await import('@tanstack/react-start/server')
         const headers = getServerRequestHeaders(getRequest)
@@ -135,7 +135,7 @@ export const queryOrderStatusFn = createServerFn({ method: 'GET' })
  * 主动查询微信支付订单状态 (用于客户端轮询)
  */
 export const syncOrderStatusFn = createServerFn({ method: 'POST' })
-    .inputValidator((data: unknown) => z.object({ orderId: z.string() }).parse(data))
+    .validator((data: unknown) => z.object({ orderId: z.string() }).parse(data))
     .handler(async ({ data }: { data: { orderId: string } }) => {
         const { getRequest } = await import('@tanstack/react-start/server')
         const headers = getServerRequestHeaders(getRequest)
@@ -146,7 +146,7 @@ export const syncOrderStatusFn = createServerFn({ method: 'POST' })
  * 关闭订单 (取消支付)
  */
 export const closeOrderFn = createServerFn({ method: 'POST' })
-    .inputValidator((data: unknown) => z.object({ orderId: z.string() }).parse(data))
+    .validator((data: unknown) => z.object({ orderId: z.string() }).parse(data))
     .handler(async ({ data }: { data: { orderId: string } }) => {
         const { getRequest } = await import('@tanstack/react-start/server')
         const headers = getServerRequestHeaders(getRequest)

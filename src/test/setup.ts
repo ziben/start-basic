@@ -1,9 +1,15 @@
 import '@testing-library/jest-dom/vitest'
 import { vi } from 'vitest'
 
+vi.stubGlobal('ResizeObserver', class {
+  observe(): void {}
+  unobserve(): void {}
+  disconnect(): void {}
+})
+
 const createServerFnMock = () => {
   const api = {
-    inputValidator: () => api,
+    validator: () => api,
     handler: (handler: (payload: unknown) => unknown) => (payload: unknown) => handler(payload),
   }
   return api

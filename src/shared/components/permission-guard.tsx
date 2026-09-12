@@ -67,7 +67,7 @@ export function PermissionGuard(props: PermissionGuardProps) {
   }
 
   // 2. Resolve access based on the specifically provided prop mode
-  let hasAccess = false
+  let hasAccess: boolean
 
   if (props.requireAdmin) {
     hasAccess = isAdmin

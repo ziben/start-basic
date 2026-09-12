@@ -1,9 +1,9 @@
 import { getRouteApi } from '@tanstack/react-router'
-import { ConfigDrawer } from '~/components/config-drawer'
-import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
-import { useTranslations } from '~/modules/admin/features/i18n/translation/hooks/use-translation-api'
 import { toTableNavigate } from '@/shared/hooks/use-table-url-state'
+import { ConfigDrawer } from '~/components/config-drawer'
 import { AppHeaderMain } from '~/components/layout/app-header-main'
+import { useTranslations } from '~/modules/admin/features/i18n/translation/hooks/use-translation-api'
+import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import { TranslationsDialogs } from './components/translations-dialogs'
 import { TranslationsPrimaryButtons } from './components/translations-primary-buttons'
 import { TranslationsProvider } from './components/translations-provider'
@@ -41,7 +41,3 @@ export function AdminTranslations() {
 }
 
 export default AdminTranslations
-
-
-
-

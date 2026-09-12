@@ -1,5 +1,5 @@
-import { createMiddleware } from '@tanstack/react-start'
 import { logger } from '@/shared/utils/logger'
+import { createMiddleware } from '@tanstack/react-start'
 
 type LogContext = {
   clientTime?: Date
@@ -56,4 +56,3 @@ export const logMiddleware = createMiddleware({ type: 'function' })
 
     return res
   })
-

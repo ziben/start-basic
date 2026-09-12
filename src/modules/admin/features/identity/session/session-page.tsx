@@ -11,8 +11,11 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
+import { useUrlSyncedSorting } from '@/shared/hooks/use-url-synced-sorting'
 import { zhCN } from 'date-fns/locale'
+import { Eye, Trash2, MoreHorizontal } from 'lucide-react'
 import { toast } from 'sonner'
+import { AppHeaderMain } from '~/components/layout/app-header-main'
 import {
   useAdminSessions,
   useBulkDeleteAdminSessions,
@@ -20,7 +23,6 @@ import {
   type AdminSessionInfo,
 } from '~/modules/admin/features/identity/session/hooks/use-admin-session-api'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
-import { useUrlSyncedSorting } from '@/shared/hooks/use-url-synced-sorting'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -33,10 +35,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { DataTable, DataTableColumnHeader, DataTablePagination, DataTableToolbar } from '@/components/data-table'
-import { AppHeaderMain } from '~/components/layout/app-header-main'
-import { AdminSessionPrimaryButtons } from './components/admin-session-primary-buttons'
 import { AdminSessionDialogs } from './components/admin-session-dialogs'
-import { Eye, Trash2, MoreHorizontal } from 'lucide-react'
+import { AdminSessionPrimaryButtons } from './components/admin-session-primary-buttons'
 
 const route = getRouteApi('/_authenticated/admin/session')
 
@@ -250,7 +250,11 @@ export default function AdminSession() {
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant='ghost' className='flex h-8 w-8 p-0 data-[state=open]:bg-muted' onClick={(e) => e.stopPropagation()}>
+                  <Button
+                    variant='ghost'
+                    className='flex h-8 w-8 p-0 data-[state=open]:bg-muted'
+                    onClick={(e) => e.stopPropagation()}
+                  >
                     <MoreHorizontal className='h-4 w-4' />
                     <span className='sr-only'>打开菜单</span>
                   </Button>
@@ -430,11 +434,3 @@ export default function AdminSession() {
     </>
   )
 }
-
-
-
-
-
-
-
-

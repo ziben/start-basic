@@ -6,14 +6,15 @@ import {
   getFacetedUniqueValues,
   useReactTable,
 } from '@tanstack/react-table'
-import { useVirtualizer } from '@tanstack/react-virtual'
-import { cn } from '@/shared/lib/utils'
+import { useTableColumnVisibility } from '@/shared/hooks/use-table-column-visibility'
 import { type NavigateFn, useTableUrlState } from '@/shared/hooks/use-table-url-state'
+import { cn } from '@/shared/lib/utils'
+import { useVirtualizer } from '@tanstack/react-virtual'
 import { DataTable, DataTablePagination, DataTableToolbar } from '@/components/data-table'
 import { useMembersListQuery } from '../hooks/use-members-list-query'
-import { useMembersColumns } from './members-columns'
 import { MembersBulkActions } from './members-bulk-actions'
-import { useTableColumnVisibility } from '@/shared/hooks/use-table-column-visibility'
+import { useMembersColumns } from './members-columns'
+
 type MembersTableProps = {
   search: Record<string, unknown>
   navigate: NavigateFn

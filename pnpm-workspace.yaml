@@ -1,11 +1,14 @@
-ignoredBuiltDependencies:
-  - '@ibm/plex-sans-sc'
-  - '@prisma/engines'
-  - '@tailwindcss/oxide'
-  - better-sqlite3
-  - esbuild
-  - prisma
-
-onlyBuiltDependencies:
-  - '@prisma/client'
-  - protobufjs
+allowBuilds:
+  '@google/genai': false
+  '@ibm/plex-sans-sc': false
+  '@prisma/client': true
+  '@prisma/engines': false
+  '@tailwindcss/oxide': false
+  better-sqlite3: false
+  esbuild: false
+  prisma: false
+  protobufjs: true
+overrides:
+  '@hono/node-server': 1.19.13
+  seroval: 1.5.5
+  seroval-plugins: 1.5.5

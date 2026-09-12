@@ -1,5 +1,4 @@
-import { DataTable, DataTablePagination, DataTableToolbar } from '@/components/data-table'
-import { type NavigateFn, type SearchRecord, toTableNavigate, useTableUrlState } from '@/shared/hooks/use-table-url-state'
+import { useEffect, useState } from 'react'
 import { getRouteApi } from '@tanstack/react-router'
 import {
   type VisibilityState,
@@ -11,9 +10,15 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-import { useEffect, useState } from 'react'
+import {
+  type NavigateFn,
+  type SearchRecord,
+  toTableNavigate,
+  useTableUrlState,
+} from '@/shared/hooks/use-table-url-state'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import { type AdminNavgroup } from '~/modules/navigation/shared/navgroup/data/schema'
+import { DataTable, DataTablePagination, DataTableToolbar } from '@/components/data-table'
 import { DataTableBulkActions } from './data-table-bulk-actions'
 import { useNavGroupColumns } from './navgroups-columns'
 
@@ -103,7 +108,10 @@ function NavGroupsTableInner({ data, search, navigate, onReload, isReloading }: 
           {
             columnId: 'scope',
             title: '范围',
-            options: [{ label: 'APP', value: 'APP' }, { label: 'ADMIN', value: 'ADMIN' }],
+            options: [
+              { label: 'APP', value: 'APP' },
+              { label: 'ADMIN', value: 'ADMIN' },
+            ],
           },
         ]}
       />
@@ -133,7 +141,3 @@ export function NavGroupsTable({ data, search, navigate, onReload, isReloading }
     />
   )
 }
-
-
-
-

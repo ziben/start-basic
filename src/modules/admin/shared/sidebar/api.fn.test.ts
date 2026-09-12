@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { loadSidebarData } from './api.fn'
+import { loadSidebarData } from './sidebar-data-loader'
 
 vi.mock('@tanstack/react-start/server', () => ({
   getRequest: () => ({

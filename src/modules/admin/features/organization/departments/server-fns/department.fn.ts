@@ -38,7 +38,7 @@ const UpdateDepartmentSchema = z.object({
  * 获取组织的部门列表
  */
 export const getDepartmentsFn = createServerFn({ method: 'GET' })
-    .inputValidator((data: { organizationId: string }) => {
+    .validator((data: { organizationId: string }) => {
         if (!data.organizationId) {
             throw new Error('组织ID不能为空')
         }
@@ -52,7 +52,7 @@ export const getDepartmentsFn = createServerFn({ method: 'GET' })
  * 获取部门树
  */
 export const getDepartmentTreeFn = createServerFn({ method: 'GET' })
-    .inputValidator((data: { organizationId: string }) => {
+    .validator((data: { organizationId: string }) => {
         if (!data.organizationId) {
             throw new Error('组织ID不能为空')
         }
@@ -66,7 +66,7 @@ export const getDepartmentTreeFn = createServerFn({ method: 'GET' })
  * 获取单个部门
  */
 export const getDepartmentFn = createServerFn({ method: 'GET' })
-    .inputValidator((data: { id: string }) => {
+    .validator((data: { id: string }) => {
         if (!data.id) {
             throw new Error('部门ID不能为空')
         }
@@ -80,7 +80,7 @@ export const getDepartmentFn = createServerFn({ method: 'GET' })
  * 创建部门
  */
 export const createDepartmentFn = createServerFn({ method: 'POST' })
-    .inputValidator((data: z.infer<typeof CreateDepartmentSchema>) => CreateDepartmentSchema.parse(data))
+    .validator((data: z.infer<typeof CreateDepartmentSchema>) => CreateDepartmentSchema.parse(data))
     .handler(async ({ data }) => {
         return await DepartmentService.create(data)
     })
@@ -89,7 +89,7 @@ export const createDepartmentFn = createServerFn({ method: 'POST' })
  * 更新部门
  */
 export const updateDepartmentFn = createServerFn({ method: 'POST' })
-    .inputValidator((data: z.infer<typeof UpdateDepartmentSchema>) => UpdateDepartmentSchema.parse(data))
+    .validator((data: z.infer<typeof UpdateDepartmentSchema>) => UpdateDepartmentSchema.parse(data))
     .handler(async ({ data }) => {
         const { id, ...updateData } = data
         return await DepartmentService.update(id, updateData)
@@ -99,7 +99,7 @@ export const updateDepartmentFn = createServerFn({ method: 'POST' })
  * 删除部门
  */
 export const deleteDepartmentFn = createServerFn({ method: 'POST' })
-    .inputValidator((data: { id: string }) => {
+    .validator((data: { id: string }) => {
         if (!data.id) {
             throw new Error('部门ID不能为空')
         }
@@ -113,7 +113,7 @@ export const deleteDepartmentFn = createServerFn({ method: 'POST' })
  * 获取下级部门
  */
 export const getSubDepartmentsFn = createServerFn({ method: 'GET' })
-    .inputValidator((data: { departmentId: string }) => {
+    .validator((data: { departmentId: string }) => {
         if (!data.departmentId) {
             throw new Error('部门ID不能为空')
         }

@@ -31,7 +31,3 @@ export const authMiddleware = createMiddleware({ type: 'request' }).server(async
   // 不抛错，让路由层处理认证逻辑
   return next({ context: { user: session?.user ?? null } })
 })
-
-
-
-

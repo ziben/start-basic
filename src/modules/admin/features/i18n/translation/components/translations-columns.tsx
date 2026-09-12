@@ -58,8 +58,3 @@ export function useTranslationColumns(): ColumnDef<Translation>[] {
     },
   ]
 }
-
-
-
-
-

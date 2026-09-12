@@ -1,5 +1,5 @@
-import { hashPassword } from 'better-auth/crypto'
 import prisma from '@/shared/lib/db'
+import { hashPassword } from 'better-auth/crypto'
 
 async function createAdminUser() {
   try {
@@ -40,8 +40,3 @@ async function createAdminUser() {
 }
 
 createAdminUser()
-
-
-
-
-

@@ -28,7 +28,7 @@ import { requireAdmin } from '~/modules/admin/shared/server-fns/auth'
 // ============ ServerFn 定义 ============
 
 export const getTranslationsFn = createServerFn({ method: 'GET' })
-    .inputValidator((data?: { locale?: string }) => data)
+    .validator((data?: { locale?: string }) => data)
     .handler(async ({ data }: { data?: { locale?: string } }) => {
         await requireAdmin('ListTranslations')
         const { TranslationService } = await import('../services/translation.service')
@@ -36,7 +36,7 @@ export const getTranslationsFn = createServerFn({ method: 'GET' })
     })
 
 export const getTranslationFn = createServerFn({ method: 'GET' })
-    .inputValidator((data: { id: string }) => {
+    .validator((data: { id: string }) => {
         if (!data?.id) throw new Error('ID 不能为空')
         return data
     })
@@ -47,7 +47,7 @@ export const getTranslationFn = createServerFn({ method: 'GET' })
     })
 
 export const createTranslationFn = createServerFn({ method: 'POST' })
-    .inputValidator((data: z.infer<typeof CreateTranslationSchema>) => CreateTranslationSchema.parse(data))
+    .validator((data: z.infer<typeof CreateTranslationSchema>) => CreateTranslationSchema.parse(data))
     .handler(async ({ data }: { data: z.infer<typeof CreateTranslationSchema> }) => {
         await requireAdmin('CreateTranslation')
         const { TranslationService } = await import('../services/translation.service')
@@ -55,7 +55,7 @@ export const createTranslationFn = createServerFn({ method: 'POST' })
     })
 
 export const updateTranslationFn = createServerFn({ method: 'POST' })
-    .inputValidator((data: z.infer<typeof UpdateTranslationSchema>) => UpdateTranslationSchema.parse(data))
+    .validator((data: z.infer<typeof UpdateTranslationSchema>) => UpdateTranslationSchema.parse(data))
     .handler(async ({ data }: { data: z.infer<typeof UpdateTranslationSchema> }) => {
         await requireAdmin('UpdateTranslation')
         const { TranslationService } = await import('../services/translation.service')
@@ -64,7 +64,7 @@ export const updateTranslationFn = createServerFn({ method: 'POST' })
     })
 
 export const deleteTranslationFn = createServerFn({ method: 'POST' })
-    .inputValidator((data: { id: string }) => {
+    .validator((data: { id: string }) => {
         if (!data?.id) throw new Error('ID 不能为空')
         return data
     })
@@ -78,7 +78,7 @@ export const deleteTranslationFn = createServerFn({ method: 'POST' })
  * 导入翻译
  */
 export const importTranslationsFn = createServerFn({ method: 'POST' })
-    .inputValidator((data: Array<{ locale: string; key: string; value: string }>) => {
+    .validator((data: Array<{ locale: string; key: string; value: string }>) => {
         if (!Array.isArray(data)) throw new Error('输入必须是数组')
         return data
     })
@@ -93,7 +93,7 @@ export const importTranslationsFn = createServerFn({ method: 'POST' })
  * 注意：由于 createServerFn 默认行为，我们可能需要特殊处理 Response
  */
 export const exportTranslationsFn = createServerFn({ method: 'GET' })
-    .inputValidator((data?: { locale?: string }) => data)
+    .validator((data?: { locale?: string }) => data)
     .handler(async ({ data }: { data?: { locale?: string } }) => {
         await requireAdmin('ExportTranslations')
         const { TranslationService } = await import('../services/translation.service')

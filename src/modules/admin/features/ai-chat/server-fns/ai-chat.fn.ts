@@ -17,14 +17,14 @@ const ListConversationsSchema = z.object({
 })
 
 export const listAIConversationsFn = createServerFn({ method: 'GET' })
-    .inputValidator((data?: z.infer<typeof ListConversationsSchema>) => (data ? ListConversationsSchema.parse(data) : {}))
+    .validator((data?: z.infer<typeof ListConversationsSchema>) => (data ? ListConversationsSchema.parse(data) : {}))
     .handler(async ({ data }: { data: z.infer<typeof ListConversationsSchema> }) => {
         await requireAdmin('ListAIConversations')
         return AiChatService.adminListConversations(data ?? {})
     })
 
 export const getAIConversationFn = createServerFn({ method: 'GET' })
-    .inputValidator((data: { conversationId: string }) => {
+    .validator((data: { conversationId: string }) => {
         if (!data?.conversationId) throw new Error('conversationId 不能为空')
         return data
     })
@@ -34,7 +34,7 @@ export const getAIConversationFn = createServerFn({ method: 'GET' })
     })
 
 export const deleteAIConversationFn = createServerFn({ method: 'POST' })
-    .inputValidator((data: { conversationId: string }) => {
+    .validator((data: { conversationId: string }) => {
         if (!data?.conversationId) throw new Error('conversationId 不能为空')
         return data
     })

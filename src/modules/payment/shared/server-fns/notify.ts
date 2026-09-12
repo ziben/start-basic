@@ -61,14 +61,17 @@ export async function handleWeChatPayNotify(
 
         // 根据支付状态更新订单
         if (paymentResult.trade_state === 'SUCCESS') {
-            await prisma.paymentOrder.update({
-                where: { id: order.id },
+            const claimed = await prisma.paymentOrder.updateMany({
+                where: { id: order.id, status: 'PENDING' },
                 data: {
                     status: 'SUCCESS',
                     transactionId: paymentResult.transaction_id,
                     paidAt: new Date(paymentResult.success_time),
                 },
             })
+
+            // ponytail: database conditional update is the idempotency guard; use an outbox when delivery must survive process restarts.
+            if (claimed.count === 0) return { code: 'SUCCESS', message: '已处理' }
 
             console.log('[WeChatPay Notify] Order paid successfully:', order.outTradeNo)
 

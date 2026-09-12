@@ -29,7 +29,7 @@ const CreateInvitationSchema = z.object({
 // ============ ServerFn 定义 ============
 
 export const getInvitationsFn = createServerFn({ method: 'GET' })
-    .inputValidator((data?: z.infer<typeof ListInvitationsSchema>) =>
+    .validator((data?: z.infer<typeof ListInvitationsSchema>) =>
         data ? ListInvitationsSchema.parse(data) : {}
     )
     .handler(async ({ data }: { data: z.infer<typeof ListInvitationsSchema> }) => {
@@ -39,7 +39,7 @@ export const getInvitationsFn = createServerFn({ method: 'GET' })
     })
 
 export const createInvitationFn = createServerFn({ method: 'POST' })
-    .inputValidator((data: z.infer<typeof CreateInvitationSchema>) => CreateInvitationSchema.parse(data))
+    .validator((data: z.infer<typeof CreateInvitationSchema>) => CreateInvitationSchema.parse(data))
     .handler(async ({ data }: { data: z.infer<typeof CreateInvitationSchema> }) => {
         const user = await requireAdmin('CreateInvitation')
         const { InvitationService } = await import('../services/invitation.service')
@@ -47,7 +47,7 @@ export const createInvitationFn = createServerFn({ method: 'POST' })
     })
 
 export const deleteInvitationFn = createServerFn({ method: 'POST' })
-    .inputValidator((data: { id: string }) => {
+    .validator((data: { id: string }) => {
         if (!data?.id) throw new Error('ID 不能为空')
         return data
     })
@@ -58,7 +58,7 @@ export const deleteInvitationFn = createServerFn({ method: 'POST' })
     })
 
 export const bulkDeleteInvitationsFn = createServerFn({ method: 'POST' })
-    .inputValidator((data: { ids: string[] }) => {
+    .validator((data: { ids: string[] }) => {
         if (!data?.ids || !Array.isArray(data.ids)) throw new Error('ids 必须是数组')
         return data
     })

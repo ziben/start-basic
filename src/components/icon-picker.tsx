@@ -1,25 +1,14 @@
 import * as React from 'react'
 import { useVirtualizer } from '@tanstack/react-virtual'
-import * as LucideIcons from 'lucide-react'
+import { ChevronsUpDown, Sparkles } from 'lucide-react'
+import { availableIconNames, iconResolver } from '@/shared/utils/icon-resolver'
 import { cn } from '@/shared/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
-// 过滤出所有可用的图标组件
-const iconList = Object.keys(LucideIcons || {})
-  .filter(
-    (name) =>
-      // 只保留首字母大写的（组件命名规范）
-      /^[A-Z]/.test(name) &&
-      // 排除 Icon 后缀的别名（只保留原始名称）
-      !name.endsWith('Icon') &&
-      // 排除特殊的导出
-      name !== 'createLucideIcon' &&
-      name !== 'default'
-  )
-  .sort()
+const iconList = availableIconNames
 
 export interface IconPickerProps {
   value?: string
@@ -32,10 +21,7 @@ export interface IconPickerProps {
 // 图标项组件 - 使用 memo 避免重复渲染
 const IconItem = React.memo(
   ({ iconName, isSelected, onSelect }: { iconName: string; isSelected: boolean; onSelect: (name: string) => void }) => {
-    const IconComponent = LucideIcons[
-      iconName as keyof typeof LucideIcons
-    ] as React.ComponentType<LucideIcons.LucideProps>
-
+    const Icon = iconResolver(iconName) ?? Sparkles
     return (
       <Tooltip>
         <TooltipTrigger asChild>
@@ -44,9 +30,7 @@ const IconItem = React.memo(
             className='flex h-12 flex-col items-center justify-center gap-1 rounded-md p-2 transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none'
             onClick={() => onSelect(iconName)}
           >
-            {React.createElement(IconComponent, {
-              className: cn('size-5', isSelected && 'text-primary'),
-            })}
+            <Icon className={cn('size-5', isSelected && 'text-primary')} />
             <span className='sr-only'>{iconName}</span>
           </button>
         </TooltipTrigger>
@@ -68,29 +52,12 @@ export const IconPicker = React.memo(function IconPicker({
 }: IconPickerProps) {
   const [open, setOpen] = React.useState(false)
   const [search, setSearch] = React.useState('')
-  const [debouncedSearch, setDebouncedSearch] = React.useState('')
+  const SelectedIcon = iconResolver(value) ?? Sparkles
 
-  const selectedIcon = value
-    ? (LucideIcons[value as keyof typeof LucideIcons] as React.ComponentType<LucideIcons.LucideProps>)
-    : null
-
-  // 防抖搜索
-  React.useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearch(search)
-    }, 150)
-    return () => clearTimeout(timer)
-  }, [search])
-
-  // 优化：限制显示数量，搜索时显示更多
   const filteredIcons = React.useMemo(() => {
-    const lowerSearch = debouncedSearch.toLowerCase()
-    const filtered = debouncedSearch ? iconList.filter((name) => name.toLowerCase().includes(lowerSearch)) : iconList
-
-    // 如果没有搜索，只显示前 300 个（性能优化）
-    // 如果有搜索，显示所有匹配结果（但限制 500 个）
-    return debouncedSearch ? filtered.slice(0, 500) : filtered.slice(0, 300)
-  }, [debouncedSearch])
+    const lowerSearch = search.toLowerCase()
+    return search ? iconList.filter((name) => name.toLowerCase().includes(lowerSearch)) : iconList
+  }, [search])
 
   const scrollRef = React.useRef<HTMLDivElement>(null)
   const COLUMN_COUNT = 6
@@ -131,18 +98,18 @@ export const IconPicker = React.memo(function IconPicker({
             className
           )}
         >
-          {selectedIcon ? (
+          {value ? (
             <div className='flex items-center gap-2'>
-              {React.createElement(selectedIcon, { className: 'size-4' })}
+              <SelectedIcon className='size-4' />
               <span className='truncate'>{value}</span>
             </div>
           ) : (
             <div className='flex items-center gap-2'>
-              <LucideIcons.Sparkles className='size-4' />
+              <Sparkles className='size-4' />
               <span>{placeholder}</span>
             </div>
           )}
-          <LucideIcons.ChevronsUpDown className='ml-auto size-4 shrink-0 opacity-50' />
+          <ChevronsUpDown className='ml-auto size-4 shrink-0 opacity-50' />
         </Button>
       </PopoverTrigger>
       <PopoverContent className='w-[320px] p-0' align='start'>
@@ -185,24 +152,8 @@ export const IconPicker = React.memo(function IconPicker({
               </TooltipProvider>
             )}
           </div>
-
-          {filteredIcons.length > 0 && (
-            <>
-              {!debouncedSearch && filteredIcons.length === 300 && (
-                <p className='px-2 pb-2 text-center text-xs text-muted-foreground'>
-                  显示前 300 个图标，使用搜索查找更多...
-                </p>
-              )}
-              {debouncedSearch && filteredIcons.length === 500 && (
-                <p className='px-2 pb-2 text-center text-xs text-muted-foreground'>已显示 500 个结果，请细化搜索...</p>
-              )}
-            </>
-          )}
         </div>
       </PopoverContent>
     </Popover>
   )
 })
-
-
-

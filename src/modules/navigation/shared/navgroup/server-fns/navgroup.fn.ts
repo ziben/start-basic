@@ -43,7 +43,7 @@ import { requireAdmin } from '~/modules/admin/shared/server-fns/auth'
  * 获取菜单组列表
  */
 export const getNavGroupsFn = createServerFn({ method: 'GET' })
-    .inputValidator((data?: { scope?: 'APP' | 'ADMIN' }) => data)
+    .validator((data?: { scope?: 'APP' | 'ADMIN' }) => data)
     .handler(async ({ data }: { data?: { scope?: 'APP' | 'ADMIN' } }) => {
         await requireAdmin('ListNavGroups')
         const { NavGroupService } = await import('../services/navgroup.service')
@@ -54,7 +54,7 @@ export const getNavGroupsFn = createServerFn({ method: 'GET' })
  * 获取单个菜单组
  */
 export const getNavGroupFn = createServerFn({ method: 'GET' })
-    .inputValidator((data: { id: string }) => {
+    .validator((data: { id: string }) => {
         if (!data?.id) throw new Error('ID 不能为空')
         return data
     })
@@ -68,7 +68,7 @@ export const getNavGroupFn = createServerFn({ method: 'GET' })
  * 创建菜单组
  */
 export const createNavGroupFn = createServerFn({ method: 'POST' })
-    .inputValidator((data: z.infer<typeof CreateNavGroupSchema>) => CreateNavGroupSchema.parse(data))
+    .validator((data: z.infer<typeof CreateNavGroupSchema>) => CreateNavGroupSchema.parse(data))
     .handler(async ({ data }: { data: z.infer<typeof CreateNavGroupSchema> }) => {
         await requireAdmin('CreateNavGroup')
         const { NavGroupService } = await import('../services/navgroup.service')
@@ -79,7 +79,7 @@ export const createNavGroupFn = createServerFn({ method: 'POST' })
  * 更新菜单组
  */
 export const updateNavGroupFn = createServerFn({ method: 'POST' })
-    .inputValidator((data: z.infer<typeof UpdateNavGroupSchema>) => UpdateNavGroupSchema.parse(data))
+    .validator((data: z.infer<typeof UpdateNavGroupSchema>) => UpdateNavGroupSchema.parse(data))
     .handler(async ({ data }: { data: z.infer<typeof UpdateNavGroupSchema> }) => {
         await requireAdmin('UpdateNavGroup')
         const { NavGroupService } = await import('../services/navgroup.service')
@@ -91,7 +91,7 @@ export const updateNavGroupFn = createServerFn({ method: 'POST' })
  * 删除菜单组
  */
 export const deleteNavGroupFn = createServerFn({ method: 'POST' })
-    .inputValidator((data: { id: string }) => {
+    .validator((data: { id: string }) => {
         if (!data?.id) throw new Error('ID 不能为空')
         return data
     })
@@ -105,7 +105,7 @@ export const deleteNavGroupFn = createServerFn({ method: 'POST' })
  * 更新排序
  */
 export const updateNavGroupOrderFn = createServerFn({ method: 'POST' })
-    .inputValidator((data: z.infer<typeof UpdateOrderSchema>) => UpdateOrderSchema.parse(data))
+    .validator((data: z.infer<typeof UpdateOrderSchema>) => UpdateOrderSchema.parse(data))
     .handler(async ({ data }: { data: z.infer<typeof UpdateOrderSchema> }) => {
         await requireAdmin('UpdateNavGroupOrder')
         const { NavGroupService } = await import('../services/navgroup.service')
@@ -116,7 +116,7 @@ export const updateNavGroupOrderFn = createServerFn({ method: 'POST' })
  * 更新用户菜单组可见性
  */
 export const updateNavGroupVisibilityFn = createServerFn({ method: 'POST' })
-    .inputValidator((data: z.infer<typeof UpdateVisibilitySchema>) => UpdateVisibilitySchema.parse(data))
+    .validator((data: z.infer<typeof UpdateVisibilitySchema>) => UpdateVisibilitySchema.parse(data))
     .handler(async ({ data }: { data: z.infer<typeof UpdateVisibilitySchema> }) => {
         await requireAdmin('UpdateNavGroupVisibility')
         const { NavGroupService } = await import('../services/navgroup.service')

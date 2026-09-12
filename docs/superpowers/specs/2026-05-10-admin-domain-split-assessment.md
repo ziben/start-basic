@@ -18,29 +18,29 @@
 
 按 `src/modules/admin/features/*` 粗略统计：
 
-| 子域 | 文件数 | 备注 |
-| --- | ---: | --- |
-| organization | 56 | 组织、成员、部门、邀请混合，耦合较多 |
-| navigation | 42 | navgroup、navitem、角色导航、用户导航混合 |
-| rbac | 40 | 系统角色、组织角色、权限资源和 action 混合 |
-| identity | 36 | 用户、会话、账号、验证混合 |
-| system-config | 20 | 配置 CRUD、历史、刷新链路较完整 |
-| i18n | 17 | 翻译管理，相对独立 |
-| audit | 13 | 日志查询和展示，边界较清晰 |
-| payment | 13 | 支付订单后台管理，边界清晰 |
-| ai-chat | 7 | 单页能力，暂不急于拆 |
+| 子域          | 文件数 | 备注                                       |
+| ------------- | -----: | ------------------------------------------ |
+| organization  |     56 | 组织、成员、部门、邀请混合，耦合较多       |
+| navigation    |     42 | navgroup、navitem、角色导航、用户导航混合  |
+| rbac          |     40 | 系统角色、组织角色、权限资源和 action 混合 |
+| identity      |     36 | 用户、会话、账号、验证混合                 |
+| system-config |     20 | 配置 CRUD、历史、刷新链路较完整            |
+| i18n          |     17 | 翻译管理，相对独立                         |
+| audit         |     13 | 日志查询和展示，边界较清晰                 |
+| payment       |     13 | 支付订单后台管理，边界清晰                 |
+| ai-chat       |      7 | 单页能力，暂不急于拆                       |
 
 按职责粗略统计：
 
-| 类型 | 文件数 |
-| --- | ---: |
-| components | 119 |
-| other/page/context/index | 63 |
-| hooks | 33 |
-| server-fns | 18 |
-| services | 18 |
-| data | 10 |
-| types | 7 |
+| 类型                     | 文件数 |
+| ------------------------ | -----: |
+| components               |    119 |
+| other/page/context/index |     63 |
+| hooks                    |     33 |
+| server-fns               |     18 |
+| services                 |     18 |
+| data                     |     10 |
+| types                    |      7 |
 
 ## 3. 拆分原则
 
@@ -86,17 +86,21 @@ admin 子域拆分的目标是降低维护成本，而不是引入运行时启�
 
 ### Phase B：Payment Admin Adapter
 
+状态：已完成。
+
 目标：把后台 payment 管理页面和 `src/modules/payment` 的稳定服务关系写清楚。
 
-建议改动：
+已落地改动：
 
-- 保留 `src/modules/admin/features/payment` 的页面组织。
-- 新增一层薄 adapter，明确后台页面依赖 payment 模块公开 service 还是 admin 自己的订单管理 service。
-- 不迁移支付核心 service，不改支付路由。
+- `src/modules/payment/admin` 承载后台支付订单页面、hooks、data、server-fns、formatter 与 admin service。
+- `src/modules/admin/features/payment/index.ts` 仅保留 compatibility re-export。
+- 后台支付路由直接挂载 `~/modules/payment/admin` 的 `PaymentOrdersPage`。
+- 支付核心 service 与支付 API 路由未迁移，仍留在 `payment/shared` 与 TanStack route 入口。
 
 验收：
 
-- 后台支付订单页面测试或 server-fn 测试仍通过。
+- `src/modules/admin/features/payment` 只剩兼容入口。
+- 后台支付订单页面测试或边界测试仍通过。
 - `paymentModule.exports.services` 不因为后台页面需求膨胀。
 
 ### Phase C：System Config Event Boundary
@@ -111,17 +115,22 @@ admin 子域拆分的目标是降低维护成本，而不是引入运行时启�
 
 ### Phase D：Audit Boundary
 
+状态：已完成。
+
 目标：让审计日志成为稳定横切能力。
 
-建议改动：
+已落地改动：
 
-- 梳理 `audit/log/services/log.service.ts` 与 `admin/shared/services/server-log-writer.ts` 的职责。
-- 明确“写日志”和“查日志”是否属于同一模块边界。
-- 如需模块化，优先新增 `auditModule`，只暴露稳定的写入/查询 service。
+- `src/modules/audit/shared` 承载日志 schema、查询 hook、server-fn、查询 service 与写日志 service。
+- `src/modules/audit/admin` 承载后台日志页面、表格、provider、筛选工具和页面级查询 hook。
+- `src/modules/admin/features/audit/index.ts` 仅保留 compatibility re-export。
+- 后台日志路由直接挂载 `~/modules/audit/admin` 的 `AdminLog`。
+- `auditModule.exports.services` 只暴露稳定的 `LogService`、`writeAuditLog`、`writeSystemLog`，不把 UI 页面或 hooks 放入 registry。
 
 验收：
 
-- 不影响现有日志页面。
+- `src/modules/admin/features/audit` 只剩兼容入口。
+- 后台日志页面仍通过边界测试和类型检查。
 - 不把所有 admin 操作都改成 Event Bus。
 
 ### Phase E：大域拆分评估

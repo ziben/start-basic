@@ -7,17 +7,17 @@ import {
   getFacetedUniqueValues,
   useReactTable,
 } from '@tanstack/react-table'
+import { AdminDataTable } from '@/modules/admin/shared/components/admin-data-table'
+import { useTableColumnVisibility } from '@/shared/hooks/use-table-column-visibility'
+import { type NavigateFn, useTableUrlState } from '@/shared/hooks/use-table-url-state'
+import { cn } from '@/shared/lib/utils'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
-import { cn } from '@/shared/lib/utils'
-import { type NavigateFn, useTableUrlState } from '@/shared/hooks/use-table-url-state'
-import { AdminDataTable } from '@/modules/admin/shared/components/admin-data-table'
 import { banned } from '../data/schema'
 import { useAdminUsersListQuery } from '../hooks/use-admin-users-list-query'
 import { getSingleBooleanFromArrayFilter } from '../utils/table-filters'
 import { useAdminUsersColumns } from './admin-users-columns'
 import { DataTableBulkActions } from './data-table-bulk-actions'
-import { useTableColumnVisibility } from '@/shared/hooks/use-table-column-visibility'
 
 type AdminUsersTableProps = {
   search: Record<string, unknown>

@@ -33,7 +33,7 @@ const UpdateDataScopeSchema = z.object({
  * [迁移自 admin/shared/server-fns/role-permission.fn.ts]
  */
 export const getRolePermissionsFn = createServerFn({ method: 'GET' })
-    .inputValidator((data: { roleId: string }) => {
+    .validator((data: { roleId: string }) => {
         if (!data?.roleId) throw new Error('角色ID不能为空')
         return data
     })
@@ -49,7 +49,7 @@ export const getRolePermissionsFn = createServerFn({ method: 'GET' })
  * [迁移自 admin/shared/server-fns/role-permission.fn.ts]
  */
 export const assignRolePermissionsFn = createServerFn({ method: 'POST' })
-    .inputValidator((data: z.infer<typeof AssignPermissionsSchema>) =>
+    .validator((data: z.infer<typeof AssignPermissionsSchema>) =>
         AssignPermissionsSchema.parse(data)
     )
     .handler(async ({ data }: { data: z.infer<typeof AssignPermissionsSchema> }) => {
@@ -72,7 +72,7 @@ export const assignRolePermissionsFn = createServerFn({ method: 'POST' })
  * [迁移自 admin/shared/server-fns/role-permission.fn.ts]
  */
 export const updateRolePermissionDataScopeFn = createServerFn({ method: 'POST' })
-    .inputValidator((data: z.infer<typeof UpdateDataScopeSchema>) =>
+    .validator((data: z.infer<typeof UpdateDataScopeSchema>) =>
         UpdateDataScopeSchema.parse(data)
     )
     .handler(async ({ data }: { data: z.infer<typeof UpdateDataScopeSchema> }) => {
@@ -87,7 +87,7 @@ export const updateRolePermissionDataScopeFn = createServerFn({ method: 'POST' }
  * [迁移自 admin/shared/server-fns/role-permission.fn.ts]
  */
 export const removeRolePermissionFn = createServerFn({ method: 'POST' })
-    .inputValidator((data: { rolePermissionId: string }) => {
+    .validator((data: { rolePermissionId: string }) => {
         if (!data?.rolePermissionId) throw new Error('权限ID不能为空')
         return data
     })

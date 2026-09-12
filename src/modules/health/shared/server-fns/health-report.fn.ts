@@ -27,7 +27,7 @@ async function requireUserId(): Promise<string> {
 }
 
 export const createHealthReportFn = createServerFn({ method: 'POST' })
-  .inputValidator((data: z.infer<typeof CreateHealthReportSchema>) =>
+  .validator((data: z.infer<typeof CreateHealthReportSchema>) =>
     CreateHealthReportSchema.parse(data),
   )
   .handler(async ({ data }) => {
@@ -37,7 +37,7 @@ export const createHealthReportFn = createServerFn({ method: 'POST' })
   })
 
 export const listHealthReportsFn = createServerFn({ method: 'GET' })
-  .inputValidator((data?: z.infer<typeof ListHealthReportsSchema>) =>
+  .validator((data?: z.infer<typeof ListHealthReportsSchema>) =>
     data ? ListHealthReportsSchema.parse(data) : {},
   )
   .handler(async ({ data }) => {
@@ -47,7 +47,7 @@ export const listHealthReportsFn = createServerFn({ method: 'GET' })
   })
 
 export const getHealthReportFn = createServerFn({ method: 'GET' })
-  .inputValidator((data: { reportId: string }) => {
+  .validator((data: { reportId: string }) => {
     if (!data?.reportId) throw new Error('报告 ID 不能为空')
     return data
   })

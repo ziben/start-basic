@@ -19,7 +19,6 @@ export function NavGroupsProvider({ children }: { children: React.ReactNode }) {
   return <NavGroupsContext.Provider value={value}>{children}</NavGroupsContext.Provider>
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const useNavGroups = () => {
   const navGroupsContext = React.useContext(NavGroupsContext)
 
@@ -29,6 +28,3 @@ export const useNavGroups = () => {
 
   return navGroupsContext
 }
-
-
-

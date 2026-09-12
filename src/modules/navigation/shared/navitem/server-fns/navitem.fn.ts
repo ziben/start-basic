@@ -41,7 +41,7 @@ import { requireAdmin } from '~/modules/admin/shared/server-fns/auth'
  * 获取导航项列表
  */
 export const getNavItemsFn = createServerFn({ method: 'GET' })
-    .inputValidator((data?: { navGroupId?: string; scope?: 'APP' | 'ADMIN' }) => data)
+    .validator((data?: { navGroupId?: string; scope?: 'APP' | 'ADMIN' }) => data)
     .handler(async ({ data }: { data?: { navGroupId?: string; scope?: 'APP' | 'ADMIN' } }) => {
         await requireAdmin('ListNavItems')
         const { NavItemService } = await import('../services/navitem.service')
@@ -52,7 +52,7 @@ export const getNavItemsFn = createServerFn({ method: 'GET' })
  * 获取单个导航项
  */
 export const getNavItemFn = createServerFn({ method: 'GET' })
-    .inputValidator((data: { id: string }) => {
+    .validator((data: { id: string }) => {
         if (!data?.id) throw new Error('ID 不能为空')
         return data
     })
@@ -66,7 +66,7 @@ export const getNavItemFn = createServerFn({ method: 'GET' })
  * 创建导航项
  */
 export const createNavItemFn = createServerFn({ method: 'POST' })
-    .inputValidator((data: z.infer<typeof CreateNavItemSchema>) => CreateNavItemSchema.parse(data))
+    .validator((data: z.infer<typeof CreateNavItemSchema>) => CreateNavItemSchema.parse(data))
     .handler(async ({ data }: { data: z.infer<typeof CreateNavItemSchema> }) => {
         await requireAdmin('CreateNavItem')
         const { NavItemService } = await import('../services/navitem.service')
@@ -77,7 +77,7 @@ export const createNavItemFn = createServerFn({ method: 'POST' })
  * 更新导航项
  */
 export const updateNavItemFn = createServerFn({ method: 'POST' })
-    .inputValidator((data: z.infer<typeof UpdateNavItemSchema>) => UpdateNavItemSchema.parse(data))
+    .validator((data: z.infer<typeof UpdateNavItemSchema>) => UpdateNavItemSchema.parse(data))
     .handler(async ({ data }: { data: z.infer<typeof UpdateNavItemSchema> }) => {
         await requireAdmin('UpdateNavItem')
         const { NavItemService } = await import('../services/navitem.service')
@@ -89,7 +89,7 @@ export const updateNavItemFn = createServerFn({ method: 'POST' })
  * 删除导航项
  */
 export const deleteNavItemFn = createServerFn({ method: 'POST' })
-    .inputValidator((data: { id: string }) => {
+    .validator((data: { id: string }) => {
         if (!data?.id) throw new Error('ID 不能为空')
         return data
     })
@@ -103,7 +103,7 @@ export const deleteNavItemFn = createServerFn({ method: 'POST' })
  * 更新排序
  */
 export const updateNavItemOrderFn = createServerFn({ method: 'POST' })
-    .inputValidator((data: { itemIds: string[] }) => {
+    .validator((data: { itemIds: string[] }) => {
         if (!data?.itemIds || !Array.isArray(data.itemIds)) {
             throw new Error('itemIds 必须是数组')
         }
@@ -119,7 +119,7 @@ export const updateNavItemOrderFn = createServerFn({ method: 'POST' })
  * 切换导航项可见性
  */
 export const toggleNavItemVisibilityFn = createServerFn({ method: 'POST' })
-    .inputValidator((data: { id: string; isVisible: boolean }) => {
+    .validator((data: { id: string; isVisible: boolean }) => {
         if (!data?.id) throw new Error('ID 不能为空')
         if (typeof data.isVisible !== 'boolean') throw new Error('isVisible 必须是布尔值')
         return data

@@ -4,7 +4,6 @@ import tailwindcss from '@tailwindcss/vite'
 import { tanstackStart } from '@tanstack/react-start/plugin/vite'
 import { fileURLToPath } from 'node:url'
 import Inspect from 'vite-plugin-inspect'
-import tsconfigPaths from 'vite-tsconfig-paths'
 import { defineConfig } from 'vitest/config'
 
 const SRC_DIR = `${normalizePath(fileURLToPath(new URL('./src', import.meta.url)))}/`
@@ -15,9 +14,6 @@ export default defineConfig({
   },
   plugins: [
     Inspect(),
-    tsconfigPaths({
-      projects: ['./tsconfig.json'],
-    }),
     tailwindcss(),
     tanstackStart(),
     viteReact(),
@@ -26,6 +22,7 @@ export default defineConfig({
     'process.env.PRISMA_SKIP_POSTINSTALL_GENERATE': JSON.stringify('true'),
   },
   resolve: {
+    tsconfigPaths: true,
     alias: [
       {
         find: /^@\//,
@@ -46,7 +43,8 @@ export default defineConfig({
     exclude: ['@prisma/client', '.prisma/client', '@prisma/adapter-pg'],
   },
   build: {
-    rollupOptions: {
+    chunkSizeWarningLimit: 800,
+    rolldownOptions: {
       external: (id) => {
         // 只排除 Prisma 引擎和 adapter，不排除生成的 client
         if (id.includes('@prisma/client') || id.includes('.prisma/client') || id.includes('@prisma/adapter-pg')) {

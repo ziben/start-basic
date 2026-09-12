@@ -26,7 +26,7 @@ const ListSessionsSchema = z.object({
  * 获取会话列表（分页）
  */
 export const getSessionsFn = createServerFn({ method: 'GET' })
-    .inputValidator((data?: z.infer<typeof ListSessionsSchema>) => (data ? ListSessionsSchema.parse(data) : {}))
+    .validator((data?: z.infer<typeof ListSessionsSchema>) => (data ? ListSessionsSchema.parse(data) : {}))
     .handler(async ({ data }: { data: z.infer<typeof ListSessionsSchema> }) => {
         await requireAdmin('ListSessions')
         const { SessionService } = await import('../services/session.service')
@@ -37,7 +37,7 @@ export const getSessionsFn = createServerFn({ method: 'GET' })
  * 批量删除会话
  */
 export const bulkDeleteSessionsFn = createServerFn({ method: 'POST' })
-    .inputValidator((data: { ids: string[] }) => {
+    .validator((data: { ids: string[] }) => {
         if (!data?.ids || !Array.isArray(data.ids)) throw new Error('ids 必须是数组')
         return data
     })
@@ -51,7 +51,7 @@ export const bulkDeleteSessionsFn = createServerFn({ method: 'POST' })
  * 删除单个会话
  */
 export const deleteSessionFn = createServerFn({ method: 'POST' })
-    .inputValidator((data: { id: string }) => {
+    .validator((data: { id: string }) => {
         if (!data?.id) throw new Error('ID 不能为空')
         return data
     })
@@ -65,7 +65,7 @@ export const deleteSessionFn = createServerFn({ method: 'POST' })
  * 撤销用户全部会话
  */
 export const revokeUserSessionsFn = createServerFn({ method: 'POST' })
-    .inputValidator((data: { userId: string }) => {
+    .validator((data: { userId: string }) => {
         if (!data?.userId) throw new Error('userId 不能为空')
         return data
     })

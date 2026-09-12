@@ -9,10 +9,10 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
+import { type NavigateFn, useTableUrlState } from '@/shared/hooks/use-table-url-state'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import type { Translation } from '~/modules/admin/features/i18n/translation/types/translation'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
-import { type NavigateFn, useTableUrlState } from '@/shared/hooks/use-table-url-state'
 import { DataTable, DataTablePagination, DataTableToolbar } from '@/components/data-table'
 import { DataTableBulkActions } from './data-table-bulk-actions'
 import { useTranslationColumns } from './translations-columns'
@@ -127,9 +127,3 @@ export function TranslationsTable({ data, search, navigate }: DataTableProps) {
     </div>
   )
 }
-
-
-
-
-
-

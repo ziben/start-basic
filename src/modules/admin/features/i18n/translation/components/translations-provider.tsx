@@ -1,6 +1,6 @@
 import React from 'react'
-import type { Translation } from '~/modules/admin/features/i18n/translation/types/translation'
 import { useDialogRowState } from '@/shared/hooks/use-dialog-row-state'
+import type { Translation } from '~/modules/admin/features/i18n/translation/types/translation'
 
 type TranslationsDialogType = 'create' | 'update' | 'delete' | 'import'
 
@@ -19,7 +19,6 @@ export function TranslationsProvider({ children }: { children: React.ReactNode }
   return <TranslationsContext.Provider value={value}>{children}</TranslationsContext.Provider>
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const useTranslations = () => {
   const translationsContext = React.useContext(TranslationsContext)
 
@@ -29,6 +28,3 @@ export const useTranslations = () => {
 
   return translationsContext
 }
-
-
-

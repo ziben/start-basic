@@ -3,9 +3,9 @@ import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate } from '@tanstack/react-router'
+import { sleep, cn } from '@/shared/lib/utils'
 import { ArrowRight, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
-import { sleep, cn } from '@/shared/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
@@ -27,7 +27,7 @@ export function ForgotPasswordForm({ className, ...props }: React.HTMLAttributes
 
   function onSubmit(data: z.infer<typeof formSchema>) {
     setIsLoading(true)
-    // eslint-disable-next-line no-console
+
     console.log(data)
 
     toast.promise(sleep(2000), {
@@ -67,6 +67,3 @@ export function ForgotPasswordForm({ className, ...props }: React.HTMLAttributes
     </Form>
   )
 }
-
-
-

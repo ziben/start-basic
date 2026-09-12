@@ -1,10 +1,10 @@
 import { ConfigDrawer } from '~/components/config-drawer'
-import { useNavgroups } from '~/modules/navigation/shared/navgroup/hooks/use-navgroup-api'
+import { AppHeaderMain } from '~/components/layout/app-header-main'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
+import { useNavgroups } from '~/modules/navigation/shared/navgroup/hooks/use-navgroup-api'
 import { NavGroupsDialogs } from './components/navgroups-dialogs'
 import { NavGroupsPrimaryButtons } from './components/navgroups-primary-buttons'
 import { NavGroupsProvider } from './components/navgroups-provider'
-import { AppHeaderMain } from '~/components/layout/app-header-main'
 import { NavGroupsTable } from './components/navgroups-table'
 
 export function AdminNavGroups() {
@@ -14,8 +14,6 @@ export function AdminNavGroups() {
 
   return (
     <NavGroupsProvider>
-
-
       <AppHeaderMain fixed>
         <div className='mb-2 flex flex-wrap items-center justify-between space-y-2 gap-x-4'>
           <div>
@@ -33,10 +31,3 @@ export function AdminNavGroups() {
     </NavGroupsProvider>
   )
 }
-
-
-
-
-
-
-

@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState, useMemo, lazy, Suspense
 
 // Define the lazy loaded component outside the render cycle
 // Assuming default export or named export converted to default
-const CommandMenu = lazy(() => import('@/components/command-menu').then(m => ({ default: m.CommandMenu })))
+const CommandMenu = lazy(() => import('@/components/command-menu').then((m) => ({ default: m.CommandMenu })))
 
 type SearchContextType = {
   open: boolean
@@ -41,7 +41,6 @@ export function SearchProvider({ children }: SearchProviderProps) {
   )
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const useSearch = () => {
   const searchContext = useContext(SearchContext)
 
@@ -51,4 +50,3 @@ export const useSearch = () => {
 
   return searchContext
 }
-

@@ -32,7 +32,7 @@ export type ChatInput = z.infer<typeof chatInputSchema>
  * 提供基本的请求流式响应
  */
 export const chatFn = createServerFn({ method: 'POST' })
-    .inputValidator(chatInputSchema)
+    .validator(chatInputSchema)
     .handler(async ({ data }) => {
         try {
             // 使用配置的大模型适配器，带有健壮的安全检查
@@ -41,7 +41,7 @@ export const chatFn = createServerFn({ method: 'POST' })
                 adapter: adapter(),
                 messages: data.messages as any,
                 conversationId: data.conversationId,
-                temperature: data.temperature ?? 0.7,
+                modelOptions: { temperature: data.temperature ?? 0.7 },
             })
             return toServerSentEventsResponse(stream)
         } catch (error) {

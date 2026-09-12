@@ -46,7 +46,7 @@ import { requireAdmin } from '~/modules/admin/shared/server-fns/auth'
  * 获取用户列表（分页）
  */
 export const getUsersFn = createServerFn({ method: 'GET' })
-    .inputValidator((data?: z.infer<typeof ListUsersSchema>) => (data ? ListUsersSchema.parse(data) : {}))
+    .validator((data?: z.infer<typeof ListUsersSchema>) => (data ? ListUsersSchema.parse(data) : {}))
     .handler(async ({ data }: { data: z.infer<typeof ListUsersSchema> }) => {
         await requireAdmin('ListUsers')
         const { UserService } = await import('../services/user.service')
@@ -57,7 +57,7 @@ export const getUsersFn = createServerFn({ method: 'GET' })
  * 获取单个用户
  */
 export const getUserFn = createServerFn({ method: 'GET' })
-    .inputValidator((data: { id: string }) => {
+    .validator((data: { id: string }) => {
         if (!data?.id) throw new Error('ID 不能为空')
         return data
     })
@@ -71,7 +71,7 @@ export const getUserFn = createServerFn({ method: 'GET' })
  * 创建用户
  */
 export const createUserFn = createServerFn({ method: 'POST' })
-    .inputValidator((data: z.infer<typeof CreateUserSchema>) => CreateUserSchema.parse(data))
+    .validator((data: z.infer<typeof CreateUserSchema>) => CreateUserSchema.parse(data))
     .handler(async ({ data }: { data: z.infer<typeof CreateUserSchema> }) => {
         const { getRequest } = await import('@tanstack/react-start/server')
         await requireAdmin('CreateUser')
@@ -84,7 +84,7 @@ export const createUserFn = createServerFn({ method: 'POST' })
  * 更新用户
  */
 export const updateUserFn = createServerFn({ method: 'POST' })
-    .inputValidator((data: z.infer<typeof UpdateUserSchema>) => UpdateUserSchema.parse(data))
+    .validator((data: z.infer<typeof UpdateUserSchema>) => UpdateUserSchema.parse(data))
     .handler(async ({ data }: { data: z.infer<typeof UpdateUserSchema> }) => {
         await requireAdmin('UpdateUser')
         const { UserService } = await import('../services/user.service')
@@ -96,7 +96,7 @@ export const updateUserFn = createServerFn({ method: 'POST' })
  * 删除用户
  */
 export const deleteUserFn = createServerFn({ method: 'POST' })
-    .inputValidator((data: { id: string }) => {
+    .validator((data: { id: string }) => {
         if (!data?.id) throw new Error('ID 不能为空')
         return data
     })
@@ -110,7 +110,7 @@ export const deleteUserFn = createServerFn({ method: 'POST' })
  * 批量删除用户
  */
 export const bulkDeleteUsersFn = createServerFn({ method: 'POST' })
-    .inputValidator((data: { ids: string[] }) => {
+    .validator((data: { ids: string[] }) => {
         if (!data?.ids || !Array.isArray(data.ids)) throw new Error('ids 必须是数组')
         return data
     })
@@ -124,7 +124,7 @@ export const bulkDeleteUsersFn = createServerFn({ method: 'POST' })
  * 批量封禁用户
  */
 export const bulkBanUsersFn = createServerFn({ method: 'POST' })
-    .inputValidator((data: { ids: string[]; banned: boolean; banReason?: string }) => {
+    .validator((data: { ids: string[]; banned: boolean; banReason?: string }) => {
         if (!data?.ids || !Array.isArray(data.ids)) throw new Error('ids 必须是数组')
         if (typeof data.banned !== 'boolean') throw new Error('banned 必须是布尔值')
         return data

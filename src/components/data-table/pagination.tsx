@@ -117,6 +117,3 @@ function DataTablePaginationInner<TData>({ table, className }: DataTablePaginati
 }
 
 export const DataTablePagination = DataTablePaginationInner
-
-
-

@@ -34,7 +34,7 @@ async function getRequestOrThrow(): Promise<Request> {
 }
 
 export const getAdminAccountFn = createServerFn({ method: 'GET' })
-  .inputValidator((data?: z.infer<typeof GetAdminAccountSchema>) => GetAdminAccountSchema.parse(data))
+  .validator((data?: z.infer<typeof GetAdminAccountSchema>) => GetAdminAccountSchema.parse(data))
   .handler(async ({ data }: { data?: z.infer<typeof GetAdminAccountSchema> }) => {
     await requireAdmin('GetAdminAccount')
     const request = await getRequestOrThrow()
@@ -42,7 +42,7 @@ export const getAdminAccountFn = createServerFn({ method: 'GET' })
   })
 
 export const setAdminPasswordFn = createServerFn({ method: 'POST' })
-  .inputValidator((data: z.infer<typeof SetAdminPasswordSchema>) => SetAdminPasswordSchema.parse(data))
+  .validator((data: z.infer<typeof SetAdminPasswordSchema>) => SetAdminPasswordSchema.parse(data))
   .handler(async ({ data }: { data: z.infer<typeof SetAdminPasswordSchema> }) => {
     await requireAdmin('SetAdminPassword')
     const request = await getRequestOrThrow()
@@ -50,7 +50,7 @@ export const setAdminPasswordFn = createServerFn({ method: 'POST' })
   })
 
 export const unlinkAdminAccountFn = createServerFn({ method: 'POST' })
-  .inputValidator((data: z.infer<typeof UnlinkAdminAccountSchema>) => UnlinkAdminAccountSchema.parse(data))
+  .validator((data: z.infer<typeof UnlinkAdminAccountSchema>) => UnlinkAdminAccountSchema.parse(data))
   .handler(async ({ data }: { data: z.infer<typeof UnlinkAdminAccountSchema> }) => {
     await requireAdmin('UnlinkAdminAccount')
     const request = await getRequestOrThrow()

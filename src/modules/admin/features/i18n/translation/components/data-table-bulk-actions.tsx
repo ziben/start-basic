@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { type Table } from '@tanstack/react-table'
+import { sleep } from '@/shared/lib/utils'
 import { Download, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import type { Translation } from '~/modules/admin/features/i18n/translation/types/translation'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
-import { sleep } from '@/shared/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { DataTableBulkActions as BulkActionsToolbar } from '@/components/data-table'
@@ -112,9 +112,3 @@ export function DataTableBulkActions<TData>({ table }: DataTableBulkActionsProps
     </>
   )
 }
-
-
-
-
-
-

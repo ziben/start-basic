@@ -1,7 +1,7 @@
-import { toast } from 'sonner'
-import { useDeleteNavgroup } from '~/modules/navigation/shared/navgroup/hooks/use-navgroup-api'
-import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import { showSubmittedData } from '@/shared/utils/show-submitted-data'
+import { toast } from 'sonner'
+import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
+import { useDeleteNavgroup } from '~/modules/navigation/shared/navgroup/hooks/use-navgroup-api'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { NavGroupsImportDialog } from './navgroups-import-dialog'
 import { NavGroupsMutateDrawer } from './navgroups-mutate-drawer'
@@ -72,9 +72,3 @@ export function NavGroupsDialogs() {
     </>
   )
 }
-
-
-
-
-
-

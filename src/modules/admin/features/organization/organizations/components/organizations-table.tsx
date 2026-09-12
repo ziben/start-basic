@@ -6,15 +6,15 @@ import {
   getFacetedUniqueValues,
   useReactTable,
 } from '@tanstack/react-table'
-import { useVirtualizer } from '@tanstack/react-virtual'
-import { cn } from '@/shared/lib/utils'
+import { useTableColumnVisibility } from '@/shared/hooks/use-table-column-visibility'
 import { type NavigateFn, useTableUrlState } from '@/shared/hooks/use-table-url-state'
+import { cn } from '@/shared/lib/utils'
+import { useVirtualizer } from '@tanstack/react-virtual'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import { DataTable, DataTablePagination, DataTableToolbar } from '@/components/data-table'
 import { useOrganizationsListQuery } from '../hooks/use-organizations-list-query'
-import { useOrganizationsColumns } from './organizations-columns'
 import { OrganizationsBulkActions } from './organizations-bulk-actions'
-import { useTableColumnVisibility } from '@/shared/hooks/use-table-column-visibility'
+import { useOrganizationsColumns } from './organizations-columns'
 
 type OrganizationsTableProps = {
   search: Record<string, unknown>

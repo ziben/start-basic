@@ -14,7 +14,7 @@ module.exports = {
             instances: 1,
             exec_mode: 'fork',
 
-            cwd: 'z:\\labs\\start-basic',
+            cwd: __dirname,
             watch: false,
 
             env_production: {

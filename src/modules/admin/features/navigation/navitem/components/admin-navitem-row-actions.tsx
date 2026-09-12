@@ -1,10 +1,10 @@
 import { Row } from '@tanstack/react-table'
 import { Eye, EyeOff, Pencil, Trash, MoreHorizontal } from 'lucide-react'
 import { toast } from 'sonner'
-import { useToggleNavItemVisibility } from '~/modules/navigation/shared/navitem/hooks/use-navitem-api'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
+import { AdminNavItem } from '~/modules/navigation/shared/navitem/data/schema'
+import { useToggleNavItemVisibility } from '~/modules/navigation/shared/navitem/hooks/use-navitem-api'
 import { Button } from '@/components/ui/button'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,8 +13,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { useAdminNavItemContext } from '../context/admin-navitem-context'
-import { AdminNavItem } from '~/modules/navigation/shared/navitem/data/schema'
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>
@@ -107,8 +107,3 @@ export function DataTableRowActions<TData>({ row }: DataTableRowActionsProps<TDa
     </div>
   )
 }
-
-
-
-
-

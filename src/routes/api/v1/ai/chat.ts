@@ -59,7 +59,7 @@ export const Route = createFileRoute('/api/v1/ai/chat')({
                         adapter: adapter(),
                         messages: data.messages as any,
                         conversationId: data.conversationId,
-                        temperature: data.temperature ?? 0.7,
+                        modelOptions: { temperature: data.temperature ?? 0.7 },
                     })
 
                     // 4. Return as Server Sent Events natively

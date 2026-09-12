@@ -41,7 +41,7 @@ type OAuthUser = User & Record<string, unknown>
 type OAuthAccount = { id: string; providerId: string }
 type OAuthUserResult = { user: OAuthUser; accounts: OAuthAccount[] }
 
-export function wechatOAuth(options: WeChatOAuthOptions): BetterAuthPlugin {
+export function wechatOAuth(options: WeChatOAuthOptions) {
   const { appId, appSecret, syntheticEmailDomain = 'wechat.local', debug = false } = options
 
   const AUTH_URL = 'https://open.weixin.qq.com/connect/oauth2/authorize'
@@ -503,5 +503,5 @@ export function wechatOAuth(options: WeChatOAuthOptions): BetterAuthPlugin {
         }
       ),
     },
-  }
+  } satisfies BetterAuthPlugin
 }

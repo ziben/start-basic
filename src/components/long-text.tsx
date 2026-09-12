@@ -68,6 +68,3 @@ const checkOverflow = (textContainer: HTMLDivElement | null) => {
   }
   return false
 }
-
-
-

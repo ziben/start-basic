@@ -15,9 +15,7 @@ type DataTableViewOptionsProps<TData> = {
   table: Table<TData>
 }
 
-export function DataTableViewOptions<TData>({
-  table,
-}: DataTableViewOptionsProps<TData>) {
+export function DataTableViewOptions<TData>({ table }: DataTableViewOptionsProps<TData>) {
   const hasAccessorKey = (def: any): def is { accessorKey: string } => typeof def.accessorKey === 'string'
 
   return (
@@ -57,4 +55,3 @@ export function DataTableViewOptions<TData>({
 }
 
 // export const DataTableViewOptions = memo(DataTableViewOptionsInner) as typeof DataTableViewOptionsInner
-

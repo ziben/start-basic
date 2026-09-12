@@ -8,6 +8,9 @@ yarn.lock
 .cursor/
 .workbuddy/
 .env
+.env.*
+!.env.example
+!.env.server.example
 .vercel
 .output
 .vinxi

@@ -29,10 +29,10 @@ pnpm add -D pm2
 pnpm run build
 
 # 启动（生产模式）
-pnpm run pm2:start
+pnpm run pm2
 
 # 启动（开发模式，带详细日志）
-pnpm run pm2:start:dev
+pnpm run pm2:dev
 ```
 
 ## 📋 PM2 命令列表

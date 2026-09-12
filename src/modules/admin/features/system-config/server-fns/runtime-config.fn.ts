@@ -64,7 +64,7 @@ export const getPublicRuntimeConfigsFn = createServerFn({ method: 'GET' })
   })
 
 export const createRuntimeConfigFn = createServerFn({ method: 'POST' })
-  .inputValidator((data: z.infer<typeof CreateRuntimeConfigSchema>) => CreateRuntimeConfigSchema.parse(data))
+  .validator((data: z.infer<typeof CreateRuntimeConfigSchema>) => CreateRuntimeConfigSchema.parse(data))
   .handler(async ({ data }: { data: z.infer<typeof CreateRuntimeConfigSchema> }) => {
     await requireAdmin('CreateRuntimeConfig')
     const { RuntimeConfigService } = await import('../services/runtime-config.service')
@@ -73,7 +73,7 @@ export const createRuntimeConfigFn = createServerFn({ method: 'POST' })
   })
 
 export const updateRuntimeConfigFn = createServerFn({ method: 'POST' })
-  .inputValidator((data: z.infer<typeof UpdateRuntimeConfigSchema>) => UpdateRuntimeConfigSchema.parse(data))
+  .validator((data: z.infer<typeof UpdateRuntimeConfigSchema>) => UpdateRuntimeConfigSchema.parse(data))
   .handler(async ({ data }: { data: z.infer<typeof UpdateRuntimeConfigSchema> }) => {
     await requireAdmin('UpdateRuntimeConfig')
     const { RuntimeConfigService } = await import('../services/runtime-config.service')
@@ -82,7 +82,7 @@ export const updateRuntimeConfigFn = createServerFn({ method: 'POST' })
   })
 
 export const getRuntimeConfigHistoryFn = createServerFn({ method: 'GET' })
-  .inputValidator((data: z.infer<typeof RuntimeConfigHistorySchema>) => RuntimeConfigHistorySchema.parse(data))
+  .validator((data: z.infer<typeof RuntimeConfigHistorySchema>) => RuntimeConfigHistorySchema.parse(data))
   .handler(async ({ data }: { data: z.infer<typeof RuntimeConfigHistorySchema> }) => {
     await requireAdmin('GetRuntimeConfigHistory')
     const { RuntimeConfigService } = await import('../services/runtime-config.service')
@@ -90,7 +90,7 @@ export const getRuntimeConfigHistoryFn = createServerFn({ method: 'GET' })
   })
 
 export const deleteRuntimeConfigFn = createServerFn({ method: 'POST' })
-  .inputValidator((data: z.infer<typeof DeleteRuntimeConfigSchema>) => DeleteRuntimeConfigSchema.parse(data))
+  .validator((data: z.infer<typeof DeleteRuntimeConfigSchema>) => DeleteRuntimeConfigSchema.parse(data))
   .handler(async ({ data }: { data: z.infer<typeof DeleteRuntimeConfigSchema> }) => {
     await requireAdmin('DeleteRuntimeConfig')
     const { RuntimeConfigService } = await import('../services/runtime-config.service')

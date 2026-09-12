@@ -6,7 +6,7 @@ import { IconPicker } from './icon-picker'
 vi.mock('@tanstack/react-virtual', () => ({
   useVirtualizer: ({ count, estimateSize }: { count: number; estimateSize: () => number }) => ({
     getVirtualItems: () =>
-      Array.from({ length: count }, (_, index) => {
+      Array.from({ length: Math.min(count, 6) }, (_, index) => {
         const size = estimateSize()
         const start = index * size
         return {
@@ -47,17 +47,11 @@ describe('IconPicker', () => {
     render(<IconPicker onValueChange={onValueChange} />)
 
     await user.click(screen.getByRole('combobox'))
-    expect(screen.getByText('显示前 300 个图标，使用搜索查找更多...')).toBeInTheDocument()
 
     const input = screen.getByPlaceholderText('搜索图标...')
     await user.type(input, 'sparkles')
 
-    const sparklesLabel = await screen.findByText('Sparkles')
-    const sparklesBtn = sparklesLabel.closest('button')
-    if (!sparklesBtn) {
-      throw new Error('Sparkles button not found')
-    }
-    await user.click(sparklesBtn)
+    await user.click(await screen.findByRole('button', { name: 'Sparkles' }))
 
     expect(onValueChange).toHaveBeenCalledWith('Sparkles')
     expect(screen.queryByPlaceholderText('搜索图标...')).not.toBeInTheDocument()

@@ -1,15 +1,15 @@
 import { Outlet } from '@tanstack/react-router'
-import { getCookie } from '@/shared/lib/cookies'
-import { cn } from '@/shared/lib/utils'
 import { LayoutProvider } from '@/shared/context/layout-provider'
 import { SearchProvider } from '@/shared/context/search-provider'
 import { TabProvider } from '@/shared/context/tab-context'
+import { getCookie } from '@/shared/lib/cookies'
+import { cn } from '@/shared/lib/utils'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
+import { AppHeader } from '@/components/layout/app-header'
 import { AppSidebar } from '@/components/layout/app-sidebar'
 import { TabBar } from '@/components/layout/tab-bar'
 import { TabContent } from '@/components/layout/tab-content'
 import { SkipToMain } from '@/components/skip-to-main'
-import { AppHeader } from '@/components/layout/app-header'
 
 type AuthenticatedLayoutProps = {
   children?: React.ReactNode
@@ -43,7 +43,7 @@ export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
             >
               <AppHeader />
               <TabBar />
-              <div className="flex-1 overflow-auto">
+              <div className='flex-1 overflow-auto'>
                 <TabContent />
               </div>
             </SidebarInset>
@@ -53,7 +53,3 @@ export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
     </LayoutProvider>
   )
 }
-
-
-
-

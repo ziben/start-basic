@@ -50,7 +50,7 @@ const AssignOrgRolePermissionsSchema = z.object({
  * 获取组织角色列表
  */
 export const getOrganizationRolesFn = createServerFn({ method: 'GET' })
-  .inputValidator((data: z.infer<typeof ListOrgRolesSchema>) => ListOrgRolesSchema.parse(data))
+  .validator((data: z.infer<typeof ListOrgRolesSchema>) => ListOrgRolesSchema.parse(data))
   .handler(async ({ data }: { data: z.infer<typeof ListOrgRolesSchema> }) => {
     await requireAdmin('ListOrganizationRoles')
     const prisma = (await import('@/shared/lib/db')).default
@@ -112,7 +112,7 @@ export const getOrganizationRolesFn = createServerFn({ method: 'GET' })
  * 获取单个组织角色详情
  */
 export const getOrganizationRoleFn = createServerFn({ method: 'GET' })
-  .inputValidator((data: { id: string }) => data)
+  .validator((data: { id: string }) => data)
   .handler(async ({ data }: { data: { id: string } }) => {
     await requireAdmin('GetOrganizationRoleDetail')
     const prisma = (await import('@/shared/lib/db')).default
@@ -144,7 +144,7 @@ export const getOrganizationRoleFn = createServerFn({ method: 'GET' })
  * 创建组织角色
  */
 export const createOrganizationRoleFn = createServerFn({ method: 'POST' })
-  .inputValidator((data: z.infer<typeof CreateOrgRoleSchema>) => CreateOrgRoleSchema.parse(data))
+  .validator((data: z.infer<typeof CreateOrgRoleSchema>) => CreateOrgRoleSchema.parse(data))
   .handler(async ({ data }: { data: z.infer<typeof CreateOrgRoleSchema> }) => {
     await requireAdmin('CreateOrganizationRole')
     const prisma = (await import('@/shared/lib/db')).default
@@ -210,7 +210,7 @@ export const createOrganizationRoleFn = createServerFn({ method: 'POST' })
  * 更新组织角色
  */
 export const updateOrganizationRoleFn = createServerFn({ method: 'POST' })
-  .inputValidator((data: z.infer<typeof UpdateOrgRoleSchema>) => UpdateOrgRoleSchema.parse(data))
+  .validator((data: z.infer<typeof UpdateOrgRoleSchema>) => UpdateOrgRoleSchema.parse(data))
   .handler(async ({ data }: { data: z.infer<typeof UpdateOrgRoleSchema> }) => {
     await requireAdmin('UpdateOrganizationRole')
     const prisma = (await import('@/shared/lib/db')).default
@@ -236,7 +236,7 @@ export const updateOrganizationRoleFn = createServerFn({ method: 'POST' })
  * 删除组织角色
  */
 export const deleteOrganizationRoleFn = createServerFn({ method: 'POST' })
-  .inputValidator((data: { id: string }) => data)
+  .validator((data: { id: string }) => data)
   .handler(async ({ data }: { data: { id: string } }) => {
     await requireAdmin('DeleteOrganizationRole')
     const prisma = (await import('@/shared/lib/db')).default
@@ -261,7 +261,7 @@ export const deleteOrganizationRoleFn = createServerFn({ method: 'POST' })
  * 为组织角色分配权限
  */
 export const assignOrganizationRolePermissionsFn = createServerFn({ method: 'POST' })
-  .inputValidator((data: z.infer<typeof AssignOrgRolePermissionsSchema>) =>
+  .validator((data: z.infer<typeof AssignOrgRolePermissionsSchema>) =>
     AssignOrgRolePermissionsSchema.parse(data)
   )
   .handler(async ({ data }: { data: z.infer<typeof AssignOrgRolePermissionsSchema> }) => {
@@ -291,7 +291,7 @@ export const assignOrganizationRolePermissionsFn = createServerFn({ method: 'POS
  * 获取组织角色的权限列表
  */
 export const getOrganizationRolePermissionsFn = createServerFn({ method: 'GET' })
-  .inputValidator((data: { organizationRoleId: string }) => data)
+  .validator((data: { organizationRoleId: string }) => data)
   .handler(async ({ data }: { data: { organizationRoleId: string } }) => {
     await requireAdmin('GetOrganizationRolePermissions')
     const prisma = (await import('@/shared/lib/db')).default

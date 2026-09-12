@@ -241,7 +241,7 @@ export const Route = createFileRoute('/api/chat')({
                         messages: chatMessages,
                         systemPrompts: [resolvedSystemPrompt],
                         conversationId: activeConversationId,
-                        temperature: resolvedTemp,
+                        modelOptions: { temperature: resolvedTemp },
                     })
 
                     // ── 6. 拦截流，收集完整回复并入库 ───────────────────────────────

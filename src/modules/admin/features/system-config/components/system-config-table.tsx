@@ -10,12 +10,12 @@ import {
   useReactTable,
   type VisibilityState,
 } from '@tanstack/react-table'
-import { cn } from '@/shared/lib/utils'
 import { AdminDataTable } from '@/modules/admin/shared/components/admin-data-table'
+import { useTableColumnVisibility } from '@/shared/hooks/use-table-column-visibility'
 import { type NavigateFn, useTableUrlState } from '@/shared/hooks/use-table-url-state'
+import { cn } from '@/shared/lib/utils'
 import { CATEGORY_OPTIONS, VALUE_TYPE_OPTIONS, type SystemConfig } from '../data/schema'
 import { useSystemConfigColumns } from './system-config-columns'
-import { useTableColumnVisibility } from '@/shared/hooks/use-table-column-visibility'
 
 type Props = {
   readonly data: SystemConfig[]
@@ -39,7 +39,7 @@ export function SystemConfigTable({ data, isLoading, search, navigate }: Props):
     ensurePageInRange,
   } = useTableUrlState({
     search: search ?? {},
-    navigate: navigate ?? (() => { }),
+    navigate: navigate ?? (() => {}),
     pagination: { defaultPage: 1, defaultPageSize: 20 },
     globalFilter: { enabled: true, key: 'filter' },
     columnFilters: [
@@ -80,9 +80,10 @@ export function SystemConfigTable({ data, isLoading, search, navigate }: Props):
     onColumnFiltersChange,
   })
 
+  const pageCount = table.getPageCount()
   useEffect(() => {
-    ensurePageInRange(table.getPageCount())
-  }, [table.getPageCount(), ensurePageInRange])
+    ensurePageInRange(pageCount)
+  }, [ensurePageInRange, pageCount])
 
   return (
     <AdminDataTable

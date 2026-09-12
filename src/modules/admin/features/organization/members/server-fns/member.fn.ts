@@ -32,7 +32,7 @@ const UpdateMemberSchema = z.object({
 // ============ ServerFn 定义 ============
 
 export const getMembersFn = createServerFn({ method: 'GET' })
-    .inputValidator((data?: z.infer<typeof ListMembersSchema>) => (data ? ListMembersSchema.parse(data) : {}))
+    .validator((data?: z.infer<typeof ListMembersSchema>) => (data ? ListMembersSchema.parse(data) : {}))
     .handler(async ({ data }: { data: z.infer<typeof ListMembersSchema> }) => {
         await requireAdmin('ListMembers')
         const { MemberService } = await import('../services/member.service')
@@ -40,7 +40,7 @@ export const getMembersFn = createServerFn({ method: 'GET' })
     })
 
 export const createMemberFn = createServerFn({ method: 'POST' })
-    .inputValidator((data: z.infer<typeof CreateMemberSchema>) => CreateMemberSchema.parse(data))
+    .validator((data: z.infer<typeof CreateMemberSchema>) => CreateMemberSchema.parse(data))
     .handler(async ({ data }: { data: z.infer<typeof CreateMemberSchema> }) => {
         await requireAdmin('CreateMember')
         const { MemberService } = await import('../services/member.service')
@@ -48,7 +48,7 @@ export const createMemberFn = createServerFn({ method: 'POST' })
     })
 
 export const updateMemberFn = createServerFn({ method: 'POST' })
-    .inputValidator((data: z.infer<typeof UpdateMemberSchema>) => UpdateMemberSchema.parse(data))
+    .validator((data: z.infer<typeof UpdateMemberSchema>) => UpdateMemberSchema.parse(data))
     .handler(async ({ data }: { data: z.infer<typeof UpdateMemberSchema> }) => {
         await requireAdmin('UpdateMember')
         const { MemberService } = await import('../services/member.service')
@@ -57,7 +57,7 @@ export const updateMemberFn = createServerFn({ method: 'POST' })
     })
 
 export const deleteMemberFn = createServerFn({ method: 'POST' })
-    .inputValidator((data: { id: string }) => {
+    .validator((data: { id: string }) => {
         if (!data?.id) throw new Error('ID 不能为空')
         return data
     })
@@ -68,7 +68,7 @@ export const deleteMemberFn = createServerFn({ method: 'POST' })
     })
 
 export const bulkDeleteMembersFn = createServerFn({ method: 'POST' })
-    .inputValidator((data: { ids: string[] }) => {
+    .validator((data: { ids: string[] }) => {
         if (!data?.ids || !Array.isArray(data.ids)) throw new Error('ids 必须是数组')
         return data
     })

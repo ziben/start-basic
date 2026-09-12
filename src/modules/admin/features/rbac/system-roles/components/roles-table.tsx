@@ -1,18 +1,18 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from 'react'
 import {
   getCoreRowModel,
   getFacetedRowModel,
   getFacetedUniqueValues,
   useReactTable,
   type VisibilityState,
-} from "@tanstack/react-table"
-import { useVirtualizer } from "@tanstack/react-virtual"
-import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
+} from '@tanstack/react-table'
 import { AdminDataTable } from '@/modules/admin/shared/components/admin-data-table'
-import { useRolesContext } from "../context/roles-context"
-import { useRolesQuery } from "../hooks/use-roles-query"
-import { useRolesColumns } from "./roles-columns"
-import { useTableColumnVisibility } from "@/shared/hooks/use-table-column-visibility"
+import { useTableColumnVisibility } from '@/shared/hooks/use-table-column-visibility'
+import { useVirtualizer } from '@tanstack/react-virtual'
+import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
+import { useRolesContext } from '../context/roles-context'
+import { useRolesQuery } from '../hooks/use-roles-query'
+import { useRolesColumns } from './roles-columns'
 
 export function RolesTable() {
   const { t } = useTranslation()

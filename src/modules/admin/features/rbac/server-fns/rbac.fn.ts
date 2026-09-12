@@ -94,7 +94,7 @@ const AssignRoleNavGroupsSchema = z.object({
 // ============ 角色管理 ============
 
 export const getRolesFn = createServerFn({ method: 'GET' })
-  .inputValidator((data: z.infer<typeof ListRolesSchema>) => ListRolesSchema.parse(data || {}))
+  .validator((data: z.infer<typeof ListRolesSchema>) => ListRolesSchema.parse(data || {}))
   .handler(async ({ data }: { data: z.infer<typeof ListRolesSchema> }) => {
     await requireAdmin('ListRoles')
     const prisma = (await import('@/shared/lib/db')).default
@@ -140,7 +140,7 @@ export const getRolesFn = createServerFn({ method: 'GET' })
   })
 
 export const getRoleFn = createServerFn({ method: 'GET' })
-  .inputValidator((data: { id: string }) => data)
+  .validator((data: { id: string }) => data)
   .handler(async ({ data }: { data: { id: string } }) => {
     await requireAdmin('GetRoleDetail')
     const prisma = (await import('@/shared/lib/db')).default
@@ -164,7 +164,7 @@ export const getRoleFn = createServerFn({ method: 'GET' })
   })
 
 export const createRoleFn = createServerFn({ method: 'POST' })
-  .inputValidator((data: z.infer<typeof CreateRoleSchema>) => CreateRoleSchema.parse(data))
+  .validator((data: z.infer<typeof CreateRoleSchema>) => CreateRoleSchema.parse(data))
   .handler(async ({ data }: { data: z.infer<typeof CreateRoleSchema> }) => {
     await requireAdmin('CreateRole')
     const prisma = (await import('@/shared/lib/db')).default
@@ -199,7 +199,7 @@ export const createRoleFn = createServerFn({ method: 'POST' })
   })
 
 export const updateRoleFn = createServerFn({ method: 'POST' })
-  .inputValidator((data: z.infer<typeof UpdateRoleSchema>) => UpdateRoleSchema.parse(data))
+  .validator((data: z.infer<typeof UpdateRoleSchema>) => UpdateRoleSchema.parse(data))
   .handler(async ({ data }: { data: z.infer<typeof UpdateRoleSchema> }) => {
     await requireAdmin('UpdateRole')
     const prisma = (await import('@/shared/lib/db')).default
@@ -242,7 +242,7 @@ export const updateRoleFn = createServerFn({ method: 'POST' })
   })
 
 export const deleteRoleFn = createServerFn({ method: 'POST' })
-  .inputValidator((data: { id: string }) => data)
+  .validator((data: { id: string }) => data)
   .handler(async ({ data }: { data: { id: string } }) => {
     await requireAdmin('DeleteRole')
     const prisma = (await import('@/shared/lib/db')).default
@@ -265,7 +265,7 @@ export const deleteRoleFn = createServerFn({ method: 'POST' })
   })
 
 export const assignRoleNavGroupsFn = createServerFn({ method: 'POST' })
-  .inputValidator((data: z.infer<typeof AssignRoleNavGroupsSchema>) => AssignRoleNavGroupsSchema.parse(data))
+  .validator((data: z.infer<typeof AssignRoleNavGroupsSchema>) => AssignRoleNavGroupsSchema.parse(data))
   .handler(async ({ data }: { data: z.infer<typeof AssignRoleNavGroupsSchema> }) => {
     await requireAdmin('AssignRoleNavGroups')
     const prisma = (await import('@/shared/lib/db')).default
@@ -309,7 +309,7 @@ export const getResourcesFn = createServerFn({ method: 'GET' })
   })
 
 export const createResourceFn = createServerFn({ method: 'POST' })
-  .inputValidator((data: z.infer<typeof CreateResourceSchema>) => CreateResourceSchema.parse(data))
+  .validator((data: z.infer<typeof CreateResourceSchema>) => CreateResourceSchema.parse(data))
   .handler(async ({ data }: { data: z.infer<typeof CreateResourceSchema> }) => {
     await requireAdmin('CreateResource')
     const { ResourceService } = await import('../permissions/services/rbac-resource.service')
@@ -317,7 +317,7 @@ export const createResourceFn = createServerFn({ method: 'POST' })
   })
 
 export const updateResourceFn = createServerFn({ method: 'POST' })
-  .inputValidator((data: z.infer<typeof UpdateResourceSchema>) => UpdateResourceSchema.parse(data))
+  .validator((data: z.infer<typeof UpdateResourceSchema>) => UpdateResourceSchema.parse(data))
   .handler(async ({ data }: { data: z.infer<typeof UpdateResourceSchema> }) => {
     await requireAdmin('UpdateResource')
     const { ResourceService } = await import('../permissions/services/rbac-resource.service')
@@ -326,7 +326,7 @@ export const updateResourceFn = createServerFn({ method: 'POST' })
   })
 
 export const deleteResourceFn = createServerFn({ method: 'POST' })
-  .inputValidator((data: { id: string }) => data)
+  .validator((data: { id: string }) => data)
   .handler(async ({ data }: { data: { id: string } }) => {
     await requireAdmin('DeleteResource')
     const { ResourceService } = await import('../permissions/services/rbac-resource.service')
@@ -337,7 +337,7 @@ export const deleteResourceFn = createServerFn({ method: 'POST' })
 // ============ 操作管理 ============
 
 export const getActionsFn = createServerFn({ method: 'GET' })
-  .inputValidator((data?: { resourceId?: string }) => data || {})
+  .validator((data?: { resourceId?: string }) => data || {})
   .handler(async ({ data }: { data: { resourceId?: string } }) => {
     await requireAdmin('ListActions')
     const { ResourceService } = await import('../permissions/services/rbac-resource.service')
@@ -345,7 +345,7 @@ export const getActionsFn = createServerFn({ method: 'GET' })
   })
 
 export const createActionFn = createServerFn({ method: 'POST' })
-  .inputValidator((data: z.infer<typeof CreateActionSchema>) => CreateActionSchema.parse(data))
+  .validator((data: z.infer<typeof CreateActionSchema>) => CreateActionSchema.parse(data))
   .handler(async ({ data }: { data: z.infer<typeof CreateActionSchema> }) => {
     await requireAdmin('CreateAction')
     const { ResourceService } = await import('../permissions/services/rbac-resource.service')
@@ -353,7 +353,7 @@ export const createActionFn = createServerFn({ method: 'POST' })
   })
 
 export const updateActionFn = createServerFn({ method: 'POST' })
-  .inputValidator((data: z.infer<typeof UpdateActionSchema>) => UpdateActionSchema.parse(data))
+  .validator((data: z.infer<typeof UpdateActionSchema>) => UpdateActionSchema.parse(data))
   .handler(async ({ data }: { data: z.infer<typeof UpdateActionSchema> }) => {
     await requireAdmin('UpdateAction')
     const { ResourceService } = await import('../permissions/services/rbac-resource.service')
@@ -362,7 +362,7 @@ export const updateActionFn = createServerFn({ method: 'POST' })
   })
 
 export const deleteActionFn = createServerFn({ method: 'POST' })
-  .inputValidator((data: { id: string }) => data)
+  .validator((data: { id: string }) => data)
   .handler(async ({ data }: { data: { id: string } }) => {
     await requireAdmin('DeleteAction')
     const { ResourceService } = await import('../permissions/services/rbac-resource.service')
@@ -380,7 +380,7 @@ export const getPermissionsFn = createServerFn({ method: 'GET' })
   })
 
 export const createPermissionFn = createServerFn({ method: 'POST' })
-  .inputValidator((data: z.infer<typeof CreatePermissionSchema>) => CreatePermissionSchema.parse(data))
+  .validator((data: z.infer<typeof CreatePermissionSchema>) => CreatePermissionSchema.parse(data))
   .handler(async ({ data }: { data: z.infer<typeof CreatePermissionSchema> }) => {
     await requireAdmin('CreatePermission')
     const { ResourceService } = await import('../permissions/services/rbac-resource.service')
@@ -388,7 +388,7 @@ export const createPermissionFn = createServerFn({ method: 'POST' })
   })
 
 export const updatePermissionFn = createServerFn({ method: 'POST' })
-  .inputValidator((data: z.infer<typeof UpdatePermissionSchema>) => UpdatePermissionSchema.parse(data))
+  .validator((data: z.infer<typeof UpdatePermissionSchema>) => UpdatePermissionSchema.parse(data))
   .handler(async ({ data }: { data: z.infer<typeof UpdatePermissionSchema> }) => {
     await requireAdmin('UpdatePermission')
     const { ResourceService } = await import('../permissions/services/rbac-resource.service')
@@ -397,7 +397,7 @@ export const updatePermissionFn = createServerFn({ method: 'POST' })
   })
 
 export const deletePermissionFn = createServerFn({ method: 'POST' })
-  .inputValidator((data: { id: string }) => data)
+  .validator((data: { id: string }) => data)
   .handler(async ({ data }: { data: { id: string } }) => {
     await requireAdmin('DeletePermission')
     const { ResourceService } = await import('../permissions/services/rbac-resource.service')
@@ -408,7 +408,7 @@ export const deletePermissionFn = createServerFn({ method: 'POST' })
 // ============ 角色-权限关联管理 ============
 
 export const assignPermissionsFn = createServerFn({ method: 'POST' })
-  .inputValidator((data: z.infer<typeof AssignPermissionsSchema>) => AssignPermissionsSchema.parse(data))
+  .validator((data: z.infer<typeof AssignPermissionsSchema>) => AssignPermissionsSchema.parse(data))
   .handler(async ({ data }: { data: z.infer<typeof AssignPermissionsSchema> }) => {
     await requireAdmin('AssignPermissions')
     const prisma = (await import('@/shared/lib/db')).default

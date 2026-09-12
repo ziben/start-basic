@@ -1,7 +1,7 @@
 import { createServerFn } from '@tanstack/react-start'
 
 export const globalSearchFn = createServerFn({ method: 'GET' })
-    .inputValidator((query: string) => query)
+    .validator((query: string) => query)
     .handler(async ({ data: query }: { data: string }) => {
         if (!query || query.length < 2) return { users: [], orgs: [] }
 

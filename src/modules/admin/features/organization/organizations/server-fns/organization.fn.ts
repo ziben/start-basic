@@ -36,7 +36,7 @@ const UpdateOrganizationSchema = z.object({
 // ============ ServerFn 定义 ============
 
 export const getOrganizationsFn = createServerFn({ method: 'GET' })
-    .inputValidator((data?: z.infer<typeof ListOrganizationsSchema>) =>
+    .validator((data?: z.infer<typeof ListOrganizationsSchema>) =>
         data ? ListOrganizationsSchema.parse(data) : {}
     )
     .handler(async ({ data }: { data: z.infer<typeof ListOrganizationsSchema> }) => {
@@ -46,7 +46,7 @@ export const getOrganizationsFn = createServerFn({ method: 'GET' })
     })
 
 export const getOrganizationFn = createServerFn({ method: 'GET' })
-    .inputValidator((data: { id: string }) => {
+    .validator((data: { id: string }) => {
         if (!data?.id) throw new Error('ID 不能为空')
         return data
     })
@@ -57,7 +57,7 @@ export const getOrganizationFn = createServerFn({ method: 'GET' })
     })
 
 export const createOrganizationFn = createServerFn({ method: 'POST' })
-    .inputValidator((data: z.infer<typeof CreateOrganizationSchema>) =>
+    .validator((data: z.infer<typeof CreateOrganizationSchema>) =>
         CreateOrganizationSchema.parse(data)
     )
     .handler(async ({ data }: { data: z.infer<typeof CreateOrganizationSchema> }) => {
@@ -67,7 +67,7 @@ export const createOrganizationFn = createServerFn({ method: 'POST' })
     })
 
 export const updateOrganizationFn = createServerFn({ method: 'POST' })
-    .inputValidator((data: z.infer<typeof UpdateOrganizationSchema>) =>
+    .validator((data: z.infer<typeof UpdateOrganizationSchema>) =>
         UpdateOrganizationSchema.parse(data)
     )
     .handler(async ({ data }: { data: z.infer<typeof UpdateOrganizationSchema> }) => {
@@ -78,7 +78,7 @@ export const updateOrganizationFn = createServerFn({ method: 'POST' })
     })
 
 export const deleteOrganizationFn = createServerFn({ method: 'POST' })
-    .inputValidator((data: { id: string }) => {
+    .validator((data: { id: string }) => {
         if (!data?.id) throw new Error('ID 不能为空')
         return data
     })
@@ -89,7 +89,7 @@ export const deleteOrganizationFn = createServerFn({ method: 'POST' })
     })
 
 export const bulkDeleteOrganizationsFn = createServerFn({ method: 'POST' })
-    .inputValidator((data: { ids: string[] }) => {
+    .validator((data: { ids: string[] }) => {
         if (!data?.ids || !Array.isArray(data.ids)) throw new Error('ids 必须是数组')
         return data
     })
