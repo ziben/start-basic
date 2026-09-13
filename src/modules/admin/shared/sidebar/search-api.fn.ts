@@ -1,35 +1,31 @@
+import { z } from 'zod'
 import { createServerFn } from '@tanstack/react-start'
+import { requireAdmin } from '~/modules/admin/shared/server-fns/auth'
 
 export const globalSearchFn = createServerFn({ method: 'GET' })
-    .validator((query: string) => query)
-    .handler(async ({ data: query }: { data: string }) => {
-        if (!query || query.length < 2) return { users: [], orgs: [] }
+  .validator(z.string().trim().max(100))
+  .handler(async ({ data: query }: { data: string }) => {
+    await requireAdmin('GlobalSearch')
+    if (!query || query.length < 2) return { users: [], orgs: [] }
 
-        const { default: prisma } = await import('@/shared/lib/db')
+    const { default: prisma } = await import('@/shared/lib/db')
 
-        const [users, orgs] = await Promise.all([
-            prisma.user.findMany({
-                where: {
-                    OR: [
-                        { name: { contains: query } },
-                        { email: { contains: query } },
-                        { username: { contains: query } },
-                    ],
-                },
-                take: 5,
-                select: { id: true, name: true, email: true, image: true },
-            }),
-            prisma.organization.findMany({
-                where: {
-                    OR: [
-                        { name: { contains: query } },
-                        { slug: { contains: query } },
-                    ],
-                },
-                take: 5,
-                select: { id: true, name: true, slug: true, logo: true },
-            }),
-        ])
+    const [users, orgs] = await Promise.all([
+      prisma.user.findMany({
+        where: {
+          OR: [{ name: { contains: query } }, { email: { contains: query } }, { username: { contains: query } }],
+        },
+        take: 5,
+        select: { id: true, name: true, email: true, image: true },
+      }),
+      prisma.organization.findMany({
+        where: {
+          OR: [{ name: { contains: query } }, { slug: { contains: query } }],
+        },
+        take: 5,
+        select: { id: true, name: true, slug: true, logo: true },
+      }),
+    ])
 
-        return { users, orgs }
-    })
+    return { users, orgs }
+  })
