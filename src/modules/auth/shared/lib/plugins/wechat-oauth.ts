@@ -2,12 +2,11 @@
  * WeChat OAuth Plugin for Better Auth
  * 基于 https://github.com/zreren/better-auth-wechat-example
  */
-
+import { z } from 'zod'
 import type { BetterAuthPlugin, GenericEndpointContext, User } from 'better-auth'
 import { generateState } from 'better-auth'
-import { setSessionCookie } from 'better-auth/cookies'
 import { createAuthEndpoint } from 'better-auth/api'
-import { z } from 'zod'
+import { setSessionCookie } from 'better-auth/cookies'
 
 interface WeChatOAuthOptions {
   appId: string
@@ -188,10 +187,7 @@ export function wechatOAuth(options: WeChatOAuthOptions) {
       }).filter(([_, v]) => v !== undefined)
     )
     if (Object.keys(updateData).length > 0) {
-      await ctx.context.internalAdapter.updateAccount(
-        existing.id,
-        updateData as Record<string, unknown>
-      )
+      await ctx.context.internalAdapter.updateAccount(existing.id, updateData as Record<string, unknown>)
     }
   }
 
@@ -206,17 +202,8 @@ export function wechatOAuth(options: WeChatOAuthOptions) {
     expiresIn?: number
     scope?: string
   }): Promise<void> => {
-    const {
-      ctx,
-      buildErrorRedirect,
-      userId,
-      providerUserId,
-      openid,
-      accessToken,
-      refreshToken,
-      expiresIn,
-      scope,
-    } = params
+    const { ctx, buildErrorRedirect, userId, providerUserId, openid, accessToken, refreshToken, expiresIn, scope } =
+      params
     try {
       await ctx.context.internalAdapter.linkAccount({
         providerId: 'wechat',
@@ -320,19 +307,10 @@ export function wechatOAuth(options: WeChatOAuthOptions) {
     expiresIn?: number
     scope?: string
   }): Promise<{ user: OAuthUser; isRegister: boolean }> => {
-    const {
-      ctx,
-      buildErrorRedirect,
-      profile,
-      providerUserId,
-      openid,
-      accessToken,
-      refreshToken,
-      expiresIn,
-      scope,
-    } = params
+    const { ctx, buildErrorRedirect, profile, providerUserId, openid, accessToken, refreshToken, expiresIn, scope } =
+      params
     const email = `${providerUserId}@${syntheticEmailDomain}`.toLowerCase()
-    const dbUser = (await ctx.context.internalAdapter
+    const dbUser = (await (ctx.context.internalAdapter as any)
       .findOAuthUser(email, providerUserId, 'wechat')
       .catch(() => null)) as OAuthUserResult | null
 
@@ -391,7 +369,7 @@ export function wechatOAuth(options: WeChatOAuthOptions) {
           body: signInBodySchema,
         },
         async (ctx: GenericEndpointContext) => {
-          const { state } = await generateState(ctx, undefined, ctx.body?.additionalData)
+          const { state } = await (generateState as any)(ctx, undefined, ctx.body?.additionalData)
 
           const redirectUri = `${ctx.context.baseURL}/oauth2/callback/wechat`
           const url = new URL(AUTH_URL)
@@ -428,7 +406,7 @@ export function wechatOAuth(options: WeChatOAuthOptions) {
           // 尝试清理 verification 记录（不影响主流程）
           const stateParam = ctx.query.state
           if (stateParam) {
-            ctx.context.internalAdapter.deleteVerificationByIdentifier(stateParam).catch(() => { })
+            ctx.context.internalAdapter.deleteVerificationByIdentifier(stateParam).catch(() => {})
           }
 
           const buildErrorRedirect = (err: string): string => {
@@ -436,7 +414,6 @@ export function wechatOAuth(options: WeChatOAuthOptions) {
             const separator = hasQuery ? '&' : '?'
             return `${callbackURL}${separator}error=${encodeURIComponent(err)}`
           }
-
 
           if (ctx.query.error || !ctx.query.code) {
             const err = ctx.query.error || 'wechat_code_missing'

@@ -13,7 +13,7 @@ const startedAt = new Date()
 const results = checks.map(([name, command, args]) => {
   const started = Date.now()
   const executable = process.platform === 'win32' && command === 'pnpm' ? 'pnpm.cmd' : command
-  const result = spawnSync(executable, args, { encoding: 'utf8' })
+  const result = spawnSync(executable, args, { encoding: 'utf8', shell: process.platform === 'win32' })
   return {
     name,
     command: [command, ...args].join(' '),

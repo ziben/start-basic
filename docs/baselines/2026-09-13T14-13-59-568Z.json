@@ -1,0 +1,39 @@
+{
+  "startedAt": "2026-09-13T14:13:59.568Z",
+  "gitCommit": "fa52ea0",
+  "passed": false,
+  "checks": [
+    {
+      "name": "lint",
+      "command": "pnpm lint",
+      "passed": true,
+      "durationMs": 16989,
+      "exitCode": 0,
+      "output": "$ eslint .\n"
+    },
+    {
+      "name": "typecheck",
+      "command": "pnpm exec tsc --noEmit",
+      "passed": false,
+      "durationMs": 32232,
+      "exitCode": 2,
+      "output": "src/modules/auth/shared/lib/plugins/wechat-oauth.ts(336,8): error TS2339: Property 'findOAuthUser' does not exist on type 'InternalAdapter<BetterAuthOptions>'.\r\nsrc/modules/auth/shared/lib/plugins/wechat-oauth.ts(394,65): error TS2554: Expected 1-2 arguments, but got 3.\r\nsrc/modules/module-diagnostics.ts(5,71): error TS2339: Property 'dependencies' does not exist on type '{ readonly key: \"audit\"; readonly version: \"1.0.0\"; readonly dependencies: readonly [\"auth\"]; readonly exports: { readonly services: { readonly LogService: { getList(input?: ListLogsInput): Promise<{ type: \"audit\"; ... 4 more ...; pageCount: number; } | { ...; }>; }; readonly writeAuditLog: (input: AuditLogInput) =>...'.\r\n  Property 'dependencies' does not exist on type '{ readonly key: \"auth\"; readonly version: \"1.0.0\"; readonly betterAuth: { readonly serverPluginIds: readonly [\"bearer\", \"username\", \"organization\", \"admin\", \"wechat-oauth\", \"user-created-hooks\"]; readonly clientPluginIds: readonly [...]; }; readonly exports: { ...; }; }'.\r\nsrc/modules/module-diagnostics.ts(7,42): error TS2339: Property 'betterAuth' does not exist on type '{ readonly key: \"audit\"; readonly version: \"1.0.0\"; readonly dependencies: readonly [\"auth\"]; readonly exports: { readonly services: { readonly LogService: { getList(input?: ListLogsInput): Promise<{ type: \"audit\"; ... 4 more ...; pageCount: number; } | { ...; }>; }; readonly writeAuditLog: (input: AuditLogInput) =>...'.\r\n  Property 'betterAuth' does not exist on type '{ readonly key: \"audit\"; readonly version: \"1.0.0\"; readonly dependencies: readonly [\"auth\"]; readonly exports: { readonly services: { readonly LogService: { getList(input?: ListLogsInput): Promise<{ type: \"audit\"; ... 4 more ...; pageCount: number; } | { ...; }>; }; readonly writeAuditLog: (input: AuditLogInput) =>...'.\r\nsrc/modules/module-diagnostics.ts(8,42): error TS2339: Property 'betterAuth' does not exist on type '{ readonly key: \"audit\"; readonly version: \"1.0.0\"; readonly dependencies: readonly [\"auth\"]; readonly exports: { readonly services: { readonly LogService: { getList(input?: ListLogsInput): Promise<{ type: \"audit\"; ... 4 more ...; pageCount: number; } | { ...; }>; }; readonly writeAuditLog: (input: AuditLogInput) =>...'.\r\n  Property 'betterAuth' does not exist on type '{ readonly key: \"audit\"; readonly version: \"1.0.0\"; readonly dependencies: readonly [\"auth\"]; readonly exports: { readonly services: { readonly LogService: { getList(input?: ListLogsInput): Promise<{ type: \"audit\"; ... 4 more ...; pageCount: number; } | { ...; }>; }; readonly writeAuditLog: (input: AuditLogInput) =>...'.\r\n"
+    },
+    {
+      "name": "test",
+      "command": "pnpm exec vitest run",
+      "passed": true,
+      "durationMs": 15352,
+      "exitCode": 0,
+      "output": "\n RUN  v4.1.11 Z:/labs/start-basic\n\n\n Test Files  32 passed (32)\n      Tests  147 passed (147)\n   Start at  22:14:51\n   Duration  12.85s (transform 10.42s, setup 16.24s, import 19.91s, tests 4.13s, environment 64.57s)\n\n"
+    },
+    {
+      "name": "build",
+      "command": "pnpm build",
+      "passed": true,
+      "durationMs": 7907,
+      "exitCode": 0,
+      "output": "B │ gzip:   4.22 kB\ndist/server/assets/log-BTuAM1PS.js                                23.76 kB │ gzip:   5.32 kB\ndist/server/assets/toolbar-DjiAiaD1.js                            25.40 kB │ gzip:   5.24 kB\ndist/server/assets/path-CbBGlsTt.js                               30.94 kB │ gzip:   8.28 kB\ndist/server/assets/session-CehlF7l9.js                            33.64 kB │ gzip:   7.09 kB\ndist/server/assets/privacy-Ccmg4hEk.js                            33.74 kB │ gzip:   4.90 kB\ndist/server/assets/_tanstack-start-manifest_v-CfQRhoTe.js         34.63 kB │ gzip:   5.05 kB\ndist/server/assets/auth-client-HBn9Urar.js                        36.25 kB │ gzip:   9.26 kB\ndist/server/assets/organizations-BejAfARK.js                      41.34 kB │ gzip:   7.38 kB\ndist/server/assets/translation-CMZAokHz.js                        41.37 kB │ gzip:   7.93 kB\ndist/server/assets/roles-BT5cr1AJ.js                              44.90 kB │ gzip:   7.71 kB\ndist/server/assets/modules-BWmawcJz.js                            47.52 kB │ gzip:   8.29 kB\ndist/server/assets/dashboard-ZLlo9aK2.js                          47.60 kB │ gzip:   5.37 kB\ndist/server/assets/orders-Cxni3vwg.js                             47.63 kB │ gzip:   8.23 kB\ndist/server/assets/department-DA5rmDSs.js                         48.12 kB │ gzip:   7.99 kB\ndist/server/assets/org-roles-BgxRRjSn.js                          53.54 kB │ gzip:   9.76 kB\ndist/server/assets/members-BPm9fHUK.js                            54.61 kB │ gzip:  10.22 kB\ndist/server/assets/chat-CsFshTul.js                               58.29 kB │ gzip:  13.46 kB\ndist/server/assets/permissions-DEbJ0E0p.js                        58.43 kB │ gzip:   6.99 kB\ndist/server/assets/system-config-BpOo4PKd.js                      72.42 kB │ gzip:  12.96 kB\ndist/server/assets/users-Bb5C-TB_.js                              75.77 kB │ gzip:  12.67 kB\ndist/server/assets/use-translation-CpijTcMz.js                    84.45 kB │ gzip:  18.46 kB\ndist/server/assets/manifest-BAGmM4J8.js                          118.67 kB │ gzip:  28.96 kB\ndist/server/assets/router-CVyUg9sZ.js                            119.25 kB │ gzip:  28.05 kB\ndist/server/assets/navigation-Dwv546gD.js                        119.93 kB │ gzip:  19.62 kB\ndist/server/assets/skip-to-main-B7xmGaG_.js                      129.78 kB │ gzip:  21.61 kB\ndist/server/assets/db-C7-0M9p5.js                                210.81 kB │ gzip:  49.76 kB\ndist/server/assets/dist-DQROhJRp.js                              221.49 kB │ gzip:  39.42 kB\ndist/server/server.js                                            251.10 kB │ gzip:  59.72 kB\ndist/server/assets/error-codes-BqDulm4I.js                       439.79 kB │ gzip:  85.12 kB\ndist/server/assets/auth-DNUOmLCL.js                              977.67 kB │ gzip: 208.71 kB\n\n✓ built in 2.39s\n$ vite build\n\u001b[33m[INEFFECTIVE_DYNAMIC_IMPORT] \u001b[0msrc/shared/lib/db.ts is dynamically imported by src/infrastructure/config/runtime-config-store.ts but also statically imported by src/modules/audit/shared/services/log.service.ts, src/modules/audit/shared/services/server-log-writer.ts, src/modules/auth/shared/lib/auth-init.ts, src/modules/health/shared/services/health-report.service.ts, src/modules/navigation/shared/navgroup/services/navgroup.service.ts, ..., dynamic import will not move module into another chunk.\n\n[plugin builtin:vite-reporter] \n(!) Some chunks are larger than 800 kB after minification. Consider:\n- Using dynamic import() to code-split the application\n- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting\n- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.\n\u001b[33m[INEFFECTIVE_DYNAMIC_IMPORT] \u001b[0msrc/modules/payment/shared/lib/wechat-pay.ts is dynamically imported by src/modules/payment/shared/server-fns/notify.ts but also statically imported by src/routes/api/v1/payment/wechat/prepay.ts, dynamic import will not move module into another chunk.\n\n"
+    }
+  ]
+}
