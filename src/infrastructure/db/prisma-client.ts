@@ -1,13 +1,16 @@
 import { PrismaPg } from '@prisma/adapter-pg'
 import { PrismaClient } from '~/generated/prisma/client'
 import { getDatabaseUrl } from './database-url'
+import { recordSlowQuery } from '../observability/metrics'
 
 const DATABASE_URL = getDatabaseUrl()
 const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient }
 
 async function createPrismaClient(): Promise<PrismaClient> {
   const adapter = new PrismaPg({ connectionString: DATABASE_URL })
-  return new PrismaClient({ adapter })
+  const client = new PrismaClient({ adapter, log: [{ emit: 'event', level: 'query' }] })
+  client.$on('query', (event) => recordSlowQuery(event.duration))
+  return client
 }
 
 export async function getDb(): Promise<PrismaClient> {

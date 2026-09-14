@@ -34,7 +34,7 @@
     "baseline": "pnpm exec tsx scripts/quality-baseline.ts",
     "format": "prettier --write .",
     "typecheck": "pnpm run routes && tsc --noEmit",
-    "check": "pnpm run format && pnpm run lint && pnpm run typecheck"
+    "check": "pnpm baseline"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx,mjs,cjs}": [

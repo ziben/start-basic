@@ -310,9 +310,12 @@ export function wechatOAuth(options: WeChatOAuthOptions) {
     const { ctx, buildErrorRedirect, profile, providerUserId, openid, accessToken, refreshToken, expiresIn, scope } =
       params
     const email = `${providerUserId}@${syntheticEmailDomain}`.toLowerCase()
-    const dbUser = (await (ctx.context.internalAdapter as any)
-      .findOAuthUser(email, providerUserId, 'wechat')
-      .catch(() => null)) as OAuthUserResult | null
+    const adapter = ctx.context.internalAdapter
+    const owner = await adapter.findAccountOwnerByKey({ providerId: 'wechat', accountId: providerUserId })
+    if (owner?.kind === 'orphaned') throw new Error('微信账号关联的用户不存在')
+    const dbUser = (owner?.kind === 'owned'
+      ? { user: owner.user, accounts: [owner.account] }
+      : await adapter.findUserByEmail(email, { includeAccounts: true })) as OAuthUserResult | null
 
     if (dbUser) {
       const existing = dbUser.accounts.find((a) => a.providerId === 'wechat')
@@ -369,7 +372,7 @@ export function wechatOAuth(options: WeChatOAuthOptions) {
           body: signInBodySchema,
         },
         async (ctx: GenericEndpointContext) => {
-          const { state } = await (generateState as any)(ctx, undefined, ctx.body?.additionalData)
+          const { state } = await generateState(ctx)
 
           const redirectUri = `${ctx.context.baseURL}/oauth2/callback/wechat`
           const url = new URL(AUTH_URL)

@@ -121,24 +121,67 @@ export function getWebVitals() {
  */
 export function reportWebVitals() {
   if (typeof window === 'undefined') return
-
-  // 等待页面加载完成
-  window.addEventListener('load', () => {
-    // 稍微延迟以确保所有指标都已记录
-    setTimeout(() => {
-      const vitals = getWebVitals()
-      if (vitals && isDev) {
-        console.group('[Web Vitals]')
-        console.log(`DNS: ${vitals.dns.toFixed(2)}ms`)
-        console.log(`TCP: ${vitals.tcp.toFixed(2)}ms`)
-        console.log(`TTFB: ${vitals.ttfb.toFixed(2)}ms`)
-        console.log(`DOM Parse: ${vitals.domParse.toFixed(2)}ms`)
-        console.log(`DOM Interactive: ${vitals.domInteractive.toFixed(2)}ms`)
-        console.log(`Load Complete: ${vitals.loadComplete.toFixed(2)}ms`)
-        console.groupEnd()
-      }
-    }, 0)
-  })
+  const sent = new Set<string>()
+  const emit = (name: string, value: number) => {
+    if (sent.has(name) || !Number.isFinite(value) || value < 0) return
+    sent.add(name)
+    recordMetric(name, value)
+    const body = JSON.stringify({ name, value })
+    // 指标不包含 URL、用户标识或页面内容；采集失败不影响页面。
+    void fetch('/api/metrics', {
+      method: 'POST',
+      body,
+      keepalive: true,
+      headers: { 'Content-Type': 'application/json' },
+    }).catch(() => {})
+  }
+  const observers: PerformanceObserver[] = []
+  let lcp: number | undefined
+  if (typeof PerformanceObserver !== 'undefined') {
+    for (const type of ['paint', 'largest-contentful-paint']) {
+      if (!PerformanceObserver.supportedEntryTypes.includes(type)) continue
+      const observer = new PerformanceObserver((list) => {
+        for (const entry of list.getEntries()) {
+          if (entry.name === 'first-contentful-paint') emit('FCP', entry.startTime)
+          if (entry.entryType === 'largest-contentful-paint') lcp = entry.startTime
+        }
+      })
+      observer.observe({ type, buffered: true })
+      observers.push(observer)
+    }
+  }
+  const finishLcp = () => {
+    if (lcp !== undefined) emit('LCP', lcp)
+  }
+  const onHidden = () => {
+    if (document.visibilityState === 'hidden') finishLcp()
+  }
+  const onLoad = () => {
+    const vitals = getWebVitals()
+    if (vitals) {
+      emit('TTFB', vitals.ttfb)
+      emit('LOAD', vitals.loadComplete)
+    }
+  }
+  // React hydration 可能晚于 load 事件。
+  const timer = window.setTimeout(() => {
+    if (document.readyState === 'complete') onLoad()
+  }, 0)
+  const loaded = () => window.setTimeout(onLoad, 0)
+  window.addEventListener('load', loaded, { once: true })
+  window.addEventListener('pagehide', finishLcp)
+  window.addEventListener('pointerdown', finishLcp, { once: true })
+  window.addEventListener('keydown', finishLcp, { once: true })
+  document.addEventListener('visibilitychange', onHidden)
+  return () => {
+    clearTimeout(timer)
+    observers.forEach((observer) => observer.disconnect())
+    window.removeEventListener('load', loaded)
+    window.removeEventListener('pagehide', finishLcp)
+    window.removeEventListener('pointerdown', finishLcp)
+    window.removeEventListener('keydown', finishLcp)
+    document.removeEventListener('visibilitychange', onHidden)
+  }
 }
 
 /**
@@ -166,4 +209,3 @@ export function measureBetweenMarks(name: string, startMark: string, endMark: st
     }
   }
 }
-

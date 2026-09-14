@@ -1,16 +1,17 @@
 import * as React from 'react'
 import { type QueryClient } from '@tanstack/react-query'
 import { HeadContent, Outlet, Scripts, createRootRouteWithContext } from '@tanstack/react-router'
+import { GeneralError, NotFoundError } from '@/shared/components/errors'
+import { composeSeoDescription, composeSeoTitle, seo } from '@/shared/utils/seo'
 import Devtools from '~/components/devtools'
 import { NavigationProgress } from '~/components/navigation-progress'
 import { Toaster } from '~/components/ui/sonner'
 import { AppProviders } from '~/shared/context/app-providers'
 import { useRouteSeoSync } from '~/shared/hooks/use-route-seo-sync'
 import { userQueryKeys } from '~/shared/lib/query-keys'
-import appCss from '~/styles/index.css?url'
-import { composeSeoDescription, composeSeoTitle, seo } from '@/shared/utils/seo'
-import { GeneralError, NotFoundError } from '@/shared/components/errors'
 import { getCurrentUserFn } from '~/shared/server-fns/auth.fn'
+import { reportWebVitals } from '~/shared/utils/performance'
+import appCss from '~/styles/index.css?url'
 
 const cssUrl = appCss
 
@@ -82,6 +83,7 @@ export const Route = createRootRouteWithContext<{
 
 function RootComponent(): React.ReactElement {
   useRouteSeoSync()
+  React.useEffect(() => reportWebVitals(), [])
 
   return (
     <React.StrictMode>
@@ -103,7 +105,11 @@ function RootDocument({ children }: { children: React.ReactNode }): React.ReactE
   return (
     <html suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: `if(!Object.hasOwn){Object.hasOwn=function(o,p){return Object.prototype.hasOwnProperty.call(o,p)}}` }} />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `if(!Object.hasOwn){Object.hasOwn=function(o,p){return Object.prototype.hasOwnProperty.call(o,p)}}`,
+          }}
+        />
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -118,7 +124,7 @@ function RootDocument({ children }: { children: React.ReactNode }): React.ReactE
                   }
                 } catch (e) {}
               })();
-            `
+            `,
           }}
         />
         <HeadContent />
@@ -130,12 +136,3 @@ function RootDocument({ children }: { children: React.ReactNode }): React.ReactE
     </html>
   )
 }
-
-
-
-
-
-
-
-
-
