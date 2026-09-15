@@ -1,6 +1,7 @@
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
 import { join, relative } from 'node:path'
 import { describe, expect, it } from 'vitest'
+import type { AppModule } from '~/core/module-registry'
 import { moduleRegistry } from './index'
 
 function collectSourceFiles(dir: string): string[] {
@@ -17,6 +18,42 @@ function collectSourceFiles(dir: string): string[] {
 }
 
 describe('module boundaries', () => {
+  it('enforces declared dependencies for shared module sources', () => {
+    const modules = new Map((moduleRegistry.modules as readonly AppModule[]).map((module) => [module.key, module]))
+    const violations: string[] = []
+
+    for (const module of moduleRegistry.modules) {
+      const sharedDir = join(process.cwd(), 'src/modules', module.key, 'shared')
+      for (const file of collectSourceFiles(sharedDir)) {
+        const source = readFileSync(file, 'utf8')
+        for (const match of source.matchAll(/(?:from|import\()\s*['"](?:~|@)\/modules\/([^/'"]+)/g)) {
+          const target = match[1]
+          // admin/shared/server-fns/auth is a compatibility adapter used by extracted modules.
+          const isLegacyAuthAdapter = target === 'admin'
+          if (
+            !isLegacyAuthAdapter &&
+            target !== module.key &&
+            !(modules.get(module.key)?.dependencies ?? []).includes(target as never)
+          ) {
+            violations.push(`${relative(process.cwd(), file).replace(/\\/g, '/')}: ${target}`)
+          }
+        }
+      }
+    }
+
+    expect(violations).toEqual([])
+  })
+
+  it('requires every registered dependency to be present', () => {
+    const keys = new Set(moduleRegistry.modules.map((module) => module.key))
+    const missing = (moduleRegistry.modules as readonly AppModule[]).flatMap((module) =>
+      (module.dependencies ?? [])
+        .filter((dependency) => !keys.has(dependency))
+        .map((dependency) => `${module.key}: ${dependency}`)
+    )
+    expect(missing).toEqual([])
+  })
+
   it('registers navigation as the shared menu capability module', () => {
     const navigation = moduleRegistry.getModule('navigation')
 

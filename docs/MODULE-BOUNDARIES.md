@@ -6,13 +6,13 @@ runtime capability.
 
 ## Current Modules
 
-| Module | Dependencies | Exports | Page Entry |
-| --- | --- | --- | --- |
-| `auth` | none | `runtime.auth`, `runtime.getAuth` | sign-in, session, RBAC gates |
-| `payment` | `auth` | payment order services, payment events | admin payment features and payment APIs |
-| `health` | `auth` | `HealthReportService` | `/admin/health` style diagnostics when enabled |
-| `audit` | `auth` | `LogService`, `writeAuditLog`, `writeSystemLog` | `/admin/log` |
-| `navigation` | `auth` | `NavGroupService`, `NavItemService` | `/admin/navigation`, sidebar data |
+| Module       | Dependencies | Exports                                         | Page Entry                                     |
+| ------------ | ------------ | ----------------------------------------------- | ---------------------------------------------- |
+| `auth`       | none         | `runtime.auth`, `runtime.getAuth`               | sign-in, session, RBAC gates                   |
+| `payment`    | `auth`       | payment order services, payment events          | admin payment features and payment APIs        |
+| `health`     | `auth`       | `HealthReportService`                           | `/admin/health` style diagnostics when enabled |
+| `audit`      | `auth`       | `LogService`, `writeAuditLog`, `writeSystemLog` | `/admin/log`                                   |
+| `navigation` | `auth`       | `NavGroupService`, `NavItemService`             | `/admin/navigation`, sidebar data              |
 
 ## Rules
 
@@ -20,6 +20,7 @@ runtime capability.
 - Shared module sources under `src/modules/*/shared` must not import `src/modules/admin/features/*`.
 - Admin pages may consume shared modules, but shared modules should not consume admin pages or table components.
 - New shared capabilities should add a module contract test and a module diagnostics entry in the same change.
+- `module-boundaries.test.ts` enforces that registered `shared` sources only import their own module or declared dependencies.
 
 ## Verification
 
