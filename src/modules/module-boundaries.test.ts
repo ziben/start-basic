@@ -22,14 +22,14 @@ describe('module boundaries', () => {
     const modules = new Map((moduleRegistry.modules as readonly AppModule[]).map((module) => [module.key, module]))
     const violations: string[] = []
 
-    for (const module of moduleRegistry.modules) {
+    for (const module of moduleRegistry.modules as readonly AppModule[]) {
       const sharedDir = join(process.cwd(), 'src/modules', module.key, 'shared')
       for (const file of collectSourceFiles(sharedDir)) {
         const source = readFileSync(file, 'utf8')
-        for (const match of source.matchAll(/(?:from|import\()\s*['"](?:~|@)\/modules\/([^/'"]+)/g)) {
-          const target = match[1]
-          // admin/shared/server-fns/auth is a compatibility adapter used by extracted modules.
-          const isLegacyAuthAdapter = target === 'admin'
+        for (const match of source.matchAll(/(?:from|import\()\s*['"](?:~|@)\/modules\/([^'"]+)/g)) {
+          const imported = match[1]
+          const target = imported.split('/')[0]
+          const isLegacyAuthAdapter = imported === 'admin/shared/server-fns/auth'
           if (
             !isLegacyAuthAdapter &&
             target !== module.key &&
@@ -45,13 +45,51 @@ describe('module boundaries', () => {
   })
 
   it('requires every registered dependency to be present', () => {
-    const keys = new Set(moduleRegistry.modules.map((module) => module.key))
+    const keys = new Set<string>(moduleRegistry.modules.map((module) => module.key))
     const missing = (moduleRegistry.modules as readonly AppModule[]).flatMap((module) =>
       (module.dependencies ?? [])
         .filter((dependency) => !keys.has(dependency))
         .map((dependency) => `${module.key}: ${dependency}`)
     )
     expect(missing).toEqual([])
+  })
+
+  it('keeps shared Prisma access within the module or a declared dependency', () => {
+    const owner: Record<string, string> = {
+      user: 'auth',
+      account: 'auth',
+      session: 'auth',
+      member: 'auth',
+      role: 'auth',
+      rolePermission: 'auth',
+      organizationRole: 'auth',
+      organizationRolePermission: 'auth',
+      navGroup: 'navigation',
+      navItem: 'navigation',
+      roleNavGroup: 'navigation',
+      userRoleNavGroup: 'navigation',
+      paymentOrder: 'payment',
+      auditLog: 'audit',
+      systemLog: 'audit',
+      healthReport: 'health',
+      healthMetricResult: 'health',
+      healthMetricCatalog: 'health',
+      aIConversation: 'ai',
+      aIMessage: 'ai',
+    }
+    const violations: string[] = []
+    for (const module of moduleRegistry.modules) {
+      for (const file of collectSourceFiles(join(process.cwd(), 'src/modules', module.key, 'shared'))) {
+        const source = readFileSync(file, 'utf8')
+        for (const match of source.matchAll(/\b(?:prisma|tx)\.([a-z]\w*)\s*\./g)) {
+          const tableOwner = owner[match[1]]
+          if (tableOwner && tableOwner !== module.key && !(module.dependencies ?? []).includes(tableOwner as never)) {
+            violations.push(`${relative(process.cwd(), file).replace(/\\/g, '/')}: ${match[1]} (${tableOwner})`)
+          }
+        }
+      }
+    }
+    expect(violations).toEqual([])
   })
 
   it('registers navigation as the shared menu capability module', () => {
