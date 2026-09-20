@@ -5,9 +5,9 @@
  */
 import { z } from 'zod'
 import { createServerFn } from '@tanstack/react-start'
-import { ServiceError } from '~/shared/utils/service-error'
 import { requireAdmin } from '~/modules/admin/shared/server-fns/auth'
 import { clearAccessControlCache, reinitAuth } from '~/modules/auth/shared/lib/auth'
+import { ServiceError } from '~/shared/utils/service-error'
 
 // ============ Schema 定义 ============
 
@@ -80,8 +80,8 @@ const AssignPermissionsSchema = z.object({
 
 // 角色管理相关的校验
 const ListRolesSchema = z.object({
-  page: z.number().optional(),
-  pageSize: z.number().optional(),
+  page: z.number().int().positive().max(100000).optional(),
+  pageSize: z.number().int().positive().max(100).optional(),
   filter: z.string().optional(),
 })
 

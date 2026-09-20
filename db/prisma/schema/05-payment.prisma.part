@@ -25,6 +25,7 @@ model PaymentOrder {
   @@index([userId])
   @@index([status])
   @@index([createdAt])
+  @@index([status, createdAt])
   @@map("payment_order")
 }
 

@@ -12,10 +12,10 @@ const requireUserId = async () => {
 }
 
 export const listConversationsFn = createServerFn({ method: 'GET' })
-  .validator(z.void())
-  .handler(async () => {
+  .validator(z.object({ page: z.number().int().positive().max(100000).default(1) }))
+  .handler(async ({ data }) => {
     const userId = await requireUserId()
-    return AiChatService.listConversations(userId)
+    return AiChatService.listConversations(userId, data.page)
   })
 
 export const getConversationMsgsFn = createServerFn({ method: 'GET' })

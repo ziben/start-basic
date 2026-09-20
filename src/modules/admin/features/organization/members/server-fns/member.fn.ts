@@ -9,8 +9,8 @@ import { requireAdmin } from '~/modules/admin/shared/server-fns/auth'
 // ============ Schema 定义 ============
 
 const ListMembersSchema = z.object({
-  page: z.number().optional(),
-  pageSize: z.number().optional(),
+  page: z.number().int().positive().max(100000).optional(),
+  pageSize: z.number().int().positive().max(100).optional(),
   filter: z.string().optional(),
   organizationId: z.string().optional(),
   sortBy: z.string().optional(),

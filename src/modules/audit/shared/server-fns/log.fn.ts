@@ -12,8 +12,8 @@ import { requireAdmin } from '~/modules/admin/shared/server-fns/auth'
 
 const ListLogsSchema = z.object({
   type: z.enum(['system', 'audit']).optional(),
-  page: z.number().optional(),
-  pageSize: z.number().optional(),
+  page: z.number().int().positive().max(100000).optional(),
+  pageSize: z.number().int().positive().max(100).optional(),
   filter: z.string().optional(),
   level: z.enum(['debug', 'info', 'warn', 'error']).optional(),
   success: z.boolean().optional(),

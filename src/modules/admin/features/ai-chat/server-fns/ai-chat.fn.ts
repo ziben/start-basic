@@ -8,8 +8,8 @@ import { requireAdmin } from '~/modules/admin/shared/server-fns/auth'
 import { AiChatService } from '~/modules/ai/shared/services/ai-chat.service'
 
 const ListConversationsSchema = z.object({
-  page: z.number().optional(),
-  pageSize: z.number().optional(),
+  page: z.number().int().positive().max(100000).optional(),
+  pageSize: z.number().int().positive().max(100).optional(),
   filter: z.string().optional(),
   sortBy: z.string().optional(),
   sortDir: z.enum(['asc', 'desc']).optional(),

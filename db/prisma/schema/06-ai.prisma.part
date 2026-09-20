@@ -13,6 +13,7 @@ model AIConversation {
   messages  AIMessage[]
 
   @@index([userId])
+  @@index([userId, updatedAt, id])
   @@index([createdAt])
   @@map("ai_conversation")
 }

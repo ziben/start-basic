@@ -1,11 +1,11 @@
 /**
  * Role API Hooks - React Query 封装
- * 
+ *
  * 已重构以对接新的 rbac.fn.ts 和系统角色逻辑
  * [迁移自 admin/shared/hooks/use-role-api.ts]
  */
-
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { permissionsQueryKeys, roleQueryKeys } from '~/shared/lib/query-keys'
 import {
   getRolesFn,
   getRoleFn,
@@ -14,9 +14,7 @@ import {
   deleteRoleFn,
   assignPermissionsFn,
   assignRoleNavGroupsFn,
-} from "../../server-fns/rbac.fn"
-import { permissionsQueryKeys, roleQueryKeys } from '~/shared/lib/query-keys'
-
+} from '../../server-fns/rbac.fn'
 
 // ============ Query Hooks ============
 
@@ -40,9 +38,13 @@ export function useAllRoles() {
   return useQuery({
     queryKey: roleQueryKeys.allList(),
     queryFn: async () => {
-      // 传递一个较大的 pageSize 来模拟获取所有角色，或者根据后端实现调整
-      const result = await getRolesFn({ data: { page: 1, pageSize: 1000 } })
-      return result.items || []
+      const result = await getRolesFn({ data: { page: 1, pageSize: 100 } })
+      const items = [...result.items]
+      for (let page = 2; page <= result.pageCount; page++) {
+        const next = await getRolesFn({ data: { page, pageSize: 100 } })
+        items.push(...next.items)
+      }
+      return items
     },
   })
 }
@@ -52,7 +54,7 @@ export function useAllRoles() {
  */
 export function useRole(id?: string) {
   return useQuery({
-    queryKey: roleQueryKeys.detail(id ?? ""),
+    queryKey: roleQueryKeys.detail(id ?? ''),
     queryFn: async () => {
       if (!id) return null
       return await getRoleFn({ data: { id } })
@@ -86,7 +88,7 @@ export function useUpdateRole() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async ({ id, ...data }: { id: string;[key: string]: any }) => {
+    mutationFn: async ({ id, ...data }: { id: string; [key: string]: any }) => {
       return await updateRoleFn({ data: { id, ...data } })
     },
     onSuccess: (_, variables) => {

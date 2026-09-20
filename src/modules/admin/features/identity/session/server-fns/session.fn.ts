@@ -10,8 +10,8 @@ import { auth } from '~/modules/auth/shared/lib/auth'
 // ============ Schema 定义 ============
 
 const ListSessionsSchema = z.object({
-  page: z.number().optional(),
-  pageSize: z.number().optional(),
+  page: z.number().int().positive().max(100000).optional(),
+  pageSize: z.number().int().positive().max(100).optional(),
   filter: z.string().optional(),
   status: z.array(z.enum(['active', 'expired'])).optional(),
   sortBy: z.string().optional(),

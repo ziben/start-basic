@@ -6,6 +6,19 @@ export const CACHE_TIME = {
   LONG: 1000 * 60 * 30, // 30 minutes - 静态配置数据
 } as const
 
+export function shouldRetryQuery(failureCount: number, error: unknown): boolean {
+  if (
+    error &&
+    typeof error === 'object' &&
+    'status' in error &&
+    typeof error.status === 'number' &&
+    error.status >= 400 &&
+    error.status < 500
+  )
+    return false
+  return failureCount < 1
+}
+
 export function createQueryClient() {
   // 创建 QueryClient，用于管理数据获取和缓存
   const queryClient = new QueryClient({
@@ -14,7 +27,7 @@ export function createQueryClient() {
         refetchOnWindowFocus: false,
         staleTime: CACHE_TIME.MEDIUM,
         gcTime: CACHE_TIME.LONG, // 垃圾回收时间
-        retry: 1, // 失败重试次数
+        retry: shouldRetryQuery,
       },
       mutations: {
         retry: 0, // mutation 不重试

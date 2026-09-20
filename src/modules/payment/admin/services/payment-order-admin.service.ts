@@ -143,33 +143,22 @@ export const PaymentOrderAdminService = {
 
   async getStats(): Promise<PaymentOrderStats> {
     try {
-      const [totalOrders, pendingOrders, successOrders, failedOrders, refundedOrders, closedOrders] = await Promise.all(
-        [
-          prisma.paymentOrder.count(),
-          prisma.paymentOrder.count({ where: { status: 'PENDING' } }),
-          prisma.paymentOrder.count({ where: { status: 'SUCCESS' } }),
-          prisma.paymentOrder.count({ where: { status: 'FAILED' } }),
-          prisma.paymentOrder.count({ where: { status: 'REFUNDED' } }),
-          prisma.paymentOrder.count({ where: { status: 'CLOSED' } }),
-        ]
-      )
-      const [amountStats, successAmountStats] = await Promise.all([
-        prisma.paymentOrder.aggregate({ _sum: { amount: true } }),
-        prisma.paymentOrder.aggregate({
-          where: { status: 'SUCCESS' },
-          _sum: { amount: true },
-        }),
-      ])
+      const groups = await prisma.paymentOrder.groupBy({
+        by: ['status'],
+        _count: { _all: true },
+        _sum: { amount: true },
+      })
+      const count = (status: PaymentStatus) => groups.find((group) => group.status === status)?._count._all ?? 0
 
       return {
-        totalOrders,
-        pendingOrders,
-        successOrders,
-        failedOrders,
-        refundedOrders,
-        closedOrders,
-        totalAmount: amountStats._sum.amount || 0,
-        successAmount: successAmountStats._sum.amount || 0,
+        totalOrders: groups.reduce((sum, group) => sum + group._count._all, 0),
+        pendingOrders: count('PENDING'),
+        successOrders: count('SUCCESS'),
+        failedOrders: count('FAILED'),
+        refundedOrders: count('REFUNDED'),
+        closedOrders: count('CLOSED'),
+        totalAmount: groups.reduce((sum, group) => sum + (group._sum.amount ?? 0), 0),
+        successAmount: groups.find((group) => group.status === 'SUCCESS')?._sum.amount ?? 0,
       }
     } catch (error) {
       console.error('获取订单统计失败:', error)

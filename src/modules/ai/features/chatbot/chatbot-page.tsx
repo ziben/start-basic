@@ -163,7 +163,15 @@ export function ChatbotPage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null)
 
-  const { data: conversations, isLoading: isLoadingConversations } = useConversationsQuery()
+  const {
+    data: conversationPages,
+    isLoading: isLoadingConversations,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+    isError: conversationError,
+  } = useConversationsQuery()
+  const conversations = conversationPages?.pages.flat()
   const { data: messages, isLoading: isLoadingMessages } = useConversationMessagesQuery(activeConversationId)
   const { mutate: deleteConversation, isPending: isDeleting } = useDeleteConversation()
 
@@ -292,6 +300,21 @@ export function ChatbotPage() {
                       />
                     ))}
                   </div>
+                )}
+                {conversationError && (
+                  <p role='alert' className='p-2 text-sm text-destructive'>
+                    对话加载失败，请重试
+                  </p>
+                )}
+                {(hasNextPage || conversationError) && (
+                  <Button
+                    variant='ghost'
+                    className='w-full'
+                    disabled={isFetchingNextPage}
+                    onClick={() => void fetchNextPage()}
+                  >
+                    {isFetchingNextPage ? '加载中…' : conversationError ? '重试' : '加载更多'}
+                  </Button>
                 )}
               </ScrollArea>
             </aside>

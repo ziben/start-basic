@@ -28,6 +28,7 @@ model HealthReport {
   metrics        HealthMetricResult[]
 
   @@index([userId])
+  @@index([userId, createdAt])
   @@index([examDate])
   @@index([createdAt])
   @@map("health_report")

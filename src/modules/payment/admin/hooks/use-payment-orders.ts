@@ -3,6 +3,7 @@
  */
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import type { PaymentStatus, PaymentMethod } from '~/generated/prisma/browser'
+import { CACHE_TIME } from '~/shared/lib/query-client'
 import {
   getPaymentOrdersFn,
   getPaymentOrderFn,
@@ -45,7 +46,7 @@ export function usePaymentOrdersQuery(filters: PaymentOrderFilters = {}) {
   return useQuery({
     queryKey: paymentOrderKeys.list(filters),
     queryFn: () => getPaymentOrdersFn({ data: filters }),
-    staleTime: 30 * 1000, // 30秒
+    staleTime: CACHE_TIME.SHORT,
   })
 }
 
@@ -68,7 +69,7 @@ export function usePaymentOrderStatsQuery() {
   return useQuery({
     queryKey: paymentOrderKeys.stats(),
     queryFn: () => getPaymentOrderStatsFn({ data: {} }),
-    staleTime: 5 * 60 * 1000, // 5分钟
+    staleTime: CACHE_TIME.MEDIUM,
   })
 }
 
@@ -84,9 +85,7 @@ export function useUpdatePaymentOrderStatus() {
     mutationFn: (data: { id: string; status: PaymentStatus; note?: string }) => updatePaymentOrderStatusFn({ data }),
     onSuccess: (updatedOrder, variables) => {
       // 刷新订单详情缓存
-      queryClient.invalidateQueries({
-        queryKey: paymentOrderKeys.detail(variables.id),
-      })
+      queryClient.setQueryData(paymentOrderKeys.detail(variables.id), updatedOrder)
       // 刷新订单列表缓存
       queryClient.invalidateQueries({
         queryKey: paymentOrderKeys.lists(),
@@ -109,9 +108,7 @@ export function useUpdatePaymentOrder() {
     mutationFn: (data: { id: string; description?: string; metadata?: unknown }) => updatePaymentOrderFn({ data }),
     onSuccess: (updatedOrder, variables) => {
       // 刷新订单详情缓存
-      queryClient.invalidateQueries({
-        queryKey: paymentOrderKeys.detail(variables.id),
-      })
+      queryClient.setQueryData(paymentOrderKeys.detail(variables.id), updatedOrder)
       // 刷新订单列表缓存
       queryClient.invalidateQueries({
         queryKey: paymentOrderKeys.lists(),

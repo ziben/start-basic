@@ -77,7 +77,16 @@ export const HealthReportService = {
         orderBy: { createdAt: 'desc' },
         skip: (page - 1) * pageSize,
         take: pageSize,
-        include: { _count: { select: { metrics: true } } },
+        select: {
+          id: true,
+          title: true,
+          examDate: true,
+          sourceFileName: true,
+          status: true,
+          createdAt: true,
+          updatedAt: true,
+          _count: { select: { metrics: true } },
+        },
       }),
     ])
 
@@ -99,7 +108,7 @@ function buildReportData(
   userId: string,
   input: CreateHealthReportInput,
   ocrText: string,
-  sourceFileName?: string,
+  sourceFileName?: string
 ): Prisma.HealthReportCreateInput {
   return {
     user: { connect: { id: userId } },
@@ -164,7 +173,7 @@ function toListItem(report: {
 async function createMetricRows(
   tx: Prisma.TransactionClient,
   reportId: string,
-  metrics: ParsedHealthMetric[],
+  metrics: ParsedHealthMetric[]
 ): Promise<void> {
   for (const metric of metrics) {
     const catalog = await upsertCatalog(tx, metric)
@@ -187,7 +196,7 @@ async function createMetricRows(
 
 async function upsertCatalog(
   tx: Prisma.TransactionClient,
-  metric: ParsedHealthMetric,
+  metric: ParsedHealthMetric
 ): Promise<HealthMetricCatalogEntity> {
   return tx.healthMetricCatalog.upsert({
     where: { code: metricCode(metric.rawName) },
@@ -215,7 +224,7 @@ function metricCode(rawName: string): string {
 async function getReportByIdForUser(
   reportId: string,
   userId: string,
-  client: Pick<Prisma.TransactionClient, 'healthReport'>,
+  client: Pick<Prisma.TransactionClient, 'healthReport'>
 ): Promise<HealthReportWithMetrics> {
   const report = await client.healthReport.findFirst({
     where: { id: reportId, userId },

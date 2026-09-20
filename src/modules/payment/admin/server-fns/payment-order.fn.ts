@@ -11,8 +11,8 @@ import { requireAdmin } from '~/modules/admin/shared/server-fns/auth'
 // ============ Schema 定义 ============
 
 const ListPaymentOrdersSchema = z.object({
-  page: z.number().optional(),
-  pageSize: z.number().optional(),
+  page: z.number().int().positive().max(100000).optional(),
+  pageSize: z.number().int().positive().max(100).optional(),
   filter: z.string().optional(),
   status: z.enum(['PENDING', 'SUCCESS', 'FAILED', 'REFUNDED', 'CLOSED']).optional(),
   paymentMethod: z.enum(['WECHAT_JSAPI', 'WECHAT_NATIVE', 'WECHAT_H5', 'ALIPAY']).optional(),

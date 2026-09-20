@@ -5,16 +5,16 @@
  */
 import { z } from 'zod'
 import { createServerFn } from '@tanstack/react-start'
-import { ServiceError } from '~/shared/utils/service-error'
 import type { Prisma } from '~/generated/prisma/client'
 import { requireAdmin } from '~/modules/admin/shared/server-fns/auth'
+import { ServiceError } from '~/shared/utils/service-error'
 
 // ============ Schema 定义 ============
 
 const ListOrgRolesSchema = z.object({
   organizationId: z.string().min(1, '组织ID不能为空'),
-  page: z.number().optional(),
-  pageSize: z.number().optional(),
+  page: z.number().int().positive().max(100000).optional(),
+  pageSize: z.number().int().positive().max(100).optional(),
   search: z.string().optional(),
   isActive: z.boolean().optional(),
 })
