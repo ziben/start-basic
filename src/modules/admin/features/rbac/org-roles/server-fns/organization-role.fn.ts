@@ -3,11 +3,11 @@
  * 管理基于模板的组织角色实例
  * [迁移自 admin/shared/server-fns/organization-role.fn.ts]
  */
-
-import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
-import { requireAdmin } from '~/modules/admin/shared/server-fns/auth'
+import { createServerFn } from '@tanstack/react-start'
+import { ServiceError } from '~/shared/utils/service-error'
 import type { Prisma } from '~/generated/prisma/client'
+import { requireAdmin } from '~/modules/admin/shared/server-fns/auth'
 
 // ============ Schema 定义 ============
 
@@ -112,7 +112,7 @@ export const getOrganizationRolesFn = createServerFn({ method: 'GET' })
  * 获取单个组织角色详情
  */
 export const getOrganizationRoleFn = createServerFn({ method: 'GET' })
-  .validator((data: { id: string }) => data)
+  .validator(z.object({ id: z.string().min(1) }))
   .handler(async ({ data }: { data: { id: string } }) => {
     await requireAdmin('GetOrganizationRoleDetail')
     const prisma = (await import('@/shared/lib/db')).default
@@ -157,7 +157,7 @@ export const createOrganizationRoleFn = createServerFn({ method: 'POST' })
     })
 
     if (!org) {
-      throw new Error('组织不存在')
+      throw new ServiceError('NOT_FOUND', '组织不存在')
     }
 
     // 检查角色名称是否在组织内已存在
@@ -171,7 +171,7 @@ export const createOrganizationRoleFn = createServerFn({ method: 'POST' })
     })
 
     if (existing) {
-      throw new Error('该组织内已存在同名角色')
+      throw new ServiceError('CONFLICT', '该组织内已存在同名角色')
     }
 
     // 创建组织角色
@@ -236,7 +236,7 @@ export const updateOrganizationRoleFn = createServerFn({ method: 'POST' })
  * 删除组织角色
  */
 export const deleteOrganizationRoleFn = createServerFn({ method: 'POST' })
-  .validator((data: { id: string }) => data)
+  .validator(z.object({ id: z.string().min(1) }))
   .handler(async ({ data }: { data: { id: string } }) => {
     await requireAdmin('DeleteOrganizationRole')
     const prisma = (await import('@/shared/lib/db')).default
@@ -247,7 +247,7 @@ export const deleteOrganizationRoleFn = createServerFn({ method: 'POST' })
     })
 
     if (membersCount > 0) {
-      throw new Error(`无法删除：还有 ${membersCount} 个成员使用此角色`)
+      throw new ServiceError('CONFLICT', `无法删除：还有 ${membersCount} 个成员使用此角色`)
     }
 
     await prisma.organizationRole.delete({
@@ -261,9 +261,7 @@ export const deleteOrganizationRoleFn = createServerFn({ method: 'POST' })
  * 为组织角色分配权限
  */
 export const assignOrganizationRolePermissionsFn = createServerFn({ method: 'POST' })
-  .validator((data: z.infer<typeof AssignOrgRolePermissionsSchema>) =>
-    AssignOrgRolePermissionsSchema.parse(data)
-  )
+  .validator((data: z.infer<typeof AssignOrgRolePermissionsSchema>) => AssignOrgRolePermissionsSchema.parse(data))
   .handler(async ({ data }: { data: z.infer<typeof AssignOrgRolePermissionsSchema> }) => {
     await requireAdmin('AssignOrganizationRolePermissions')
     const prisma = (await import('@/shared/lib/db')).default
@@ -291,7 +289,7 @@ export const assignOrganizationRolePermissionsFn = createServerFn({ method: 'POS
  * 获取组织角色的权限列表
  */
 export const getOrganizationRolePermissionsFn = createServerFn({ method: 'GET' })
-  .validator((data: { organizationRoleId: string }) => data)
+  .validator(z.object({ organizationRoleId: z.string().min(1) }))
   .handler(async ({ data }: { data: { organizationRoleId: string } }) => {
     await requireAdmin('GetOrganizationRolePermissions')
     const prisma = (await import('@/shared/lib/db')).default
@@ -313,6 +311,7 @@ export const getOrganizationRolePermissionsFn = createServerFn({ method: 'GET' }
  * 获取可用的角色模板列表
  */
 export const getRoleTemplatesFn = createServerFn({ method: 'GET' })
+  .validator(z.void())
   .handler(async () => {
     await requireAdmin('ListRoleTemplates')
     const prisma = (await import('@/shared/lib/db')).default

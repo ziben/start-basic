@@ -3,9 +3,9 @@
  * 管理角色、资源、操作、权限和角色-权限关联
  * [迁移自 admin/shared/server-fns/rbac.fn.ts]
  */
-
-import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
+import { createServerFn } from '@tanstack/react-start'
+import { ServiceError } from '~/shared/utils/service-error'
 import { requireAdmin } from '~/modules/admin/shared/server-fns/auth'
 import { clearAccessControlCache, reinitAuth } from '~/modules/auth/shared/lib/auth'
 
@@ -129,7 +129,7 @@ export const getRolesFn = createServerFn({ method: 'GET' })
           },
         },
         orderBy: [{ scope: 'asc' }, { name: 'asc' }],
-      })
+      }),
     ])
 
     return {
@@ -140,7 +140,7 @@ export const getRolesFn = createServerFn({ method: 'GET' })
   })
 
 export const getRoleFn = createServerFn({ method: 'GET' })
-  .validator((data: { id: string }) => data)
+  .validator(z.object({ id: z.string().min(1) }))
   .handler(async ({ data }: { data: { id: string } }) => {
     await requireAdmin('GetRoleDetail')
     const prisma = (await import('@/shared/lib/db')).default
@@ -176,11 +176,13 @@ export const createRoleFn = createServerFn({ method: 'POST' })
         ...roleData,
         name: `${data.scope}:${data.name}`,
         isSystem: false,
-        rolePermissions: permissionIds ? {
-          create: permissionIds.map((permissionId: string) => ({
-            permissionId,
-          })),
-        } : undefined,
+        rolePermissions: permissionIds
+          ? {
+              create: permissionIds.map((permissionId: string) => ({
+                permissionId,
+              })),
+            }
+          : undefined,
       },
       include: {
         rolePermissions: {
@@ -209,7 +211,7 @@ export const updateRoleFn = createServerFn({ method: 'POST' })
     // 检查是否是系统角色
     const role = await prisma.role.findUnique({ where: { id } })
     if (role?.isSystem) {
-      throw new Error('系统角色不允许修改')
+      throw new ServiceError('FORBIDDEN', '系统角色不允许修改')
     }
 
     // 更新角色
@@ -242,7 +244,7 @@ export const updateRoleFn = createServerFn({ method: 'POST' })
   })
 
 export const deleteRoleFn = createServerFn({ method: 'POST' })
-  .validator((data: { id: string }) => data)
+  .validator(z.object({ id: z.string().min(1) }))
   .handler(async ({ data }: { data: { id: string } }) => {
     await requireAdmin('DeleteRole')
     const prisma = (await import('@/shared/lib/db')).default
@@ -250,7 +252,7 @@ export const deleteRoleFn = createServerFn({ method: 'POST' })
     // 检查是否是系统角色
     const role = await prisma.role.findUnique({ where: { id: data.id } })
     if (role?.isSystem) {
-      throw new Error('系统角色不允许删除')
+      throw new ServiceError('FORBIDDEN', '系统角色不允许删除')
     }
 
     await prisma.role.delete({
@@ -271,24 +273,24 @@ export const assignRoleNavGroupsFn = createServerFn({ method: 'POST' })
     const prisma = (await import('@/shared/lib/db')).default
 
     const role = await prisma.role.findUnique({ where: { id: data.id } })
-    if (!role) throw new Error('角色不存在')
+    if (!role) throw new ServiceError('NOT_FOUND', '角色不存在')
 
     // 删除旧关联
     await prisma.roleNavGroup.deleteMany({
-      where: { roleName: role.name }
+      where: { roleName: role.name },
     })
 
     // 创建新关联
     if (data.navGroupIds.length > 0) {
       const navGroups = await prisma.navGroup.findMany({
-        where: { id: { in: data.navGroupIds } }
+        where: { id: { in: data.navGroupIds } },
       })
 
       await prisma.roleNavGroup.createMany({
-        data: navGroups.map(ng => ({
+        data: navGroups.map((ng) => ({
           roleName: role.name,
-          navGroupId: ng.id
-        }))
+          navGroupId: ng.id,
+        })),
       })
     }
 
@@ -302,6 +304,7 @@ export const assignRoleNavGroupsFn = createServerFn({ method: 'POST' })
 // ============ 资源管理 ============
 
 export const getResourcesFn = createServerFn({ method: 'GET' })
+  .validator(z.void())
   .handler(async () => {
     await requireAdmin('ListResources')
     const { ResourceService } = await import('../permissions/services/rbac-resource.service')
@@ -326,7 +329,7 @@ export const updateResourceFn = createServerFn({ method: 'POST' })
   })
 
 export const deleteResourceFn = createServerFn({ method: 'POST' })
-  .validator((data: { id: string }) => data)
+  .validator(z.object({ id: z.string().min(1) }))
   .handler(async ({ data }: { data: { id: string } }) => {
     await requireAdmin('DeleteResource')
     const { ResourceService } = await import('../permissions/services/rbac-resource.service')
@@ -337,7 +340,12 @@ export const deleteResourceFn = createServerFn({ method: 'POST' })
 // ============ 操作管理 ============
 
 export const getActionsFn = createServerFn({ method: 'GET' })
-  .validator((data?: { resourceId?: string }) => data || {})
+  .validator(
+    z
+      .object({ resourceId: z.string().min(1).optional() })
+      .optional()
+      .default({})
+  )
   .handler(async ({ data }: { data: { resourceId?: string } }) => {
     await requireAdmin('ListActions')
     const { ResourceService } = await import('../permissions/services/rbac-resource.service')
@@ -362,7 +370,7 @@ export const updateActionFn = createServerFn({ method: 'POST' })
   })
 
 export const deleteActionFn = createServerFn({ method: 'POST' })
-  .validator((data: { id: string }) => data)
+  .validator(z.object({ id: z.string().min(1) }))
   .handler(async ({ data }: { data: { id: string } }) => {
     await requireAdmin('DeleteAction')
     const { ResourceService } = await import('../permissions/services/rbac-resource.service')
@@ -373,6 +381,7 @@ export const deleteActionFn = createServerFn({ method: 'POST' })
 // ============ 权限管理 ============
 
 export const getPermissionsFn = createServerFn({ method: 'GET' })
+  .validator(z.void())
   .handler(async () => {
     await requireAdmin('ListPermissions')
     const { ResourceService } = await import('../permissions/services/rbac-resource.service')
@@ -397,7 +406,7 @@ export const updatePermissionFn = createServerFn({ method: 'POST' })
   })
 
 export const deletePermissionFn = createServerFn({ method: 'POST' })
-  .validator((data: { id: string }) => data)
+  .validator(z.object({ id: z.string().min(1) }))
   .handler(async ({ data }: { data: { id: string } }) => {
     await requireAdmin('DeletePermission')
     const { ResourceService } = await import('../permissions/services/rbac-resource.service')
@@ -416,7 +425,7 @@ export const assignPermissionsFn = createServerFn({ method: 'POST' })
     // 检查是否是系统角色
     const role = await prisma.role.findUnique({ where: { id: data.roleId } })
     if (role?.isSystem) {
-      throw new Error('系统角色不允许修改权限')
+      throw new ServiceError('FORBIDDEN', '系统角色不允许修改权限')
     }
 
     // 删除旧的权限关联
@@ -442,6 +451,7 @@ export const assignPermissionsFn = createServerFn({ method: 'POST' })
 // ============ 权限矩阵查询 ============
 
 export const getPermissionMatrixFn = createServerFn({ method: 'GET' })
+  .validator(z.void())
   .handler(async () => {
     await requireAdmin('ViewPermissionMatrix')
     const prisma = (await import('@/shared/lib/db')).default
@@ -469,13 +479,13 @@ export const getPermissionMatrixFn = createServerFn({ method: 'GET' })
     return {
       roles,
       permissions,
-      matrix: roles.map(role => ({
+      matrix: roles.map((role) => ({
         roleId: role.id,
         roleName: role.name,
         roleDisplayName: role.displayName,
         scope: role.scope,
         isSystem: role.isSystem,
-        permissions: role.rolePermissions.map(rp => rp.permission.code),
+        permissions: role.rolePermissions.map((rp) => rp.permission.code),
       })),
     }
   })

@@ -1,26 +1,22 @@
 import { z } from 'zod'
 import { fetchServerSentEvents } from '@tanstack/ai-react'
 import { createServerFn } from '@tanstack/react-start'
+import { requireUser } from '~/modules/auth/shared/lib/require-auth'
 import { AiChatService } from '../services/ai-chat.service'
 
 /**
  * 通用的权限校验辅助函数
  */
 const requireUserId = async () => {
-  const { getRequest } = await import('@tanstack/react-start/server')
-  const { auth } = await import('~/modules/auth/shared/lib/auth')
-  const request = getRequest()
-  if (!request) throw new Error('Unauthorized')
-
-  const session = await auth.api.getSession({ headers: request.headers })
-  if (!session?.user?.id) throw new Error('Unauthorized')
-  return session.user.id
+  return (await requireUser()).id
 }
 
-export const listConversationsFn = createServerFn({ method: 'GET' }).handler(async () => {
-  const userId = await requireUserId()
-  return AiChatService.listConversations(userId)
-})
+export const listConversationsFn = createServerFn({ method: 'GET' })
+  .validator(z.void())
+  .handler(async () => {
+    const userId = await requireUserId()
+    return AiChatService.listConversations(userId)
+  })
 
 export const getConversationMsgsFn = createServerFn({ method: 'GET' })
   .validator(z.object({ conversationId: z.string().min(1) }))

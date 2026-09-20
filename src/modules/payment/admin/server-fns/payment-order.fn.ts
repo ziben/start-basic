@@ -40,7 +40,7 @@ const UpdatePaymentOrderSchema = z.object({
  * 获取订单列表（分页）
  */
 export const getPaymentOrdersFn = createServerFn({ method: 'GET' })
-  .validator((data?: z.infer<typeof ListPaymentOrdersSchema>) => (data ? ListPaymentOrdersSchema.parse(data) : {}))
+  .validator(ListPaymentOrdersSchema.optional().default({}))
   .handler(async ({ data }: { data: z.infer<typeof ListPaymentOrdersSchema> }) => {
     await requireAdmin('ListPaymentOrders')
     const { PaymentOrderAdminService } = await import('../services/payment-order-admin.service')
@@ -51,10 +51,7 @@ export const getPaymentOrdersFn = createServerFn({ method: 'GET' })
  * 获取单个订单
  */
 export const getPaymentOrderFn = createServerFn({ method: 'GET' })
-  .validator((data: { id: string }) => {
-    if (!data?.id) throw new Error('订单ID不能为空')
-    return data
-  })
+  .validator(z.object({ id: z.string().min(1) }))
   .handler(async ({ data }: { data: { id: string } }) => {
     await requireAdmin('GetPaymentOrderDetail')
     const { PaymentOrderAdminService } = await import('../services/payment-order-admin.service')
@@ -65,7 +62,7 @@ export const getPaymentOrderFn = createServerFn({ method: 'GET' })
  * 获取订单统计
  */
 export const getPaymentOrderStatsFn = createServerFn({ method: 'GET' })
-  .validator(() => ({}))
+  .validator(z.object({}).optional())
   .handler(async () => {
     await requireAdmin('GetPaymentOrderStats')
     const { PaymentOrderAdminService } = await import('../services/payment-order-admin.service')

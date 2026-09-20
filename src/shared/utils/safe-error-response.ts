@@ -2,8 +2,7 @@
  * 安全的错误响应处理
  * 在生产环境中隐藏详细错误信息，防止敏感信息泄露
  */
-
-const isDev = process.env.NODE_ENV === 'development'
+import { errorCodeForStatus, ServiceError, toSafeError } from './service-error'
 
 interface ErrorResponseOptions {
   status?: number
@@ -12,39 +11,21 @@ interface ErrorResponseOptions {
 
 /**
  * 创建安全的错误响应
- * - 开发环境：显示详细错误信息便于调试
- * - 生产环境：显示通用错误信息，详细信息仅记录日志
+ * 详细错误仅记录在服务端；HTTP 与 Server Function 使用相同错误体。
  */
 export function createSafeErrorResponse(error: unknown, options: ErrorResponseOptions = {}): Response {
-  const { status = 500, defaultMessage = '操作失败' } = options
-
-  // 开发环境显示详细错误
-  if (isDev) {
-    const errorMessage = error instanceof Error ? error.message : String(error)
-    console.error('[DEV ERROR]', error)
-    return new Response(errorMessage, { status })
-  }
-
-  // 生产环境只记录日志，返回通用消息
-  console.error('[PROD ERROR]', error)
-  return new Response(defaultMessage, { status })
+  return createSafeJsonErrorResponse(error, options)
 }
 
 /**
  * 创建安全的 JSON 错误响应
  */
 export function createSafeJsonErrorResponse(error: unknown, options: ErrorResponseOptions = {}): Response {
-  const { status = 500, defaultMessage = '操作失败' } = options
-
-  const errorMessage = isDev ? (error instanceof Error ? error.message : String(error)) : defaultMessage
-
-  if (isDev) {
-    console.error('[DEV ERROR]', error)
-  } else {
-    console.error('[PROD ERROR]', error)
-  }
-
-  return Response.json({ error: errorMessage, success: false }, { status })
+  const safe = toSafeError(
+    options.status ? new ServiceError(errorCodeForStatus(options.status), options.defaultMessage) : error
+  )
+  console.error('[SERVER ERROR]', error)
+  return Response.json(safe, { status: safe.status })
 }
 
 /**
@@ -66,4 +47,3 @@ export const SafeResponse = {
   serverError: (error: unknown, message = '服务器错误') =>
     createSafeErrorResponse(error, { status: 500, defaultMessage: message }),
 }
-

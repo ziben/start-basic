@@ -9,6 +9,7 @@ import {
   getFriendlyFunctionName,
 } from '~/modules/audit/shared/services/server-log-writer'
 import { auth } from '~/modules/auth/shared/lib/auth'
+import { ServiceError } from '~/shared/utils/service-error'
 import { checkPermission } from '../lib/permission-check'
 
 /**
@@ -24,7 +25,7 @@ export async function requireAdmin(actionName?: string) {
   const start = Date.now()
   const request = getRequest()
   if (!request) {
-    throw new Error('无法获取请求信息')
+    throw new ServiceError('UNAUTHORIZED')
   }
 
   const requestId = createRequestId()
@@ -68,7 +69,7 @@ export async function requireAdmin(actionName?: string) {
         error: '未登录',
         meta: { action: actionName },
       })
-      throw new Error('未登录')
+      throw new ServiceError('UNAUTHORIZED')
     }
 
     const adminRoles = ['admin', 'superadmin']
@@ -92,7 +93,7 @@ export async function requireAdmin(actionName?: string) {
         error: '无权限访问',
         meta: { action: actionName },
       })
-      throw new Error('无权限访问')
+      throw new ServiceError('FORBIDDEN')
     }
 
     // 如果是排除操作，直接返回，不记录任何日志
@@ -168,7 +169,7 @@ export async function requirePermission(
   const start = Date.now()
   const request = getRequest()
   if (!request) {
-    throw new Error('无法获取请求信息')
+    throw new ServiceError('UNAUTHORIZED')
   }
 
   const requestId = createRequestId()
@@ -210,7 +211,7 @@ export async function requirePermission(
         error: '未登录',
         meta: { permission, action: options?.actionName },
       })
-      throw new Error('未登录')
+      throw new ServiceError('UNAUTHORIZED')
     }
 
     // 检查权限
@@ -233,7 +234,7 @@ export async function requirePermission(
         error: `缺少权限: ${permission}`,
         meta: { permission, action: options?.actionName },
       })
-      throw new Error(`缺少权限: ${permission}`)
+      throw new ServiceError('FORBIDDEN')
     }
 
     // 如果是排除操作，直接返回，不记录任何日志
@@ -272,7 +273,7 @@ export async function requirePermission(
 
     return session.user
   } catch (error) {
-    if (error instanceof Error && (error.message === '未登录' || error.message.includes('缺少权限'))) {
+    if (error instanceof ServiceError) {
       throw error
     }
 

@@ -1,3 +1,4 @@
+import { ServiceError } from '~/shared/utils/service-error'
 import type { PaymentResult } from '../lib/wechat-pay'
 
 type PaymentStatus = 'PENDING' | 'SUCCESS' | 'FAILED' | 'REFUNDED' | 'CLOSED'
@@ -46,17 +47,17 @@ export type WeChatCloseGateway = {
 
 function assertSession(sessionUserId: string | null): asserts sessionUserId is string {
   if (!sessionUserId) {
-    throw new Error('Unauthorized')
+    throw new ServiceError('UNAUTHORIZED', 'Unauthorized')
   }
 }
 
 function assertOwnedOrder(order: PaymentOrder | null, sessionUserId: string): PaymentOrder {
   if (!order) {
-    throw new Error('Order not found')
+    throw new ServiceError('NOT_FOUND', 'Order not found')
   }
 
   if (order.userId !== sessionUserId) {
-    throw new Error('Forbidden')
+    throw new ServiceError('FORBIDDEN', 'Forbidden')
   }
 
   return order
@@ -70,7 +71,7 @@ function stripUserId(order: PaymentOrder): PaymentOrderStatusResult {
 async function findOwnedOrder(
   prisma: QueryPaymentOrderPrisma,
   orderId: string,
-  sessionUserId: string,
+  sessionUserId: string
 ): Promise<PaymentOrder> {
   const order = await prisma.paymentOrder.findUnique({
     where: { id: orderId },

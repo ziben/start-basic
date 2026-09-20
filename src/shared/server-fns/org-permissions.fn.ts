@@ -1,7 +1,8 @@
+import { z } from 'zod'
 import { createServerFn } from '@tanstack/react-start'
 
 export const checkOrgPermissionFn = createServerFn({ method: 'GET' })
-  .validator((data: { organizationId: string; resource: string; action: string }) => data)
+  .validator(z.object({ organizationId: z.string().min(1), resource: z.string().min(1), action: z.string().min(1) }))
   .handler(async ({ data }: { data: { organizationId: string; resource: string; action: string } }) => {
     const { getRequest } = await import('@tanstack/react-start/server')
     const { auth } = await import('~/modules/auth/shared/lib/auth')
@@ -32,7 +33,7 @@ export const checkOrgPermissionFn = createServerFn({ method: 'GET' })
   })
 
 export const getOrgRoleFn = createServerFn({ method: 'GET' })
-  .validator((data: { organizationId: string }) => data)
+  .validator(z.object({ organizationId: z.string().min(1) }))
   .handler(async ({ data }: { data: { organizationId: string } }) => {
     const { getRequest } = await import('@tanstack/react-start/server')
     const { auth } = await import('~/modules/auth/shared/lib/auth')

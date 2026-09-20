@@ -78,7 +78,7 @@ describe('module boundaries', () => {
       aIMessage: 'ai',
     }
     const violations: string[] = []
-    for (const module of moduleRegistry.modules) {
+    for (const module of moduleRegistry.modules as readonly AppModule[]) {
       for (const file of collectSourceFiles(join(process.cwd(), 'src/modules', module.key, 'shared'))) {
         const source = readFileSync(file, 'utf8')
         for (const match of source.matchAll(/\b(?:prisma|tx)\.([a-z]\w*)\s*\./g)) {

@@ -1,3 +1,4 @@
+import { z } from 'zod'
 import { notFound } from '@tanstack/react-router'
 import { createServerFn } from '@tanstack/react-start'
 
@@ -8,8 +9,8 @@ export type PostType = {
 }
 
 export const fetchPost = createServerFn({ method: 'GET' })
-  .validator((d: string) => d)
-  .handler(async ({ data }: any) => {
+  .validator(z.string().regex(/^\d+$/))
+  .handler(async ({ data }) => {
     console.info(`Fetching post with id ${data}...`)
     const res = await fetch(`https://jsonplaceholder.typicode.com/posts/${data}`)
     if (!res.ok) {
@@ -25,15 +26,16 @@ export const fetchPost = createServerFn({ method: 'GET' })
     return post
   })
 
-export const fetchPosts = createServerFn({ method: 'GET' }).handler(async () => {
-  console.info('Fetching posts...')
-  const res = await fetch('https://jsonplaceholder.typicode.com/posts')
-  if (!res.ok) {
-    throw new Error('Failed to fetch posts')
-  }
+export const fetchPosts = createServerFn({ method: 'GET' })
+  .validator(z.void())
+  .handler(async () => {
+    console.info('Fetching posts...')
+    const res = await fetch('https://jsonplaceholder.typicode.com/posts')
+    if (!res.ok) {
+      throw new Error('Failed to fetch posts')
+    }
 
-  const posts = (await res.json()) as Array<PostType>
+    const posts = (await res.json()) as Array<PostType>
 
-  return posts
-})
-
+    return posts
+  })

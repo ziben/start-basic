@@ -2,15 +2,17 @@
  * Runtime Config ServerFn
  * [迁移自 admin/shared/server-fns/runtime-config.fn.ts]
  */
-
+import { z } from 'zod'
 import { createServerFn } from '@tanstack/react-start'
 import { getRequest } from '@tanstack/react-start/server'
-import { z } from 'zod'
 import { requireAdmin } from '~/modules/admin/shared/server-fns/auth'
 import { auth } from '~/modules/auth/shared/lib/auth'
 
 const CreateRuntimeConfigSchema = z.object({
-  key: z.string().min(1).regex(/^[a-z0-9][a-z0-9._-]*$/, 'key 只允许小写字母、数字、点、横线、下划线，且不能以点或横线开头'),
+  key: z
+    .string()
+    .min(1)
+    .regex(/^[a-z0-9][a-z0-9._-]*$/, 'key 只允许小写字母、数字、点、横线、下划线，且不能以点或横线开头'),
   value: z.string(),
   category: z.string().min(1),
   valueType: z.enum(['STRING', 'NUMBER', 'BOOLEAN', 'JSON', 'STRING_ARRAY']),
@@ -50,6 +52,7 @@ async function getOperator(): Promise<{ operatorId: string | null; operatorName:
 }
 
 export const listRuntimeConfigsFn = createServerFn({ method: 'GET' })
+  .validator(z.void())
   .handler(async () => {
     await requireAdmin('ListRuntimeConfigs')
     const { RuntimeConfigService } = await import('../services/runtime-config.service')
@@ -57,6 +60,7 @@ export const listRuntimeConfigsFn = createServerFn({ method: 'GET' })
   })
 
 export const getPublicRuntimeConfigsFn = createServerFn({ method: 'GET' })
+  .validator(z.void())
   .handler(async () => {
     // Unauthenticated access for public configurations (e.g. login_title)
     const { RuntimeConfigService } = await import('../services/runtime-config.service')
@@ -100,6 +104,7 @@ export const deleteRuntimeConfigFn = createServerFn({ method: 'POST' })
   })
 
 export const refreshRuntimeConfigFn = createServerFn({ method: 'POST' })
+  .validator(z.void())
   .handler(async () => {
     await requireAdmin('RefreshRuntimeConfig')
     const { RuntimeConfigService } = await import('../services/runtime-config.service')

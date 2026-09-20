@@ -1,3 +1,4 @@
+import { ServiceError } from '~/shared/utils/service-error'
 import type { PrepayRequestInput } from '../schemas/prepay'
 
 type JsapiPayload = {
@@ -22,10 +23,7 @@ type PaymentOrderPrisma = {
         metadata?: { attach: string }
       }
     }): Promise<{ id: string }>
-    update(args: {
-      where: { id: string }
-      data: { status: 'FAILED' }
-    }): Promise<unknown>
+    update(args: { where: { id: string }; data: { status: 'FAILED' } }): Promise<unknown>
   }
   account: {
     findFirst(args: {
@@ -69,12 +67,9 @@ function normalizeJsapiPayload(result: JsapiPayload | { data: JsapiPayload }): J
   return 'data' in result ? result.data : result
 }
 
-export async function createPrepayOrder(
-  input: PrepayRequestInput,
-  deps: CreatePrepayOrderDeps,
-) {
+export async function createPrepayOrder(input: PrepayRequestInput, deps: CreatePrepayOrderDeps) {
   if (!deps.sessionUserId) {
-    throw new Error('Unauthorized')
+    throw new ServiceError('UNAUTHORIZED', 'Unauthorized')
   }
 
   const outTradeNo = deps.createOutTradeNo?.() ?? defaultOutTradeNo()
@@ -149,8 +144,6 @@ export async function createPrepayOrder(
       data: { status: 'FAILED' },
     })
 
-    throw new Error(
-      `Payment request failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-    )
+    throw new Error(`Payment request failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
   }
 }

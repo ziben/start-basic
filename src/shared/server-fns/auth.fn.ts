@@ -1,10 +1,13 @@
+import { z } from 'zod'
 import { createServerFn } from '@tanstack/react-start'
 
-export const getCurrentUserFn = createServerFn({ method: 'GET' }).handler(async () => {
+export const getCurrentUserFn = createServerFn({ method: 'GET' })
+  .validator(z.void())
+  .handler(async () => {
     const { getRequestHeaders } = await import('@tanstack/react-start/server')
     const { auth } = await import('~/modules/auth/shared/lib/auth')
     const headers = getRequestHeaders()
     const session = await auth.api.getSession({ headers })
 
     return session?.user || null
-})
+  })

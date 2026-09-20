@@ -28,7 +28,7 @@ const ListLogsSchema = z.object({
 // ============ ServerFn 定义 ============
 
 export const getLogsFn = createServerFn({ method: 'GET' })
-  .validator((data?: z.infer<typeof ListLogsSchema>) => (data ? ListLogsSchema.parse(data) : {}))
+  .validator(ListLogsSchema.optional().default({}))
   .handler(async ({ data }: { data: z.infer<typeof ListLogsSchema> }) => {
     await requireAdmin('ListLogs')
     const { LogService } = await import('../services/log.service')
