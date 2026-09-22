@@ -31,6 +31,8 @@ export type AdminAuditLog = {
   createdAt: string
   actorUserId: string | null
   actorRole: string | null
+  organizationId: string | null
+  requestId: string | null
   action: string
   targetType: string
   targetId: string | null

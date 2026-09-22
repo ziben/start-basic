@@ -57,6 +57,8 @@ function getQueue(): QueueState {
 export type AuditLogInput = {
   actorUserId?: string | null
   actorRole?: string | null
+  organizationId?: string | null
+  requestId?: string | null
   action: string
   targetType: string
   targetId?: string | null
@@ -87,12 +89,12 @@ async function appendJsonl(filePath: string, obj: unknown) {
 
 function safeStringifyError(err: unknown) {
   if (err instanceof Error) {
-    return `${err.name}: ${err.message}${err.stack ? `\n${err.stack}` : ''}`
+    return redactString(`${err.name}: ${err.message}${err.stack ? `\n${err.stack}` : ''}`)
   }
   try {
-    return JSON.stringify(err)
+    return redactString(JSON.stringify(err) ?? String(err))
   } catch {
-    return String(err)
+    return redactString(String(err))
   }
 }
 
@@ -116,21 +118,55 @@ const SENSITIVE_KEYS = new Set([
   'pass',
   'pwd',
   'token',
-  'accessToken',
-  'refreshToken',
-  'idToken',
+  'accesstoken',
+  'refreshtoken',
+  'idtoken',
   'authorization',
   'cookie',
-  'set-cookie',
+  'setcookie',
+  'secret',
+  'apikey',
+  'apiv3key',
+  'privatekey',
+  'signature',
+  'certificate',
+  'openid',
 ])
+
+const SENSITIVE_TEXT_PATTERN =
+  /\b((?:password|pass|pwd|token|access[_-]?token|refresh[_-]?token|id[_-]?token|authorization|cookie|secret|api[_-]?key|api[_-]?v3[_-]?key|private[_-]?key|signature|certificate|openid))\b(\s*[:=]\s*)(?:"([^"]*)"|'([^']*)'|([^,;&\s}]+))/gi
+const BEARER_PATTERN = /\bBearer\s+[^\s,;]+/gi
+const PRIVATE_KEY_PATTERN = /-----BEGIN [^-]*PRIVATE KEY-----[\s\S]*?-----END [^-]*PRIVATE KEY-----/gi
+
+export function redactString(value: string): string {
+  return value
+    .replace(PRIVATE_KEY_PATTERN, '[REDACTED]')
+    .replace(BEARER_PATTERN, 'Bearer [REDACTED]')
+    .replace(SENSITIVE_TEXT_PATTERN, (_match, key, separator, doubleQuoted, singleQuoted) => {
+      const quote = doubleQuoted !== undefined ? '"' : singleQuoted !== undefined ? "'" : ''
+      return `${key}${separator}${quote}[REDACTED]${quote}`
+    })
+}
+
+function isSensitiveKey(key: string): boolean {
+  const normalized = key.toLowerCase().replace(/[^a-z0-9]/g, '')
+  return (
+    SENSITIVE_KEYS.has(normalized) ||
+    normalized.endsWith('secret') ||
+    normalized.endsWith('apikey') ||
+    normalized.endsWith('apiv3key') ||
+    normalized.endsWith('privatekey')
+  )
+}
 
 export function redact(value: unknown): unknown {
   if (Array.isArray(value)) return value.map(redact)
+  if (typeof value === 'string') return redactString(value)
   if (!isPlainObject(value)) return value
 
   const out: Record<string, unknown> = {}
   for (const [k, v] of Object.entries(value)) {
-    out[k] = SENSITIVE_KEYS.has(k) ? '[REDACTED]' : redact(v)
+    out[k] = isSensitiveKey(k) ? '[REDACTED]' : redact(v)
   }
   return out
 }
@@ -195,8 +231,14 @@ export async function writeSystemLog(input: SystemLogInput) {
   const dir = await ensureLogsDir()
   const filePath = path.join(dir, `system-${toDateKey(now)}-${input.level}.jsonl`)
 
-  const entry = {
+  const normalized = {
     ...input,
+    query: input.query ? redactString(input.query) : input.query,
+    error: input.error ? redactString(input.error) : input.error,
+    meta: redact(input.meta) as Prisma.InputJsonValue | null | undefined,
+  }
+  const entry = {
+    ...normalized,
     createdAt: now.toISOString(),
   }
 
@@ -208,8 +250,8 @@ export async function writeSystemLog(input: SystemLogInput) {
 
   const queue = getQueue()
   queue.system.push({
-    ...input,
-    meta: input.meta ?? null,
+    ...normalized,
+    meta: normalized.meta ?? null,
     createdAt: now,
   })
   scheduleFlush()
@@ -220,9 +262,16 @@ export async function writeAuditLog(input: AuditLogInput) {
   const dir = await ensureLogsDir()
   const filePath = path.join(dir, `audit-${toDateKey(now)}.jsonl`)
 
-  const entry = {
+  const normalized = {
     ...input,
+    requestId: input.requestId ?? createRequestId(),
+    organizationId: input.organizationId ?? null,
+    message: input.message ? redactString(input.message) : input.message,
+    meta: redact(input.meta) as Prisma.InputJsonValue | null | undefined,
     success: input.success ?? true,
+  }
+  const entry = {
+    ...normalized,
     createdAt: now.toISOString(),
   }
 
@@ -234,9 +283,8 @@ export async function writeAuditLog(input: AuditLogInput) {
 
   const queue = getQueue()
   queue.audit.push({
-    ...input,
-    success: input.success ?? true,
-    meta: input.meta ?? null,
+    ...normalized,
+    meta: normalized.meta ?? null,
     createdAt: now,
   })
   scheduleFlush()
@@ -295,6 +343,8 @@ async function flushDb() {
         data: audit.map((a) => ({
           actorUserId: a.actorUserId ?? undefined,
           actorRole: a.actorRole ?? undefined,
+          organizationId: a.organizationId ?? undefined,
+          requestId: a.requestId ?? undefined,
           action: a.action,
           targetType: a.targetType,
           targetId: a.targetId ?? undefined,

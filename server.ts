@@ -64,6 +64,7 @@
  */
 
 import path from 'node:path'
+import { readinessResponse } from './src/infrastructure/observability/health-check'
 import { initRuntimeConfig } from './src/shared/config/runtime-config'
 
 // Configuration
@@ -540,6 +541,14 @@ function withPerfMonitoring(
   }
 }
 
+function handleProbe(pathname: string): Response | Promise<Response> | undefined {
+  if (pathname === '/healthz') {
+    return Response.json({ status: 'ok' }, { headers: { 'cache-control': 'no-store' } })
+  }
+  if (pathname === '/readyz') return readinessResponse()
+  return undefined
+}
+
 /**
  * Initialize the server
  */
@@ -579,8 +588,8 @@ async function initializeServer() {
     fetch: ENABLE_PERF_LOGGING
       ? withPerfMonitoring((req: Request) => {
         const url = new URL(req.url)
-        if (url.pathname === '/healthz') return Response.json({ status: 'ok' })
-        if (url.pathname === '/readyz') return Response.json({ status: 'ready' })
+        const probe = handleProbe(url.pathname)
+        if (probe) return probe
         const staticHandler = routes[url.pathname]
         if (staticHandler) {
           return staticHandler(req)
@@ -596,8 +605,8 @@ async function initializeServer() {
       })
       : (req: Request) => {
         const url = new URL(req.url)
-        if (url.pathname === '/healthz') return Response.json({ status: 'ok' })
-        if (url.pathname === '/readyz') return Response.json({ status: 'ready' })
+        const probe = handleProbe(url.pathname)
+        if (probe) return probe
         const staticHandler = routes[url.pathname]
         if (staticHandler) {
           return staticHandler(req)

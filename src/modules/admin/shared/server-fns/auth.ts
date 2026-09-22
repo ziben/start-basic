@@ -106,6 +106,8 @@ export async function requireAdmin(actionName?: string) {
       void writeAuditLog({
         actorUserId: session.user.id,
         actorRole: userRoleStr,
+        requestId,
+        organizationId: session.session?.activeOrganizationId ?? null,
         action: actionName,
         targetType: 'ServerFn',
         ip,
@@ -247,6 +249,8 @@ export async function requirePermission(
       void writeAuditLog({
         actorUserId: session.user.id,
         actorRole: session.user.role || '',
+        requestId,
+        organizationId: options?.organizationId ?? session.session?.activeOrganizationId ?? null,
         action: options.actionName,
         targetType: 'ServerFn',
         ip,

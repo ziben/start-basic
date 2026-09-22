@@ -25,7 +25,10 @@ interface AuthenticatedContext extends HandlerContext {
   requestId: string
   audit: {
     log: (
-      input: Omit<Parameters<typeof writeAuditLog>[0], 'actorUserId' | 'actorRole' | 'ip' | 'userAgent'> & {
+      input: Omit<
+        Parameters<typeof writeAuditLog>[0],
+        'actorUserId' | 'actorRole' | 'ip' | 'userAgent' | 'requestId'
+      > & {
         actorUserId?: string | null
         actorRole?: string | null
         ip?: string | null
@@ -90,7 +93,10 @@ export function withAuth<T extends HandlerContext>(handler: Handler<T & Authenti
 
       const audit = {
         log: async (
-          input: Omit<Parameters<typeof writeAuditLog>[0], 'actorUserId' | 'actorRole' | 'ip' | 'userAgent'> & {
+          input: Omit<
+            Parameters<typeof writeAuditLog>[0],
+            'actorUserId' | 'actorRole' | 'ip' | 'userAgent' | 'requestId'
+          > & {
             actorUserId?: string | null
             actorRole?: string | null
             ip?: string | null
@@ -100,6 +106,8 @@ export function withAuth<T extends HandlerContext>(handler: Handler<T & Authenti
           await writeAuditLog({
             actorUserId: input.actorUserId ?? session.user.id,
             actorRole: input.actorRole ?? (typeof role === 'string' ? role : null),
+            requestId,
+            organizationId: input.organizationId ?? session.session?.activeOrganizationId ?? null,
             ip: input.ip ?? ip,
             userAgent: input.userAgent ?? userAgent,
             action: input.action,
@@ -196,7 +204,10 @@ export function withAdminAuth<T extends HandlerContext>(handler: Handler<T & Aut
 
       const audit = {
         log: async (
-          input: Omit<Parameters<typeof writeAuditLog>[0], 'actorUserId' | 'actorRole' | 'ip' | 'userAgent'> & {
+          input: Omit<
+            Parameters<typeof writeAuditLog>[0],
+            'actorUserId' | 'actorRole' | 'ip' | 'userAgent' | 'requestId'
+          > & {
             actorUserId?: string | null
             actorRole?: string | null
             ip?: string | null
@@ -206,6 +217,8 @@ export function withAdminAuth<T extends HandlerContext>(handler: Handler<T & Aut
           await writeAuditLog({
             actorUserId: input.actorUserId ?? session.user.id,
             actorRole: input.actorRole ?? (typeof role === 'string' ? role : null),
+            requestId,
+            organizationId: input.organizationId ?? session.session?.activeOrganizationId ?? null,
             ip: input.ip ?? ip,
             userAgent: input.userAgent ?? userAgent,
             action: input.action,

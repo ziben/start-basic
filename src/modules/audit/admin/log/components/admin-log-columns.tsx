@@ -168,6 +168,18 @@ export function useAuditLogColumns(): ColumnDef<AuditLog>[] {
         meta: { className: 'w-52' },
       },
       {
+        id: 'context',
+        accessorFn: (row) => `${row.organizationId ?? ''} ${row.requestId ?? ''}`,
+        header: '上下文',
+        cell: ({ row }) => (
+          <div className='space-y-0.5 font-mono text-xs text-muted-foreground'>
+            <div>组织：{row.original.organizationId || '-'}</div>
+            <div>请求：{row.original.requestId || '-'}</div>
+          </div>
+        ),
+        meta: { className: 'w-56' },
+      },
+      {
         accessorKey: 'actorUserId',
         header: ({ column }) => <DataTableColumnHeader column={column} title='操作者' />,
         cell: ({ row }) => (

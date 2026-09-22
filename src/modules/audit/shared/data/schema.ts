@@ -33,6 +33,8 @@ export const auditLogSchema = z.object({
   createdAt: z.string(),
   actorUserId: z.string().nullable(),
   actorRole: z.string().nullable(),
+  organizationId: z.string().nullable(),
+  requestId: z.string().nullable(),
   action: z.string(),
   targetType: z.string(),
   targetId: z.string().nullable(),
