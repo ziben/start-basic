@@ -1,12 +1,12 @@
+import { useMemo } from 'react'
 import { useSearch } from '@tanstack/react-router'
-import { Logo } from '@/assets/logo'
 import { cn } from '@/shared/lib/utils'
-import dashboardDark from './assets/dashboard-dark.png'
-import dashboardLight from './assets/dashboard-light.png'
-import { UserAuthForm } from './components/user-auth-form'
 import { usePublicConfigs } from '~/modules/admin/features/system-config/hooks/use-system-config-query'
 import { sanitizeRedirectTarget } from '~/modules/auth/shared/lib/safe-redirect'
-import { useMemo } from 'react'
+import { Logo } from '@/assets/logo'
+import dashboardDark from './assets/dashboard-dark.webp'
+import dashboardLight from './assets/dashboard-light.webp'
+import { UserAuthForm } from './components/user-auth-form'
 
 export function SignIn2() {
   const { redirect } = useSearch({ from: '/(auth)/sign-in-2' })
@@ -65,5 +65,3 @@ export function SignIn2() {
     </div>
   )
 }
-
-
