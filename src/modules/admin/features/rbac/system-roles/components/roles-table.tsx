@@ -21,7 +21,7 @@ export function RolesTable() {
   const { tableUrl } = useRolesContext()
   const columns = useRolesColumns()
 
-  const { data, isLoading, refetch, isRefetching } = useRolesQuery({
+  const { data, isLoading, refetch, isRefetching, error } = useRolesQuery({
     page: tableUrl.pagination.pageIndex + 1,
     pageSize: tableUrl.pagination.pageSize,
     filter: tableUrl.globalFilter,
@@ -73,6 +73,7 @@ export function RolesTable() {
       containerRef={tableContainerRef}
       rowVirtualizer={rowVirtualizer}
       emptyState={t('admin.common.noData')}
+      errorState={error ? String(error) : undefined}
       searchPlaceholder={t('admin.role.searchPlaceholder')}
       onReload={() => void refetch()}
       isReloading={isRefetching}

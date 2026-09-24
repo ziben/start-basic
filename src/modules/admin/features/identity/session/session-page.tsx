@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { format } from 'date-fns'
 import { getRouteApi } from '@tanstack/react-router'
 import {
@@ -35,6 +35,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { DataTable, DataTableColumnHeader, DataTablePagination, DataTableToolbar } from '@/components/data-table'
+import { useVirtualizer } from '@tanstack/react-virtual'
 import { AdminSessionDialogs } from './components/admin-session-dialogs'
 import { AdminSessionPrimaryButtons } from './components/admin-session-primary-buttons'
 
@@ -333,6 +334,14 @@ export default function AdminSession() {
     tableUrl.ensurePageInRange(serverPageCount)
   }, [serverPageCount, tableUrl])
 
+  const tableContainerRef = useRef<HTMLDivElement>(null)
+  const rowVirtualizer = useVirtualizer({
+    count: table.getRowModel().rows.length,
+    getScrollElement: () => tableContainerRef.current,
+    estimateSize: () => 44,
+    overscan: 10,
+  })
+
   const handleConfirm = async () => {
     try {
       if (confirmMode === 'single') {
@@ -377,38 +386,35 @@ export default function AdminSession() {
 
         <div className='-mx-4 flex-1 overflow-hidden px-4 py-1 lg:flex-row lg:space-y-0 lg:space-x-12'>
           <div className='flex h-full flex-col space-y-4 max-sm:has-[div[role="toolbar"]]:mb-16'>
-            {error ? <div className='py-8 text-center text-red-500'>{String(error)}</div> : null}
+            <DataTableToolbar
+              table={table}
+              searchPlaceholder={t('admin.session.searchPlaceholder', { defaultMessage: '搜索用户/邮箱/IP/UA...' })}
+              onReload={() => void refetch()}
+              isReloading={isRefetching}
+              filters={[
+                {
+                  columnId: 'isActive',
+                  title: t('admin.session.columns.status', { defaultMessage: '状态' }),
+                  options: [
+                    { label: t('admin.session.status.active', { defaultMessage: '活跃' }), value: 'active' },
+                    { label: t('admin.session.status.expired', { defaultMessage: '已过期' }), value: 'expired' },
+                  ],
+                },
+              ]}
+            />
 
-            {!error ? (
-              <>
-                <DataTableToolbar
-                  table={table}
-                  searchPlaceholder={t('admin.session.searchPlaceholder', { defaultMessage: '搜索用户/邮箱/IP/UA...' })}
-                  onReload={() => void refetch()}
-                  isReloading={isRefetching}
-                  filters={[
-                    {
-                      columnId: 'isActive',
-                      title: t('admin.session.columns.status', { defaultMessage: '状态' }),
-                      options: [
-                        { label: t('admin.session.status.active', { defaultMessage: '活跃' }), value: 'active' },
-                        { label: t('admin.session.status.expired', { defaultMessage: '已过期' }), value: 'expired' },
-                      ],
-                    },
-                  ]}
-                />
+            <DataTable
+              table={table}
+              columnsLength={columns.length}
+              isLoading={isLoading}
+              skeletonCount={tableUrl.pagination.pageSize}
+              emptyState={t('admin.common.noData', { defaultMessage: '暂无数据' })}
+              errorState={error ? String(error) : undefined}
+              containerRef={tableContainerRef}
+              rowVirtualizer={rowVirtualizer}
+            />
 
-                <DataTable
-                  table={table}
-                  columnsLength={columns.length}
-                  isLoading={isLoading}
-                  skeletonCount={tableUrl.pagination.pageSize}
-                  emptyState={t('admin.common.noData', { defaultMessage: '暂无数据' })}
-                />
-
-                <DataTablePagination table={table} />
-              </>
-            ) : null}
+            <DataTablePagination table={table} />
           </div>
         </div>
       </AppHeaderMain>

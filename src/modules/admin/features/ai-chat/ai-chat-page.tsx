@@ -25,7 +25,7 @@ export default function AdminAIChatPage(): ReactElement {
     globalFilter: { enabled: true, key: 'filter' },
   })
 
-  const { data, isLoading } = useAIConversations({
+  const { data, isLoading, error } = useAIConversations({
     page: pagination.pageIndex + 1,
     pageSize: pagination.pageSize,
     filter: globalFilter,
@@ -65,6 +65,7 @@ export default function AdminAIChatPage(): ReactElement {
         <AIChatTable
           data={data?.items ?? []}
           isLoading={isLoading}
+          error={error}
           search={search}
           navigate={navigate}
           onView={handleView}

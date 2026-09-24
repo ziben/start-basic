@@ -64,7 +64,7 @@ export function AdminUsersTable({ search, navigate }: AdminUsersTableProps) {
     return getSingleBooleanFromArrayFilter(columnFilters, 'banned')
   }, [columnFilters])
 
-  const { data, serverPageCount, refetch, isRefetching, pageData } = useAdminUsersListQuery({
+  const { data, serverPageCount, refetch, isRefetching, pageData, error } = useAdminUsersListQuery({
     pageIndex: pagination.pageIndex,
     pageSize: pagination.pageSize,
     filter: globalFilter ?? undefined,
@@ -127,6 +127,7 @@ export function AdminUsersTable({ search, navigate }: AdminUsersTableProps) {
         containerRef={tableContainerRef}
         rowVirtualizer={rowVirtualizer}
         emptyState={t('common.noResults')}
+        errorState={error ? String(error) : undefined}
         searchPlaceholder={t('admin.user.table.searchPlaceholder')}
         onReload={() => void refetch()}
         isReloading={isRefetching}

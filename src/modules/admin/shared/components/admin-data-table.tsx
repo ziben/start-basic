@@ -11,6 +11,7 @@ type AdminDataTableProps<TData> = {
     isLoading?: boolean
     skeletonCount?: number
     emptyState?: React.ReactNode
+    errorState?: React.ReactNode
 
     // Toolbar props
     searchPlaceholder?: string
@@ -42,6 +43,7 @@ export function AdminDataTable<TData>({
     isLoading,
     skeletonCount,
     emptyState,
+    errorState,
     searchPlaceholder,
     searchKey,
     onReload,
@@ -69,6 +71,7 @@ export function AdminDataTable<TData>({
                 isLoading={isLoading}
                 skeletonCount={skeletonCount}
                 emptyState={emptyState}
+                errorState={errorState}
                 rowVirtualizer={rowVirtualizer}
                 containerRef={containerRef}
                 containerClassName='min-h-0 flex-1'

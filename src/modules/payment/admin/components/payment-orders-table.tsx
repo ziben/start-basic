@@ -89,6 +89,7 @@ export function PaymentOrdersTable({ search, navigate }: PaymentOrdersTableProps
   // 查询订单列表
   const {
     data: pageData,
+    error,
     isLoading,
     refetch,
     isRefetching,
@@ -171,6 +172,7 @@ export function PaymentOrdersTable({ search, navigate }: PaymentOrdersTableProps
         containerRef={tableContainerRef}
         rowVirtualizer={rowVirtualizer}
         emptyState={t('common.noResults')}
+        errorState={error ? String(error) : undefined}
         containerClassName='min-h-0 flex-1'
       />
       <DataTablePagination table={table} className='mt-auto' />

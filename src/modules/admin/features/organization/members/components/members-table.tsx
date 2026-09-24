@@ -35,7 +35,7 @@ export function MembersTable({ search, navigate }: MembersTableProps) {
 
   const columns = useMembersColumns()
 
-  const { data, serverPageCount, isLoading, refetch, isRefetching } = useMembersListQuery({
+  const { data, serverPageCount, isLoading, refetch, isRefetching, error } = useMembersListQuery({
     pageIndex: pagination.pageIndex,
     pageSize: pagination.pageSize,
     filter: globalFilter ?? undefined,
@@ -113,6 +113,7 @@ export function MembersTable({ search, navigate }: MembersTableProps) {
         containerRef={tableContainerRef}
         rowVirtualizer={rowVirtualizer}
         emptyState='暂无数据'
+        errorState={error ? String(error) : undefined}
         containerClassName='min-h-0 flex-1'
       />
       <DataTablePagination table={table} className='mt-auto' />

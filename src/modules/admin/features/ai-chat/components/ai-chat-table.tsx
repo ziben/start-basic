@@ -14,13 +14,14 @@ import { useAIChatColumns } from './ai-chat-columns'
 type Props = {
   data: AIConversationItem[]
   isLoading: boolean
+  error?: unknown
   search?: Record<string, unknown>
   navigate?: NavigateFn
   onView: (id: string) => void
   onDelete: (id: string) => void
 }
 
-function AIChatTableInner({ data, isLoading, search, navigate, onView, onDelete }: Props): React.ReactElement {
+function AIChatTableInner({ data, isLoading, error, search, navigate, onView, onDelete }: Props): React.ReactElement {
   const columns = useAIChatColumns({ onView, onDelete })
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 
@@ -70,7 +71,13 @@ function AIChatTableInner({ data, isLoading, search, navigate, onView, onDelete 
             ))}
           </TableHeader>
           <TableBody>
-            {isLoading ? (
+            {error ? (
+              <TableRow>
+                <TableCell colSpan={columns.length} className='h-24 text-center text-destructive'>
+                  {String(error)}
+                </TableCell>
+              </TableRow>
+            ) : isLoading ? (
               <TableRow>
                 <TableCell colSpan={columns.length} className='h-24 text-center'>
                   加载中…

@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import {
   type ColumnDef,
   getCoreRowModel,
@@ -9,6 +9,7 @@ import {
 import { useTableColumnVisibility } from '@/shared/hooks/use-table-column-visibility'
 import { type NavigateFn, useTableUrlState } from '@/shared/hooks/use-table-url-state'
 import { cn } from '@/shared/lib/utils'
+import { useVirtualizer } from '@tanstack/react-virtual'
 import { auditResults, logLevels, type LogType } from '~/modules/audit/shared/data/schema'
 import { type AdminAuditLog, type AdminSystemLog } from '~/modules/audit/shared/hooks/use-admin-log-api'
 import { DataTablePagination, DataTableToolbar, DataTable } from '@/components/data-table'
@@ -79,7 +80,7 @@ export function AdminLogTable({ type, search, navigate }: AdminLogTableProps) {
 
   const success = useMemo(() => getSingleBooleanFromArrayFilter(columnFilters, 'success'), [columnFilters])
 
-  const { data, serverPageCount, refetch, isRefetching, isLoading } = useAdminLogsQuery({
+  const { data, serverPageCount, refetch, isRefetching, isLoading, error } = useAdminLogsQuery({
     type,
     pageIndex: pagination.pageIndex,
     pageSize: pagination.pageSize,
@@ -114,6 +115,14 @@ export function AdminLogTable({ type, search, navigate }: AdminLogTableProps) {
   useEffect(() => {
     ensurePageInRange(serverPageCount)
   }, [serverPageCount, ensurePageInRange])
+
+  const tableContainerRef = useRef<HTMLDivElement>(null)
+  const rowVirtualizer = useVirtualizer({
+    count: table.getRowModel().rows.length,
+    getScrollElement: () => tableContainerRef.current,
+    estimateSize: () => 44,
+    overscan: 10,
+  })
 
   return (
     <div className={cn('max-sm:has-[div[role="toolbar"]]:mb-16', 'flex h-full flex-col space-y-4')}>
@@ -155,6 +164,9 @@ export function AdminLogTable({ type, search, navigate }: AdminLogTableProps) {
         isLoading={isLoading}
         skeletonCount={pagination.pageSize}
         emptyState='暂无数据'
+        errorState={error ? String(error) : undefined}
+        containerRef={tableContainerRef}
+        rowVirtualizer={rowVirtualizer}
         containerClassName='min-h-0 flex-1'
       />
       <DataTablePagination table={table} />

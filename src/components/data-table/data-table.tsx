@@ -20,6 +20,7 @@ export interface DataTableProps<TData> {
    * Optional custom empty state message
    */
   emptyState?: React.ReactNode
+  errorState?: React.ReactNode
   /**
    * Required for row virtualization
    */
@@ -73,6 +74,7 @@ export function DataTable<TData>({
   isLoading,
   skeletonCount,
   emptyState,
+  errorState,
   rowVirtualizer,
   containerRef,
   containerClassName,
@@ -145,7 +147,13 @@ export function DataTable<TData>({
             ))}
           </TableHeader>
           <TableBody>
-            {isLoading ? (
+            {errorState ? (
+              <TableRow>
+                <TableCell colSpan={columnsLength} className='h-24 text-center text-destructive'>
+                  {errorState}
+                </TableCell>
+              </TableRow>
+            ) : isLoading ? (
               Array.from({ length: pageSize }).map((_, i) => (
                 <TableRow key={`skeleton-${i}`}>
                   {Array.from({ length: columnsLength }).map((_, j) => (

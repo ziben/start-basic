@@ -56,6 +56,7 @@ export function useOrganizationsListQuery(input: UseOrganizationsListQueryInput)
 
   const {
     data: pageData,
+    error,
     isLoading,
     refetch,
     isRefetching,
@@ -99,6 +100,7 @@ export function useOrganizationsListQuery(input: UseOrganizationsListQueryInput)
     data: pageData?.items ?? [],
     serverPageCount: pageData?.pageCount ?? 0,
     isLoading,
+    error,
     refetch,
     isRefetching,
   }

@@ -37,7 +37,7 @@ export function OrganizationsTable({ search, navigate }: OrganizationsTableProps
 
   const columns = useOrganizationsColumns()
 
-  const { data, serverPageCount, isLoading, refetch, isRefetching } = useOrganizationsListQuery({
+  const { data, serverPageCount, isLoading, refetch, isRefetching, error } = useOrganizationsListQuery({
     pageIndex: pagination.pageIndex,
     pageSize: pagination.pageSize,
     filter: globalFilter ?? undefined,
@@ -108,6 +108,7 @@ export function OrganizationsTable({ search, navigate }: OrganizationsTableProps
         containerRef={tableContainerRef}
         rowVirtualizer={rowVirtualizer}
         emptyState={t('admin.common.noData')}
+        errorState={error ? String(error) : undefined}
         containerClassName='min-h-0 flex-1'
       />
       <DataTablePagination table={table} className='mt-auto' />

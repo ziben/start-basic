@@ -59,6 +59,7 @@ export function useAdminUsersListQuery(input: UseAdminUsersListQueryInput) {
 
   const {
     data: pageData,
+    error,
     refetch,
     isRefetching,
   } = useQuery<PageData>({
@@ -100,6 +101,7 @@ export function useAdminUsersListQuery(input: UseAdminUsersListQueryInput) {
     pageData,
     data: pageData?.items ?? [],
     serverPageCount: pageData?.pageCount ?? 0,
+    error,
     refetch,
     isRefetching,
   }
