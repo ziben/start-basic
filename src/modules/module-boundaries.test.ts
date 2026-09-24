@@ -54,7 +54,7 @@ describe('module boundaries', () => {
     expect(missing).toEqual([])
   })
 
-  it('keeps shared Prisma access within the module or a declared dependency', () => {
+  it('keeps shared Prisma access within the owning module', () => {
     const owner: Record<string, string> = {
       user: 'auth',
       account: 'auth',
@@ -81,9 +81,9 @@ describe('module boundaries', () => {
     for (const module of moduleRegistry.modules as readonly AppModule[]) {
       for (const file of collectSourceFiles(join(process.cwd(), 'src/modules', module.key, 'shared'))) {
         const source = readFileSync(file, 'utf8')
-        for (const match of source.matchAll(/\b(?:prisma|tx)\.([a-z]\w*)\s*\./g)) {
+        for (const match of source.matchAll(/\b(?:prisma|tx|[A-Za-z_$][\w$]*\.prisma)\.([a-z]\w*)\s*\./g)) {
           const tableOwner = owner[match[1]]
-          if (tableOwner && tableOwner !== module.key && !(module.dependencies ?? []).includes(tableOwner as never)) {
+          if (tableOwner && tableOwner !== module.key) {
             violations.push(`${relative(process.cwd(), file).replace(/\\/g, '/')}: ${match[1]} (${tableOwner})`)
           }
         }

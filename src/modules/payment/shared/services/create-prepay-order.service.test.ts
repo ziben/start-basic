@@ -21,10 +21,8 @@ describe('createPrepayOrder', () => {
           create: paymentOrderCreate,
           update: vi.fn(),
         },
-        account: {
-          findFirst: vi.fn(),
-        },
       },
+      getWeChatOpenId: vi.fn(),
       wechatPayClient: {
         transactionsNative,
         transactionsJSAPI: vi.fn(),
@@ -64,10 +62,8 @@ describe('createPrepayOrder', () => {
             create: vi.fn().mockResolvedValue({ id: 'order_2' }),
             update: paymentOrderUpdate,
           },
-          account: {
-            findFirst: vi.fn(),
-          },
         },
+        getWeChatOpenId: vi.fn(),
         wechatPayClient: {
           transactionsNative: vi.fn().mockRejectedValue(new Error('sdk down')),
           transactionsJSAPI: vi.fn(),

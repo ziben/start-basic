@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { auth } from '~/modules/auth/shared/lib/auth'
+import { getWeChatOpenId } from '~/modules/auth/shared/services/account.service'
 import { getWeChatPayClient } from '~/modules/payment/shared/lib/wechat-pay'
 import { PrepayRequestSchema } from '~/modules/payment/shared/schemas/prepay'
 import { createPrepayOrder } from '~/modules/payment/shared/services/create-prepay-order.service'
@@ -44,6 +45,7 @@ export const Route = createFileRoute('/api/v1/payment/wechat/prepay')({
                         sessionUserId: session.user.id,
                         notifyUrl: process.env.WECHAT_PAY_NOTIFY_URL!,
                         prisma,
+                        getWeChatOpenId,
                         wechatPayClient,
                     })
 

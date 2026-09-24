@@ -42,6 +42,7 @@ export async function handleCreatePrepayOrder(
   headers: Headers
 ): Promise<Awaited<ReturnType<typeof createPrepayOrder>>> {
   const { auth } = await import('../../../auth/shared/lib/auth')
+  const { getWeChatOpenId } = await import('../../../auth/shared/services/account.service')
   const { getDb } = await import('~/shared/lib/db')
   const { getWeChatPayClient } = await import('../lib/wechat-pay')
 
@@ -53,6 +54,7 @@ export async function handleCreatePrepayOrder(
     sessionUserId: session?.user?.id ?? null,
     notifyUrl: getRequiredNotifyUrl(),
     prisma,
+    getWeChatOpenId,
     wechatPayClient,
   })
 }

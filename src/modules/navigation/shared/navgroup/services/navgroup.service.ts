@@ -4,6 +4,7 @@
  */
 
 import prisma from '@/shared/lib/db'
+import { getDefaultNavigationRoleNames } from '~/modules/auth/shared/services/role.service'
 
 // Prisma 事务客户端类型
 type TransactionClient = Omit<
@@ -86,6 +87,7 @@ export const NavGroupService = {
      */
     async create(data: CreateNavGroupInput) {
         try {
+            const defaultRoles = !data.roles?.length ? await getDefaultNavigationRoleNames() : []
             // 获取最大 orderIndex
             let orderIndex = data.orderIndex
             if (orderIndex === undefined) {
@@ -115,13 +117,10 @@ export const NavGroupService = {
                     })
                 } else {
                     // 默认所有内置角色可见
-                    const roles = await tx.role.findMany({
-                        where: { name: { in: ['user', 'admin'] } }
-                    })
-                    if (roles.length > 0) {
+                    if (defaultRoles.length > 0) {
                         await tx.roleNavGroup.createMany({
-                            data: roles.map((r) => ({
-                                roleName: r.name,
+                            data: defaultRoles.map((roleName) => ({
+                                roleName,
                                 navGroupId: group.id,
                             })),
                         })

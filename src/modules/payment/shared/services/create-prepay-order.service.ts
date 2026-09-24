@@ -25,12 +25,6 @@ type PaymentOrderPrisma = {
     }): Promise<{ id: string }>
     update(args: { where: { id: string }; data: { status: 'FAILED' } }): Promise<unknown>
   }
-  account: {
-    findFirst(args: {
-      where: { userId: string; providerId: 'wechat' }
-      select: { idToken: true }
-    }): Promise<{ idToken: string | null } | null>
-  }
 }
 
 type WeChatPayGateway = {
@@ -55,6 +49,7 @@ type CreatePrepayOrderDeps = {
   sessionUserId: string | null
   notifyUrl: string
   prisma: PaymentOrderPrisma
+  getWeChatOpenId: (userId: string) => Promise<string | null>
   wechatPayClient: WeChatPayGateway
   createOutTradeNo?: () => string
 }
@@ -104,11 +99,7 @@ export async function createPrepayOrder(input: PrepayRequestInput, deps: CreateP
 
     let openid = input.openid
     if (!openid) {
-      const wechatAccount = await deps.prisma.account.findFirst({
-        where: { userId: deps.sessionUserId, providerId: 'wechat' },
-        select: { idToken: true },
-      })
-      openid = wechatAccount?.idToken ?? undefined
+      openid = (await deps.getWeChatOpenId(deps.sessionUserId)) ?? undefined
     }
 
     if (!openid) {
