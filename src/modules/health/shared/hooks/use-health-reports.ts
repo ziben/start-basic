@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import type { UseMutationResult, UseQueryResult } from '@tanstack/react-query'
+import { CACHE_TIME } from '~/shared/lib/query-client'
 import {
   createHealthReportFn,
   getHealthReportFn,
@@ -32,7 +33,7 @@ export function useHealthReportsQuery(
   return useQuery({
     queryKey: healthReportKeys.list(filters),
     queryFn: () => listHealthReportsFn({ data: filters }),
-    staleTime: 30 * 1000,
+    staleTime: CACHE_TIME.SHORT,
   })
 }
 

@@ -6,6 +6,7 @@
 import { useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useAuth } from '~/modules/auth/shared/hooks/use-auth'
+import { CACHE_TIME } from '~/shared/lib/query-client'
 import { permissionsQueryKeys } from '../lib/query-keys'
 import { getUserPermissionsFn, checkPermissionFn } from '../server-fns/permissions.fn'
 
@@ -20,7 +21,7 @@ export function usePermissions(organizationId?: string) {
     queryKey: permissionsQueryKeys.list(user?.id, organizationId),
     queryFn: () => getUserPermissionsFn({ data: { organizationId } }),
     enabled: !!user,
-    staleTime: 5 * 60 * 1000, // 5分钟缓存
+    staleTime: CACHE_TIME.MEDIUM,
   })
 }
 
@@ -35,7 +36,7 @@ export function usePermission(permission: string, organizationId?: string) {
     queryKey: permissionsQueryKeys.check(user?.id, permission, organizationId),
     queryFn: () => checkPermissionFn({ data: { permission, organizationId } }),
     enabled: !!user && !!permission,
-    staleTime: 5 * 60 * 1000,
+    staleTime: CACHE_TIME.MEDIUM,
   })
 }
 

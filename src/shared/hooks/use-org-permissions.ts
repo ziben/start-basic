@@ -1,6 +1,7 @@
 import { useQueries, useQuery } from '@tanstack/react-query'
 import { useAuth } from '~/modules/auth/shared/hooks/use-auth'
 import { orgPermissionQueryKeys } from '~/shared/lib/query-keys'
+import { CACHE_TIME } from '~/shared/lib/query-client'
 import { checkOrgPermissionFn, getOrgRoleFn } from '~/shared/server-fns/org-permissions.fn'
 /**
  * Hook: 检查组织权限
@@ -22,7 +23,7 @@ export function useOrgPermission(
       })
     },
     enabled: !!user && !!organizationId && !!resource && !!action,
-    staleTime: 5 * 60 * 1000,
+    staleTime: CACHE_TIME.MEDIUM,
   })
 }
 
@@ -40,7 +41,7 @@ export function useOrgRole(organizationId: string | undefined) {
       return getOrgRoleFn({ data: { organizationId } })
     },
     enabled: !!user && !!organizationId,
-    staleTime: 5 * 60 * 1000,
+    staleTime: CACHE_TIME.MEDIUM,
   })
 }
 
@@ -83,7 +84,7 @@ export function useAnyOrgPermission(
         })
       },
       enabled: !!user && !!organizationId && !!resource && !!action,
-      staleTime: 5 * 60 * 1000,
+      staleTime: CACHE_TIME.MEDIUM,
     })),
   })
 
@@ -113,7 +114,7 @@ export function useAllOrgPermissions(
         })
       },
       enabled: !!user && !!organizationId && !!resource && !!action,
-      staleTime: 5 * 60 * 1000,
+      staleTime: CACHE_TIME.MEDIUM,
     })),
   })
 

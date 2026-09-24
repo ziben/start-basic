@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { authQueryKeys } from '~/shared/lib/query-keys'
 import { authClient } from '@/modules/auth/shared/lib/auth-client'
+import { CACHE_TIME } from '~/shared/lib/query-client'
 
 export function useAuth() {
   return useQuery({
@@ -16,8 +17,8 @@ export function useAuth() {
         return null
       }
     },
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes
+    staleTime: CACHE_TIME.MEDIUM,
+    gcTime: 10 * 60 * 1000, // 会话缓存保留时间短于普通查询
   })
 }
 
