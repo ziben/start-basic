@@ -14,7 +14,7 @@
 - **路由管理**: TanStack Router (全类型安全地文件化路由)
 - **认证与授权**: [Better Auth](https://www.better-auth.com/) + RBAC (角色权限控制)
 - **数据流**: [TanStack Query](https://tanstack.com/query) (React Query)
-- **ORM**: [Prisma](https://www.prisma.io/) + [Drizzle](https://orm.drizzle.team/)
+- **ORM**: [Prisma](https://www.prisma.io/) 7 + PostgreSQL（driver adapter: `@prisma/adapter-pg`）
 - **多语言**: [i18next](https://www.i18next.com/) (支持数据库运行时动态加载翻译)
 
 ---
@@ -28,15 +28,16 @@ src/
 ├── routes/             # 路由定义 (TanStack Router 约定)
 │   ├── __root.tsx      # 根路由 (Provider 注入 + beforeLoad 检查)
 │   ├── _authenticated/    # 认证保护路由组
-│   │   ├── admin/      # 管理后台路由
+│   │   ├── admin/      # 管理后台路由 (需 admin/superadmin 角色)
 │   │   └── ...
-│   └── (auth)/         # 登录、注册等公共认证路由
+│   ├── (auth)/ (public)/ (errors)/   # 公共与错误页
+│   ├── api/            # HTTP 端点 (仅少量；业务主要走 Server Functions)
+│   └── m/              # 移动端路由
 ├── modules/            # 核心业务模块
-│   ├── admin/          # 管理后台模块 (原 system-admin)
-│   │   ├── features/   # 具体功能区 (用户、组织、角色)
-│   │   └── shared/     # 模块内共享服务、Hooks 等
-│   ├── auth/           # 认证流程模块 (原 identity)
-│   └── dashboard/      # 控制面板模块
+│   └── <module>/
+│       ├── module.ts   # 模块契约 (defineModule: key / dependencies / exports)
+│       ├── features/   # 具体功能区 (页面级)
+│       └── shared/     # 模块内共享服务、Server Functions、Hooks
 ├── components/         # 全局共享组件
 │   └── ui/             # shadcn 原始位
 ├── shared/             # 全局共享资源
@@ -44,8 +45,32 @@ src/
 │   ├── hooks/          # 通用 React Hooks
 │   ├── context/        # 核心上下文 (Theme, Auth, Locale)
 │   └── utils/          # 纯函数工具类
+├── infrastructure/     # 运行时配置、数据库连接、可观测性 (不属任何业务模块)
+├── core/               # 模块体系内核 (module-registry, event-bus)
+├── i18n/               # 国际化配置
 └── styles/             # 全局样式配置
 ```
+
+### 2.1 模块契约
+
+每个业务模块通过 `module.ts` 声明自身边界，并在 `src/modules/index.ts` 注册：
+
+```ts
+export const paymentModule = defineModule({
+  key: 'payment',
+  version: '1.0.0',
+  dependencies: ['auth'],
+  exports: { services: {...}, events: {...} },
+})
+```
+
+`src/modules/module-boundaries.test.ts` 静态扫描各模块 `shared/` 目录，跨模块 import 未声明在 `dependencies` 中即测试失败。**未注册的模块不受此约束**——新增模块务必注册。
+
+### 2.2 数据层
+
+- Prisma schema 由 `db/prisma/schema/*.part` 分片合并生成（`pnpm db:merge` → `db/prisma/schema.prisma`，该文件已 gitignore）。
+- 生效的迁移目录是 `db/prisma/migrations_pg/`；`db/prisma/migrations/` 为早期 SQLite 残留，**不要在其新增迁移**。
+- 客户端单例在 `src/infrastructure/db/prisma-client.ts`，通过 `getDb()`（异步）或 `getDbSync()` 获取。
 
 ---
 
@@ -106,3 +131,14 @@ graph LR
 项目使用双重翻译机制：
 1. **本地 JSON**: 基础 UI 文档 (如 `src/modules/admin/shared/locales`)。
 2. **数据库翻译**: `Translation` 模型支持管理员在后台动态修改文案，应用启动后会异步加载并覆盖本地配置。
+
+---
+
+## 7. 已知技术债与演进计划
+
+完整评审见 [架构评审报告](ARCHITECTURE-REVIEW-2026-09.md)。当前重点：
+
+1. **`modules/admin` 正在拆分**：它承载了身份、组织、权限、导航、系统配置五个子域，是全部业务代码的主体。目标是把五个子域提升为平级模块，`admin` 退化为壳（layout + 菜单编排 + 路由聚合）。**新功能不要再放进 `modules/admin/features/`。**
+2. **模块契约未全覆盖**：目前只注册了 auth / payment / health / audit / navigation 五个模块，其余模块尚未纳入边界约束，需补齐 `module.ts` 并注册。
+3. **鉴权中间件待合并**：`src/middleware.ts` 的 `withAuth` / `withAdminAuth` 存在重复实现，计划收敛为 `withSession({ roles })` 工厂，并区分 401（未登录）与 403（无权限）。
+4. **前端包体待优化**：首屏 chunk 偏大，计划引入 `manualChunks` 与路由级动态导入。
