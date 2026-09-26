@@ -13,7 +13,8 @@ export default defineConfig({
     allowedHosts: true,
   },
   plugins: [
-    Inspect(),
+    // 仅开发环境启用：生产构建会拖慢速度并暴露模块图谱
+    ...(process.env.NODE_ENV === 'development' ? [Inspect()] : []),
     tailwindcss(),
     tanstackStart(),
     viteReact(),

@@ -50,3 +50,7 @@ npm-debug.log*
 pnpm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# 本地调试快照（tsc / build 输出，禁止入库）
+*.txt
+!public/MP_verify_*.txt
