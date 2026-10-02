@@ -1,5 +1,5 @@
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
-import { join, relative } from 'node:path'
+import { dirname, join, relative, resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import type { AppModule } from '~/core/module-registry'
 import { moduleRegistry } from './index'
@@ -18,20 +18,21 @@ function collectSourceFiles(dir: string): string[] {
 }
 
 describe('module boundaries', () => {
-  it('enforces declared dependencies for shared module sources', () => {
+  it('enforces declared dependencies across static, dynamic, and relative imports', () => {
     const modules = new Map((moduleRegistry.modules as readonly AppModule[]).map((module) => [module.key, module]))
     const violations: string[] = []
 
     for (const module of moduleRegistry.modules as readonly AppModule[]) {
-      const sharedDir = join(process.cwd(), 'src/modules', module.key, 'shared')
-      for (const file of collectSourceFiles(sharedDir)) {
-        const source = readFileSync(file, 'utf8')
-        for (const match of source.matchAll(/(?:from|import\()\s*['"](?:~|@)\/modules\/([^'"]+)/g)) {
+      const moduleDir = join(process.cwd(), 'src/modules', module.key)
+      for (const file of collectSourceFiles(moduleDir)) {
+        const source = readFileSync(file, 'utf8').replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, '')
+        for (const match of source.matchAll(/(?:from|import\s*\()\s*['"]([^'"]+)['"]/g)) {
           const imported = match[1]
-          const target = imported.split('/')[0]
-          const isLegacyAuthAdapter = imported === 'admin/shared/server-fns/auth'
+          const target = getImportedModuleKey(file, imported)
+          const isCompatibilityImport = COMPATIBILITY_IMPORTS.has(imported)
           if (
-            !isLegacyAuthAdapter &&
+            target &&
+            !isCompatibilityImport &&
             target !== module.key &&
             !(modules.get(module.key)?.dependencies ?? []).includes(target as never)
           ) {
@@ -176,3 +177,29 @@ describe('module boundaries', () => {
     expect(content).not.toContain('~/modules/admin')
   })
 })
+
+const COMPATIBILITY_IMPORTS = new Set([
+  '~/modules/admin/shared/server-fns/auth',
+  '~/modules/admin/shared/lib/user-hooks',
+  '~/modules/admin/features/system-config/hooks/use-system-config-query',
+  '~/modules/admin/shared/hooks/use-translation',
+  '../../../../admin/shared/lib/user-hooks',
+  '../../../admin/shared/lib/user-hooks',
+])
+
+function getImportedModuleKey(file: string, imported: string): string | null {
+  if (imported.startsWith('~/modules/') || imported.startsWith('@/modules/')) {
+    return imported.split('/')[2] ?? null
+  }
+
+  if (!imported.startsWith('.')) return null
+
+  const candidate = resolve(dirname(file), imported)
+  const normalized = candidate.replace(/\\/g, '/')
+  const marker = '/src/modules/'
+  const index = normalized.indexOf(marker)
+  if (index < 0) return null
+
+  const remainder = normalized.slice(index + marker.length)
+  return remainder.split('/')[0] ?? null
+}
