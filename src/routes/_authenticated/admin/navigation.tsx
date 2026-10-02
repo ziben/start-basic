@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { z } from 'zod'
-import { AdminNavigationPage } from '~/modules/admin'
+import { AdminNavigationPage } from '~/modules/navigation/admin'
 
 const navigationSearchSchema = z.object({
   tab: z.enum(['groups', 'items']).optional().catch('groups'),

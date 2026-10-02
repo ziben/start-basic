@@ -1,5 +1,3 @@
-export * from './navgroup'
-export * from './navitem'
+export * from '~/modules/navigation/admin'
 export * from './rolenavgroup'
 export * from './userrolenavgroup'
-export { default as AdminNavigationPage } from './admin-navigation'

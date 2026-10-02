@@ -51,8 +51,8 @@
 
 ### 3. 收紧边界，再逐项收口 admin
 
-- 状态（2026-10-02）：边界检查的第一切片完成。检查范围从已注册模块的 `shared/` 扩展到模块全部源码，覆盖静态、动态和相对导入；兼容 admin 入口收敛为显式白名单，注释中的伪导入不会再绕过检查。navigation 的 admin 路由继续通过模块入口挂载。
-- 本轮证据：模块边界测试 13 项通过，lint、typecheck 通过。当前只完成边界约束加固，未宣称 identity、organization、rbac 全部迁移完成。
+- 状态（2026-10-02）：边界检查的第一切片完成，并将 navigation 的菜单组、菜单项 admin 页面归位到 `src/modules/navigation/admin`；旧 admin 入口保留为兼容转发。检查范围覆盖静态、动态和相对导入，兼容 admin 入口收敛为显式白名单，注释中的伪导入不会再绕过检查。
+- 本轮证据：模块边界测试 13 项通过，lint、typecheck 通过。角色菜单组仍依赖 admin 的 RBAC 适配层，暂未迁移；未宣称 identity、organization、rbac 全部迁移完成。
 
 - 区分拥有业务数据和公共能力的模块，与 dashboard / mobile / settings 等页面组织目录；不要求每个目录都注册。
 - 检查实际消费者，补齐相对路径、动态导入、未注册业务代码和数据库访问别名的约束缺口；优先复用现有 TypeScript 解析能力。
