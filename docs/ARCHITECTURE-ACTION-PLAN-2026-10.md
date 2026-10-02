@@ -39,6 +39,9 @@
 
 ### 2. 验证真实鉴权与错误契约
 
+- 状态（2026-10-02）：核心 ServerFn 与包装鉴权分支已完成本地行为验收。未登录统一返回 `401`，已登录但无管理员角色返回 `403`；业务处理器在拒绝分支不会执行，ServerFn 错误中间件继续保留 `UNAUTHORIZED` / `FORBIDDEN` 契约。
+- 本轮证据：`tests/unit/middleware.test.ts`、错误中间件和 AI ServerFn 鉴权测试共 11 项通过；仍未进行真实浏览器登录态和部署环境 HTTP 验收。
+
 - 沿 `src/start.ts`、`authMiddleware`、`requireUser`、`requireAdmin`、`requirePermission` 和实际 ServerFn / API Route 核对保护位置。
 - 为未登录、普通用户访问管理功能、合法管理员、资源越权和无效输入补最小行为测试，验证业务读写没有先于权限检查发生。
 - 检查 session 缓存、角色组合和权限错误的返回契约。框架重定向、流式响应与内部错误保持各自语义。

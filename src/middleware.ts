@@ -70,7 +70,7 @@ export function withAuth<T extends HandlerContext>(handler: Handler<T & Authenti
       const session = headers ? await auth.api.getSession({ headers }) : null
 
       if (!session) {
-        const res = new Response('您没有访问此资源的权限', { status: 403 })
+        const res = new Response('未登录', { status: 401 })
         void writeSystemLog({
           level: 'warn',
           requestId,
@@ -84,7 +84,7 @@ export function withAuth<T extends HandlerContext>(handler: Handler<T & Authenti
           userId: null,
           userRole: null,
           error: null,
-          meta: { reason: 'forbidden' },
+          meta: { reason: 'unauthorized' },
         })
         return res
       }
@@ -183,7 +183,9 @@ export function withAdminAuth<T extends HandlerContext>(handler: Handler<T & Aut
 
       const role = session?.user?.role
       if (!session || !hasAdminRole(role)) {
-        const res = new Response('您没有访问此资源的权限', { status: 403 })
+        const res = new Response(session ? '您没有访问此资源的权限' : '未登录', {
+          status: session ? 403 : 401,
+        })
         void writeSystemLog({
           level: 'warn',
           requestId,
@@ -197,7 +199,7 @@ export function withAdminAuth<T extends HandlerContext>(handler: Handler<T & Aut
           userId: session?.user?.id ?? null,
           userRole: typeof role === 'string' ? role : null,
           error: null,
-          meta: { reason: 'forbidden' },
+          meta: { reason: session ? 'forbidden' : 'unauthorized' },
         })
         return res
       }

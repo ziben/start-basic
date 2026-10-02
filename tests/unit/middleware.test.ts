@@ -78,12 +78,12 @@ describe('Middleware Unit Tests', () => {
       const wrappedHandler = withAuth(mockHandler)
       const response = await wrappedHandler({ request: mockRequest })
 
-      expect(response.status).toBe(403)
+      expect(response.status).toBe(401)
       expect(mockHandler).not.toHaveBeenCalled()
       expect(logWriter.writeSystemLog).toHaveBeenCalledWith(
         expect.objectContaining({
           level: 'warn',
-          meta: { reason: 'forbidden' },
+          meta: { reason: 'unauthorized' },
         })
       )
     })
@@ -177,7 +177,7 @@ describe('Middleware Unit Tests', () => {
       const wrappedHandler = withAdminAuth(mockHandler)
       const response = await wrappedHandler({ request: mockRequest })
 
-      expect(response.status).toBe(403)
+      expect(response.status).toBe(401)
       expect(mockHandler).not.toHaveBeenCalled()
     })
   })
