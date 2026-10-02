@@ -8,6 +8,7 @@ import { createServerFn } from '@tanstack/react-start'
 import { requireAdmin } from '~/modules/admin/shared/server-fns/auth'
 import { clearAccessControlCache, reinitAuth } from '~/modules/auth/shared/lib/auth'
 import { ServiceError } from '~/shared/utils/service-error'
+export { assignRoleNavGroupsFn } from '~/modules/navigation/shared/server-fns/role-nav-groups.fn'
 
 // ============ Schema 定义 ============
 
@@ -83,12 +84,6 @@ const ListRolesSchema = z.object({
   page: z.number().int().positive().max(100000).optional(),
   pageSize: z.number().int().positive().max(100).optional(),
   filter: z.string().optional(),
-})
-
-// 角色-导航组关联
-const AssignRoleNavGroupsSchema = z.object({
-  id: z.string().min(1, '角色ID不能为空'),
-  navGroupIds: z.array(z.string()),
 })
 
 // ============ 角色管理 ============
@@ -260,41 +255,6 @@ export const deleteRoleFn = createServerFn({ method: 'POST' })
     })
 
     // 清除缓存并重新初始化 auth
-    clearAccessControlCache()
-    await reinitAuth()
-
-    return { success: true }
-  })
-
-export const assignRoleNavGroupsFn = createServerFn({ method: 'POST' })
-  .validator((data: z.infer<typeof AssignRoleNavGroupsSchema>) => AssignRoleNavGroupsSchema.parse(data))
-  .handler(async ({ data }: { data: z.infer<typeof AssignRoleNavGroupsSchema> }) => {
-    await requireAdmin('AssignRoleNavGroups')
-    const prisma = (await import('@/shared/lib/db')).default
-
-    const role = await prisma.role.findUnique({ where: { id: data.id } })
-    if (!role) throw new ServiceError('NOT_FOUND', '角色不存在')
-
-    // 删除旧关联
-    await prisma.roleNavGroup.deleteMany({
-      where: { roleName: role.name },
-    })
-
-    // 创建新关联
-    if (data.navGroupIds.length > 0) {
-      const navGroups = await prisma.navGroup.findMany({
-        where: { id: { in: data.navGroupIds } },
-      })
-
-      await prisma.roleNavGroup.createMany({
-        data: navGroups.map((ng) => ({
-          roleName: role.name,
-          navGroupId: ng.id,
-        })),
-      })
-    }
-
-    // 清除缓存
     clearAccessControlCache()
     await reinitAuth()
 

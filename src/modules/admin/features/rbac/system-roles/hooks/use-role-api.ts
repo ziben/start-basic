@@ -6,6 +6,7 @@
  */
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { permissionsQueryKeys, roleQueryKeys } from '~/shared/lib/query-keys'
+import { assignRoleNavGroupsFn } from '~/modules/navigation/shared/server-fns/role-nav-groups.fn'
 import {
   getRolesFn,
   getRoleFn,
@@ -13,7 +14,6 @@ import {
   updateRoleFn,
   deleteRoleFn,
   assignPermissionsFn,
-  assignRoleNavGroupsFn,
 } from '../../server-fns/rbac.fn'
 
 // ============ Query Hooks ============

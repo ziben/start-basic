@@ -8,3 +8,12 @@ export async function getDefaultNavigationRoleNames(): Promise<string[]> {
   })
   return roles.map((role) => role.name)
 }
+
+export async function getRoleNameById(id: string): Promise<string | null> {
+  const db = await getDb()
+  const role = await db.role.findUnique({
+    where: { id },
+    select: { name: true },
+  })
+  return role?.name ?? null
+}
