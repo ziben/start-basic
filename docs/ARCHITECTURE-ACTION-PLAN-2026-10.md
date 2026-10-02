@@ -65,7 +65,8 @@
 ### 4. 验证数据库与发布治理
 
 - 状态（2026-10-02）：本地 schema 与迁移契约检查完成。`db:merge` 可重复生成合并 schema，Prisma schema 校验通过，活动迁移目录明确为 `db/prisma/migrations_pg`；新增测试防止活动目录混入 SQLite SQL。
-- 本轮证据：迁移契约与数据库 URL 测试 5 项通过，`node node_modules/prisma/build/index.js validate --schema db/prisma/schema.prisma` 通过，lint、typecheck 通过。
+- 本轮证据：迁移契约与数据库 URL 测试 5 项通过，`node node_modules/prisma/build/index.js validate --schema db/prisma/schema.prisma` 通过；在当前 checkout 执行 `pnpm install --frozen-lockfile` 和 `pnpm check` 通过，质量基线包含 lint、typecheck、test、build。
+- 当前边界：`pnpm check` 证明当前 checkout 可复现代码检查和构建，不证明临时 PostgreSQL 回放、远端 CI 或生产迁移状态。
 - 待处理：尚未连接隔离临时 PostgreSQL 回放迁移，也未完成干净 checkout、远端 CI、生产数据库、健康检查和回滚演练。
 
 - 明确 PG schema 分片、生成客户端和有效迁移目录，检查干净 checkout 能否按记录的命令完成生成、检查和构建。
