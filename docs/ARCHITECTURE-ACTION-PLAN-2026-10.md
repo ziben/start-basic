@@ -51,8 +51,8 @@
 
 ### 3. 收紧边界，再逐项收口 admin
 
-- 状态（2026-10-02）：边界检查的第一切片完成，并将 navigation 的菜单组、菜单项 admin 页面归位到 `src/modules/navigation/admin`；角色-菜单组分配 ServerFn 也归位到 navigation，并通过 auth 角色服务解析角色标识。旧 admin 入口保留为兼容转发。
-- 本轮证据：模块边界与 ServerFn 契约测试 16 项通过，lint、typecheck 通过。角色菜单组页面仍复用 admin 的角色查询 UI，identity、organization、rbac 其余能力未迁移。
+- 状态（2026-10-02）：navigation 的菜单组、菜单项、角色菜单组 admin 页面和角色-菜单组分配 ServerFn 已归位到 `src/modules/navigation/admin` / `src/modules/navigation/shared`；旧 admin 入口保留为兼容转发。角色查询仍通过 RBAC 的显式兼容入口复用。
+- 本轮证据：模块边界测试 13 项通过，lint、typecheck 通过。identity、organization、rbac 其余能力未迁移。
 
 - 区分拥有业务数据和公共能力的模块，与 dashboard / mobile / settings 等页面组织目录；不要求每个目录都注册。
 - 检查实际消费者，补齐相对路径、动态导入、未注册业务代码和数据库访问别名的约束缺口；优先复用现有 TypeScript 解析能力。
