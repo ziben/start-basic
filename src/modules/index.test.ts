@@ -9,10 +9,11 @@ import {
   organizationModule,
   paymentModule,
   rbacModule,
+  systemConfigModule,
 } from './index'
 
 describe('moduleRegistry', () => {
-  it('registers auth, payment, health, identity, audit, navigation, organization, and rbac explicitly', () => {
+  it('registers auth, payment, health, identity, audit, navigation, organization, rbac, and system-config explicitly', () => {
     expect(moduleRegistry.modules).toEqual([
       authModule,
       paymentModule,
@@ -22,6 +23,7 @@ describe('moduleRegistry', () => {
       navigationModule,
       organizationModule,
       rbacModule,
+      systemConfigModule,
     ])
     expect(moduleRegistry.getModule('payment')).toBe(paymentModule)
     expect(moduleRegistry.getModule('payment').dependencies).toContain('auth')
@@ -37,5 +39,7 @@ describe('moduleRegistry', () => {
     expect(moduleRegistry.getModule('organization').dependencies).toContain('auth')
     expect(moduleRegistry.getModule('rbac')).toBe(rbacModule)
     expect(moduleRegistry.getModule('rbac').dependencies).toContain('auth')
+    expect(moduleRegistry.getModule('system-config')).toBe(systemConfigModule)
+    expect(moduleRegistry.getModule('system-config').dependencies).toContain('auth')
   })
 })

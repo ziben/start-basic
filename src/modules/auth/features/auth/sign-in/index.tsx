@@ -2,7 +2,7 @@ import { Link, useSearch } from '@tanstack/react-router'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { AuthLayout } from '../auth-layout'
 import { UserAuthForm } from './components/user-auth-form'
-import { usePublicConfigs } from '~/modules/admin/features/system-config/hooks/use-system-config-query'
+import { usePublicConfigs } from '~/modules/system-config/hooks/use-system-config-query'
 import { sanitizeRedirectTarget } from '~/modules/auth/shared/lib/safe-redirect'
 import { useMemo } from 'react'
 

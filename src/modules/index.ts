@@ -7,6 +7,7 @@ import { navigationModule } from './navigation/module'
 import { organizationModule } from './organization/module'
 import { paymentModule } from './payment/module'
 import { rbacModule } from './rbac/module'
+import { systemConfigModule } from './system-config/module'
 
 export const moduleRegistry = createModuleRegistry([
   authModule,
@@ -17,6 +18,7 @@ export const moduleRegistry = createModuleRegistry([
   navigationModule,
   organizationModule,
   rbacModule,
+  systemConfigModule,
 ] as const)
 
 export type AppModuleRegistry = typeof moduleRegistry
@@ -29,5 +31,6 @@ export { navigationModule }
 export { organizationModule }
 export { paymentModule }
 export { rbacModule }
+export { systemConfigModule }
 export { appEventBus, createAppEventBus } from './events'
 export type { AppEventBus, AppEvents } from './events'

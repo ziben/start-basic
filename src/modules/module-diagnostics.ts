@@ -91,4 +91,12 @@ export const moduleDiagnostics: ModuleDiagnosticsItem[] = [
     betterAuthServerPluginIds: [],
     betterAuthClientPluginIds: [],
   },
+  {
+    key: 'system-config',
+    version: '1.0.0',
+    dependencies: ['auth'],
+    exports: [{ name: 'services', keys: ['RuntimeConfigService'] }],
+    betterAuthServerPluginIds: [],
+    betterAuthClientPluginIds: [],
+  },
 ]

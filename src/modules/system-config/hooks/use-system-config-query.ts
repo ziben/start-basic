@@ -13,7 +13,7 @@ import {
   getPublicRuntimeConfigsFn,
   refreshRuntimeConfigFn,
   updateRuntimeConfigFn,
-} from '~/modules/admin/features/system-config/server-fns/runtime-config.fn'
+} from '~/modules/system-config/server-fns/runtime-config.fn'
 import { runtimeConfigQueryKeys } from '~/shared/lib/query-keys'
 import type { SystemConfig, SystemConfigChange, ConfigValueType } from '../data/schema'
 import {

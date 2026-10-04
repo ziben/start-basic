@@ -51,8 +51,8 @@
 
 ### 3. 收紧边界，再逐项收口 admin
 
-- 状态（2026-10-04）：navigation 的菜单组、菜单项、角色菜单组 admin 页面和角色-菜单组分配 ServerFn 已归位；identity 的 users、account、session、verification 已迁移到 `src/modules/identity` 并注册模块；organization 的组织、成员、部门、邀请及其服务和 ServerFn 已迁移到 `src/modules/organization` 并注册模块；RBAC 的角色、权限、组织角色及其服务和 ServerFn 已迁移到 `src/modules/rbac` 并注册模块，旧 admin 入口保留为兼容转发。
-- 本轮证据：模块边界测试、模块诊断测试、类型检查和全量构建通过。identity、organization、RBAC 仍保留少量 admin 共享兼容入口，system-config 其余能力未迁移。
+- 状态（2026-10-04）：navigation 的菜单组、菜单项、角色菜单组 admin 页面和角色-菜单组分配 ServerFn 已归位；identity 的 users、account、session、verification 已迁移到 `src/modules/identity` 并注册模块；organization 的组织、成员、部门、邀请及其服务和 ServerFn 已迁移到 `src/modules/organization` 并注册模块；RBAC 的角色、权限、组织角色及其服务和 ServerFn 已迁移到 `src/modules/rbac` 并注册模块；system-config 的配置页面、运行时配置服务、ServerFn 和 hooks 已迁移到 `src/modules/system-config` 并注册模块，旧 admin 入口保留为兼容转发。
+- 本轮证据：模块边界测试、模块诊断测试、类型检查和全量构建通过。identity、organization、RBAC、system-config 仍保留少量 admin 共享兼容入口。
 
 - 区分拥有业务数据和公共能力的模块，与 dashboard / mobile / settings 等页面组织目录；不要求每个目录都注册。
 - 检查实际消费者，补齐相对路径、动态导入、未注册业务代码和数据库访问别名的约束缺口；优先复用现有 TypeScript 解析能力。
@@ -95,4 +95,4 @@
 - 后续普通应用修复按已授权范围继续；大范围移动、共享契约或数据库结构变更、根配置与 CI 变更、凭据轮换、历史重写和部署，需要明确覆盖对应操作的授权。
 - 不新增框架、依赖或通用脚手架；若已有实现足够，只补缺口与验证。
 - 每步记录修改、运行检查、结果和未验证项；不把历史测试结果当成本轮验证，不把代码提交当成生产验收。
-- 路线状态随实际交付更新：第 1～4 步的本地代码与 CI 证据已收口；organization 和 RBAC 第一切片已完成；第 5 步仍需真实浏览器网络瀑布和生产数据，system-config 模块迁移作为后续切片。
+- 路线状态随实际交付更新：第 1～4 步的本地代码与 CI 证据已收口；organization、RBAC 和 system-config 第一切片已完成；第 5 步仍需真实浏览器网络瀑布和生产数据。

@@ -189,6 +189,8 @@ const COMPATIBILITY_IMPORTS = new Set([
   '~/modules/admin/shared/hooks/use-translation',
   '~/modules/admin/features/rbac/system-roles/hooks/use-role-api',
   '~/modules/rbac/system-roles/hooks/use-role-api',
+  '~/modules/system-config/hooks/use-system-config-query',
+  '~/modules/events',
   '../../../../admin/shared/lib/user-hooks',
   '../../../admin/shared/lib/user-hooks',
 ])

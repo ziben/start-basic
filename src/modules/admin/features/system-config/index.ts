@@ -1,1 +1,2 @@
-export { default as AdminSystemConfigPage } from './system-config-page'
+/** Legacy compatibility entry for the system-config module. */
+export * from '~/modules/system-config'

@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { useSearch } from '@tanstack/react-router'
 import { cn } from '@/shared/lib/utils'
-import { usePublicConfigs } from '~/modules/admin/features/system-config/hooks/use-system-config-query'
+import { usePublicConfigs } from '~/modules/system-config/hooks/use-system-config-query'
 import { sanitizeRedirectTarget } from '~/modules/auth/shared/lib/safe-redirect'
 import { Logo } from '@/assets/logo'
 import dashboardDark from './assets/dashboard-dark.webp'

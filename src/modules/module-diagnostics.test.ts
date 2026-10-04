@@ -71,6 +71,13 @@ describe('moduleDiagnostics', () => {
     ])
   })
 
+  it('registers system-config as the runtime configuration capability module', () => {
+    const systemConfigDiagnostics = moduleDiagnostics.find((module) => module.key === 'system-config')
+
+    expect(systemConfigDiagnostics?.dependencies).toEqual(moduleRegistry.getModule('system-config').dependencies)
+    expect(systemConfigDiagnostics?.exports).toEqual([{ name: 'services', keys: ['RuntimeConfigService'] }])
+  })
+
   it('reports actionable recommendations for broken module contracts', () => {
     const issues = getModuleDiagnosticsIssues([
       {

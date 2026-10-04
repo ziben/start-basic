@@ -5,7 +5,7 @@ import {
   refreshRuntimeConfigFn,
   updateRuntimeConfigFn,
 } from '../server-fns/runtime-config.fn'
-import type { AdminRuntimeConfig, AdminRuntimeConfigChange, ConfigValueType } from '~/modules/admin/features/system-config/types/runtime-config'
+import type { AdminRuntimeConfig, AdminRuntimeConfigChange, ConfigValueType } from '~/modules/system-config/types/runtime-config'
 import { runtimeConfigQueryKeys } from '~/shared/lib/query-keys'
 
 export function useRuntimeConfigs(): UseQueryResult<AdminRuntimeConfig[], Error> {

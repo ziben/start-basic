@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { WeChatLoginButton } from '@/modules/auth/features/wechat'
 import { Smartphone, ArrowLeft } from 'lucide-react'
-import { usePublicConfigs } from '~/modules/admin/features/system-config/hooks/use-system-config-query'
+import { usePublicConfigs } from '~/modules/system-config/hooks/use-system-config-query'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
