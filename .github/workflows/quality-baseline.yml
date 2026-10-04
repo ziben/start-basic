@@ -13,6 +13,22 @@ jobs:
   quality:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: start_basic
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres -d start_basic"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/start_basic?schema=public
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -28,6 +44,18 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Merge Prisma schema
+        run: pnpm db:merge
+
+      - name: Validate Prisma schema
+        run: pnpm exec prisma validate --schema db/prisma/schema.prisma
+
+      - name: Run migration contract tests
+        run: pnpm exec vitest run src/infrastructure/db/migration-contract.test.ts
+
+      - name: Replay PostgreSQL migrations
+        run: pnpm exec prisma migrate deploy --schema db/prisma/schema.prisma
 
       - name: Run quality baseline
         run: pnpm check
