@@ -1,0 +1,83 @@
+{
+  "capturedAt": "2026-10-04T13:10:00+08:00",
+  "environment": {
+    "browser": "Playwright Chromium",
+    "viewport": "1440x900",
+    "server": "Vite production preview on localhost:4173",
+    "cache": "fresh browser context per route",
+    "network": "local browser to local preview; no throttling",
+    "database": "configured PostgreSQL backend"
+  },
+  "routes": [
+    {
+      "route": "/",
+      "finalUrl": "http://localhost:4173/",
+      "navigationDurationMs": 2082.8,
+      "domContentLoadedMs": 1996.9,
+      "responseEndMs": 1833.7,
+      "navigationTransferBytes": 16322,
+      "resourceCount": 40,
+      "resourceTransferBytes": 353142,
+      "resourceEncodedBytes": 356548,
+      "scriptResourceCount": 1,
+      "scriptTransferBytes": 518,
+      "cssTransferBytes": 28553,
+      "fcpMs": 2476,
+      "status": "measured"
+    },
+    {
+      "route": "/sign-in",
+      "finalUrl": "http://localhost:4173/sign-in",
+      "navigationDurationMs": 266.6,
+      "domContentLoadedMs": 243.5,
+      "responseEndMs": 182.7,
+      "navigationTransferBytes": 16551,
+      "resourceCount": 53,
+      "resourceTransferBytes": 66349,
+      "resourceEncodedBytes": 399892,
+      "fcpMs": 280,
+      "status": "measured"
+    },
+    {
+      "route": "/admin/users",
+      "finalUrl": "http://localhost:4173/sign-in?redirect=%2Fadmin%2Fusers",
+      "navigationDurationMs": 113.7,
+      "domContentLoadedMs": 90.6,
+      "responseEndMs": 36.8,
+      "navigationTransferBytes": 16577,
+      "resourceCount": 53,
+      "resourceTransferBytes": 16139,
+      "resourceEncodedBytes": 399892,
+      "fcpMs": 100,
+      "status": "unauthenticated-redirect"
+    },
+    {
+      "route": "/admin/ai-chat",
+      "finalUrl": "http://localhost:4173/sign-in?redirect=%2Fadmin%2Fai-chat",
+      "navigationDurationMs": 214.6,
+      "domContentLoadedMs": 172.7,
+      "responseEndMs": 62.4,
+      "navigationTransferBytes": 16579,
+      "resourceCount": 53,
+      "resourceTransferBytes": 16139,
+      "resourceEncodedBytes": 399892,
+      "fcpMs": 184,
+      "status": "unauthenticated-redirect"
+    }
+  ],
+  "loginAttempt": {
+    "route": "/sign-in",
+    "account": "admin@example.com",
+    "result": "blocked",
+    "httpStatus": 401,
+    "error": "Better Auth rejected the credential request in the local preview environment"
+  },
+  "observations": [
+    "The first preview request includes server startup and module initialization cost.",
+    "The login route measured after warm preview startup is substantially faster than the first public route request.",
+    "The authenticated admin and AI routes were not measured because the login attempt returned 401.",
+    "Earlier preview startup logs recorded slow database queries above 200 ms, including approximately 213-350 ms samples.",
+    "The local preview environment had an origin mismatch on an earlier run when BETTER_AUTH_URL remained on port 3000; the second run used port 4173 and still returned 401."
+  ],
+  "nextMeasurementRequirement": "Run the same route set with a valid disposable admin account and matching APP_URL/BETTER_AUTH_URL, then record authenticated route waterfalls."
+}
