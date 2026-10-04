@@ -8,10 +8,10 @@
 import type { UseMutationResult, UseQueryResult } from '@tanstack/react-query'
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { getSessionsFn, deleteSessionFn, bulkDeleteSessionsFn } from '../server-fns/session.fn'
-import type { AdminSessionsPage } from '~/modules/admin/features/identity/session/types/session'
+import type { AdminSessionsPage } from '~/modules/identity/session/types/session'
 import { sessionQueryKeys } from '~/shared/lib/query-keys'
 
-export type { AdminSessionInfo } from '~/modules/admin/features/identity/session/types/session'
+export type { AdminSessionInfo } from '~/modules/identity/session/types/session'
 
 // ============ Query Hooks ============
 

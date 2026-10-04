@@ -183,6 +183,8 @@ describe('module boundaries', () => {
 const COMPATIBILITY_IMPORTS = new Set([
   '~/modules/admin/shared/server-fns/auth',
   '~/modules/admin/shared/lib/user-hooks',
+  '~/modules/admin/shared/utils/admin-utils',
+  '@/modules/admin/shared/components/admin-data-table',
   '~/modules/admin/features/system-config/hooks/use-system-config-query',
   '~/modules/admin/shared/hooks/use-translation',
   '~/modules/admin/features/rbac/system-roles/hooks/use-role-api',

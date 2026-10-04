@@ -55,4 +55,3 @@ export const banned = [
   { labelKey: 'admin.user.table.status.banned', value: true },
   { labelKey: 'admin.user.table.status.normal', value: false },
 ]
-

@@ -6,7 +6,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import { useRoles } from '~/modules/admin/features/rbac/system-roles/hooks/use-role-api'
-import { createUserFn, updateUserFn } from '~/modules/admin/features/identity/users/server-fns/user.fn'
+import { createUserFn, updateUserFn } from '~/modules/identity/users/server-fns/user.fn'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
@@ -376,9 +376,3 @@ export function AdminUsersMutateDialog({ currentRow, open, onOpenChange }: Admin
     </Dialog>
   )
 }
-
-
-
-
-
-

@@ -26,7 +26,7 @@
 
 ### 1. 隔离服务端配置与处理凭据风险
 
-- 状态（2026-10-02）：代码与本地构建验收完成。`src/shared/lib/env.ts` 现在只读取显式公开的 `VITE_*` 配置；服务端必填项继续由启动校验和数据库入口负责，已移除硬编码数据库默认值。
+- 状态（2026-10-04）：代码与本地构建验收完成。`src/shared/lib/env.ts` 现在只读取显式公开的 `VITE_*` 配置；服务端必填项继续由启动校验和数据库入口负责，已移除硬编码数据库默认值。`.env.server.example` 已统一为 PostgreSQL。
 - 本轮证据：3 个环境配置回归测试通过，lint、typecheck、production build 通过；重建后的 `dist/client` 不再匹配旧连接串，且未匹配 `.env` 中数据库、认证和微信密钥值。
 - 待处理：凭据是否仍有效、轮换、历史清理、已发布静态资源和缓存范围，以及生产重新发布，均未在本地完成。
 
@@ -39,7 +39,7 @@
 
 ### 2. 验证真实鉴权与错误契约
 
-- 状态（2026-10-02）：核心 ServerFn 与包装鉴权分支已完成本地行为验收。未登录统一返回 `401`，已登录但无管理员角色返回 `403`；业务处理器在拒绝分支不会执行，ServerFn 错误中间件继续保留 `UNAUTHORIZED` / `FORBIDDEN` 契约。
+- 状态（2026-10-04）：核心 ServerFn 与包装鉴权分支已完成本地行为验收。未登录统一返回 `401`，已登录但无管理员角色返回 `403`；admin sidebar 的 `ADMIN` ServerFn 已增加入口管理员鉴权。
 - 本轮证据：`tests/unit/middleware.test.ts`、错误中间件和 AI ServerFn 鉴权测试共 11 项通过；仍未进行真实浏览器登录态和部署环境 HTTP 验收。
 
 - 沿 `src/start.ts`、`authMiddleware`、`requireUser`、`requireAdmin`、`requirePermission` 和实际 ServerFn / API Route 核对保护位置。
@@ -51,8 +51,8 @@
 
 ### 3. 收紧边界，再逐项收口 admin
 
-- 状态（2026-10-02）：navigation 的菜单组、菜单项、角色菜单组 admin 页面和角色-菜单组分配 ServerFn 已归位到 `src/modules/navigation/admin` / `src/modules/navigation/shared`；旧 admin 入口保留为兼容转发。角色查询仍通过 RBAC 的显式兼容入口复用。
-- 本轮证据：模块边界测试 13 项通过，lint、typecheck 通过。identity、organization、rbac 其余能力未迁移。
+- 状态（2026-10-04）：navigation 的菜单组、菜单项、角色菜单组 admin 页面和角色-菜单组分配 ServerFn 已归位；identity 的 users、account、session、verification 已迁移到 `src/modules/identity` 并注册模块，旧 admin 入口保留为兼容转发。
+- 本轮证据：模块边界测试和全量测试通过。identity 仍有少量 admin 共享兼容入口，organization、rbac、system-config 其余能力未迁移。
 
 - 区分拥有业务数据和公共能力的模块，与 dashboard / mobile / settings 等页面组织目录；不要求每个目录都注册。
 - 检查实际消费者，补齐相对路径、动态导入、未注册业务代码和数据库访问别名的约束缺口；优先复用现有 TypeScript 解析能力。
@@ -64,7 +64,7 @@
 
 ### 4. 验证数据库与发布治理
 
-- 状态（2026-10-02）：本地 schema 与迁移契约检查完成。`db:merge` 可重复生成合并 schema，Prisma schema 校验通过，活动迁移目录明确为 `db/prisma/migrations_pg`；新增测试防止活动目录混入 SQLite SQL。
+- 状态（2026-10-04）：本地 schema 与迁移契约检查完成，`pnpm deploy:preflight` 在当前环境通过。`.env.server.example` 已修正为 PostgreSQL。
 - 本轮证据：迁移契约与数据库 URL 测试 5 项通过，`node node_modules/prisma/build/index.js validate --schema db/prisma/schema.prisma` 通过；在当前 checkout 执行 `pnpm install --frozen-lockfile` 和 `pnpm check` 通过，质量基线包含 lint、typecheck、test、build。
 - 当前边界：`pnpm check` 证明当前 checkout 可复现代码检查和构建，不证明临时 PostgreSQL 回放、远端 CI 或生产迁移状态。
 - 待处理：尚未连接隔离临时 PostgreSQL 回放迁移，也未完成干净 checkout、远端 CI、生产数据库、健康检查和回滚演练。
@@ -79,7 +79,7 @@
 
 ### 5. 用测量决定性能与日志改动
 
-- 状态（2026-10-02）：完成第一轮本地构建与请求基线。`dist/client/assets` 共 224 个 JavaScript 文件、约 3.27 MiB 未压缩；最大文件约 704 KiB，随后为 chat 约 489 KiB、dashboard 约 367 KiB。Vite preview 下 `/`、`/sign-in`、`/admin/dashboard`、`/ai/chat` 均返回 200 HTML，未登录访问受保护路由时服务端日志记录了 307 跳转。
+- 状态（2026-10-04）：完成第一轮本地构建与请求基线，并收紧日志队列。日志队列现在有 5000 条上限，数据库写入失败时保留待刷批次，服务关闭时执行 flush。
 - 本轮证据：四条路由请求均成功；本地服务日志记录首个请求约 978 ms，后续请求约 19 ms；同时观察到两次超过 200 ms 的数据库慢查询。该数据是单机预览基线，不是用户真实网络性能。
 - 处理决定：先保留现有拆包和慢查询阈值，不凭静态文件大小直接改配置；下一轮对登录、管理列表和 AI 会话做带浏览器瀑布的对比。
 

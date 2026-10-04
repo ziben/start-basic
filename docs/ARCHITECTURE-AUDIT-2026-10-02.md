@@ -113,3 +113,12 @@
 3. 再评估 middleware 工厂化、settings 路由合并和旧迁移归档。
 
 每个切片的完成条件是：代码差异、定向行为证据、lint/typecheck/test/build 结果、未验证项和 Git 提交同时记录。生产凭据轮换、数据库迁移、CI 修改、发布和回滚必须分别保留环境证据。
+
+## 2026-10-04 执行结果
+
+- admin sidebar 的 `ADMIN` ServerFn 已增加管理员鉴权；admin 加载失败不再返回 admin fallback。
+- `.env.server.example` 已改为 PostgreSQL 连接示例。
+- identity 的 users、account、session、verification 已迁移到 `src/modules/identity`，并注册 `identityModule`。
+- 日志队列已限制为 5000 条；数据库写入失败时保留批次，服务关闭时执行 flush。
+- `pnpm deploy:preflight` 已在当前环境通过；全量测试为 48 个文件、176 个测试通过。
+- 未完成的环境证据仍包括临时 PostgreSQL 回放、远端 CI、生产发布、浏览器真实网络瀑布、凭据轮换和回滚演练。

@@ -1,4 +1,4 @@
-import type { AdminUser } from '@/modules/admin/features/identity/users'
+import type { AdminUser } from '@/modules/identity/users'
 
 // 本地类型定义，避免导入 Prisma Client
 export type PrismaUser = {

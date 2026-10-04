@@ -1,4 +1,4 @@
-export * from '../../features/identity/session/types/session'
+export * from '~/modules/identity/session/types/session'
 export * from '../../features/i18n/translation/types/translation'
 export * from '../../features/organization/invitation/types/invitation'
 export * from '../../features/organization/members/types/member'

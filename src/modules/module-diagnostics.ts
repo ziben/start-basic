@@ -42,6 +42,14 @@ export const moduleDiagnostics: ModuleDiagnosticsItem[] = [
     betterAuthClientPluginIds: [],
   },
   {
+    key: 'identity',
+    version: '1.0.0',
+    dependencies: ['auth'],
+    exports: [],
+    betterAuthServerPluginIds: [],
+    betterAuthClientPluginIds: [],
+  },
+  {
     key: 'audit',
     version: '1.0.0',
     dependencies: ['auth'],

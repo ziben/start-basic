@@ -21,7 +21,7 @@ import {
   useBulkDeleteAdminSessions,
   useDeleteAdminSession,
   type AdminSessionInfo,
-} from '~/modules/admin/features/identity/session/hooks/use-admin-session-api'
+} from '~/modules/identity/session/hooks/use-admin-session-api'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'

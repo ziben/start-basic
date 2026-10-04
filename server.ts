@@ -65,6 +65,7 @@
 
 import path from 'node:path'
 import { readinessResponse } from './src/infrastructure/observability/health-check'
+import { flushLogs } from './src/modules/audit/shared/services/server-log-writer'
 import { initRuntimeConfig } from './src/shared/config/runtime-config'
 
 // Configuration
@@ -640,6 +641,7 @@ async function initializeServer() {
   const shutdown = async (signal: string) => {
     log.warning(`\nReceived ${signal}, shutting down gracefully...`)
     server.stop()
+    await flushLogs()
     log.success('Server stopped')
     process.exit(0)
   }

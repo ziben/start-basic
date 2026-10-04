@@ -74,6 +74,7 @@ export async function loadSidebarData(scope: SidebarScope): Promise<Serializable
 
     return serializeSidebarData(await getSidebarData(userId, role, scope))
   } catch (error) {
+    if (scope === 'ADMIN') throw error
     console.error('Error fetching sidebar data:', error)
     return createFallbackSidebarData(scope)
   }

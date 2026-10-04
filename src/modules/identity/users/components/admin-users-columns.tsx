@@ -247,11 +247,3 @@ export function useAdminUsersColumns(): ColumnDef<AdminUser>[] {
     [t]
   )
 }
-
-
-
-
-
-
-
-

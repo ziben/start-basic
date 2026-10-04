@@ -21,7 +21,3 @@ export function createBulkBanUpdateFn(users: AdminUser[], ids: string[], banned:
 export function createBulkDeleteUpdateFn(users: AdminUser[], ids: string[]) {
   return users.filter((u) => !ids.includes(u.id))
 }
-
-
-
-

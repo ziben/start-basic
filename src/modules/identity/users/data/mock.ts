@@ -19,5 +19,3 @@ export const adminUsers: AdminUser[] = Array.from({ length: 20 }, () => {
     updatedAt: faker.date.recent().toISOString(),
   }
 })
-
-

@@ -45,6 +45,8 @@ type QueueState = {
   scheduled: boolean
 }
 
+const MAX_PENDING_LOGS = 5000
+
 const globalForLogs = globalThis as unknown as { __logQueue?: QueueState }
 
 function getQueue(): QueueState {
@@ -52,6 +54,13 @@ function getQueue(): QueueState {
     globalForLogs.__logQueue = { system: [], audit: [], scheduled: false }
   }
   return globalForLogs.__logQueue
+}
+
+function enqueue<T>(queue: T[], entry: T) {
+  queue.push(entry)
+  if (queue.length > MAX_PENDING_LOGS) {
+    queue.splice(0, queue.length - MAX_PENDING_LOGS)
+  }
 }
 
 export type AuditLogInput = {
@@ -249,7 +258,7 @@ export async function writeSystemLog(input: SystemLogInput) {
   }
 
   const queue = getQueue()
-  queue.system.push({
+  enqueue(queue.system, {
     ...normalized,
     meta: normalized.meta ?? null,
     createdAt: now,
@@ -282,7 +291,7 @@ export async function writeAuditLog(input: AuditLogInput) {
   }
 
   const queue = getQueue()
-  queue.audit.push({
+  enqueue(queue.audit, {
     ...normalized,
     meta: normalized.meta ?? null,
     createdAt: now,
@@ -305,6 +314,10 @@ function scheduleFlush() {
       if (q.system.length > 0 || q.audit.length > 0) scheduleFlush()
     })
   }, 100)
+}
+
+export async function flushLogs() {
+  await flushDb()
 }
 
 async function flushDb() {
@@ -333,7 +346,10 @@ async function flushDb() {
         })),
       })
     } catch {
-      // ignore
+      queue.system.unshift(...system)
+      if (queue.system.length > MAX_PENDING_LOGS) {
+        queue.system.splice(0, queue.system.length - MAX_PENDING_LOGS)
+      }
     }
   }
 
@@ -357,7 +373,10 @@ async function flushDb() {
         })),
       })
     } catch {
-      // ignore
+      queue.audit.unshift(...audit)
+      if (queue.audit.length > MAX_PENDING_LOGS) {
+        queue.audit.splice(0, queue.audit.length - MAX_PENDING_LOGS)
+      }
     }
   }
 }
