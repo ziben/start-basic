@@ -65,4 +65,17 @@ export const moduleDiagnostics: ModuleDiagnosticsItem[] = [
     betterAuthServerPluginIds: [],
     betterAuthClientPluginIds: [],
   },
+  {
+    key: 'organization',
+    version: '1.0.0',
+    dependencies: ['auth', 'identity'],
+    exports: [
+      {
+        name: 'services',
+        keys: ['DepartmentService', 'InvitationService', 'MemberService', 'OrganizationService'],
+      },
+    ],
+    betterAuthServerPluginIds: [],
+    betterAuthClientPluginIds: [],
+  },
 ]

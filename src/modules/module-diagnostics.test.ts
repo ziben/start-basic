@@ -47,6 +47,18 @@ describe('moduleDiagnostics', () => {
     ])
   })
 
+  it('registers organization as the organization capability module', () => {
+    const organizationDiagnostics = moduleDiagnostics.find((module) => module.key === 'organization')
+
+    expect(organizationDiagnostics?.dependencies).toEqual(moduleRegistry.getModule('organization').dependencies)
+    expect(organizationDiagnostics?.exports).toEqual([
+      {
+        name: 'services',
+        keys: ['DepartmentService', 'InvitationService', 'MemberService', 'OrganizationService'],
+      },
+    ])
+  })
+
   it('reports actionable recommendations for broken module contracts', () => {
     const issues = getModuleDiagnosticsIssues([
       {

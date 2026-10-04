@@ -1,6 +1,6 @@
 export * from './features/navigation'
 export * from './features/identity'
-export * from './features/organization'
+export * from '~/modules/organization'
 export * from './features/i18n'
 export * from './features/audit'
 export * from './features/rbac'

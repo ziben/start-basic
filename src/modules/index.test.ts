@@ -1,8 +1,17 @@
 import { describe, expect, it } from 'vitest'
-import { auditModule, authModule, healthModule, identityModule, moduleRegistry, navigationModule, paymentModule } from './index'
+import {
+  auditModule,
+  authModule,
+  healthModule,
+  identityModule,
+  moduleRegistry,
+  navigationModule,
+  organizationModule,
+  paymentModule,
+} from './index'
 
 describe('moduleRegistry', () => {
-  it('registers auth, payment, health, identity, audit, and navigation explicitly', () => {
+  it('registers auth, payment, health, identity, audit, navigation, and organization explicitly', () => {
     expect(moduleRegistry.modules).toEqual([
       authModule,
       paymentModule,
@@ -10,6 +19,7 @@ describe('moduleRegistry', () => {
       identityModule,
       auditModule,
       navigationModule,
+      organizationModule,
     ])
     expect(moduleRegistry.getModule('payment')).toBe(paymentModule)
     expect(moduleRegistry.getModule('payment').dependencies).toContain('auth')
@@ -21,5 +31,7 @@ describe('moduleRegistry', () => {
     expect(moduleRegistry.getModule('audit').dependencies).toContain('auth')
     expect(moduleRegistry.getModule('navigation')).toBe(navigationModule)
     expect(moduleRegistry.getModule('navigation').dependencies).toContain('auth')
+    expect(moduleRegistry.getModule('organization')).toBe(organizationModule)
+    expect(moduleRegistry.getModule('organization').dependencies).toContain('auth')
   })
 })

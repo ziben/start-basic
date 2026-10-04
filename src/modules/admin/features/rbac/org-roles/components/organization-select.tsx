@@ -16,7 +16,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import { useOrganizationsListQuery } from "@/modules/admin/features/organization/organizations/hooks/use-organizations-list-query"
+import { useOrganizationsListQuery } from '~/modules/organization/organizations/hooks/use-organizations-list-query'
 
 interface OrganizationSelectProps {
   value?: string

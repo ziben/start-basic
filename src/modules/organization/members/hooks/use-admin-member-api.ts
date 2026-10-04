@@ -13,7 +13,7 @@ import {
   deleteMemberFn,
   bulkDeleteMembersFn,
 } from '../server-fns/member.fn'
-import type { AdminMemberInfo } from '~/modules/admin/features/organization/members/types/member'
+import type { AdminMemberInfo } from '~/modules/organization/members/types/member'
 import { memberQueryKeys } from '~/shared/lib/query-keys'
 
 export type { AdminMemberInfo }

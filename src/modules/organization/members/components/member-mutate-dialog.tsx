@@ -4,10 +4,10 @@ import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { createMemberFn, updateMemberFn } from '~/modules/admin/features/organization/members/server-fns/member.fn'
-import { getOrganizationsFn } from '~/modules/admin/features/organization/organizations/server-fns/organization.fn'
+import { createMemberFn, updateMemberFn } from '~/modules/organization/members/server-fns/member.fn'
+import { getOrganizationsFn } from '~/modules/organization/organizations/server-fns/organization.fn'
 import { getUsersFn } from '~/modules/identity/users/server-fns/user.fn'
-import { DepartmentSelector } from '../../../../shared/components/department-selector'
+import { DepartmentSelector } from '~/modules/organization/shared/components/department-selector'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
