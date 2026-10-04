@@ -317,7 +317,13 @@ function scheduleFlush() {
 }
 
 export async function flushLogs() {
-  await flushDb()
+  for (let attempt = 0; attempt < 25; attempt += 1) {
+    const queue = getQueue()
+    if (queue.system.length === 0 && queue.audit.length === 0) return
+    const before = queue.system.length + queue.audit.length
+    await flushDb()
+    if (queue.system.length + queue.audit.length >= before) return
+  }
 }
 
 async function flushDb() {
