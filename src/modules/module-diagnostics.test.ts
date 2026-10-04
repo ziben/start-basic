@@ -59,6 +59,18 @@ describe('moduleDiagnostics', () => {
     ])
   })
 
+  it('registers rbac as the authorization capability module', () => {
+    const rbacDiagnostics = moduleDiagnostics.find((module) => module.key === 'rbac')
+
+    expect(rbacDiagnostics?.dependencies).toEqual(moduleRegistry.getModule('rbac').dependencies)
+    expect(rbacDiagnostics?.exports).toEqual([
+      {
+        name: 'services',
+        keys: ['PermissionService', 'ResourceService', 'RolePermissionService', 'RoleService'],
+      },
+    ])
+  })
+
   it('reports actionable recommendations for broken module contracts', () => {
     const issues = getModuleDiagnosticsIssues([
       {

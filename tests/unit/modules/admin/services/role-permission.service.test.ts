@@ -2,7 +2,7 @@
  * RolePermission Service 单元测试
  */
 // 导入服务（在 mock 之后）
-import { RolePermissionService } from '@/modules/admin/features/rbac/permissions/services/role-permission.service'
+import { RolePermissionService } from '~/modules/rbac/permissions/services/role-permission.service'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 
 // 使用 vi.hoisted() 解决 mock 提升问题

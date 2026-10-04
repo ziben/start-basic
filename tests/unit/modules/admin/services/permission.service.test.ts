@@ -35,7 +35,7 @@ vi.mock('@/shared/lib/db', () => ({
 }))
 
 // 导入服务（在 mock 之后）
-import { PermissionService } from '@/modules/admin/features/rbac/permissions/services/permission.service'
+import { PermissionService } from '~/modules/rbac/permissions/services/permission.service'
 
 describe('PermissionService', () => {
     beforeEach(() => {

@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { z } from 'zod'
-import { OrgRolesPage } from '@/modules/admin/features/rbac'
+import { OrgRolesPage } from '~/modules/rbac'
 
 const orgRolesSearchSchema = z.object({
   organizationId: z.string().optional(),

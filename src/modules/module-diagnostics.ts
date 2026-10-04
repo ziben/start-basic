@@ -78,4 +78,17 @@ export const moduleDiagnostics: ModuleDiagnosticsItem[] = [
     betterAuthServerPluginIds: [],
     betterAuthClientPluginIds: [],
   },
+  {
+    key: 'rbac',
+    version: '1.0.0',
+    dependencies: ['auth', 'navigation', 'organization'],
+    exports: [
+      {
+        name: 'services',
+        keys: ['PermissionService', 'ResourceService', 'RolePermissionService', 'RoleService'],
+      },
+    ],
+    betterAuthServerPluginIds: [],
+    betterAuthClientPluginIds: [],
+  },
 ]

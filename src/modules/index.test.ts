@@ -8,10 +8,11 @@ import {
   navigationModule,
   organizationModule,
   paymentModule,
+  rbacModule,
 } from './index'
 
 describe('moduleRegistry', () => {
-  it('registers auth, payment, health, identity, audit, navigation, and organization explicitly', () => {
+  it('registers auth, payment, health, identity, audit, navigation, organization, and rbac explicitly', () => {
     expect(moduleRegistry.modules).toEqual([
       authModule,
       paymentModule,
@@ -20,6 +21,7 @@ describe('moduleRegistry', () => {
       auditModule,
       navigationModule,
       organizationModule,
+      rbacModule,
     ])
     expect(moduleRegistry.getModule('payment')).toBe(paymentModule)
     expect(moduleRegistry.getModule('payment').dependencies).toContain('auth')
@@ -33,5 +35,7 @@ describe('moduleRegistry', () => {
     expect(moduleRegistry.getModule('navigation').dependencies).toContain('auth')
     expect(moduleRegistry.getModule('organization')).toBe(organizationModule)
     expect(moduleRegistry.getModule('organization').dependencies).toContain('auth')
+    expect(moduleRegistry.getModule('rbac')).toBe(rbacModule)
+    expect(moduleRegistry.getModule('rbac').dependencies).toContain('auth')
   })
 })
