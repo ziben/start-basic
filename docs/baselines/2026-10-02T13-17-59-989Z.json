@@ -1,0 +1,40 @@
+{
+  "startedAt": "2026-10-02T13:17:59.989Z",
+  "gitCommit": "2282eae479a4cb0753dc58a9be5c3469b648c9a8",
+  "workingTree": "?? docs/baselines/2026-09-14T04-31-49-339Z.json\n?? docs/superpowers/specs/2026-09-13-health-archive-architecture.md",
+  "passed": true,
+  "checks": [
+    {
+      "name": "lint",
+      "command": "pnpm lint",
+      "passed": true,
+      "durationMs": 18579,
+      "exitCode": 0,
+      "output": "$ eslint .\n"
+    },
+    {
+      "name": "typecheck",
+      "command": "pnpm typecheck",
+      "passed": true,
+      "durationMs": 27074,
+      "exitCode": 0,
+      "output": "$ pnpm run routes && tsc --noEmit\n$ pnpm exec tsx scripts/generate-routes.ts\n"
+    },
+    {
+      "name": "test",
+      "command": "pnpm exec vitest run",
+      "passed": true,
+      "durationMs": 20739,
+      "exitCode": 0,
+      "output": "\n RUN  v4.1.11 Z:/labs/start-basic\n\n\n Test Files  47 passed (47)\n      Tests  175 passed (175)\n   Start at  21:18:48\n   Duration  17.90s (transform 12.94s, setup 22.98s, import 31.28s, tests 5.86s, environment 99.78s)\n\n"
+    },
+    {
+      "name": "build",
+      "command": "pnpm build",
+      "passed": true,
+      "durationMs": 11541,
+      "exitCode": 0,
+      "output": "                        14.64 kB │ gzip:   4.14 kB\ndist/server/assets/notifications-page-DM3uwYtq.js                 16.05 kB │ gzip:   2.28 kB\ndist/server/assets/account-DJNnUsjE.js                            17.38 kB │ gzip:   3.30 kB\ndist/server/assets/rbac.fn-B-4WzHCc.js                            18.27 kB │ gzip:   3.59 kB\ndist/server/assets/terms-BRtgJf5d.js                              18.60 kB │ gzip:   3.33 kB\ndist/server/assets/account-page-CoO2Df3C.js                       18.90 kB │ gzip:   4.20 kB\ndist/server/assets/useSelector-URaoghRs.js                        19.06 kB │ gzip:   6.36 kB\ndist/server/assets/Match-sv-z440I.js                              22.19 kB │ gzip:   5.77 kB\ndist/server/assets/ai-chat-CzCz4bMt.js                            22.29 kB │ gzip:   5.21 kB\ndist/server/assets/(public)-DfL9W-3m.js                           23.68 kB │ gzip:   4.22 kB\ndist/server/assets/log-CIVhzgfO.js                                25.08 kB │ gzip:   5.58 kB\ndist/server/assets/toolbar-D7aBFQw-.js                            25.40 kB │ gzip:   5.24 kB\ndist/server/assets/path-CbBGlsTt.js                               30.94 kB │ gzip:   8.28 kB\ndist/server/assets/session-Df6LVWma.js                            33.53 kB │ gzip:   7.10 kB\ndist/server/assets/privacy-Ccmg4hEk.js                            33.74 kB │ gzip:   4.90 kB\ndist/server/assets/_tanstack-start-manifest_v-CLDEm6Dd.js         33.88 kB │ gzip:   4.81 kB\ndist/server/assets/auth-client-DOgRZzUb.js                        36.25 kB │ gzip:   9.26 kB\ndist/server/assets/translation-zTAskDVu.js                        41.37 kB │ gzip:   7.87 kB\ndist/server/assets/organizations-BysWuqcw.js                      41.39 kB │ gzip:   7.40 kB\ndist/server/assets/modules-D5odq9Gs.js                            42.34 kB │ gzip:   6.85 kB\ndist/server/assets/roles-B1GeIWVP.js                              44.95 kB │ gzip:   7.73 kB\ndist/server/assets/dashboard-ZLlo9aK2.js                          47.60 kB │ gzip:   5.37 kB\ndist/server/assets/orders-Cppk8zWM.js                             47.71 kB │ gzip:   8.26 kB\ndist/server/assets/department-39Qaf5Ud.js                         48.12 kB │ gzip:   7.98 kB\ndist/server/assets/chat-CKPqolv2.js                               50.60 kB │ gzip:  12.08 kB\ndist/server/assets/org-roles-uaDi_cg7.js                          53.69 kB │ gzip:   9.81 kB\ndist/server/assets/members-C0wwv3nU.js                            54.60 kB │ gzip:  10.21 kB\ndist/server/assets/permissions-DjVCcyUF.js                        58.43 kB │ gzip:   6.98 kB\ndist/server/assets/system-config-CQeTqq5o.js                      72.42 kB │ gzip:  12.96 kB\ndist/server/assets/users-CGZ5bnPd.js                              75.84 kB │ gzip:  12.69 kB\ndist/server/assets/use-translation-CpijTcMz.js                    84.45 kB │ gzip:  18.46 kB\ndist/server/assets/manifest-DIysW7cP.js                          118.71 kB │ gzip:  28.97 kB\ndist/server/assets/navigation-ynfVvBb1.js                        119.45 kB │ gzip:  19.56 kB\ndist/server/assets/router-CeCzOx25.js                            124.59 kB │ gzip:  29.80 kB\ndist/server/assets/skip-to-main-Ba6sV6Zk.js                      129.78 kB │ gzip:  21.61 kB\ndist/server/assets/db-CZoYWmwH.js                                212.98 kB │ gzip:  50.43 kB\ndist/server/assets/dist-CdDAJsw4.js                              221.49 kB │ gzip:  39.42 kB\ndist/server/server.js                                            251.16 kB │ gzip:  59.76 kB\ndist/server/assets/error-codes-DvcQy6ms.js                       439.79 kB │ gzip:  85.12 kB\ndist/server/assets/auth-ReFC2d6H.js                              977.95 kB │ gzip: 208.84 kB\n\n✓ built in 2.21s\n$ vite build\n\u001b[33m[INEFFECTIVE_DYNAMIC_IMPORT] \u001b[0msrc/modules/payment/shared/lib/wechat-pay.ts is dynamically imported by src/modules/payment/shared/server-fns/notify.ts but also statically imported by src/routes/api/v1/payment/wechat/prepay.ts, dynamic import will not move module into another chunk.\n\n"
+    }
+  ]
+}

@@ -13,10 +13,30 @@ enum HealthMetricFlag {
   UNKNOWN
 }
 
+model HealthPerson {
+  id            String         @id @default(cuid())
+  ownerUserId   String
+  ownerUser     User           @relation(fields: [ownerUserId], references: [id], onDelete: Cascade)
+  name          String
+  gender        String?
+  birthDate     DateTime?
+  relationLabel String?
+  note          String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  reports       HealthReport[]
+
+  @@index([ownerUserId])
+  @@index([ownerUserId, name])
+  @@map("health_person")
+}
+
 model HealthReport {
   id             String             @id @default(cuid())
   userId         String
   user           User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  personId       String?
+  person         HealthPerson?      @relation(fields: [personId], references: [id], onDelete: SetNull)
   title          String
   examDate       DateTime?
   sourceFileName String?
@@ -28,6 +48,7 @@ model HealthReport {
   metrics        HealthMetricResult[]
 
   @@index([userId])
+  @@index([personId])
   @@index([userId, createdAt])
   @@index([examDate])
   @@index([createdAt])

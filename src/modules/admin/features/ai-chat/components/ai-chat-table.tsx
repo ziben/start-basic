@@ -2,14 +2,19 @@
  * AI Chat Admin - 会话列表表格
  */
 import { useState } from 'react'
-import { type VisibilityState, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
 import { type NavigateFn, useTableUrlState } from '@/shared/hooks/use-table-url-state'
 import { cn } from '@/shared/lib/utils'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
+import { dataTableFeatures, tableFeatures } from '~/shared/lib/tanstack-table'
+import { type VisibilityState, flexRender, useTable } from '~/shared/lib/tanstack-table'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
 import type { AIConversationItem } from '../hooks/use-ai-chat-query'
 import { useAIChatColumns } from './ai-chat-columns'
+
+const features = tableFeatures({
+  ...dataTableFeatures,
+})
 
 type Props = {
   data: AIConversationItem[]
@@ -32,7 +37,8 @@ function AIChatTableInner({ data, isLoading, error, search, navigate, onView, on
     globalFilter: { enabled: true, key: 'filter' },
   })
 
-  const table = useReactTable({
+  const table = useTable({
+    features,
     data,
     columns,
     state: {
@@ -43,7 +49,6 @@ function AIChatTableInner({ data, isLoading, error, search, navigate, onView, on
     onColumnVisibilityChange: setColumnVisibility,
     onGlobalFilterChange,
     onPaginationChange,
-    getCoreRowModel: getCoreRowModel(),
   })
 
   const pageCount = table.getPageCount()

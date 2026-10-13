@@ -1,18 +1,24 @@
 import { useEffect, useRef, useState } from 'react'
-import {
-  getCoreRowModel,
-  getFacetedRowModel,
-  getFacetedUniqueValues,
-  useReactTable,
-  type VisibilityState,
-} from '@tanstack/react-table'
 import { AdminDataTable } from '@/modules/admin/shared/components/admin-data-table'
 import { useTableColumnVisibility } from '@/shared/hooks/use-table-column-visibility'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
+import { dataTableFeatures, tableFeatures } from '~/shared/lib/tanstack-table'
+import {
+  createFacetedRowModel,
+  createFacetedUniqueValues,
+  useTable,
+  type VisibilityState,
+} from '~/shared/lib/tanstack-table'
 import { useRolesContext } from '../context/roles-context'
 import { useRolesQuery } from '../hooks/use-roles-query'
 import { useRolesColumns } from './roles-columns'
+
+const features = tableFeatures({
+  ...dataTableFeatures,
+  facetedRowModel: createFacetedRowModel(),
+  facetedUniqueValues: createFacetedUniqueValues(),
+})
 
 export function RolesTable() {
   const { t } = useTranslation()
@@ -27,7 +33,8 @@ export function RolesTable() {
     filter: tableUrl.globalFilter,
   })
 
-  const table = useReactTable({
+  const table = useTable({
+    features,
     data: data?.items ?? [],
     columns,
     state: {
@@ -43,9 +50,7 @@ export function RolesTable() {
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
     onColumnVisibilityChange: setColumnVisibility,
-    getCoreRowModel: getCoreRowModel(),
-    getFacetedRowModel: getFacetedRowModel(),
-    getFacetedUniqueValues: getFacetedUniqueValues(),
+
     onPaginationChange: tableUrl.onPaginationChange,
     onGlobalFilterChange: tableUrl.onGlobalFilterChange,
     onColumnFiltersChange: tableUrl.onColumnFiltersChange,

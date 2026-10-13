@@ -1,13 +1,14 @@
 import React from 'react'
 import { Cross2Icon } from '@radix-ui/react-icons'
-import { type Table } from '@tanstack/react-table'
 import { RefreshCw } from 'lucide-react'
+import type { RowData } from '~/shared/lib/tanstack-table'
+import { type Table } from '~/shared/lib/tanstack-table'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { DataTableFacetedFilter } from './faceted-filter'
 import { DataTableViewOptions } from './view-options'
 
-type DataTableToolbarProps<TData> = {
+type DataTableToolbarProps<TData extends RowData> = {
   table: Table<TData>
   searchPlaceholder?: string
   searchKey?: string
@@ -27,7 +28,7 @@ type DataTableToolbarProps<TData> = {
   onColumnVisibilityChange?: (visibility: Record<string, boolean>) => void
 }
 
-export function DataTableToolbar<TData>({
+export function DataTableToolbar<TData extends RowData>({
   table,
   searchPlaceholder = 'Filter...',
   searchKey,
@@ -36,7 +37,7 @@ export function DataTableToolbar<TData>({
   showViewOptions = true,
   filters = [],
 }: DataTableToolbarProps<TData>) {
-  const isFiltered = table.getState().columnFilters.length > 0 || table.getState().globalFilter
+  const isFiltered = table.state.columnFilters.length > 0 || table.state.globalFilter
 
   return (
     <div className='flex items-center justify-between'>
@@ -51,7 +52,7 @@ export function DataTableToolbar<TData>({
         ) : (
           <Input
             placeholder={searchPlaceholder}
-            value={table.getState().globalFilter ?? ''}
+            value={table.state.globalFilter ?? ''}
             onChange={(event) => table.setGlobalFilter(event.target.value)}
             className='h-8 w-[150px] lg:w-[250px]'
           />
@@ -103,6 +104,3 @@ export function DataTableToolbar<TData>({
     </div>
   )
 }
-
-// export const DataTableToolbar = memo(DataTableToolbarInner) as typeof DataTableToolbarInner
-

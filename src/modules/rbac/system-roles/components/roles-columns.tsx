@@ -1,4 +1,8 @@
-import { type ColumnDef } from '@tanstack/react-table'
+import type { Role } from '@/generated/prisma/browser'
+import { PermissionGuard } from '@/shared/components/permission-guard'
+import { MoreHorizontal, Shield, Users } from 'lucide-react'
+import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
+import { type ColumnDef } from '~/shared/lib/tanstack-table'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -9,11 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { MoreHorizontal, Shield, Users } from 'lucide-react'
-import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import { useRolesContext } from '../context/roles-context'
-import type { Role } from '@/generated/prisma/browser'
-import { PermissionGuard } from '@/shared/components/permission-guard'
 
 type RoleWithCount = Role & {
   rolePermissions: Array<{ permission: any }>
@@ -30,11 +30,11 @@ export function useRolesColumns() {
       cell: ({ row }) => {
         const role = row.original
         return (
-          <div className="flex items-center gap-2">
-            <Shield className="h-4 w-4 text-muted-foreground" />
+          <div className='flex items-center gap-2'>
+            <Shield className='h-4 w-4 text-muted-foreground' />
             <div>
-              <div className="font-medium">{role.displayName}</div>
-              <div className="text-xs text-muted-foreground">{role.name}</div>
+              <div className='font-medium'>{role.displayName}</div>
+              <div className='text-xs text-muted-foreground'>{role.name}</div>
             </div>
           </div>
         )
@@ -60,9 +60,9 @@ export function useRolesColumns() {
       cell: ({ row }) => {
         const category = row.getValue('category') as string | null
         return category ? (
-          <Badge variant="outline">{category}</Badge>
+          <Badge variant='outline'>{category}</Badge>
         ) : (
-          <span className="text-muted-foreground">{t('admin.common.empty')}</span>
+          <span className='text-muted-foreground'>{t('admin.common.empty')}</span>
         )
       },
     },
@@ -72,8 +72,8 @@ export function useRolesColumns() {
       cell: ({ row }) => {
         const count = row.original.rolePermissions?.length || 0
         return (
-          <div className="flex items-center gap-1">
-            <Users className="h-3 w-3 text-muted-foreground" />
+          <div className='flex items-center gap-1'>
+            <Users className='h-3 w-3 text-muted-foreground' />
             <span>{count}</span>
           </div>
         )
@@ -84,7 +84,7 @@ export function useRolesColumns() {
       header: t('admin.role.columns.template'),
       cell: ({ row }) => {
         const isTemplate = row.getValue('isTemplate') as boolean
-        return isTemplate ? <Badge variant="secondary">{t('admin.role.badge.template')}</Badge> : null
+        return isTemplate ? <Badge variant='secondary'>{t('admin.role.badge.template')}</Badge> : null
       },
     },
     {
@@ -92,7 +92,7 @@ export function useRolesColumns() {
       header: t('admin.role.columns.system'),
       cell: ({ row }) => {
         const isSystem = row.getValue('isSystem') as boolean
-        return isSystem ? <Badge variant="destructive">{t('admin.role.badge.system')}</Badge> : null
+        return isSystem ? <Badge variant='destructive'>{t('admin.role.badge.system')}</Badge> : null
       },
     },
     {
@@ -113,41 +113,41 @@ export function useRolesColumns() {
         const role = row.original
 
         return (
-          <div className="flex items-center justify-end gap-2">
-            <PermissionGuard permission="role:update">
+          <div className='flex items-center justify-end gap-2'>
+            <PermissionGuard permission='role:update'>
               <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8"
+                variant='ghost'
+                size='icon'
+                className='h-8 w-8'
                 onClick={() => openEditDialog(role)}
                 disabled={role.isSystem}
               >
-                <Shield className="h-4 w-4 text-muted-foreground" />
-                <span className="sr-only">{t('admin.common.edit')}</span>
+                <Shield className='h-4 w-4 text-muted-foreground' />
+                <span className='sr-only'>{t('admin.common.edit')}</span>
               </Button>
             </PermissionGuard>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="flex h-8 w-8 p-0 data-[state=open]:bg-muted">
-                  <span className="sr-only">{t('admin.common.openMenu')}</span>
-                  <MoreHorizontal className="h-4 w-4" />
+                <Button variant='ghost' className='flex h-8 w-8 p-0 data-[state=open]:bg-muted'>
+                  <span className='sr-only'>{t('admin.common.openMenu')}</span>
+                  <MoreHorizontal className='h-4 w-4' />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-[160px]">
+              <DropdownMenuContent align='end' className='w-[160px]'>
                 <DropdownMenuLabel>{t('admin.common.actions')}</DropdownMenuLabel>
-                <PermissionGuard permission="role:update">
+                <PermissionGuard permission='role:update'>
                   <DropdownMenuItem onClick={() => openPermissionsDialog(role)}>
-                    <Users className="mr-2 h-4 w-4 text-muted-foreground" />
+                    <Users className='mr-2 h-4 w-4 text-muted-foreground' />
                     {t('admin.role.actions.permissions')}
                   </DropdownMenuItem>
                 </PermissionGuard>
                 <DropdownMenuSeparator />
-                <PermissionGuard permission="role:delete">
+                <PermissionGuard permission='role:delete'>
                   <DropdownMenuItem
                     onClick={() => openDeleteDialog(role)}
                     disabled={role.isSystem}
-                    className="text-destructive focus:text-destructive"
+                    className='text-destructive focus:text-destructive'
                   >
                     {t('admin.common.delete')}
                   </DropdownMenuItem>

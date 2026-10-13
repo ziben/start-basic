@@ -1,19 +1,20 @@
 import { useState } from 'react'
-import { type Table } from '@tanstack/react-table'
 import { Trash2, Download } from 'lucide-react'
 import { toast } from 'sonner'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
+import type { RowData } from '~/shared/lib/tanstack-table'
+import { type Table } from '~/shared/lib/tanstack-table'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { DataTableBulkActions as BulkActionsToolbar } from '@/components/data-table'
 import { type Organization } from '../data/schema'
 import { OrganizationsMultiDeleteDialog } from './organizations-multi-delete-dialog'
 
-type OrganizationsBulkActionsProps<TData> = {
+type OrganizationsBulkActionsProps<TData extends RowData> = {
   table: Table<TData>
 }
 
-export function OrganizationsBulkActions<TData>({ table }: OrganizationsBulkActionsProps<TData>) {
+export function OrganizationsBulkActions<TData extends RowData>({ table }: OrganizationsBulkActionsProps<TData>) {
   const { t } = useTranslation()
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const selectedRows = table.getFilteredSelectedRowModel().rows

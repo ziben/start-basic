@@ -1,18 +1,18 @@
 import { useMemo } from 'react'
-import {
-  flexRender,
-  getCoreRowModel,
-  getExpandedRowModel,
-  useReactTable,
-  type ExpandedState,
-} from '@tanstack/react-table'
-import { ChevronRight, ChevronDown } from 'lucide-react'
-import { cn } from '@/shared/lib/utils'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Button } from '@/components/ui/button'
-import { useDepartmentsColumns } from './departments-columns'
-import { type Department } from '../data/schema'
 import { useState } from 'react'
+import { cn } from '@/shared/lib/utils'
+import { ChevronRight, ChevronDown } from 'lucide-react'
+import { dataTableFeatures, tableFeatures } from '~/shared/lib/tanstack-table'
+import { flexRender, createExpandedRowModel, useTable, type ExpandedState } from '~/shared/lib/tanstack-table'
+import { Button } from '@/components/ui/button'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { type Department } from '../data/schema'
+import { useDepartmentsColumns } from './departments-columns'
+
+const features = tableFeatures({
+  ...dataTableFeatures,
+  expandedRowModel: createExpandedRowModel(),
+})
 
 type DepartmentsListProps = {
   departments: Department[]
@@ -20,13 +20,13 @@ type DepartmentsListProps = {
 
 export function DepartmentsList({ departments }: DepartmentsListProps) {
   const [expanded, setExpanded] = useState<ExpandedState>({})
-  
+
   const columns = useDepartmentsColumns()
 
   // 构建树形数据
   const treeData = useMemo(() => {
     type DepartmentWithSubRows = Department & { subRows?: DepartmentWithSubRows[] }
-    
+
     const buildTree = (items: Department[], parentId: string | null = null): DepartmentWithSubRows[] => {
       return items
         .filter((item) => item.parentId === parentId)
@@ -38,7 +38,8 @@ export function DepartmentsList({ departments }: DepartmentsListProps) {
     return buildTree(departments)
   }, [departments])
 
-  const table = useReactTable({
+  const table = useTable({
+    features,
     data: treeData,
     columns,
     state: {
@@ -46,8 +47,6 @@ export function DepartmentsList({ departments }: DepartmentsListProps) {
     },
     onExpandedChange: setExpanded,
     getSubRows: (row: any) => row.subRows,
-    getCoreRowModel: getCoreRowModel(),
-    getExpandedRowModel: getExpandedRowModel(),
   })
 
   return (
@@ -74,10 +73,7 @@ export function DepartmentsList({ departments }: DepartmentsListProps) {
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
                   {row.getVisibleCells().map((cell, index) => (
-                    <TableCell
-                      key={cell.id}
-                      className={cn(cell.column.columnDef.meta?.className)}
-                    >
+                    <TableCell key={cell.id} className={cn(cell.column.columnDef.meta?.className)}>
                       {index === 0 && row.subRows?.length > 0 ? (
                         <div className='flex items-center gap-1'>
                           <Button

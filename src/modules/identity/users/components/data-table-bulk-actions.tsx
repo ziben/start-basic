@@ -1,24 +1,25 @@
 import { useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
-import { type Table } from '@tanstack/react-table'
 import { Trash2, CircleArrowUp, Download } from 'lucide-react'
 import { toast } from 'sonner'
-import { bulkBanUsersFn } from '~/modules/identity/users/server-fns/user.fn'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
+import { bulkBanUsersFn } from '~/modules/identity/users/server-fns/user.fn'
+import { adminUsersQueryKeys } from '~/shared/lib/query-keys'
+import type { RowData } from '~/shared/lib/tanstack-table'
+import { type Table } from '~/shared/lib/tanstack-table'
 import { Button } from '@/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { DataTableBulkActions as BulkActionsToolbar } from '@/components/data-table'
 import { type AdminUser } from '../data/schema'
-import { adminUsersQueryKeys } from '~/shared/lib/query-keys'
 import { useUsersOptimisticUpdate, createBulkBanUpdateFn } from '../hooks/use-users-optimistic-update'
 import { AdminUsersMultiDeleteDialog } from './admin-users-multi-delete-dialog'
 
-type DataTableBulkActionsProps<TData> = {
+type DataTableBulkActionsProps<TData extends RowData> = {
   table: Table<TData>
 }
 
-export function DataTableBulkActions<TData>({ table }: DataTableBulkActionsProps<TData>) {
+export function DataTableBulkActions<TData extends RowData>({ table }: DataTableBulkActionsProps<TData>) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const selectedRows = table.getFilteredSelectedRowModel().rows
   const { getOptimisticMutationOptions } = useUsersOptimisticUpdate()
@@ -31,7 +32,7 @@ export function DataTableBulkActions<TData>({ table }: DataTableBulkActionsProps
           ids: input.ids,
           banned: input.banned,
           banReason: undefined,
-        }
+        },
       })
     },
     ...getOptimisticMutationOptions({
@@ -102,9 +103,7 @@ export function DataTableBulkActions<TData>({ table }: DataTableBulkActionsProps
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent sideOffset={14}>
-            <DropdownMenuItem onClick={() => void runBulkBan()}>
-              {t('admin.user.bulk.banSelected')}
-            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => void runBulkBan()}>{t('admin.user.bulk.banSelected')}</DropdownMenuItem>
             <DropdownMenuItem onClick={() => void runBulkUnban()}>
               {t('admin.user.bulk.unbanSelected')}
             </DropdownMenuItem>

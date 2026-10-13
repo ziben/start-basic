@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
-import { DirectionProvider as RdxDirProvider } from '@radix-ui/react-direction'
 import { getCookie, setCookie, removeCookie } from '@/shared/lib/cookies'
+import { Direction as DirectionPrimitive } from 'radix-ui'
 
 export type Direction = 'ltr' | 'rtl'
 
@@ -47,7 +47,7 @@ export function DirectionProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <DirectionContext.Provider value={value}>
-      <RdxDirProvider dir={dir}>{children}</RdxDirProvider>
+      <DirectionPrimitive.Provider dir={dir}>{children}</DirectionPrimitive.Provider>
     </DirectionContext.Provider>
   )
 }

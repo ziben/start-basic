@@ -1,9 +1,10 @@
-import { Row } from '@tanstack/react-table'
 import { Eye, EyeOff, Pencil, Trash, MoreHorizontal } from 'lucide-react'
 import { toast } from 'sonner'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import { AdminNavItem } from '~/modules/navigation/shared/navitem/data/schema'
 import { useToggleNavItemVisibility } from '~/modules/navigation/shared/navitem/hooks/use-navitem-api'
+import type { RowData } from '~/shared/lib/tanstack-table'
+import { Row } from '~/shared/lib/tanstack-table'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -16,11 +17,11 @@ import {
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { useAdminNavItemContext } from '../context/admin-navitem-context'
 
-interface DataTableRowActionsProps<TData> {
+interface DataTableRowActionsProps<TData extends RowData> {
   row: Row<TData>
 }
 
-export function DataTableRowActions<TData>({ row }: DataTableRowActionsProps<TData>) {
+export function DataTableRowActions<TData extends RowData>({ row }: DataTableRowActionsProps<TData>) {
   const { t } = useTranslation()
   const navitem = row.original as AdminNavItem
   const { setEditDialogOpen, setDeleteDialogOpen, setSelectedNavItem } = useAdminNavItemContext()

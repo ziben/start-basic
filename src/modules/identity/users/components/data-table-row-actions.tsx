@@ -1,28 +1,24 @@
 import { DotsHorizontalIcon } from '@radix-ui/react-icons'
 import { useMutation } from '@tanstack/react-query'
-import { type Row } from '@tanstack/react-table'
+import { PermissionGuard } from '@/shared/components/permission-guard'
 import { Trash2, UserPen, Ban } from 'lucide-react'
 import { toast } from 'sonner'
-import { bulkBanUsersFn } from '~/modules/identity/users/server-fns/user.fn'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
-import { Button } from '@/components/ui/button'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { type AdminUser } from '../data/schema'
+import { bulkBanUsersFn } from '~/modules/identity/users/server-fns/user.fn'
 import { adminUsersQueryKeys } from '~/shared/lib/query-keys'
+import type { RowData } from '~/shared/lib/tanstack-table'
+import { type Row } from '~/shared/lib/tanstack-table'
+import { Button } from '@/components/ui/button'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { type AdminUser } from '../data/schema'
 import { useUsersOptimisticUpdate, createBulkBanUpdateFn } from '../hooks/use-users-optimistic-update'
 import { useAdminUsers } from './admin-users-provider'
-import { PermissionGuard } from '@/shared/components/permission-guard'
 
-type DataTableRowActionsProps<TData> = {
+type DataTableRowActionsProps<TData extends RowData> = {
   row: Row<TData>
 }
 
-export function DataTableRowActions<TData>({ row }: DataTableRowActionsProps<TData>) {
+export function DataTableRowActions<TData extends RowData>({ row }: DataTableRowActionsProps<TData>) {
   const user = row.original as AdminUser
 
   const { setOpen, setCurrentRow } = useAdminUsers()
@@ -36,7 +32,7 @@ export function DataTableRowActions<TData>({ row }: DataTableRowActionsProps<TDa
           ids: [input.id],
           banned: input.banned,
           banReason: undefined,
-        }
+        },
       })
     },
     ...getOptimisticMutationOptions({
@@ -56,7 +52,7 @@ export function DataTableRowActions<TData>({ row }: DataTableRowActionsProps<TDa
 
   return (
     <div className='flex items-center justify-end gap-2'>
-      <PermissionGuard permission="user:update">
+      <PermissionGuard permission='user:update'>
         <Button
           variant='ghost'
           size='icon'
@@ -72,7 +68,7 @@ export function DataTableRowActions<TData>({ row }: DataTableRowActionsProps<TDa
         </Button>
       </PermissionGuard>
 
-      <PermissionGuard permission="user:delete">
+      <PermissionGuard permission='user:delete'>
         <Button
           variant='ghost'
           size='icon'
@@ -88,10 +84,14 @@ export function DataTableRowActions<TData>({ row }: DataTableRowActionsProps<TDa
         </Button>
       </PermissionGuard>
 
-      <PermissionGuard permission="user:update">
+      <PermissionGuard permission='user:update'>
         <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
-            <Button variant='ghost' className='flex h-8 w-8 p-0 data-[state=open]:bg-muted' onClick={(e) => e.stopPropagation()}>
+            <Button
+              variant='ghost'
+              className='flex h-8 w-8 p-0 data-[state=open]:bg-muted'
+              onClick={(e) => e.stopPropagation()}
+            >
               <DotsHorizontalIcon className='h-4 w-4' />
               <span className='sr-only'>{t('admin.user.actions.openMenu')}</span>
             </Button>

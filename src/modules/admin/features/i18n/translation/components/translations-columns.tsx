@@ -1,6 +1,6 @@
-import { type ColumnDef } from '@tanstack/react-table'
 import type { Translation } from '~/modules/admin/features/i18n/translation/types/translation'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
+import { type ColumnDef } from '~/shared/lib/tanstack-table'
 import { Checkbox } from '@/components/ui/checkbox'
 import { DataTableRowActions } from './data-table-row-actions'
 

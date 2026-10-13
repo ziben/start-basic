@@ -1,10 +1,10 @@
 import { useState } from 'react'
-import { type Table, type Row } from '@tanstack/react-table'
 import { useMutation } from '@tanstack/react-query'
 import { Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { bulkDeleteMembersFn } from '~/modules/organization/members/server-fns/member.fn'
-import { Button } from '@/components/ui/button'
+import { memberQueryKeys } from '~/shared/lib/query-keys'
+import { type Table, type Row } from '~/shared/lib/tanstack-table'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,8 +16,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
+import { Button } from '@/components/ui/button'
 import { type Member } from '../data/schema'
-import { memberQueryKeys } from '~/shared/lib/query-keys'
 import { useMembersOptimisticUpdate, createBulkDeleteUpdateFn } from '../hooks/use-members-optimistic-update'
 
 type MembersMultiDeleteDialogProps = {

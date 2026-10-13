@@ -1,5 +1,8 @@
-import { type ColumnDef } from '@tanstack/react-table'
+import { PermissionGuard } from '@/shared/components/permission-guard'
 import { History, Pencil, Trash2, MoreHorizontal } from 'lucide-react'
+import { type ColumnDef } from '~/shared/lib/tanstack-table'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,15 +11,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { DataTableColumnHeader } from '@/components/data-table'
 import type { SystemConfig } from '../data/schema'
 import { maskConfigValue } from '../utils/value-parser'
 import { useSystemConfigContext } from './system-config-provider'
-
-import { PermissionGuard } from '@/shared/components/permission-guard'
 
 function RowActions({ row }: { row: { original: SystemConfig } }): React.ReactElement {
   const { setOpen, setCurrentRow } = useSystemConfigContext()
@@ -38,7 +37,7 @@ function RowActions({ row }: { row: { original: SystemConfig } }): React.ReactEl
 
   return (
     <div className='flex items-center justify-end gap-2'>
-      <PermissionGuard permission="sysconfig.update">
+      <PermissionGuard permission='sysconfig.update'>
         <Tooltip>
           <TooltipTrigger asChild>
             <Button variant='ghost' size='icon' className='h-8 w-8' onClick={openEdit}>
@@ -50,7 +49,7 @@ function RowActions({ row }: { row: { original: SystemConfig } }): React.ReactEl
         </Tooltip>
       </PermissionGuard>
 
-      <PermissionGuard permission="sysconfig.update">
+      <PermissionGuard permission='sysconfig.update'>
         <Tooltip>
           <TooltipTrigger asChild>
             <Button variant='ghost' size='icon' className='h-8 w-8' onClick={openHistory}>
@@ -62,7 +61,7 @@ function RowActions({ row }: { row: { original: SystemConfig } }): React.ReactEl
         </Tooltip>
       </PermissionGuard>
 
-      <PermissionGuard permission="sysconfig.delete">
+      <PermissionGuard permission='sysconfig.delete'>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant='ghost' className='flex h-8 w-8 p-0 data-[state=open]:bg-muted'>
@@ -73,10 +72,7 @@ function RowActions({ row }: { row: { original: SystemConfig } }): React.ReactEl
           <DropdownMenuContent align='end' className='w-[160px]'>
             <DropdownMenuLabel>操作</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={openDelete}
-              className='text-destructive focus:text-destructive'
-            >
+            <DropdownMenuItem onClick={openDelete} className='text-destructive focus:text-destructive'>
               <Trash2 className='mr-2 h-4 w-4' />
               删除
             </DropdownMenuItem>
@@ -104,7 +100,7 @@ export function useSystemConfigColumns(): ColumnDef<SystemConfig>[] {
             <TooltipTrigger asChild>
               <span className='block w-full cursor-default truncate font-mono text-xs'>{value}</span>
             </TooltipTrigger>
-            <TooltipContent side='bottom' className='max-w-[480px] break-all font-mono text-xs'>
+            <TooltipContent side='bottom' className='max-w-[480px] font-mono text-xs break-all'>
               {value}
             </TooltipContent>
           </Tooltip>
@@ -117,9 +113,7 @@ export function useSystemConfigColumns(): ColumnDef<SystemConfig>[] {
       accessorKey: 'category',
       size: 120,
       header: ({ column }) => <DataTableColumnHeader column={column} title='分类' />,
-      cell: ({ row }) => (
-        <span className='whitespace-nowrap capitalize'>{row.getValue('category')}</span>
-      ),
+      cell: ({ row }) => <span className='whitespace-nowrap capitalize'>{row.getValue('category')}</span>,
       filterFn: (row, _id, filterValues: string[]) =>
         filterValues.includes((row.getValue<string>('category') ?? '').toLowerCase()),
       meta: { title: '分类' },
@@ -129,12 +123,11 @@ export function useSystemConfigColumns(): ColumnDef<SystemConfig>[] {
       size: 120,
       header: ({ column }) => <DataTableColumnHeader column={column} title='类型' />,
       cell: ({ row }) => (
-        <Badge variant='outline' className='whitespace-nowrap font-mono text-xs'>
+        <Badge variant='outline' className='font-mono text-xs whitespace-nowrap'>
           {row.getValue('valueType')}
         </Badge>
       ),
-      filterFn: (row, _id, filterValues: string[]) =>
-        filterValues.includes(row.getValue('valueType')),
+      filterFn: (row, _id, filterValues: string[]) => filterValues.includes(row.getValue('valueType')),
       meta: { title: '类型' },
     },
     {
@@ -150,12 +143,14 @@ export function useSystemConfigColumns(): ColumnDef<SystemConfig>[] {
         return (
           <Tooltip>
             <TooltipTrigger asChild>
-              <span className={`block w-full cursor-default truncate font-mono text-xs ${isSecret ? 'text-muted-foreground tracking-widest' : ''}`}>
+              <span
+                className={`block w-full cursor-default truncate font-mono text-xs ${isSecret ? 'tracking-widest text-muted-foreground' : ''}`}
+              >
                 {display}
               </span>
             </TooltipTrigger>
             {!isSecret ? (
-              <TooltipContent side='bottom' className='max-w-[560px] break-all font-mono text-xs'>
+              <TooltipContent side='bottom' className='max-w-[560px] font-mono text-xs break-all'>
                 {display}
               </TooltipContent>
             ) : null}

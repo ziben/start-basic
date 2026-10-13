@@ -1,9 +1,9 @@
 import { useEffect, useMemo } from 'react'
 import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query'
-import { type SortingState } from '@tanstack/react-table'
 import { adminUsersQueryKeys } from '~/shared/lib/query-keys'
-import { getUsersFn } from '../server-fns/user.fn'
+import { type SortingState } from '~/shared/lib/tanstack-table'
 import { type AdminUser } from '../data/schema'
+import { getUsersFn } from '../server-fns/user.fn'
 
 type PageData = {
   items: AdminUser[]

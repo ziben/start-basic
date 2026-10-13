@@ -21,4 +21,3 @@ export function DataCard({ title, value, description, icon }: DataCardProps) {
     </Card>
   )
 }
-

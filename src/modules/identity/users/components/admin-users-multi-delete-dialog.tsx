@@ -1,19 +1,20 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { type Table } from '@tanstack/react-table'
 import { toast } from 'sonner'
-import { bulkDeleteUsersFn } from '~/modules/identity/users/server-fns/user.fn'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
+import { bulkDeleteUsersFn } from '~/modules/identity/users/server-fns/user.fn'
+import { adminUsersQueryKeys } from '~/shared/lib/query-keys'
+import type { RowData } from '~/shared/lib/tanstack-table'
+import { type Table } from '~/shared/lib/tanstack-table'
 import { ConfirmDeleteDialog } from '@/components/confirm-delete-dialog'
 import { type AdminUser } from '../data/schema'
-import { adminUsersQueryKeys } from '~/shared/lib/query-keys'
 
-type AdminUserMultiDeleteDialogProps<TData> = {
+type AdminUserMultiDeleteDialogProps<TData extends RowData> = {
   open: boolean
   onOpenChange: (open: boolean) => void
   table: Table<TData>
 }
 
-export function AdminUsersMultiDeleteDialog<TData>({
+export function AdminUsersMultiDeleteDialog<TData extends RowData>({
   open,
   onOpenChange,
   table,

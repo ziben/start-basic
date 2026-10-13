@@ -1,20 +1,26 @@
 import { useState, useRef, useEffect } from 'react'
-import {
-  type VisibilityState,
-  getCoreRowModel,
-  getFacetedRowModel,
-  getFacetedUniqueValues,
-  useReactTable,
-} from '@tanstack/react-table'
 import { useTableColumnVisibility } from '@/shared/hooks/use-table-column-visibility'
 import { type NavigateFn, useTableUrlState } from '@/shared/hooks/use-table-url-state'
 import { cn } from '@/shared/lib/utils'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
+import { dataTableFeatures, tableFeatures } from '~/shared/lib/tanstack-table'
+import {
+  type VisibilityState,
+  createFacetedRowModel,
+  createFacetedUniqueValues,
+  useTable,
+} from '~/shared/lib/tanstack-table'
 import { DataTable, DataTablePagination, DataTableToolbar } from '@/components/data-table'
 import { useOrganizationsListQuery } from '../hooks/use-organizations-list-query'
 import { OrganizationsBulkActions } from './organizations-bulk-actions'
 import { useOrganizationsColumns } from './organizations-columns'
+
+const features = tableFeatures({
+  ...dataTableFeatures,
+  facetedRowModel: createFacetedRowModel(),
+  facetedUniqueValues: createFacetedUniqueValues(),
+})
 
 type OrganizationsTableProps = {
   search: Record<string, unknown>
@@ -44,7 +50,8 @@ export function OrganizationsTable({ search, navigate }: OrganizationsTableProps
     sorting: [],
   })
 
-  const table = useReactTable({
+  const table = useTable({
+    features,
     data,
     columns,
     state: {
@@ -67,9 +74,7 @@ export function OrganizationsTable({ search, navigate }: OrganizationsTableProps
 
       return id.includes(searchValue) || name.includes(searchValue) || slug.includes(searchValue)
     },
-    getCoreRowModel: getCoreRowModel(),
-    getFacetedRowModel: getFacetedRowModel(),
-    getFacetedUniqueValues: getFacetedUniqueValues(),
+
     onPaginationChange,
     onGlobalFilterChange,
   })

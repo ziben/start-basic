@@ -1,28 +1,29 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { format } from 'date-fns'
 import { getRouteApi } from '@tanstack/react-router'
-import {
-  type ColumnDef,
-  type VisibilityState,
-  flexRender,
-  getCoreRowModel,
-  getFacetedRowModel,
-  getFacetedUniqueValues,
-  getSortedRowModel,
-  useReactTable,
-} from '@tanstack/react-table'
 import { useUrlSyncedSorting } from '@/shared/hooks/use-url-synced-sorting'
+import { useVirtualizer } from '@tanstack/react-virtual'
 import { zhCN } from 'date-fns/locale'
 import { Eye, Trash2, MoreHorizontal } from 'lucide-react'
 import { toast } from 'sonner'
 import { AppHeaderMain } from '~/components/layout/app-header-main'
+import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import {
   useAdminSessions,
   useBulkDeleteAdminSessions,
   useDeleteAdminSession,
   type AdminSessionInfo,
 } from '~/modules/identity/session/hooks/use-admin-session-api'
-import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
+import { dataTableFeatures, tableFeatures } from '~/shared/lib/tanstack-table'
+import {
+  type ColumnDef,
+  type VisibilityState,
+  flexRender,
+  createFacetedRowModel,
+  createFacetedUniqueValues,
+  createSortedRowModel,
+  useTable,
+} from '~/shared/lib/tanstack-table'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -35,9 +36,15 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { DataTable, DataTableColumnHeader, DataTablePagination, DataTableToolbar } from '@/components/data-table'
-import { useVirtualizer } from '@tanstack/react-virtual'
 import { AdminSessionDialogs } from './components/admin-session-dialogs'
 import { AdminSessionPrimaryButtons } from './components/admin-session-primary-buttons'
+
+const features = tableFeatures({
+  ...dataTableFeatures,
+  sortedRowModel: createSortedRowModel(),
+  facetedRowModel: createFacetedRowModel(),
+  facetedUniqueValues: createFacetedUniqueValues(),
+})
 
 const route = getRouteApi('/_authenticated/admin/session')
 
@@ -131,8 +138,7 @@ export default function AdminSession() {
         id: 'index',
         header: '#',
         cell: ({ row, table }) => {
-          const pageIndex = table.getState().pagination.pageIndex
-          const pageSize = table.getState().pagination.pageSize
+          const { pageIndex, pageSize } = table.atoms.pagination.get()
           return <span className='text-muted-foreground'>{pageIndex * pageSize + row.index + 1}</span>
         },
         enableSorting: false,
@@ -302,7 +308,8 @@ export default function AdminSession() {
   const sessions = pageData?.items ?? []
   const serverPageCount = pageData?.pageCount ?? 0
 
-  const table = useReactTable({
+  const table = useTable({
+    features,
     data: sessions,
     columns,
     state: {
@@ -324,10 +331,6 @@ export default function AdminSession() {
     onPaginationChange: tableUrl.onPaginationChange,
     onGlobalFilterChange: tableUrl.onGlobalFilterChange,
     onColumnFiltersChange: tableUrl.onColumnFiltersChange,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFacetedRowModel: getFacetedRowModel(),
-    getFacetedUniqueValues: getFacetedUniqueValues(),
   })
 
   useEffect(() => {

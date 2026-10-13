@@ -2,21 +2,27 @@
  * Payment Orders Table - 订单列表表格组件
  */
 import { useEffect, useMemo, useRef, useState } from 'react'
-import {
-  type VisibilityState,
-  getCoreRowModel,
-  getFacetedRowModel,
-  getFacetedUniqueValues,
-  useReactTable,
-} from '@tanstack/react-table'
 import { type NavigateFn, useTableUrlState } from '@/shared/hooks/use-table-url-state'
 import { cn } from '@/shared/lib/utils'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
+import { dataTableFeatures, tableFeatures } from '~/shared/lib/tanstack-table'
+import {
+  type VisibilityState,
+  createFacetedRowModel,
+  createFacetedUniqueValues,
+  useTable,
+} from '~/shared/lib/tanstack-table'
 import { DataTable, DataTablePagination, DataTableToolbar } from '@/components/data-table'
 import { paymentStatuses, paymentMethods } from '../data/schema'
 import { type PaymentOrderFilters, usePaymentOrdersQuery } from '../hooks/use-payment-orders'
 import { usePaymentOrdersColumns } from './payment-orders-columns'
+
+const features = tableFeatures({
+  ...dataTableFeatures,
+  facetedRowModel: createFacetedRowModel(),
+  facetedUniqueValues: createFacetedUniqueValues(),
+})
 
 type PaymentOrdersTableProps = {
   search: Record<string, unknown>
@@ -104,7 +110,8 @@ export function PaymentOrdersTable({ search, navigate }: PaymentOrdersTableProps
   const data = pageData?.items ?? []
   const serverPageCount = pageData?.pageCount ?? 0
 
-  const table = useReactTable({
+  const table = useTable({
+    features,
     data,
     columns,
     state: {
@@ -117,9 +124,7 @@ export function PaymentOrdersTable({ search, navigate }: PaymentOrdersTableProps
     manualPagination: true,
     manualFiltering: true,
     onColumnVisibilityChange: setColumnVisibility,
-    getCoreRowModel: getCoreRowModel(),
-    getFacetedRowModel: getFacetedRowModel(),
-    getFacetedUniqueValues: getFacetedUniqueValues(),
+
     onPaginationChange,
     onGlobalFilterChange,
     onColumnFiltersChange,

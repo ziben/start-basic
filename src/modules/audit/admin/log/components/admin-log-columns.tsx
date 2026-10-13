@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
-import { type ColumnDef } from '@tanstack/react-table'
 import { cn } from '@/shared/lib/utils'
 import { type SystemLog, type AuditLog } from '~/modules/audit/shared/data/schema'
+import { type ColumnDef } from '~/shared/lib/tanstack-table'
 import { Badge } from '@/components/ui/badge'
 import { DataTableColumnHeader } from '@/components/data-table'
 

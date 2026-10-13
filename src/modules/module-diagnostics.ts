@@ -37,7 +37,7 @@ export const moduleDiagnostics: ModuleDiagnosticsItem[] = [
     key: 'health',
     version: '1.0.0',
     dependencies: ['auth'],
-    exports: [{ name: 'services', keys: ['HealthReportService'] }],
+    exports: [{ name: 'services', keys: ['HealthPersonService', 'HealthReportService'] }],
     betterAuthServerPluginIds: [],
     betterAuthClientPluginIds: [],
   },

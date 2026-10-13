@@ -1,9 +1,9 @@
 import { useMemo } from 'react'
-import { type ColumnDef } from '@tanstack/react-table'
 import { formatDate } from '@/shared/lib/utils'
 import { Copy, MoreHorizontal, FileText, Activity } from 'lucide-react'
 import { toast } from 'sonner'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
+import { type ColumnDef } from '~/shared/lib/tanstack-table'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {

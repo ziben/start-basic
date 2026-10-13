@@ -1,11 +1,11 @@
 import { useMemo } from 'react'
-import { type ColumnDef } from '@tanstack/react-table'
 import { format } from 'date-fns'
 import { Building2, Users, Phone, Mail } from 'lucide-react'
+import { type ColumnDef } from '~/shared/lib/tanstack-table'
 import { Badge } from '@/components/ui/badge'
 import { DataTableColumnHeader } from '@/components/data-table'
-import { DataTableRowActions } from './data-table-row-actions'
 import { type Department } from '../data/schema'
+import { DataTableRowActions } from './data-table-row-actions'
 
 export function useDepartmentsColumns() {
   return useMemo<ColumnDef<Department>[]>(

@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import type { UseMutationResult, UseQueryResult } from '@tanstack/react-query'
 import { CACHE_TIME } from '~/shared/lib/query-client'
 import {
+  compareHealthReportsFn,
   createHealthReportFn,
   getHealthReportFn,
   listHealthReportsFn,
@@ -11,10 +12,12 @@ export interface HealthReportFilters {
   readonly page?: number
   readonly pageSize?: number
   readonly filter?: string
+  readonly personId?: string
 }
 
 export interface CreateHealthReportData {
   readonly title: string
+  readonly personId: string
   readonly examDate?: string
   readonly sourceFileName?: string
   readonly ocrText: string
@@ -25,10 +28,12 @@ export const healthReportKeys = {
   lists: () => [...healthReportKeys.all, 'list'] as const,
   list: (filters: HealthReportFilters) => [...healthReportKeys.lists(), filters] as const,
   detail: (reportId: string) => [...healthReportKeys.all, 'detail', reportId] as const,
+  compare: (leftReportId: string, rightReportId: string) =>
+    [...healthReportKeys.all, 'compare', leftReportId, rightReportId] as const,
 }
 
 export function useHealthReportsQuery(
-  filters: HealthReportFilters = {},
+  filters: HealthReportFilters = {}
 ): UseQueryResult<Awaited<ReturnType<typeof listHealthReportsFn>>> {
   return useQuery({
     queryKey: healthReportKeys.list(filters),
@@ -37,13 +42,20 @@ export function useHealthReportsQuery(
   })
 }
 
-export function useHealthReportQuery(
-  reportId: string,
-): UseQueryResult<Awaited<ReturnType<typeof getHealthReportFn>>> {
+export function useHealthReportQuery(reportId: string): UseQueryResult<Awaited<ReturnType<typeof getHealthReportFn>>> {
   return useQuery({
     queryKey: healthReportKeys.detail(reportId),
     queryFn: () => getHealthReportFn({ data: { reportId } }),
     enabled: reportId.length > 0,
+  })
+}
+
+export function useCompareHealthReportsQuery(leftReportId: string, rightReportId: string) {
+  return useQuery({
+    queryKey: healthReportKeys.compare(leftReportId, rightReportId),
+    queryFn: () => compareHealthReportsFn({ data: { leftReportId, rightReportId } }),
+    enabled: leftReportId.length > 0 && rightReportId.length > 0 && leftReportId !== rightReportId,
+    staleTime: CACHE_TIME.SHORT,
   })
 }
 

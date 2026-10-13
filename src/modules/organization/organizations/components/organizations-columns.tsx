@@ -1,13 +1,13 @@
 import { useMemo } from 'react'
-import { type ColumnDef } from '@tanstack/react-table'
 import { format } from 'date-fns'
 import { Building2, Users, Layers } from 'lucide-react'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
+import { type ColumnDef } from '~/shared/lib/tanstack-table'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import { DataTableColumnHeader } from '@/components/data-table'
-import { DataTableRowActions } from './data-table-row-actions'
 import { type Organization } from '../data/schema'
+import { DataTableRowActions } from './data-table-row-actions'
 
 export function useOrganizationsColumns() {
   const { t } = useTranslation()
@@ -89,7 +89,9 @@ export function useOrganizationsColumns() {
       {
         id: 'departments',
         accessorFn: (row) => row.departmentCount ?? 0,
-        header: ({ column }) => <DataTableColumnHeader column={column} title={t('admin.organization.table.departments')} />,
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} title={t('admin.organization.table.departments')} />
+        ),
         cell: ({ row }) => {
           const count = row.original.departmentCount ?? 0
           return (
@@ -105,7 +107,9 @@ export function useOrganizationsColumns() {
       },
       {
         accessorKey: 'createdAt',
-        header: ({ column }) => <DataTableColumnHeader column={column} title={t('admin.organization.table.createdAt')} />,
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} title={t('admin.organization.table.createdAt')} />
+        ),
         cell: ({ row }) => {
           const date = row.getValue('createdAt') as string
           return <span className='text-muted-foreground'>{format(new Date(date), 'yyyy-MM-dd HH:mm')}</span>

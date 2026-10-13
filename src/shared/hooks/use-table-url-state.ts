@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import type { ColumnFiltersState, OnChangeFn, PaginationState } from '@tanstack/react-table'
+import type { ColumnFiltersState, OnChangeFn, PaginationState } from '~/shared/lib/tanstack-table'
 
 export type SearchRecord = Record<string, unknown>
 
@@ -17,9 +17,7 @@ export function toTableNavigate<TSearch extends SearchRecord>(
     void navigate({
       replace,
       search:
-        typeof search === 'function'
-          ? ((prev: TSearch) => search(prev) as TSearch)
-          : (search as TSearch | undefined),
+        typeof search === 'function' ? (prev: TSearch) => search(prev) as TSearch : (search as TSearch | undefined),
     })
   }
 }

@@ -1,11 +1,12 @@
-import React, { memo } from 'react'
-import { flexRender, type Table as TanstackTable, type Row as TanstackRow } from '@tanstack/react-table'
+import React from 'react'
 import { cn } from '@/shared/lib/utils'
 import { type Virtualizer } from '@tanstack/react-virtual'
+import type { RowData } from '~/shared/lib/tanstack-table'
+import { flexRender, type Table as TanstackTable, type Row as TanstackRow } from '~/shared/lib/tanstack-table'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 
-export interface DataTableProps<TData> {
+export interface DataTableProps<TData extends RowData> {
   table: TanstackTable<TData>
   columnsLength: number
   /**
@@ -13,7 +14,7 @@ export interface DataTableProps<TData> {
    */
   isLoading?: boolean
   /**
-   * Determine the number of skeletons to show. Defaults to table.getState().pagination.pageSize
+   * Determine the number of skeletons to show. Defaults to table.state.pagination.pageSize
    */
   skeletonCount?: number
   /**
@@ -33,42 +34,36 @@ export interface DataTableProps<TData> {
   tableClassName?: string
 }
 
-const MemoizedTableRow = memo(
-  ({ row, columnsLength }: { row: TanstackRow<any>; columnsLength: number }) => {
-    return (
-      <TableRow data-state={row.getIsSelected() && 'selected'} className='group/row'>
-        {row.getVisibleCells().map((cell) => {
-          const isAutoWidth = cell.column.id === 'actions'
-          return (
-            <TableCell
-              key={cell.id}
-              className={cn(
-                'bg-background transition-colors group-hover/row:bg-muted/50 group-data-[state=selected]/row:bg-muted/50',
-                cell.column.columnDef.meta?.className,
-                (cell.column.columnDef.meta as Record<string, unknown>)?.tdClassName as string
-              )}
-              style={
-                isAutoWidth
-                  ? { width: 'auto' }
-                  : cell.column.columnDef.enableResizing
-                    ? { width: `var(--col-${cell.column.id}-size)` }
-                    : undefined
-              }
-            >
-              {flexRender(cell.column.columnDef.cell, cell.getContext())}
-            </TableCell>
-          )
-        })}
-      </TableRow>
-    )
-  },
-  (prev, next) =>
-    prev.row === next.row &&
-    prev.row.getIsSelected() === next.row.getIsSelected() &&
-    prev.row.getIsExpanded() === next.row.getIsExpanded()
-)
+function DataTableRow<TData extends RowData>({ row }: { row: TanstackRow<TData> }) {
+  return (
+    <TableRow data-state={row.getIsSelected() && 'selected'} className='group/row'>
+      {row.getVisibleCells().map((cell) => {
+        const isAutoWidth = cell.column.id === 'actions'
+        return (
+          <TableCell
+            key={cell.id}
+            className={cn(
+              'bg-background transition-colors group-hover/row:bg-muted/50 group-data-[state=selected]/row:bg-muted/50',
+              cell.column.columnDef.meta?.className,
+              cell.column.columnDef.meta?.tdClassName
+            )}
+            style={
+              isAutoWidth
+                ? { width: 'auto' }
+                : cell.column.columnDef.enableResizing
+                  ? { width: `var(--col-${cell.column.id}-size)` }
+                  : undefined
+            }
+          >
+            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+          </TableCell>
+        )
+      })}
+    </TableRow>
+  )
+}
 
-export function DataTable<TData>({
+export function DataTable<TData extends RowData>({
   table,
   columnsLength,
   isLoading,
@@ -81,7 +76,7 @@ export function DataTable<TData>({
   tableClassName,
 }: DataTableProps<TData>) {
   const rows = table.getRowModel().rows
-  const pageSize = skeletonCount ?? table.getState().pagination.pageSize
+  const pageSize = skeletonCount ?? table.state.pagination.pageSize
 
   const virtualRows = rowVirtualizer?.getVirtualItems()
   const paddingTop = virtualRows && virtualRows.length > 0 ? virtualRows[0]!.start : 0
@@ -117,7 +112,7 @@ export function DataTable<TData>({
                       className={cn(
                         'relative bg-background select-none',
                         header.column.columnDef.meta?.className,
-                        (header.column.columnDef.meta as Record<string, unknown>)?.thClassName as string
+                        header.column.columnDef.meta?.thClassName
                       )}
                       style={
                         isAutoWidth
@@ -172,7 +167,7 @@ export function DataTable<TData>({
                 ) : null}
 
                 {(virtualRows ? virtualRows.map((v) => rows[v.index]!) : rows).map((row) => (
-                  <MemoizedTableRow key={row.id} row={row} columnsLength={columnsLength} />
+                  <DataTableRow<TData> key={row.id} row={row} />
                 ))}
 
                 {paddingBottom > 0 ? (

@@ -1,9 +1,9 @@
 import { useEffect } from 'react'
 import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query'
-import { type SortingState } from '@tanstack/react-table'
 import { memberQueryKeys } from '~/shared/lib/query-keys'
-import { getMembersFn } from '../server-fns/member.fn'
+import { type SortingState } from '~/shared/lib/tanstack-table'
 import { type Member } from '../data/schema'
+import { getMembersFn } from '../server-fns/member.fn'
 
 type UseMembersListQueryProps = {
   pageIndex: number
@@ -13,7 +13,13 @@ type UseMembersListQueryProps = {
   sorting: SortingState
 }
 
-export function useMembersListQuery({ pageIndex, pageSize, filter, organizationId, sorting }: UseMembersListQueryProps) {
+export function useMembersListQuery({
+  pageIndex,
+  pageSize,
+  filter,
+  organizationId,
+  sorting,
+}: UseMembersListQueryProps) {
   const queryClient = useQueryClient()
 
   const sortBy = sorting[0]?.id

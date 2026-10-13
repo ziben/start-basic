@@ -1,6 +1,6 @@
+import type { ReactElement } from 'react'
 import { Link } from '@tanstack/react-router'
 import { Activity, AlertCircle, ArrowLeft } from 'lucide-react'
-import type { ReactElement } from 'react'
 import { AppHeaderMain } from '~/components/layout/app-header-main'
 import { Alert, AlertDescription, AlertTitle } from '~/components/ui/alert'
 import { Badge } from '~/components/ui/badge'
@@ -18,22 +18,24 @@ export function HealthReportDetailPage({ reportId }: HealthReportDetailPageProps
 
   return (
     <AppHeaderMain fixed>
-      <div className="mb-4 flex items-center justify-between gap-3">
+      <div className='mb-4 flex items-center justify-between gap-3'>
         <div>
-          <Button asChild variant="ghost" size="sm" className="mb-2 -ml-2">
-            <Link to="/health/reports">
-              <ArrowLeft className="mr-2 h-4 w-4" />
+          <Button asChild variant='ghost' size='sm' className='mb-2 -ml-2'>
+            <Link to='/health/reports'>
+              <ArrowLeft className='mr-2 h-4 w-4' />
               返回报告列表
             </Link>
           </Button>
-          <h2 className="text-2xl font-bold tracking-tight">{report?.title ?? '体检报告详情'}</h2>
-          <p className="text-muted-foreground">{formatDate(report?.examDate ?? null)}</p>
+          <h2 className='text-2xl font-bold tracking-tight'>{report?.title ?? '体检报告详情'}</h2>
+          <p className='text-muted-foreground'>
+            {report?.person?.name ?? '未分配人员'} · {formatDate(report?.examDate ?? null)}
+          </p>
         </div>
-        {report && <Badge variant="secondary">{report.metrics.length} 项指标</Badge>}
+        {report && <Badge variant='secondary'>{report.metrics.length} 项指标</Badge>}
       </div>
 
       {error && (
-        <Alert variant="destructive" className="mb-4">
+        <Alert variant='destructive' className='mb-4'>
           <AlertCircle />
           <AlertTitle>报告详情加载失败</AlertTitle>
           <AlertDescription>{error instanceof Error ? error.message : '请稍后重试'}</AlertDescription>
@@ -42,8 +44,8 @@ export function HealthReportDetailPage({ reportId }: HealthReportDetailPageProps
 
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center text-base">
-            <Activity className="mr-2 h-4 w-4" />
+          <CardTitle className='flex items-center text-base'>
+            <Activity className='mr-2 h-4 w-4' />
             指标明细
           </CardTitle>
         </CardHeader>
@@ -61,14 +63,14 @@ export function HealthReportDetailPage({ reportId }: HealthReportDetailPageProps
             <TableBody>
               {isLoading && (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-muted-foreground h-28 text-center">
+                  <TableCell colSpan={5} className='h-28 text-center text-muted-foreground'>
                     正在加载指标明细...
                   </TableCell>
                 </TableRow>
               )}
               {report?.metrics.map((metric) => (
                 <TableRow key={metric.id}>
-                  <TableCell className="font-medium">{metric.rawName}</TableCell>
+                  <TableCell className='font-medium'>{metric.rawName}</TableCell>
                   <TableCell>{metric.valueText}</TableCell>
                   <TableCell>{metric.unit ?? '-'}</TableCell>
                   <TableCell>{metric.referenceRange ?? '-'}</TableCell>
@@ -79,7 +81,7 @@ export function HealthReportDetailPage({ reportId }: HealthReportDetailPageProps
               ))}
               {!isLoading && !report && (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-muted-foreground h-28 text-center">
+                  <TableCell colSpan={5} className='h-28 text-center text-muted-foreground'>
                     未找到体检报告
                   </TableCell>
                 </TableRow>

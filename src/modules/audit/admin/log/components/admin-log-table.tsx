@@ -1,21 +1,22 @@
 import { useEffect, useMemo, useRef } from 'react'
-import {
-  type ColumnDef,
-  getCoreRowModel,
-  getFacetedRowModel,
-  getFacetedUniqueValues,
-  useReactTable,
-} from '@tanstack/react-table'
 import { useTableColumnVisibility } from '@/shared/hooks/use-table-column-visibility'
 import { type NavigateFn, useTableUrlState } from '@/shared/hooks/use-table-url-state'
 import { cn } from '@/shared/lib/utils'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { auditResults, logLevels, type LogType } from '~/modules/audit/shared/data/schema'
 import { type AdminAuditLog, type AdminSystemLog } from '~/modules/audit/shared/hooks/use-admin-log-api'
+import { dataTableFeatures, tableFeatures } from '~/shared/lib/tanstack-table'
+import { type ColumnDef, createFacetedRowModel, createFacetedUniqueValues, useTable } from '~/shared/lib/tanstack-table'
 import { DataTablePagination, DataTableToolbar, DataTable } from '@/components/data-table'
 import { useAdminLogsQuery } from '../hooks/use-admin-logs-query'
 import { getSingleBooleanFromArrayFilter, getSingleStringFromArrayFilter } from '../utils/table-filters'
 import { useAuditLogColumns, useSystemLogColumns } from './admin-log-columns'
+
+const features = tableFeatures({
+  ...dataTableFeatures,
+  facetedRowModel: createFacetedRowModel(),
+  facetedUniqueValues: createFacetedUniqueValues(),
+})
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -90,7 +91,8 @@ export function AdminLogTable({ type, search, navigate }: AdminLogTableProps) {
     success,
   })
 
-  const table = useReactTable<AdminSystemLog | AdminAuditLog>({
+  const table = useTable<AdminSystemLog | AdminAuditLog>({
+    features,
     data: (data ?? []) as (AdminSystemLog | AdminAuditLog)[],
     columns,
     state: {
@@ -107,9 +109,6 @@ export function AdminLogTable({ type, search, navigate }: AdminLogTableProps) {
     onPaginationChange,
     onGlobalFilterChange,
     onColumnFiltersChange,
-    getCoreRowModel: getCoreRowModel(),
-    getFacetedRowModel: getFacetedRowModel(),
-    getFacetedUniqueValues: getFacetedUniqueValues(),
   })
 
   useEffect(() => {

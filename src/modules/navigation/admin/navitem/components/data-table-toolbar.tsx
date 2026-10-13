@@ -1,18 +1,19 @@
 import { Cross2Icon } from '@radix-ui/react-icons'
-import { Table } from '@tanstack/react-table'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
+import type { RowData } from '~/shared/lib/tanstack-table'
+import { Table } from '~/shared/lib/tanstack-table'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { DataTableViewOptions } from './data-table-view-options'
 import { NavGroupFacetedFilter } from './nav-group-faceted-filter'
 
-interface DataTableToolbarProps<TData> {
+interface DataTableToolbarProps<TData extends RowData> {
   table: Table<TData>
 }
 
-export function DataTableToolbar<TData>({ table }: DataTableToolbarProps<TData>) {
+export function DataTableToolbar<TData extends RowData>({ table }: DataTableToolbarProps<TData>) {
   const { t } = useTranslation()
-  const isFiltered = table.getState().columnFilters.length > 0
+  const isFiltered = table.state.columnFilters.length > 0
 
   return (
     <div className='flex flex-col space-y-4'>
@@ -43,8 +44,3 @@ export function DataTableToolbar<TData>({ table }: DataTableToolbarProps<TData>)
     </div>
   )
 }
-
-
-
-
-

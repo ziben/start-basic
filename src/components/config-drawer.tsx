@@ -1,6 +1,10 @@
 import { type SVGProps } from 'react'
-import { Root as Radio, Item } from '@radix-ui/react-radio-group'
+import { useDirection } from '@/shared/context/direction-provider'
+import { type Collapsible, useLayout } from '@/shared/context/layout-provider'
+import { useTheme } from '@/shared/context/theme-provider'
+import { cn } from '@/shared/lib/utils'
 import { CircleCheck, RotateCcw, Settings } from 'lucide-react'
+import { RadioGroup as RadioGroupPrimitive } from 'radix-ui'
 import { IconDir } from '@/assets/custom/icon-dir'
 import { IconLayoutCompact } from '@/assets/custom/icon-layout-compact'
 import { IconLayoutDefault } from '@/assets/custom/icon-layout-default'
@@ -11,10 +15,6 @@ import { IconSidebarSidebar } from '@/assets/custom/icon-sidebar-sidebar'
 import { IconThemeDark } from '@/assets/custom/icon-theme-dark'
 import { IconThemeLight } from '@/assets/custom/icon-theme-light'
 import { IconThemeSystem } from '@/assets/custom/icon-theme-system'
-import { cn } from '@/shared/lib/utils'
-import { useDirection } from '@/shared/context/direction-provider'
-import { type Collapsible, useLayout } from '@/shared/context/layout-provider'
-import { useTheme } from '@/shared/context/theme-provider'
 import { Button } from '@/components/ui/button'
 import {
   Sheet,
@@ -26,6 +26,9 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet'
 import { useSidebar } from './ui/sidebar'
+
+const Radio = RadioGroupPrimitive.Root
+const Item = RadioGroupPrimitive.Item
 
 export function ConfigDrawer() {
   const { setOpen } = useSidebar()
@@ -318,7 +321,3 @@ function DirConfig() {
     </div>
   )
 }
-
-
-
-

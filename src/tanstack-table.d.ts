@@ -1,11 +1,10 @@
 import '@tanstack/react-table'
 
 declare module '@tanstack/react-table' {
-  interface ColumnMeta<TData, TValue> {
-    className?: string // apply to both th and td
+  interface ColumnMeta<TFeatures, TData, TValue> {
+    className?: string
     tdClassName?: string
     thClassName?: string
-    title?: string // display name for DataTableViewOptions
+    title?: string
   }
 }
-

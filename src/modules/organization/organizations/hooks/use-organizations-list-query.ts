@@ -1,9 +1,9 @@
 import { useEffect, useMemo } from 'react'
 import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query'
-import { type SortingState } from '@tanstack/react-table'
 import { organizationQueryKeys } from '~/shared/lib/query-keys'
-import { getOrganizationsFn } from '../server-fns/organization.fn'
+import { type SortingState } from '~/shared/lib/tanstack-table'
 import { type Organization } from '../data/schema'
+import { getOrganizationsFn } from '../server-fns/organization.fn'
 
 type PageData = {
   items: Organization[]

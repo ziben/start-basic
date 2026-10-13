@@ -73,6 +73,7 @@ describe('module boundaries', () => {
       auditLog: 'audit',
       systemLog: 'audit',
       healthReport: 'health',
+      healthPerson: 'health',
       healthMetricResult: 'health',
       healthMetricCatalog: 'health',
       aIConversation: 'ai',

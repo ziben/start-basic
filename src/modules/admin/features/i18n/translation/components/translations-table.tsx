@@ -1,21 +1,30 @@
 import { useEffect, useRef, useState } from 'react'
-import {
-  type VisibilityState,
-  getCoreRowModel,
-  getFacetedRowModel,
-  getFacetedUniqueValues,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from '@tanstack/react-table'
 import { type NavigateFn, useTableUrlState } from '@/shared/hooks/use-table-url-state'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import type { Translation } from '~/modules/admin/features/i18n/translation/types/translation'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
+import { dataTableFeatures, tableFeatures } from '~/shared/lib/tanstack-table'
+import {
+  type VisibilityState,
+  createFacetedRowModel,
+  createFacetedUniqueValues,
+  createFilteredRowModel,
+  createPaginatedRowModel,
+  createSortedRowModel,
+  useTable,
+} from '~/shared/lib/tanstack-table'
 import { DataTable, DataTablePagination, DataTableToolbar } from '@/components/data-table'
 import { DataTableBulkActions } from './data-table-bulk-actions'
 import { useTranslationColumns } from './translations-columns'
+
+const features = tableFeatures({
+  ...dataTableFeatures,
+  paginatedRowModel: createPaginatedRowModel(),
+  filteredRowModel: createFilteredRowModel(),
+  sortedRowModel: createSortedRowModel(),
+  facetedRowModel: createFacetedRowModel(),
+  facetedUniqueValues: createFacetedUniqueValues(),
+})
 
 type DataTableProps = {
   data: Translation[]
@@ -48,7 +57,8 @@ export function TranslationsTable({ data, search, navigate }: DataTableProps) {
     ],
   })
 
-  const table = useReactTable({
+  const table = useTable({
+    features,
     data,
     columns,
     state: {
@@ -67,12 +77,7 @@ export function TranslationsTable({ data, search, navigate }: DataTableProps) {
 
       return key.includes(searchValue)
     },
-    getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFacetedRowModel: getFacetedRowModel(),
-    getFacetedUniqueValues: getFacetedUniqueValues(),
+
     onPaginationChange,
     onGlobalFilterChange,
     onColumnFiltersChange,

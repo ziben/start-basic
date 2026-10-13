@@ -1,23 +1,29 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
-import {
-  type VisibilityState,
-  flexRender,
-  getCoreRowModel,
-  getFacetedRowModel,
-  getFacetedUniqueValues,
-  useReactTable,
-} from '@tanstack/react-table'
 import { AdminDataTable } from '@/modules/admin/shared/components/admin-data-table'
 import { useTableColumnVisibility } from '@/shared/hooks/use-table-column-visibility'
 import { type NavigateFn, useTableUrlState } from '@/shared/hooks/use-table-url-state'
 import { cn } from '@/shared/lib/utils'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
+import { dataTableFeatures, tableFeatures } from '~/shared/lib/tanstack-table'
+import {
+  type VisibilityState,
+  flexRender,
+  createFacetedRowModel,
+  createFacetedUniqueValues,
+  useTable,
+} from '~/shared/lib/tanstack-table'
 import { banned } from '../data/schema'
 import { useAdminUsersListQuery } from '../hooks/use-admin-users-list-query'
 import { getSingleBooleanFromArrayFilter } from '../utils/table-filters'
 import { useAdminUsersColumns } from './admin-users-columns'
 import { DataTableBulkActions } from './data-table-bulk-actions'
+
+const features = tableFeatures({
+  ...dataTableFeatures,
+  facetedRowModel: createFacetedRowModel(),
+  facetedUniqueValues: createFacetedUniqueValues(),
+})
 
 type AdminUsersTableProps = {
   search: Record<string, unknown>
@@ -74,7 +80,8 @@ export function AdminUsersTable({ search, navigate }: AdminUsersTableProps) {
 
   const isLoading = !pageData && !data.length
 
-  const table = useReactTable({
+  const table = useTable({
+    features,
     data,
     columns,
     state: {
@@ -96,9 +103,7 @@ export function AdminUsersTable({ search, navigate }: AdminUsersTableProps) {
       const searchValue = String(filterValue).toLowerCase()
       return id.includes(searchValue) || name.includes(searchValue)
     },
-    getCoreRowModel: getCoreRowModel(),
-    getFacetedRowModel: getFacetedRowModel(),
-    getFacetedUniqueValues: getFacetedUniqueValues(),
+
     onPaginationChange,
     onGlobalFilterChange,
     onColumnFiltersChange,

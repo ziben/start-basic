@@ -1,7 +1,7 @@
-import { memo } from 'react'
 import { ArrowDownIcon, ArrowUpIcon, CaretSortIcon, EyeNoneIcon } from '@radix-ui/react-icons'
-import { type Column } from '@tanstack/react-table'
 import { cn } from '@/shared/lib/utils'
+import type { RowData } from '~/shared/lib/tanstack-table'
+import { type Column } from '~/shared/lib/tanstack-table'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -11,12 +11,12 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 
-type DataTableColumnHeaderProps<TData, TValue> = React.HTMLAttributes<HTMLDivElement> & {
+type DataTableColumnHeaderProps<TData extends RowData, TValue> = React.HTMLAttributes<HTMLDivElement> & {
   column: Column<TData, TValue>
   title: string
 }
 
-function DataTableColumnHeaderInner<TData, TValue>({
+function DataTableColumnHeaderInner<TData extends RowData, TValue>({
   column,
   title,
   className,
@@ -64,7 +64,4 @@ function DataTableColumnHeaderInner<TData, TValue>({
   )
 }
 
-export const DataTableColumnHeader = memo(DataTableColumnHeaderInner) as typeof DataTableColumnHeaderInner
-
-
-
+export const DataTableColumnHeader = DataTableColumnHeaderInner

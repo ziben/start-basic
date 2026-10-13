@@ -1,7 +1,6 @@
-import { memo } from 'react'
-import { DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu'
 import { MixerHorizontalIcon } from '@radix-ui/react-icons'
-import { type Table } from '@tanstack/react-table'
+import type { RowData } from '~/shared/lib/tanstack-table'
+import { type Table } from '~/shared/lib/tanstack-table'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -9,15 +8,14 @@ import {
   DropdownMenuContent,
   DropdownMenuLabel,
   DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 
-type DataTableViewOptionsProps<TData> = {
+type DataTableViewOptionsProps<TData extends RowData> = {
   table: Table<TData>
 }
 
-export function DataTableViewOptions<TData>({ table }: DataTableViewOptionsProps<TData>) {
-  const hasAccessorKey = (def: any): def is { accessorKey: string } => typeof def.accessorKey === 'string'
-
+export function DataTableViewOptions<TData extends RowData>({ table }: DataTableViewOptionsProps<TData>) {
   return (
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
@@ -31,12 +29,9 @@ export function DataTableViewOptions<TData>({ table }: DataTableViewOptionsProps
         <DropdownMenuSeparator />
         {table
           .getAllColumns()
-          .filter(
-            (column) =>
-              (typeof column.accessorFn !== 'undefined' || hasAccessorKey(column.columnDef)) && column.getCanHide()
-          )
+          .filter((column) => typeof column.accessorFn !== 'undefined' && column.getCanHide())
           .map((column) => {
-            const title = (column.columnDef.meta as any)?.title as string | undefined
+            const title = column.columnDef.meta?.title
             const isVisible = column.getIsVisible()
             return (
               <DropdownMenuCheckboxItem
@@ -53,5 +48,3 @@ export function DataTableViewOptions<TData>({ table }: DataTableViewOptionsProps
     </DropdownMenu>
   )
 }
-
-// export const DataTableViewOptions = memo(DataTableViewOptionsInner) as typeof DataTableViewOptionsInner

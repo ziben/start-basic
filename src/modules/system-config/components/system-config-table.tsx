@@ -1,21 +1,30 @@
 import { useEffect, useState } from 'react'
-import {
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getFacetedRowModel,
-  getFacetedUniqueValues,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-  type VisibilityState,
-} from '@tanstack/react-table'
 import { AdminDataTable } from '@/modules/admin/shared/components/admin-data-table'
 import { useTableColumnVisibility } from '@/shared/hooks/use-table-column-visibility'
 import { type NavigateFn, useTableUrlState } from '@/shared/hooks/use-table-url-state'
 import { cn } from '@/shared/lib/utils'
+import { dataTableFeatures, tableFeatures } from '~/shared/lib/tanstack-table'
+import {
+  flexRender,
+  createFilteredRowModel,
+  createFacetedRowModel,
+  createFacetedUniqueValues,
+  createPaginatedRowModel,
+  createSortedRowModel,
+  useTable,
+  type VisibilityState,
+} from '~/shared/lib/tanstack-table'
 import { CATEGORY_OPTIONS, VALUE_TYPE_OPTIONS, type SystemConfig } from '../data/schema'
 import { useSystemConfigColumns } from './system-config-columns'
+
+const features = tableFeatures({
+  ...dataTableFeatures,
+  filteredRowModel: createFilteredRowModel(),
+  sortedRowModel: createSortedRowModel(),
+  paginatedRowModel: createPaginatedRowModel(),
+  facetedRowModel: createFacetedRowModel(),
+  facetedUniqueValues: createFacetedUniqueValues(),
+})
 
 type Props = {
   readonly data: SystemConfig[]
@@ -48,7 +57,8 @@ export function SystemConfigTable({ data, isLoading, search, navigate }: Props):
     ],
   })
 
-  const table = useReactTable({
+  const table = useTable({
+    features,
     data,
     columns,
     columnResizeMode: 'onChange',
@@ -69,12 +79,6 @@ export function SystemConfigTable({ data, isLoading, search, navigate }: Props):
       const q = String(filterValue).toLowerCase()
       return key.includes(q) || category.includes(q)
     },
-    getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFacetedRowModel: getFacetedRowModel(),
-    getFacetedUniqueValues: getFacetedUniqueValues(),
     onPaginationChange,
     onGlobalFilterChange,
     onColumnFiltersChange,

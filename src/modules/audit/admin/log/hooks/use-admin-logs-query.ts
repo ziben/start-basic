@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
-import { type SortingState } from '@tanstack/react-table'
 import { useAdminLogs } from '~/modules/audit/shared/hooks/use-admin-log-api'
+import { type SortingState } from '~/shared/lib/tanstack-table'
 
 type UseAdminLogsQueryProps = {
   type: 'system' | 'audit'

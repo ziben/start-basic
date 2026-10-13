@@ -1,17 +1,18 @@
 'use client'
 
-import { type Table } from '@tanstack/react-table'
-import { toast } from 'sonner'
 import { sleep } from '@/shared/lib/utils'
+import { toast } from 'sonner'
+import type { RowData } from '~/shared/lib/tanstack-table'
+import { type Table } from '~/shared/lib/tanstack-table'
 import { ConfirmDeleteDialog } from '@/components/confirm-delete-dialog'
 
-type NavGroupsMultiDeleteDialogProps<TData> = {
+type NavGroupsMultiDeleteDialogProps<TData extends RowData> = {
   open: boolean
   onOpenChange: (open: boolean) => void
   table: Table<TData>
 }
 
-export function NavGroupsMultiDeleteDialog<TData>({
+export function NavGroupsMultiDeleteDialog<TData extends RowData>({
   open,
   onOpenChange,
   table,
@@ -42,6 +43,3 @@ export function NavGroupsMultiDeleteDialog<TData>({
     />
   )
 }
-
-
-

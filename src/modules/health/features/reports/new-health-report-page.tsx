@@ -1,6 +1,6 @@
+import { FormEvent, useEffect, useState, type ReactElement } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { ClipboardList, Loader2 } from 'lucide-react'
-import { FormEvent, useState, type ReactElement } from 'react'
 import { toast } from 'sonner'
 import { AppHeaderMain } from '~/components/layout/app-header-main'
 import { Button } from '~/components/ui/button'
@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/com
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
 import { Textarea } from '~/components/ui/textarea'
+import { useCreateHealthPerson, useHealthPersonsQuery } from '../../shared/hooks/use-health-persons'
 import { useCreateHealthReport } from '../../shared/hooks/use-health-reports'
 
 const sampleText = `白细胞 6.21 10^9/L 3.5-9.5 正常
@@ -17,17 +18,38 @@ const sampleText = `白细胞 6.21 10^9/L 3.5-9.5 正常
 export function NewHealthReportPage(): ReactElement {
   const navigate = useNavigate()
   const createReport = useCreateHealthReport()
+  const createPerson = useCreateHealthPerson()
+  const { data: persons = [] } = useHealthPersonsQuery()
   const [title, setTitle] = useState('年度体检报告')
+  const [personId, setPersonId] = useState('')
+  const [newPersonName, setNewPersonName] = useState('')
   const [examDate, setExamDate] = useState('')
   const [sourceFileName, setSourceFileName] = useState('')
   const [ocrText, setOcrText] = useState('')
+
+  useEffect(() => {
+    if (!personId && persons.length > 0) setPersonId(persons[0].id)
+  }, [personId, persons])
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault()
 
     try {
+      let selectedPersonId = personId
+      if (!selectedPersonId && newPersonName.trim()) {
+        const person = await createPerson.mutateAsync({ name: newPersonName })
+        selectedPersonId = person.id
+        setPersonId(person.id)
+        setNewPersonName('')
+      }
+      if (!selectedPersonId) {
+        toast.error('请先选择或新建健康档案人员')
+        return
+      }
+
       const report = await createReport.mutateAsync({
         title,
+        personId: selectedPersonId,
         examDate: examDate || undefined,
         sourceFileName: sourceFileName || undefined,
         ocrText,
@@ -41,67 +63,94 @@ export function NewHealthReportPage(): ReactElement {
 
   return (
     <AppHeaderMain fixed>
-      <div className="mb-4">
-        <h2 className="text-2xl font-bold tracking-tight">新建体检识别</h2>
-        <p className="text-muted-foreground">第一版使用手动粘贴 OCR 文本，后续可替换真实 OCR 服务</p>
+      <div className='mb-4'>
+        <h2 className='text-2xl font-bold tracking-tight'>新建体检识别</h2>
+        <p className='text-muted-foreground'>第一版使用手动粘贴 OCR 文本，后续可替换真实 OCR 服务</p>
       </div>
 
-      <Card className="max-w-4xl">
+      <Card className='max-w-4xl'>
         <CardHeader>
-          <CardTitle className="flex items-center text-base">
-            <ClipboardList className="mr-2 h-4 w-4" />
+          <CardTitle className='flex items-center text-base'>
+            <ClipboardList className='mr-2 h-4 w-4' />
             报告信息
           </CardTitle>
           <CardDescription>粘贴体检报告识别文本后，系统会解析指标并写入明细表</CardDescription>
         </CardHeader>
         <CardContent>
-          <form className="space-y-4" onSubmit={handleSubmit}>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="title">报告标题</Label>
-                <Input id="title" value={title} onChange={(event) => setTitle(event.target.value)} required />
+          <form className='space-y-4' onSubmit={handleSubmit}>
+            <div className='grid gap-4 sm:grid-cols-2'>
+              <div className='space-y-2'>
+                <Label htmlFor='personId'>健康档案人员</Label>
+                <select
+                  id='personId'
+                  value={personId}
+                  onChange={(event) => setPersonId(event.target.value)}
+                  className='h-9 w-full rounded-md border border-input bg-background px-3 text-sm'
+                >
+                  <option value=''>选择人员</option>
+                  {persons.map((person) => (
+                    <option key={person.id} value={person.id}>
+                      {person.name}
+                    </option>
+                  ))}
+                </select>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="examDate">体检日期</Label>
+              <div className='space-y-2'>
+                <Label htmlFor='newPersonName'>新建人员</Label>
                 <Input
-                  id="examDate"
-                  type="date"
+                  id='newPersonName'
+                  value={newPersonName}
+                  onChange={(event) => setNewPersonName(event.target.value)}
+                  placeholder='没有人员时填写姓名'
+                />
+              </div>
+              <div className='space-y-2'>
+                <Label htmlFor='title'>报告标题</Label>
+                <Input id='title' value={title} onChange={(event) => setTitle(event.target.value)} required />
+              </div>
+              <div className='space-y-2'>
+                <Label htmlFor='examDate'>体检日期</Label>
+                <Input
+                  id='examDate'
+                  type='date'
                   value={examDate}
                   onChange={(event) => setExamDate(event.target.value)}
                 />
               </div>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="sourceFileName">来源文件名</Label>
+            <div className='space-y-2'>
+              <Label htmlFor='sourceFileName'>来源文件名</Label>
               <Input
-                id="sourceFileName"
+                id='sourceFileName'
                 value={sourceFileName}
                 onChange={(event) => setSourceFileName(event.target.value)}
-                placeholder="例如 2026体检报告.pdf"
+                placeholder='例如 2026体检报告.pdf'
               />
             </div>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="ocrText">OCR 文本</Label>
-                <Button type="button" variant="ghost" size="sm" onClick={() => setOcrText(sampleText)}>
+            <div className='space-y-2'>
+              <div className='flex items-center justify-between'>
+                <Label htmlFor='ocrText'>OCR 文本</Label>
+                <Button type='button' variant='ghost' size='sm' onClick={() => setOcrText(sampleText)}>
                   填入示例
                 </Button>
               </div>
               <Textarea
-                id="ocrText"
+                id='ocrText'
                 value={ocrText}
                 onChange={(event) => setOcrText(event.target.value)}
-                placeholder="每行一个指标，例如：白细胞 6.21 10^9/L 3.5-9.5 正常"
-                className="min-h-60 font-mono text-sm"
+                placeholder='每行一个指标，例如：白细胞 6.21 10^9/L 3.5-9.5 正常'
+                className='min-h-60 font-mono text-sm'
                 required
               />
             </div>
-            <div className="flex justify-end gap-2">
-              <Button type="button" variant="outline" onClick={() => void navigate({ to: '/health/reports' })}>
+            <div className='flex justify-end gap-2'>
+              <Button type='button' variant='outline' onClick={() => void navigate({ to: '/health/reports' })}>
                 返回
               </Button>
-              <Button type="submit" disabled={createReport.isPending}>
-                {createReport.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              <Button type='submit' disabled={createReport.isPending || createPerson.isPending}>
+                {(createReport.isPending || createPerson.isPending) && (
+                  <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                )}
                 解析并入库
               </Button>
             </div>

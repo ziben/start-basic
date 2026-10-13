@@ -1,6 +1,6 @@
-import { type Table } from '@tanstack/react-table'
 import { Download, X } from 'lucide-react'
 import { toast } from 'sonner'
+import { type Table } from '~/shared/lib/tanstack-table'
 import { Button } from '@/components/ui/button'
 import { type Member } from '../data/schema'
 import { MembersMultiDeleteDialog } from './members-multi-delete-dialog'

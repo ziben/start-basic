@@ -1,8 +1,8 @@
-import { type ColumnDef } from '@tanstack/react-table'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
+import { type AdminNavgroup } from '~/modules/navigation/shared/navgroup/data/schema'
+import { type ColumnDef } from '~/shared/lib/tanstack-table'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
-import { type AdminNavgroup } from '~/modules/navigation/shared/navgroup/data/schema'
 import { DataTableRowActions } from './data-table-row-actions'
 
 const formatDate = (date: string | Date | null | undefined) => {
@@ -70,7 +70,7 @@ export function useNavGroupColumns(): ColumnDef<AdminNavgroup>[] {
       header: () => '范围',
       cell: ({ row }) => row.getValue('scope'),
       meta: { className: 'w-20' },
-    },   
+    },
     {
       id: 'navItems',
       header: () => t('admin.navgroup.table.navItems'),
@@ -98,8 +98,3 @@ export function useNavGroupColumns(): ColumnDef<AdminNavgroup>[] {
     },
   ]
 }
-
-
-
-
-

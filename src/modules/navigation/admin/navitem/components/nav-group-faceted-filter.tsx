@@ -1,9 +1,10 @@
 import * as React from 'react'
 import { CheckIcon, PlusCircledIcon } from '@radix-ui/react-icons'
-import { Column } from '@tanstack/react-table'
-import { useNavgroups, type NavGroup } from '~/modules/navigation/shared/navgroup/hooks/use-navgroup-api'
-import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import { cn } from '@/shared/lib/utils'
+import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
+import { useNavgroups, type NavGroup } from '~/modules/navigation/shared/navgroup/hooks/use-navgroup-api'
+import type { RowData } from '~/shared/lib/tanstack-table'
+import { type Column } from '~/shared/lib/tanstack-table'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -24,12 +25,15 @@ interface IFacetOption {
   icon?: React.ComponentType<{ className?: string }>
 }
 
-interface NavGroupFacetedFilterProps<TData, TValue> {
+interface NavGroupFacetedFilterProps<TData extends RowData, TValue> {
   column?: Column<TData, TValue>
   title?: string
 }
 
-export function NavGroupFacetedFilter<TData, TValue>({ column, title }: NavGroupFacetedFilterProps<TData, TValue>) {
+export function NavGroupFacetedFilter<TData extends RowData, TValue>({
+  column,
+  title,
+}: NavGroupFacetedFilterProps<TData, TValue>) {
   const { t } = useTranslation()
   const { data: navgroups = [], isLoading } = useNavgroups()
 
@@ -128,9 +132,3 @@ export function NavGroupFacetedFilter<TData, TValue>({ column, title }: NavGroup
     </Popover>
   )
 }
-
-
-
-
-
-

@@ -1,7 +1,7 @@
-import { DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu'
 import { MixerHorizontalIcon } from '@radix-ui/react-icons'
-import { Table } from '@tanstack/react-table'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
+import type { RowData } from '~/shared/lib/tanstack-table'
+import { Table } from '~/shared/lib/tanstack-table'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -9,13 +9,14 @@ import {
   DropdownMenuContent,
   DropdownMenuLabel,
   DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 
-interface DataTableViewOptionsProps<TData> {
+interface DataTableViewOptionsProps<TData extends RowData> {
   table: Table<TData>
 }
 
-export function DataTableViewOptions<TData>({ table }: DataTableViewOptionsProps<TData>) {
+export function DataTableViewOptions<TData extends RowData>({ table }: DataTableViewOptionsProps<TData>) {
   const { t } = useTranslation()
 
   const getColumnLabel = (columnId: string) => {
@@ -66,8 +67,3 @@ export function DataTableViewOptions<TData>({ table }: DataTableViewOptionsProps
     </DropdownMenu>
   )
 }
-
-
-
-
-

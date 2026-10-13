@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react'
-import { type OnChangeFn } from '@tanstack/react-table'
-import { type SortingState } from '@tanstack/react-table'
+import { type OnChangeFn } from '~/shared/lib/tanstack-table'
+import { type SortingState } from '~/shared/lib/tanstack-table'
 import { type NavigateFn, useTableUrlState } from './use-table-url-state'
 
 type SearchRecord = Record<string, unknown>
@@ -25,14 +25,7 @@ type UseUrlSyncedSortingReturn = ReturnType<typeof useTableUrlState> & {
 }
 
 export function useUrlSyncedSorting(params: UseUrlSyncedSortingParams): UseUrlSyncedSortingReturn {
-  const {
-    search,
-    navigate,
-    pagination,
-    globalFilter,
-    columnFilters,
-    sorting: sortingCfg,
-  } = params
+  const { search, navigate, pagination, globalFilter, columnFilters, sorting: sortingCfg } = params
 
   const sortByKey = sortingCfg?.sortByKey ?? 'sortBy'
   const sortDirKey = sortingCfg?.sortDirKey ?? 'sortDir'
@@ -90,4 +83,3 @@ export function useUrlSyncedSorting(params: UseUrlSyncedSortingParams): UseUrlSy
     onSortingChange,
   }
 }
-

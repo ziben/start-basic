@@ -1,14 +1,15 @@
 import { ChevronLeftIcon, ChevronRightIcon, DoubleArrowLeftIcon, DoubleArrowRightIcon } from '@radix-ui/react-icons'
-import { Table } from '@tanstack/react-table'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
+import type { RowData } from '~/shared/lib/tanstack-table'
+import { Table } from '~/shared/lib/tanstack-table'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
-interface DataTablePaginationProps<TData> {
+interface DataTablePaginationProps<TData extends RowData> {
   table: Table<TData>
 }
 
-export function DataTablePagination<TData>({ table }: DataTablePaginationProps<TData>) {
+export function DataTablePagination<TData extends RowData>({ table }: DataTablePaginationProps<TData>) {
   const { t } = useTranslation()
 
   return (
@@ -21,13 +22,13 @@ export function DataTablePagination<TData>({ table }: DataTablePaginationProps<T
         <div className='flex items-center space-x-2'>
           <p className='text-sm font-medium'>{t('admin.common.rowsPerPage')}</p>
           <Select
-            value={`${table.getState().pagination.pageSize}`}
+            value={`${table.state.pagination.pageSize}`}
             onValueChange={(value) => {
               table.setPageSize(Number(value))
             }}
           >
             <SelectTrigger className='h-8 w-[70px]'>
-              <SelectValue placeholder={table.getState().pagination.pageSize} />
+              <SelectValue placeholder={table.state.pagination.pageSize} />
             </SelectTrigger>
             <SelectContent side='top'>
               {[10, 20, 30, 40, 50].map((pageSize) => (
@@ -40,7 +41,7 @@ export function DataTablePagination<TData>({ table }: DataTablePaginationProps<T
         </div>
         <div className='flex w-[100px] items-center justify-center text-sm font-medium'>
           {t('admin.common.pageCount', {
-            current: table.getState().pagination.pageIndex + 1,
+            current: table.state.pagination.pageIndex + 1,
             total: table.getPageCount(),
           })}
         </div>
@@ -86,8 +87,3 @@ export function DataTablePagination<TData>({ table }: DataTablePaginationProps<T
     </div>
   )
 }
-
-
-
-
-

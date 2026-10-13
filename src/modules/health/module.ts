@@ -1,4 +1,5 @@
 import { defineModule } from '~/core/module-registry'
+import { HealthPersonService } from './shared/services/health-person.service'
 import { HealthReportService } from './shared/services/health-report.service'
 
 export const healthModule = defineModule({
@@ -7,6 +8,7 @@ export const healthModule = defineModule({
   dependencies: ['auth'],
   exports: {
     services: {
+      HealthPersonService,
       HealthReportService,
     },
   },

@@ -1,8 +1,8 @@
 import { useMemo } from 'react'
-import { type ColumnDef } from '@tanstack/react-table'
 import { Link } from '@tanstack/react-router'
-import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import { cn, formatDate } from '@/shared/lib/utils'
+import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
+import { type ColumnDef } from '~/shared/lib/tanstack-table'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
@@ -75,12 +75,12 @@ export function useAdminUsersColumns(): ColumnDef<AdminUser>[] {
       },
       {
         accessorKey: 'accounts',
-        header: ({ column }) => <DataTableColumnHeader column={column} title="登录方式" />,
+        header: ({ column }) => <DataTableColumnHeader column={column} title='登录方式' />,
         cell: ({ row }) => {
           const accounts = row.original.accounts || []
 
           if (accounts.length === 0) {
-            return <div className="text-muted-foreground">-</div>
+            return <div className='text-muted-foreground'>-</div>
           }
 
           // Provider ID 到中文映射
@@ -93,40 +93,36 @@ export function useAdminUsersColumns(): ColumnDef<AdminUser>[] {
           }
 
           return (
-            <div className="flex flex-wrap gap-1">
+            <div className='flex flex-wrap gap-1'>
               {accounts.map((account) => (
                 <TooltipProvider key={account.id}>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Badge variant="secondary" className="cursor-help">
+                      <Badge variant='secondary' className='cursor-help'>
                         {providerLabels[account.providerId] || account.providerId}
                       </Badge>
                     </TooltipTrigger>
                     <TooltipContent>
-                      <div className="text-xs space-y-1">
-                        <div className="font-medium">
+                      <div className='space-y-1 text-xs'>
+                        <div className='font-medium'>
                           {providerLabels[account.providerId] || account.providerId}登录
                         </div>
                         {account.providerId !== 'username' && account.providerId !== 'email' && (
-                          <div className="text-muted-foreground">
-                            ID: {account.accountId.substring(0, 12)}...
-                          </div>
+                          <div className='text-muted-foreground'>ID: {account.accountId.substring(0, 12)}...</div>
                         )}
                         {(account.providerId === 'username' || account.providerId === 'email') && (
                           <div>
                             {account.providerId === 'username' ? '用户名' : '邮箱'}: {account.accountId}
                           </div>
                         )}
-                        <div className="text-muted-foreground">
-                          绑定于: {formatDate(account.createdAt)}
-                        </div>
+                        <div className='text-muted-foreground'>绑定于: {formatDate(account.createdAt)}</div>
                       </div>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
               ))}
               {accounts.length > 1 && (
-                <Badge variant="outline" className="text-muted-foreground">
+                <Badge variant='outline' className='text-muted-foreground'>
                   ({accounts.length})
                 </Badge>
               )}

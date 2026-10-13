@@ -1,17 +1,17 @@
-import { memo } from 'react'
 import { ChevronLeftIcon, ChevronRightIcon, DoubleArrowLeftIcon, DoubleArrowRightIcon } from '@radix-ui/react-icons'
-import { type Table } from '@tanstack/react-table'
 import { cn, getPageNumbers } from '@/shared/lib/utils'
+import type { RowData } from '~/shared/lib/tanstack-table'
+import { type Table } from '~/shared/lib/tanstack-table'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
-type DataTablePaginationProps<TData> = {
+type DataTablePaginationProps<TData extends RowData> = {
   table: Table<TData>
   className?: string
 }
 
-function DataTablePaginationInner<TData>({ table, className }: DataTablePaginationProps<TData>) {
-  const currentPage = table.getState().pagination.pageIndex + 1
+function DataTablePaginationInner<TData extends RowData>({ table, className }: DataTablePaginationProps<TData>) {
+  const currentPage = table.state.pagination.pageIndex + 1
   const totalPages = table.getPageCount()
   const pageNumbers = getPageNumbers(currentPage, totalPages)
 
@@ -30,13 +30,13 @@ function DataTablePaginationInner<TData>({ table, className }: DataTablePaginati
         </div>
         <div className='flex items-center gap-2 @max-2xl/content:flex-row-reverse'>
           <Select
-            value={`${table.getState().pagination.pageSize}`}
+            value={`${table.state.pagination.pageSize}`}
             onValueChange={(value) => {
               table.setPageSize(Number(value))
             }}
           >
             <SelectTrigger className='h-8 w-[70px]'>
-              <SelectValue placeholder={table.getState().pagination.pageSize} />
+              <SelectValue placeholder={table.state.pagination.pageSize} />
             </SelectTrigger>
             <SelectContent side='top'>
               {[1, 10, 20, 30, 40, 50].map((pageSize) => (

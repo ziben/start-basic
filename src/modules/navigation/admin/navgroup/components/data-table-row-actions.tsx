@@ -1,8 +1,9 @@
 import { DotsHorizontalIcon } from '@radix-ui/react-icons'
-import { type Row } from '@tanstack/react-table'
 import { Trash2, Pen } from 'lucide-react'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import { adminNavgroupSchema } from '~/modules/navigation/shared/navgroup/data/schema'
+import type { RowData } from '~/shared/lib/tanstack-table'
+import { type Row } from '~/shared/lib/tanstack-table'
 import { logger } from '~/shared/utils/logger'
 import { Button } from '@/components/ui/button'
 import {
@@ -15,11 +16,11 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { useNavGroups } from './navgroups-provider'
 
-type DataTableRowActionsProps<TData> = {
+type DataTableRowActionsProps<TData extends RowData> = {
   row: Row<TData>
 }
 
-export function DataTableRowActions<TData>({ row }: DataTableRowActionsProps<TData>) {
+export function DataTableRowActions<TData extends RowData>({ row }: DataTableRowActionsProps<TData>) {
   const navgroup = adminNavgroupSchema.parse(row.original)
 
   const { setOpen, setCurrentRow } = useNavGroups()

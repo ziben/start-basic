@@ -8,7 +8,42 @@ allowBuilds:
   esbuild: false
   prisma: false
   protobufjs: true
+  workerd: true
+minimumReleaseAgeExclude:
+  - '@tanstack/history@1.162.5'
+  - '@tanstack/react-router@1.170.42'
+  - '@tanstack/react-start-client@1.168.40'
+  - '@tanstack/react-start-rsc@0.1.60'
+  - '@tanstack/react-start-server@1.167.47'
+  - '@tanstack/react-start@1.168.61'
+  - '@tanstack/router-core@1.171.35'
+  - '@tanstack/router-generator@1.167.41'
+  - '@tanstack/router-plugin@1.168.43'
+  - '@tanstack/start-client-core@1.170.35'
+  - '@tanstack/start-plugin-core@1.171.50'
+  - '@tanstack/start-server-core@1.169.40'
+  - '@tanstack/start-storage-context@1.167.37'
+  - i18next@26.4.3
+  - lucide-react@1.55.0
+  - prettier@3.9.10
+  - react-resizable-panels@4.14.4
 overrides:
   '@hono/node-server': 1.19.13
   seroval: 1.5.5
   seroval-plugins: 1.5.5
+permissions:
+  '@tanstack/ai':
+    skills: true
+  '@tanstack/devtools-event-client':
+    skills: true
+  '@tanstack/devtools-vite':
+    skills: true
+  '@tanstack/react-start':
+    skills: true
+  '@tanstack/react-table':
+    skills: true
+  '@tanstack/router-plugin':
+    skills: true
+skills:
+  dirs:
+    - .agent/skills

@@ -1,13 +1,14 @@
-import { memo, useState, useEffect, useRef } from 'react'
-import { type Table } from '@tanstack/react-table'
-import { X } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react'
 import { cn } from '@/shared/lib/utils'
+import { X } from 'lucide-react'
+import type { RowData } from '~/shared/lib/tanstack-table'
+import { type Table } from '~/shared/lib/tanstack-table'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
-type DataTableBulkActionsProps<TData> = {
+type DataTableBulkActionsProps<TData extends RowData> = {
   table: Table<TData>
   entityName: string
   children: React.ReactNode
@@ -24,7 +25,7 @@ type DataTableBulkActionsProps<TData> = {
  * @param {React.ReactNode} props.children The action buttons to be rendered inside the toolbar.
  * @returns {React.ReactNode | null} The rendered component or null if no rows are selected.
  */
-function DataTableBulkActionsInner<TData>({
+function DataTableBulkActionsInner<TData extends RowData>({
   table,
   entityName,
   children,
@@ -174,9 +175,7 @@ function DataTableBulkActionsInner<TData>({
             <Badge variant='default' className='min-w-8 rounded-lg' aria-label={`${selectedCount} selected`}>
               {selectedCount}
             </Badge>{' '}
-            <span className='hidden sm:inline'>
-              {entityName}
-            </span>
+            <span className='hidden sm:inline'>{entityName}</span>
           </div>
 
           <Separator className='h-5' orientation='vertical' aria-hidden='true' />
@@ -188,7 +187,4 @@ function DataTableBulkActionsInner<TData>({
   )
 }
 
-export const DataTableBulkActions = memo(DataTableBulkActionsInner) as typeof DataTableBulkActionsInner
-
-
-
+export const DataTableBulkActions = DataTableBulkActionsInner

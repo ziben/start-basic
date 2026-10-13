@@ -1,8 +1,9 @@
 import { DotsHorizontalIcon } from '@radix-ui/react-icons'
-import { type Row } from '@tanstack/react-table'
 import { Trash2, Pen } from 'lucide-react'
 import type { Translation } from '~/modules/admin/features/i18n/translation/types/translation'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
+import type { RowData } from '~/shared/lib/tanstack-table'
+import { type Row } from '~/shared/lib/tanstack-table'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -14,11 +15,11 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { useTranslations } from './translations-provider'
 
-type DataTableRowActionsProps<TData> = {
+type DataTableRowActionsProps<TData extends RowData> = {
   row: Row<TData>
 }
 
-export function DataTableRowActions<TData>({ row }: DataTableRowActionsProps<TData>) {
+export function DataTableRowActions<TData extends RowData>({ row }: DataTableRowActionsProps<TData>) {
   const translation = row.original as Translation
 
   const { setOpen, setCurrentRow } = useTranslations()

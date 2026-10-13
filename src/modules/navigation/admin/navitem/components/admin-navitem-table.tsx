@@ -1,22 +1,30 @@
-import { useMemo, useEffect, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
 import { AdminNavItem } from '~/modules/navigation/shared/navitem/data/schema'
-import { useAdminNavItemColumns } from './admin-navitem-columns'
+import { dataTableFeatures, tableFeatures } from '~/shared/lib/tanstack-table'
 import {
   ColumnFiltersState,
   SortingState,
   VisibilityState,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
+  createFilteredRowModel,
+  createPaginatedRowModel,
+  createSortedRowModel,
+  useTable,
   flexRender,
-  getExpandedRowModel,
+  createExpandedRowModel,
   ExpandedState,
-} from '@tanstack/react-table'
+} from '~/shared/lib/tanstack-table'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
+import { useAdminNavItemColumns } from './admin-navitem-columns'
+
+const features = tableFeatures({
+  ...dataTableFeatures,
+  paginatedRowModel: createPaginatedRowModel(),
+  filteredRowModel: createFilteredRowModel(),
+  sortedRowModel: createSortedRowModel(),
+  expandedRowModel: createExpandedRowModel(),
+})
 
 interface Props {
   readonly data: ReadonlyArray<AdminNavItem>
@@ -143,41 +151,36 @@ export default function AdminNavItemTable({ data, isLoading, error, navGroupId, 
     return {
       tableData: treeData,
       getSubRowsFunction: subRowsFunc,
-      allVisibleItemsById: allVisibleItemsMap
+      allVisibleItemsById: allVisibleItemsMap,
     }
   }, [data, titleFilterValue, depthMap])
 
-  // Effect for auto-expanding rows when filter is applied
-  useEffect(() => {
-    if (!titleFilterValue) {
-      return
-    }
-    // const allItemsById = new Map(data.map(item => [item.id, item])); // Original data map
-    const newExpanded: any = {}
-    const lowercasedFilter = titleFilterValue.toLowerCase()
-
-    // Iterate over all visible items (roots and children) to find matches and their ancestors for expansion
-    allVisibleItemsById.forEach((item: any) => {
-      if (item.title.toLowerCase().includes(lowercasedFilter)) {
-        let currentAncestorId = item.parentId
-        while (currentAncestorId) {
-          if (allVisibleItemsById.has(currentAncestorId)) {
-            // Ensure ancestor is in the visible set
+  const [previousVisibleItems, setPreviousVisibleItems] = useState(allVisibleItemsById)
+  // Update only when the search or data changes so users can still collapse rows.
+  if (previousVisibleItems !== allVisibleItemsById) {
+    setPreviousVisibleItems(allVisibleItemsById)
+    if (titleFilterValue) {
+      const newExpanded: Record<string, boolean> = {}
+      const lowercasedFilter = titleFilterValue.toLowerCase()
+      allVisibleItemsById.forEach((item) => {
+        if (item.title.toLowerCase().includes(lowercasedFilter)) {
+          let currentAncestorId = item.parentId
+          while (currentAncestorId) {
             newExpanded[currentAncestorId] = true
+            currentAncestorId = allVisibleItemsById.get(currentAncestorId)?.parentId
           }
-          const ancestorDetails: any = allVisibleItemsById.get(currentAncestorId) // Get details from visible set
-          currentAncestorId = ancestorDetails ? ancestorDetails.parentId : null
         }
-      }
-    })
-    setExpanded((prevExpanded) => {
-      const baseExpanded = typeof prevExpanded === 'object' ? prevExpanded : {}
-      return { ...baseExpanded, ...newExpanded }
-    })
-  }, [titleFilterValue, data, allVisibleItemsById])
+      })
+      setExpanded((prevExpanded) => {
+        const baseExpanded = typeof prevExpanded === 'object' ? prevExpanded : {}
+        return { ...baseExpanded, ...newExpanded }
+      })
+    }
+  }
 
   // 创建table实例
-  const table = useReactTable({
+  const table = useTable({
+    features,
     data: tableData,
     columns,
     state: {
@@ -189,17 +192,15 @@ export default function AdminNavItemTable({ data, isLoading, error, navGroupId, 
     },
     enableRowSelection: true,
     enableExpanding: true,
+    autoResetExpanded: false,
+    getRowId: (row) => row.id,
     getSubRows: getSubRowsFunction,
+    filterFromLeafRows: true,
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
     onExpandedChange: setExpanded,
-    getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getExpandedRowModel: getExpandedRowModel(),
   })
 
   const rows = table.getRowModel().rows
@@ -208,9 +209,7 @@ export default function AdminNavItemTable({ data, isLoading, error, navGroupId, 
   if (isLoading) return <div className='py-8 text-center'>{t('common.loading')}</div>
   if (error)
     return (
-      <div className='py-8 text-center text-red-500'>
-        {t('admin.navitem.loadError', { message: error.message })}
-      </div>
+      <div className='py-8 text-center text-red-500'>{t('admin.navitem.loadError', { message: error.message })}</div>
     )
 
   return (
@@ -218,15 +217,9 @@ export default function AdminNavItemTable({ data, isLoading, error, navGroupId, 
       <DataTableToolbar
         table={table}
         searchPlaceholder={t('admin.navitem.search')}
+        searchKey='title'
         onReload={onReload}
         isReloading={isReloading}
-        filters={[
-          {
-            columnId: 'title',
-            title: t('admin.navitem.table.title'),
-            options: [],
-          },
-        ]}
       />
       <div className='min-h-0 flex-1 overflow-auto rounded-md border'>
         <div>
@@ -272,8 +265,3 @@ export default function AdminNavItemTable({ data, isLoading, error, navGroupId, 
     </div>
   )
 }
-
-
-
-
-

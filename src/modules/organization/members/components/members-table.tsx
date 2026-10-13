@@ -1,19 +1,25 @@
 import { useState, useRef, useEffect } from 'react'
-import {
-  type VisibilityState,
-  getCoreRowModel,
-  getFacetedRowModel,
-  getFacetedUniqueValues,
-  useReactTable,
-} from '@tanstack/react-table'
 import { useTableColumnVisibility } from '@/shared/hooks/use-table-column-visibility'
 import { type NavigateFn, useTableUrlState } from '@/shared/hooks/use-table-url-state'
 import { cn } from '@/shared/lib/utils'
 import { useVirtualizer } from '@tanstack/react-virtual'
+import { dataTableFeatures, tableFeatures } from '~/shared/lib/tanstack-table'
+import {
+  type VisibilityState,
+  createFacetedRowModel,
+  createFacetedUniqueValues,
+  useTable,
+} from '~/shared/lib/tanstack-table'
 import { DataTable, DataTablePagination, DataTableToolbar } from '@/components/data-table'
 import { useMembersListQuery } from '../hooks/use-members-list-query'
 import { MembersBulkActions } from './members-bulk-actions'
 import { useMembersColumns } from './members-columns'
+
+const features = tableFeatures({
+  ...dataTableFeatures,
+  facetedRowModel: createFacetedRowModel(),
+  facetedUniqueValues: createFacetedUniqueValues(),
+})
 
 type MembersTableProps = {
   search: Record<string, unknown>
@@ -43,7 +49,8 @@ export function MembersTable({ search, navigate }: MembersTableProps) {
     sorting: [],
   })
 
-  const table = useReactTable({
+  const table = useTable({
+    features,
     data,
     columns,
     state: {
@@ -72,9 +79,6 @@ export function MembersTable({ search, navigate }: MembersTableProps) {
         role.includes(searchValue)
       )
     },
-    getCoreRowModel: getCoreRowModel(),
-    getFacetedRowModel: getFacetedRowModel(),
-    getFacetedUniqueValues: getFacetedUniqueValues(),
     onPaginationChange,
     onGlobalFilterChange,
   })

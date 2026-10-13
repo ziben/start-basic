@@ -1,12 +1,12 @@
 import { useMemo } from 'react'
-import { type ColumnDef } from '@tanstack/react-table'
 import { format } from 'date-fns'
 import { User, Building2, Shield } from 'lucide-react'
+import { type ColumnDef } from '~/shared/lib/tanstack-table'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import { DataTableColumnHeader } from '@/components/data-table'
-import { DataTableRowActions } from './data-table-row-actions'
 import { type Member } from '../data/schema'
+import { DataTableRowActions } from './data-table-row-actions'
 
 const roleColors: Record<string, string> = {
   owner: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
