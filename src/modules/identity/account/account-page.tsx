@@ -1,20 +1,16 @@
 import { useState } from 'react'
-import { useSearch } from '@tanstack/react-router'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useSearch } from '@tanstack/react-router'
 import { BadgeCheck, CircleAlert, Link2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { AppHeaderMain } from '~/components/layout/app-header-main'
-import { authClient } from '~/modules/auth/shared/lib/auth-client'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
-import {
-  getAdminAccountFn,
-  setAdminPasswordFn,
-  unlinkAdminAccountFn,
-} from './server-fns/account.fn'
-import { type AdminAccountOverview } from './services/account.service'
+import { authClient } from '~/modules/auth/shared/lib/auth-client'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
+import { getAdminAccountFn, setAdminPasswordFn, unlinkAdminAccountFn } from './server-fns/account.fn'
+import { type AdminAccountOverview } from './services/account.service'
 
 export default function AdminAccount(): React.ReactElement {
   const { t } = useTranslation()
@@ -66,8 +62,7 @@ export default function AdminAccount(): React.ReactElement {
   const accounts: AdminAccountOverview['accounts'] = overview?.accounts ?? []
   const hasAccounts = accounts.length > 0
   const userId = overview?.user?.id
-  const isBusy =
-    resetPassword.isPending || unlinkAccount.isPending
+  const isBusy = resetPassword.isPending || unlinkAccount.isPending
 
   return (
     <AppHeaderMain>
@@ -83,7 +78,7 @@ export default function AdminAccount(): React.ReactElement {
           onClick={() => {
             if (!userId) return
             const params = new URLSearchParams({ filter: userId })
-            globalThis.location.href = `/_authenticated/admin/session?${params.toString()}`
+            globalThis.location.href = `/admin/session?${params.toString()}`
           }}
         >
           进入会话管理
@@ -206,7 +201,6 @@ export default function AdminAccount(): React.ReactElement {
             </Button>
           </CardContent>
         </Card>
-
       </div>
     </AppHeaderMain>
   )

@@ -108,9 +108,9 @@ describe('tab utils', () => {
     ).toEqual([
       ['/admin/system-config', '系统设置'],
       ['/admin/users', '用户管理'],
-      ['/admin/rbac/roles', '系统角色'],
+      ['/admin/rbac/roles', '角色与模板'],
       ['/admin/modules', '模块诊断'],
-      ['/admin/log', '系统日志'],
+      ['/admin/log', '日志与审计'],
     ])
   })
 })

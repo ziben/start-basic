@@ -4,6 +4,7 @@ import { getDb } from '~/shared/lib/db'
 import { Prisma, ResourceScope, RoleScope } from '../../../src/generated/prisma/client'
 import en from '../../../src/i18n/locales/en'
 import zh from '../../../src/i18n/locales/zh'
+import { syncAdminNavigation } from '../../../src/modules/admin/shared/sidebar/sync-admin-navigation'
 
 type RuntimeConfigSeedItem = {
   key: string
@@ -375,12 +376,6 @@ async function seedBaseData(prisma: Prisma.TransactionClient): Promise<void> {
     }
   }
 
-  const ensureAdminNavGroup = (data: {
-    title: string
-    orderIndex: number
-    navItems: { title: string; url: string; icon: string; orderIndex: number }[]
-  }) => ensureNavGroup({ ...data, scope: 'ADMIN' }, ['admin', 'superadmin'])
-
   const ensureAppNavGroup = (data: {
     title: string
     orderIndex: number
@@ -393,29 +388,7 @@ async function seedBaseData(prisma: Prisma.TransactionClient): Promise<void> {
     navItems: [{ title: '仪表盘', url: '/', icon: 'LayoutDashboard', orderIndex: 0 }],
   })
 
-  await ensureAdminNavGroup({
-    title: '仪表盘',
-    orderIndex: -1,
-    navItems: [{ title: '系统概览', url: '/admin/dashboard', icon: 'LayoutDashboard', orderIndex: 0 }],
-  })
-
-  await ensureAdminNavGroup({
-    title: '系统管理',
-    orderIndex: 90,
-    navItems: [
-      { title: '菜单管理', url: '/admin/navigation', icon: 'List', orderIndex: 1 },
-      { title: 'I18N管理', url: '/admin/translation', icon: 'Users', orderIndex: 2 },
-      { title: '用户管理', url: '/admin/users', icon: 'Users', orderIndex: 3 },
-      { title: '账号管理', url: '/admin/accounts', icon: 'User', orderIndex: 4 },
-      { title: '会话管理', url: '/admin/sessions', icon: 'Lock', orderIndex: 5 },
-      { title: '系统角色', url: '/admin/rbac/roles', icon: 'Shield', orderIndex: 6 },
-      { title: '组织角色', url: '/admin/rbac/org-roles', icon: 'Building', orderIndex: 7 },
-      { title: '权限定义', url: '/admin/rbac/permissions', icon: 'Key', orderIndex: 8 },
-      { title: '组织管理', url: '/admin/organizations', icon: 'Building', orderIndex: 9 },
-      { title: '成员管理', url: '/admin/members', icon: 'Users', orderIndex: 10 },
-      { title: '部门管理', url: '/admin/department', icon: 'Building', orderIndex: 11 },
-    ],
-  })
+  await syncAdminNavigation(prisma)
 
   console.log('Base seed complete successfully.')
 }

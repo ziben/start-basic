@@ -12,9 +12,9 @@ describe('sidebar server utils', () => {
       expect.arrayContaining([
         expect.objectContaining({ title: '系统设置', url: '/admin/system-config' }),
         expect.objectContaining({ title: '用户管理', url: '/admin/users' }),
-        expect.objectContaining({ title: '系统角色', url: '/admin/rbac/roles' }),
+        expect.objectContaining({ title: '角色与模板', url: '/admin/rbac/roles' }),
         expect.objectContaining({ title: '模块诊断', url: '/admin/modules' }),
-        expect.objectContaining({ title: '日志', url: '/admin/log' }),
+        expect.objectContaining({ title: '日志与审计', url: '/admin/log' }),
       ])
     )
   })
@@ -37,10 +37,10 @@ describe('sidebar server utils', () => {
     expect(merged).toEqual([
       groups[0],
       expect.objectContaining({
-        title: '诊断',
+        title: '运维与审计',
         items: expect.arrayContaining([
           expect.objectContaining({ title: '模块诊断', url: '/admin/modules' }),
-          expect.objectContaining({ title: '日志', url: '/admin/log' }),
+          expect.objectContaining({ title: '日志与审计', url: '/admin/log' }),
         ]),
       }),
     ])
@@ -64,7 +64,7 @@ describe('sidebar server utils', () => {
 
     expect(diagnostics?.items.filter((item) => 'url' in item && item.url === '/admin/modules')).toHaveLength(1)
     expect(diagnostics?.items).toEqual(
-      expect.arrayContaining([expect.objectContaining({ title: '日志', url: '/admin/log' })])
+      expect.arrayContaining([expect.objectContaining({ title: '日志与审计', url: '/admin/log' })])
     )
   })
 
@@ -82,5 +82,18 @@ describe('sidebar server utils', () => {
     ]
 
     expect(mergeRequiredAdminGroups(groups, createAdminSidebarData((key) => key).navGroups, 'APP')).toBe(groups)
+  })
+
+  it('does not repeat a diagnostic target configured in another group', () => {
+    const groups: NavGroup[] = [
+      {
+        title: '自定义运维',
+        items: [
+          { title: '日志', url: '/admin/log' },
+          { title: '模块', url: '/admin/modules' },
+        ],
+      },
+    ]
+    expect(mergeRequiredAdminGroups(groups, createAdminSidebarData((key) => key).navGroups, 'ADMIN')).toBe(groups)
   })
 })

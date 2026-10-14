@@ -26,21 +26,20 @@ export function mergeRequiredAdminGroups(
 ): NavGroupType[] {
   if (scope !== 'ADMIN') return groups
 
-  const requiredGroup = fallbackGroups.find((group) => group.title === '诊断')
+  const requiredGroup = fallbackGroups.find((group) => group.title === '运维与审计')
   if (!requiredGroup) return groups
 
-  const existingIndex = groups.findIndex((group) => group.title === requiredGroup.title)
-  if (existingIndex === -1) return [...groups, requiredGroup]
+  const existingIndex = groups.findIndex((group) => group.title === requiredGroup.title || group.title === '诊断')
+  const missingItems = requiredGroup.items.filter((item) => {
+    const url = findItemUrl(item)
+    return url ? !groups.some((group) => hasNavItemUrl(group.items, url)) : false
+  })
+  if (missingItems.length === 0) return groups
+  if (existingIndex === -1) return [...groups, { ...requiredGroup, items: missingItems }]
 
   return groups.map((group, index) => {
     if (index !== existingIndex) return group
 
-    const missingItems = requiredGroup.items.filter((item) => {
-      const url = findItemUrl(item)
-      return url ? !hasNavItemUrl(group.items, url) : false
-    })
-
-    if (missingItems.length === 0) return group
     return {
       ...group,
       items: [...group.items, ...missingItems],
