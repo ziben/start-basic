@@ -1,6 +1,9 @@
 import { useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { assignPermissionsFn } from '../../server-fns/rbac.fn'
+import { toast } from 'sonner'
+import { permissionsQueryKeys, roleQueryKeys } from '~/shared/lib/query-keys'
+import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 import {
   Dialog,
   DialogContent,
@@ -9,11 +12,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import { Checkbox } from '@/components/ui/checkbox'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { toast } from 'sonner'
-import { roleQueryKeys } from '~/shared/lib/query-keys'
+import { assignPermissionsFn } from '../../server-fns/rbac.fn'
 import { useRolesContext } from '../context/roles-context'
 import { usePermissionsQuery } from '../hooks/use-permissions-query'
 
@@ -25,7 +25,7 @@ export function RolePermissionsDialog() {
 
   return (
     <Dialog open={permissionsDialog.isOpen} onOpenChange={closePermissionsDialog}>
-      <DialogContent className="max-w-3xl">
+      <DialogContent className='max-w-3xl'>
         <RolePermissionsDialogContent
           key={role?.id ?? 'empty'}
           role={role}
@@ -68,6 +68,8 @@ function RolePermissionsDialogContent({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: roleQueryKeys.all })
+      queryClient.invalidateQueries({ queryKey: permissionsQueryKeys.all })
+      queryClient.invalidateQueries({ queryKey: permissionsQueryKeys.checkAll })
       toast.success('权限分配成功')
       closePermissionsDialog()
     },
@@ -82,9 +84,7 @@ function RolePermissionsDialogContent({
 
   const togglePermission = (permissionId: string) => {
     setSelectedPermissions((prev) =>
-      prev.includes(permissionId)
-        ? prev.filter((id) => id !== permissionId)
-        : [...prev, permissionId]
+      prev.includes(permissionId) ? prev.filter((id) => id !== permissionId) : [...prev, permissionId]
     )
   }
 
@@ -107,14 +107,14 @@ function RolePermissionsDialogContent({
         <DialogDescription>为角色分配权限</DialogDescription>
       </DialogHeader>
 
-      <ScrollArea className="h-[500px] pr-4">
-        <div className="space-y-6">
+      <ScrollArea className='h-[500px] pr-4'>
+        <div className='space-y-6'>
           {Object.entries(groupedPermissions).map(([resourceName, permissions]) => (
-            <div key={resourceName} className="space-y-2">
-              <h4 className="font-medium text-sm">{resourceName}</h4>
-              <div className="grid grid-cols-2 gap-2">
+            <div key={resourceName} className='space-y-2'>
+              <h4 className='text-sm font-medium'>{resourceName}</h4>
+              <div className='grid grid-cols-2 gap-2'>
                 {permissions.map((permission: any) => (
-                  <div key={permission.id} className="flex items-center space-x-2">
+                  <div key={permission.id} className='flex items-center space-x-2'>
                     <Checkbox
                       id={permission.id}
                       checked={selectedPermissions.includes(permission.id)}
@@ -122,12 +122,10 @@ function RolePermissionsDialogContent({
                     />
                     <label
                       htmlFor={permission.id}
-                      className="text-sm font-normal leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                      className='cursor-pointer text-sm leading-none font-normal peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
                     >
                       {permission.displayName}
-                      <span className="text-xs text-muted-foreground ml-1">
-                        ({permission.code})
-                      </span>
+                      <span className='ml-1 text-xs text-muted-foreground'>({permission.code})</span>
                     </label>
                   </div>
                 ))}
@@ -138,7 +136,7 @@ function RolePermissionsDialogContent({
       </ScrollArea>
 
       <DialogFooter>
-        <Button variant="outline" onClick={closePermissionsDialog}>
+        <Button variant='outline' onClick={closePermissionsDialog}>
           取消
         </Button>
         <Button onClick={handleSubmit} disabled={assignMutation.isPending}>

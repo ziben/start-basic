@@ -8,6 +8,7 @@ import { createServerFn } from '@tanstack/react-start'
 import { requireAdmin } from '~/modules/admin/shared/server-fns/auth'
 import { clearAccessControlCache, reinitAuth } from '~/modules/auth/shared/lib/auth'
 import { ServiceError } from '~/shared/utils/service-error'
+
 export { assignRoleNavGroupsFn } from '~/modules/navigation/shared/server-fns/role-nav-groups.fn'
 
 // ============ Schema 定义 ============
@@ -197,46 +198,38 @@ export const createRoleFn = createServerFn({ method: 'POST' })
 
 export const updateRoleFn = createServerFn({ method: 'POST' })
   .validator((data: z.infer<typeof UpdateRoleSchema>) => UpdateRoleSchema.parse(data))
-  .handler(async ({ data }: { data: z.infer<typeof UpdateRoleSchema> }) => {
-    await requireAdmin('UpdateRole')
-    const prisma = (await import('@/shared/lib/db')).default
+  .handler(handleUpdateRole)
 
-    const { id, permissionIds, ...updateData } = data
+export async function handleUpdateRole({ data }: { data: z.infer<typeof UpdateRoleSchema> }) {
+  await requireAdmin('UpdateRole')
+  const prisma = (await import('@/shared/lib/db')).default
 
-    // 检查是否是系统角色
-    const role = await prisma.role.findUnique({ where: { id } })
-    if (role?.isSystem) {
-      throw new ServiceError('FORBIDDEN', '系统角色不允许修改')
-    }
+  const { id, permissionIds, ...updateData } = data
 
-    // 更新角色
-    const updated = await prisma.role.update({
-      where: { id },
-      data: updateData,
-    })
+  const updated = await prisma.$transaction(async (tx) => {
+    const role = await tx.role.findUnique({ where: { id } })
+    if (!role) throw new ServiceError('NOT_FOUND', '角色不存在')
+    if (role.isSystem) throw new ServiceError('FORBIDDEN', '系统角色不允许修改')
 
-    // 如果提供了权限列表，更新权限关联
+    const result = await tx.role.update({ where: { id }, data: updateData })
     if (permissionIds !== undefined) {
-      // 删除旧的权限关联
-      await prisma.rolePermission.deleteMany({
-        where: { roleId: id },
-      })
-
-      // 创建新的权限关联
-      await prisma.rolePermission.createMany({
-        data: permissionIds.map((permissionId: string) => ({
-          roleId: id,
-          permissionId,
-        })),
-      })
+      await tx.rolePermission.deleteMany({ where: { roleId: id } })
+      const ids = [...new Set(permissionIds)]
+      if (ids.length > 0) {
+        await tx.rolePermission.createMany({
+          data: ids.map((permissionId) => ({ roleId: id, permissionId })),
+        })
+      }
     }
-
-    // 清除缓存并重新初始化 auth
-    clearAccessControlCache()
-    await reinitAuth()
-
-    return updated
+    return result
   })
+
+  // 清除缓存并重新初始化 auth
+  clearAccessControlCache()
+  await reinitAuth()
+
+  return updated
+}
 
 export const deleteRoleFn = createServerFn({ method: 'POST' })
   .validator(z.object({ id: z.string().min(1) }))
@@ -378,35 +371,32 @@ export const deletePermissionFn = createServerFn({ method: 'POST' })
 
 export const assignPermissionsFn = createServerFn({ method: 'POST' })
   .validator((data: z.infer<typeof AssignPermissionsSchema>) => AssignPermissionsSchema.parse(data))
-  .handler(async ({ data }: { data: z.infer<typeof AssignPermissionsSchema> }) => {
-    await requireAdmin('AssignPermissions')
-    const prisma = (await import('@/shared/lib/db')).default
+  .handler(handleAssignPermissions)
 
-    // 检查是否是系统角色
-    const role = await prisma.role.findUnique({ where: { id: data.roleId } })
-    if (role?.isSystem) {
-      throw new ServiceError('FORBIDDEN', '系统角色不允许修改权限')
+export async function handleAssignPermissions({ data }: { data: z.infer<typeof AssignPermissionsSchema> }) {
+  await requireAdmin('AssignPermissions')
+  const prisma = (await import('@/shared/lib/db')).default
+
+  await prisma.$transaction(async (tx) => {
+    const role = await tx.role.findUnique({ where: { id: data.roleId } })
+    if (!role) throw new ServiceError('NOT_FOUND', '角色不存在')
+    if (role.isSystem) throw new ServiceError('FORBIDDEN', '系统角色不允许修改权限')
+
+    await tx.rolePermission.deleteMany({ where: { roleId: data.roleId } })
+    const ids = [...new Set(data.permissionIds)]
+    if (ids.length > 0) {
+      await tx.rolePermission.createMany({
+        data: ids.map((permissionId) => ({ roleId: data.roleId, permissionId })),
+      })
     }
-
-    // 删除旧的权限关联
-    await prisma.rolePermission.deleteMany({
-      where: { roleId: data.roleId },
-    })
-
-    // 创建新的权限关联
-    await prisma.rolePermission.createMany({
-      data: data.permissionIds.map((permissionId: string) => ({
-        roleId: data.roleId,
-        permissionId,
-      })),
-    })
-
-    // 清除缓存并重新初始化 auth
-    clearAccessControlCache()
-    await reinitAuth()
-
-    return { success: true }
   })
+
+  // 清除缓存并重新初始化 auth
+  clearAccessControlCache()
+  await reinitAuth()
+
+  return { success: true }
+}
 
 // ============ 权限矩阵查询 ============
 
