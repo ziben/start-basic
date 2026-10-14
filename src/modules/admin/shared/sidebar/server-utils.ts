@@ -330,14 +330,14 @@ async function createNavItem(
 
 async function ensureAdminDiagnosticsNavGroup(): Promise<void> {
   const t = (key: string): string => key
-  const diagnosticsGroup = createAdminSidebarData(t).navGroups.find((group) => group.title === '诊断')
+  const diagnosticsGroup = createAdminSidebarData(t).navGroups.find((group) => group.title === '运维与审计')
   if (!diagnosticsGroup) return
 
   await prisma.$transaction(async (tx): Promise<void> => {
     const existingGroup = await tx.navGroup.findFirst({
       where: {
         scope: 'ADMIN',
-        title: diagnosticsGroup.title,
+        title: { in: [diagnosticsGroup.title, '诊断'] },
       },
       include: {
         navItems: true,
