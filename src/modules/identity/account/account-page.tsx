@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useSearch } from '@tanstack/react-router'
+import { QueryState } from '@/shared/components/query-state'
 import { BadgeCheck, CircleAlert, Link2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { AppHeaderMain } from '~/components/layout/app-header-main'
@@ -87,7 +88,11 @@ export default function AdminAccount(): React.ReactElement {
 
       {overviewQuery.isLoading ? <div className='py-8 text-center text-muted-foreground'>加载中...</div> : null}
       {overviewQuery.error ? (
-        <div className='py-8 text-center text-destructive'>{String(overviewQuery.error)}</div>
+        <QueryState
+          error={overviewQuery.error}
+          onRetry={() => void overviewQuery.refetch()}
+          isRetrying={overviewQuery.isRefetching}
+        />
       ) : null}
 
       {!overviewQuery.isLoading && !overviewQuery.error ? (

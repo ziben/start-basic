@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import type { ReactNode } from 'react'
 import { type NavigateFn, useTableUrlState } from '@/shared/hooks/use-table-url-state'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import type { Translation } from '~/modules/admin/features/i18n/translation/types/translation'
@@ -30,9 +31,21 @@ type DataTableProps = {
   data: Translation[]
   search: Record<string, unknown>
   navigate: NavigateFn
+  isLoading?: boolean
+  errorState?: ReactNode
+  onReload?: () => void
+  isReloading?: boolean
 }
 
-export function TranslationsTable({ data, search, navigate }: DataTableProps) {
+export function TranslationsTable({
+  data,
+  search,
+  navigate,
+  isLoading,
+  errorState,
+  onReload,
+  isReloading,
+}: DataTableProps) {
   const { t } = useTranslation()
   const columns = useTranslationColumns()
   const [rowSelection, setRowSelection] = useState({})
@@ -107,6 +120,8 @@ export function TranslationsTable({ data, search, navigate }: DataTableProps) {
       <DataTableToolbar
         table={table}
         searchPlaceholder={t('admin.translation.searchPlaceholder')}
+        onReload={onReload}
+        isReloading={isReloading}
         filters={[
           {
             columnId: 'locale',
@@ -121,6 +136,8 @@ export function TranslationsTable({ data, search, navigate }: DataTableProps) {
       <DataTable
         table={table}
         columnsLength={columns.length}
+        isLoading={isLoading}
+        errorState={errorState}
         skeletonCount={pagination.pageSize}
         containerRef={tableContainerRef}
         rowVirtualizer={rowVirtualizer}

@@ -29,11 +29,22 @@ const features = tableFeatures({
 type Props = {
   readonly data: SystemConfig[]
   readonly isLoading: boolean
+  readonly errorState?: React.ReactNode
+  readonly onReload?: () => void
+  readonly isReloading?: boolean
   readonly search?: Record<string, unknown>
   readonly navigate?: NavigateFn
 }
 
-export function SystemConfigTable({ data, isLoading, search, navigate }: Props): React.ReactElement {
+export function SystemConfigTable({
+  data,
+  isLoading,
+  errorState,
+  onReload,
+  isReloading,
+  search,
+  navigate,
+}: Props): React.ReactElement {
   const columns = useSystemConfigColumns()
   const { columnVisibility, setColumnVisibility } = useTableColumnVisibility({ tableId: 'admin-sysconfig' })
   const [columnSizing, setColumnSizing] = useState<Record<string, number>>({})
@@ -94,6 +105,9 @@ export function SystemConfigTable({ data, isLoading, search, navigate }: Props):
       table={table}
       columnsLength={columns.length}
       isLoading={isLoading}
+      errorState={errorState}
+      onReload={onReload}
+      isReloading={isReloading}
       skeletonCount={8}
       emptyState='暂无数据'
       searchPlaceholder='搜索 key / 分类…'

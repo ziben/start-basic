@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import type { ReactNode } from 'react'
 import { getRouteApi } from '@tanstack/react-router'
 import {
   type NavigateFn,
@@ -39,9 +40,11 @@ type DataTableProps = {
   navigate?: NavigateFn
   onReload?: () => void
   isReloading?: boolean
+  isLoading?: boolean
+  errorState?: ReactNode
 }
 
-function NavGroupsTableInner({ data, search, navigate, onReload, isReloading }: DataTableProps) {
+function NavGroupsTableInner({ data, search, navigate, onReload, isReloading, isLoading, errorState }: DataTableProps) {
   const { t } = useTranslation()
   const routeSearch = route.useSearch()
   const routeNavigate = route.useNavigate()
@@ -123,6 +126,8 @@ function NavGroupsTableInner({ data, search, navigate, onReload, isReloading }: 
       <DataTable
         table={table}
         columnsLength={columns.length}
+        isLoading={isLoading}
+        errorState={errorState}
         emptyState={t('admin.common.noData')}
         containerClassName='min-h-0 flex-1'
       />
@@ -132,7 +137,15 @@ function NavGroupsTableInner({ data, search, navigate, onReload, isReloading }: 
   )
 }
 
-export function NavGroupsTable({ data, search, navigate, onReload, isReloading }: DataTableProps) {
+export function NavGroupsTable({
+  data,
+  search,
+  navigate,
+  onReload,
+  isReloading,
+  isLoading,
+  errorState,
+}: DataTableProps) {
   const resolvedSearch = search ?? route.useSearch()
   const resolvedNavigate = navigate ?? toTableNavigate(route.useNavigate())
 
@@ -143,6 +156,8 @@ export function NavGroupsTable({ data, search, navigate, onReload, isReloading }
       navigate={resolvedNavigate}
       onReload={onReload}
       isReloading={isReloading}
+      isLoading={isLoading}
+      errorState={errorState}
     />
   )
 }
