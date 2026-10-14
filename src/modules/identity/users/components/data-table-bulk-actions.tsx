@@ -73,19 +73,6 @@ export function DataTableBulkActions<TData extends RowData>({ table }: DataTable
     })
   }
 
-  const handleBulkExport = () => {
-    const selectedUsers = selectedRows.map((row) => row.original as AdminUser)
-    toast.promise(Promise.resolve(), {
-      loading: t('admin.user.bulk.export.loading'),
-      success: () => {
-        table.resetRowSelection()
-        return t('admin.user.bulk.export.success', { count: selectedUsers.length })
-      },
-      error: t('admin.common.error'),
-    })
-    table.resetRowSelection()
-  }
-
   return (
     <>
       <BulkActionsToolbar table={table} entityName={t('admin.user.entity')} placement='content'>
@@ -97,6 +84,7 @@ export function DataTableBulkActions<TData extends RowData>({ table }: DataTable
               className='size-8'
               aria-label={t('admin.user.bulk.banToggle.label')}
               title={t('admin.user.bulk.banToggle.label')}
+              disabled={bulkBanMutation.isPending}
             >
               <CircleArrowUp />
               <span className='sr-only'>{t('admin.user.bulk.banToggle.label')}</span>
@@ -113,31 +101,13 @@ export function DataTableBulkActions<TData extends RowData>({ table }: DataTable
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
-              variant='outline'
-              size='icon'
-              onClick={() => handleBulkExport()}
-              className='size-8'
-              aria-label={t('admin.user.bulk.export.label')}
-              title={t('admin.user.bulk.export.label')}
-            >
-              <Download />
-              <span className='sr-only'>{t('admin.user.bulk.export.label')}</span>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>{t('admin.user.bulk.export.label')}</p>
-          </TooltipContent>
-        </Tooltip>
-
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
               variant='destructive'
               size='icon'
               onClick={() => setShowDeleteConfirm(true)}
               className='size-8'
               aria-label={t('admin.user.bulk.delete.label')}
               title={t('admin.user.bulk.delete.label')}
+              disabled={bulkBanMutation.isPending}
             >
               <Trash2 />
               <span className='sr-only'>{t('admin.user.bulk.delete.label')}</span>

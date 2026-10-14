@@ -15,7 +15,6 @@ import {
   useTable,
 } from '~/shared/lib/tanstack-table'
 import { DataTable, DataTablePagination, DataTableToolbar } from '@/components/data-table'
-import { DataTableBulkActions } from './data-table-bulk-actions'
 import { useTranslationColumns } from './translations-columns'
 
 const features = tableFeatures({
@@ -48,7 +47,6 @@ export function TranslationsTable({
 }: DataTableProps) {
   const { t } = useTranslation()
   const columns = useTranslationColumns()
-  const [rowSelection, setRowSelection] = useState({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 
   const {
@@ -76,13 +74,11 @@ export function TranslationsTable({
     columns,
     state: {
       columnVisibility,
-      rowSelection,
       columnFilters,
       globalFilter,
       pagination,
     },
-    enableRowSelection: true,
-    onRowSelectionChange: setRowSelection,
+    enableRowSelection: false,
     onColumnVisibilityChange: setColumnVisibility,
     globalFilterFn: (row, _columnId, filterValue) => {
       const key = String(row.getValue('key')).toLowerCase()
@@ -145,7 +141,6 @@ export function TranslationsTable({
         containerClassName='min-h-0 flex-1'
       />
       <DataTablePagination table={table} />
-      <DataTableBulkActions table={table} />
     </div>
   )
 }

@@ -1,8 +1,7 @@
 import { useEffect } from 'react'
-import { useAdminUsers } from './admin-users-provider'
-import { AdminUserImportDialog } from './admin-users-import-dialog'
-import { AdminUsersMutateDialog } from './admin-users-mutate-dialog'
 import { AdminUsersDeleteDialog } from './admin-users-delete-dialog'
+import { AdminUsersMutateDialog } from './admin-users-mutate-dialog'
+import { useAdminUsers } from './admin-users-provider'
 
 export function AdminUsersDialogs() {
   const { open, setOpen, currentRow, setCurrentRow } = useAdminUsers()
@@ -23,14 +22,9 @@ export function AdminUsersDialogs() {
       <AdminUsersMutateDialog
         key='user-create'
         open={open === 'create'}
-        onOpenChange={(o) => { if (!o) close() }}
-      />
-
-      {/* 导入 */}
-      <AdminUserImportDialog
-        key='user-import'
-        open={open === 'import'}
-        onOpenChange={(o) => { if (!o) close() }}
+        onOpenChange={(o) => {
+          if (!o) close()
+        }}
       />
 
       {/* 编辑 */}
@@ -38,17 +32,15 @@ export function AdminUsersDialogs() {
         <AdminUsersMutateDialog
           key={`user-edit-${currentRow.id}`}
           open={open === 'update'}
-          onOpenChange={(o) => { if (!o) close() }}
+          onOpenChange={(o) => {
+            if (!o) close()
+          }}
           currentRow={currentRow}
         />
       )}
 
       {/* 删除 */}
-      <AdminUsersDeleteDialog
-        row={currentRow}
-        open={open === 'delete'}
-        onClose={close}
-      />
+      <AdminUsersDeleteDialog row={currentRow} open={open === 'delete'} onClose={close} />
     </>
   )
 }

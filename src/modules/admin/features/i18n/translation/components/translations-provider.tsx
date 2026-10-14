@@ -2,7 +2,7 @@ import React from 'react'
 import { useDialogRowState } from '@/shared/hooks/use-dialog-row-state'
 import type { Translation } from '~/modules/admin/features/i18n/translation/types/translation'
 
-type TranslationsDialogType = 'create' | 'update' | 'delete' | 'import'
+type TranslationsDialogType = 'create' | 'update' | 'delete'
 
 type TranslationsContextType = {
   open: TranslationsDialogType | null

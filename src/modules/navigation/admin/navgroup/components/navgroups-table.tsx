@@ -20,7 +20,6 @@ import {
   useTable,
 } from '~/shared/lib/tanstack-table'
 import { DataTable, DataTablePagination, DataTableToolbar } from '@/components/data-table'
-import { DataTableBulkActions } from './data-table-bulk-actions'
 import { useNavGroupColumns } from './navgroups-columns'
 
 const features = tableFeatures({
@@ -49,7 +48,6 @@ function NavGroupsTableInner({ data, search, navigate, onReload, isReloading, is
   const routeSearch = route.useSearch()
   const routeNavigate = route.useNavigate()
   const columns = useNavGroupColumns()
-  const [rowSelection, setRowSelection] = useState({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 
   const {
@@ -77,13 +75,11 @@ function NavGroupsTableInner({ data, search, navigate, onReload, isReloading, is
     columns,
     state: {
       columnVisibility,
-      rowSelection,
       columnFilters,
       globalFilter,
       pagination,
     },
-    enableRowSelection: true,
-    onRowSelectionChange: setRowSelection,
+    enableRowSelection: false,
     onColumnVisibilityChange: setColumnVisibility,
     globalFilterFn: (row, _columnId, filterValue) => {
       const id = String(row.getValue('id')).toLowerCase()
@@ -132,7 +128,6 @@ function NavGroupsTableInner({ data, search, navigate, onReload, isReloading, is
         containerClassName='min-h-0 flex-1'
       />
       <DataTablePagination table={table} />
-      <DataTableBulkActions table={table} />
     </div>
   )
 }
