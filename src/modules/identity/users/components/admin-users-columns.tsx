@@ -188,17 +188,15 @@ export function useAdminUsersColumns(): ColumnDef<AdminUser>[] {
       {
         accessorKey: 'banned',
         header: ({ column }) => <DataTableColumnHeader column={column} title={t('admin.user.table.status')} />,
-        cell: ({ row }) => (
-          <Badge
-            variant='outline'
-            className={cn('capitalize', {
-              'border-red-300 bg-red-50 text-red-700': row.getValue('banned'),
-              'border-green-300 bg-green-50 text-green-700': !row.getValue('banned'),
-            })}
-          >
-            {row.getValue('banned') ? t('admin.user.table.status.banned') : t('admin.user.table.status.normal')}
-          </Badge>
-        ),
+        cell: ({ row }) => {
+          const isBanned = !!row.getValue('banned')
+          return (
+            <Badge variant={isBanned ? 'destructive' : 'success'} className='gap-1.5 font-normal'>
+              <span className={cn('size-1.5 rounded-full', isBanned ? 'bg-destructive' : 'bg-emerald-500')} />
+              {isBanned ? t('admin.user.table.status.banned') : t('admin.user.table.status.normal')}
+            </Badge>
+          )
+        },
         meta: { className: 'w-24', title: t('admin.user.table.status') },
       },
       {
@@ -237,7 +235,7 @@ export function useAdminUsersColumns(): ColumnDef<AdminUser>[] {
         enableSorting: false,
         enableHiding: false,
         enableResizing: false,
-        meta: { className: 'sticky end-0 bg-background shadow-[-1px_0_0_0_hsl(var(--border))] text-end' },
+        meta: { className: 'sticky end-0 bg-background/95 backdrop-blur-xs border-s border-border/60 text-end' },
       },
     ],
     [t]

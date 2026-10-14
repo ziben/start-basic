@@ -75,24 +75,35 @@ const SortableTab = memo(function SortableTab({
             <div
               data-state={isActive ? 'active' : 'inactive'}
               onClick={() => onActivate(tab.id)}
+              onAuxClick={(e) => {
+                if (e.button === 1 && tab.closable !== false) {
+                  e.preventDefault()
+                  onClose(tab.id)
+                }
+              }}
               className={cn(
-                'relative h-8 max-w-[180px] min-w-[100px] gap-2 px-3 transition-all duration-200',
+                'group relative inline-flex h-8 max-w-[190px] min-w-[110px] items-center gap-2 rounded-md px-2.5 text-xs font-medium transition-all duration-150',
                 isActive
-                  ? 'bg-background shadow-xs'
-                  : 'border-transparent bg-transparent text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+                  ? 'border border-border/80 bg-background text-foreground shadow-xs dark:border-white/10 dark:bg-zinc-900/90 dark:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)]'
+                  : 'border border-transparent bg-transparent text-muted-foreground/80 hover:border-border/40 hover:bg-muted/50 hover:text-foreground'
               )}
             >
               {Icon && (
-                <Icon className={cn('h-3.5 w-3.5 shrink-0', isActive ? 'text-primary' : 'text-muted-foreground')} />
+                <Icon
+                  className={cn(
+                    'h-3.5 w-3.5 shrink-0 transition-colors',
+                    isActive ? 'text-foreground' : 'text-muted-foreground/70 group-hover:text-foreground'
+                  )}
+                />
               )}
-              <span className='truncate text-xs font-medium'>{tab.title}</span>
+              <span className='truncate'>{tab.title}</span>
               {tab.closable !== false && (
                 <button
                   type='button'
                   aria-label={`关闭 ${tab.title}`}
                   className={cn(
-                    'ml-1 shrink-0 rounded-sm p-0.5 opacity-0 transition-opacity group-hover:opacity-100 hover:bg-muted/80',
-                    isActive && 'opacity-100'
+                    'ml-auto shrink-0 rounded p-0.5 text-muted-foreground/60 transition-all duration-150 hover:bg-muted hover:text-foreground',
+                    isActive ? 'opacity-80' : 'opacity-0 group-hover:opacity-100'
                   )}
                   onPointerDown={(e) => e.stopPropagation()}
                   onClick={(e) => {
@@ -178,14 +189,14 @@ export function TabBar(): React.ReactElement {
 
   if (!tabContext || tabContext.tabs.length === 0) {
     // 返回与内容高度一致的空结构维持高度，防止闪烁 (Layout Shift)
-    return <div className='hidden h-11 border-b bg-muted/30 backdrop-blur-sm md:block' />
+    return <div className='hidden h-10 border-b border-border/60 bg-background/40 backdrop-blur-md md:block' />
   }
 
   const { tabs, activeTabId, activateTab, closeTab, closeOtherTabs, closeTabsToRight } = tabContext
 
   return (
-    <div className='hidden border-b bg-muted/30 backdrop-blur-sm md:block'>
-      <div className='flex h-11 items-center px-3'>
+    <div className='hidden border-b border-border/60 bg-background/40 backdrop-blur-md md:block'>
+      <div className='flex h-10 items-center px-3'>
         <Tabs value={activeTabId || ''} className='w-full overflow-hidden'>
           <TabsList
             ref={scrollRef}
