@@ -47,11 +47,11 @@ export function TranslationsDialogs() {
               if (!currentRow || deleteMutation.isPending) return
               try {
                 await deleteMutation.mutateAsync(currentRow.id)
-                toast.success(t('admin.translation.toast.deleteSuccess.title'))
+                toast.success(t('admin.translation.toast.deleteSuccess'))
                 setOpen(null)
                 setCurrentRow(null)
               } catch (err) {
-                toast.error(t('admin.translation.toast.deleteError.title'), { description: getErrorMessage(err) })
+                toast.error(t('admin.translation.toast.deleteError'), { description: getErrorMessage(err) })
               }
             }}
             className='max-w-md'

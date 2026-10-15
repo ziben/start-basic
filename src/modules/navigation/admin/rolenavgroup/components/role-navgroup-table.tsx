@@ -1,5 +1,5 @@
 import { QueryState } from '@/shared/components/query-state'
-import { Loader2, Settings2 } from 'lucide-react'
+import { Settings2 } from 'lucide-react'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import { useAllRoles } from '~/modules/rbac/system-roles/hooks/use-role-api'
 import { Button } from '@/components/ui/button'
