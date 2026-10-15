@@ -1,8 +1,8 @@
+import { getErrorMessage } from '@/shared/lib/error-handler'
 import { toast } from 'sonner'
-import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import { useDeleteTranslation } from '~/modules/admin/features/i18n/translation/hooks/use-translation-api'
+import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import { ConfirmDialog } from '@/components/confirm-dialog'
-import { TranslationsImportDialog } from './translations-import-dialog'
 import { TranslationsMutateDrawer } from './translations-mutate-drawer'
 import { useTranslations } from './translations-provider'
 
@@ -10,18 +10,19 @@ export function TranslationsDialogs() {
   const { open, setOpen, currentRow, setCurrentRow } = useTranslations()
   const deleteMutation = useDeleteTranslation()
   const { t } = useTranslation()
+  const close = () => {
+    if (deleteMutation.isPending) return
+    setOpen(null)
+    setCurrentRow(null)
+  }
   return (
     <>
       <TranslationsMutateDrawer
         key='translations-create'
         open={open === 'create'}
-        onOpenChange={() => setOpen('create')}
-      />
-
-      <TranslationsImportDialog
-        key='translations-import'
-        open={open === 'import'}
-        onOpenChange={() => setOpen('import')}
+        onOpenChange={(next) => {
+          if (!next) close()
+        }}
       />
 
       {currentRow && (
@@ -30,10 +31,7 @@ export function TranslationsDialogs() {
             key={`translation-update-${currentRow.id}`}
             open={open === 'update'}
             onOpenChange={() => {
-              setOpen('update')
-              setTimeout(() => {
-                setCurrentRow(null)
-              }, 500)
+              close()
             }}
             currentRow={currentRow}
           />
@@ -43,24 +41,17 @@ export function TranslationsDialogs() {
             destructive
             open={open === 'delete'}
             onOpenChange={() => {
-              setOpen('delete')
-              setTimeout(() => {
-                setCurrentRow(null)
-              }, 500)
+              close()
             }}
             handleConfirm={async () => {
-              if (!currentRow) return
+              if (!currentRow || deleteMutation.isPending) return
               try {
                 await deleteMutation.mutateAsync(currentRow.id)
-                toast.success(t('admin.translation.toast.deleteSuccess.title'))
-              } catch (err: any) {
-                console.error(err)
-                toast.error(t('admin.translation.toast.deleteError.title'))
-              } finally {
+                toast.success(t('admin.translation.toast.deleteSuccess'))
                 setOpen(null)
-                setTimeout(() => {
-                  setCurrentRow(null)
-                }, 500)
+                setCurrentRow(null)
+              } catch (err) {
+                toast.error(t('admin.translation.toast.deleteError'), { description: getErrorMessage(err) })
               }
             }}
             className='max-w-md'
@@ -73,14 +64,11 @@ export function TranslationsDialogs() {
               </>
             }
             confirmText={t('common.delete')}
+            cancelBtnText={t('common.buttons.cancel')}
+            isLoading={deleteMutation.isPending}
           />
         </>
       )}
     </>
   )
 }
-
-
-
-
-

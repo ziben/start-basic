@@ -1,19 +1,9 @@
-import { DotsHorizontalIcon } from '@radix-ui/react-icons'
 import { Trash2, Pen } from 'lucide-react'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import { adminNavgroupSchema } from '~/modules/navigation/shared/navgroup/data/schema'
 import type { RowData } from '~/shared/lib/tanstack-table'
 import { type Row } from '~/shared/lib/tanstack-table'
-import { logger } from '~/shared/utils/logger'
 import { Button } from '@/components/ui/button'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
 import { useNavGroups } from './navgroups-provider'
 
 type DataTableRowActionsProps<TData extends RowData> = {
@@ -53,19 +43,6 @@ export function DataTableRowActions<TData extends RowData>({ row }: DataTableRow
         <Trash2 className='h-4 w-4 text-destructive' />
         <span className='sr-only'>{t('admin.navgroup.actions.delete')}</span>
       </Button>
-
-      <DropdownMenu modal={false}>
-        <DropdownMenuTrigger asChild>
-          <Button variant='ghost' className='flex h-8 w-8 p-0 data-[state=open]:bg-muted'>
-            <DotsHorizontalIcon className='h-4 w-4' />
-            <span className='sr-only'>Open menu</span>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align='end' className='w-[160px]'>
-          <DropdownMenuItem disabled>{t('admin.navgroup.actions.makeCopy')}</DropdownMenuItem>
-          <DropdownMenuItem disabled>{t('admin.navgroup.actions.favorite')}</DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
     </div>
   )
 }

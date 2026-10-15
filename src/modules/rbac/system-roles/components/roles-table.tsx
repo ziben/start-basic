@@ -27,7 +27,7 @@ export function RolesTable() {
   const { tableUrl } = useRolesContext()
   const columns = useRolesColumns()
 
-  const { data, isLoading, refetch, isRefetching, error } = useRolesQuery({
+  const { data, isLoading, refetch, isRefetching, error, isPlaceholderData } = useRolesQuery({
     page: tableUrl.pagination.pageIndex + 1,
     pageSize: tableUrl.pagination.pageSize,
     filter: tableUrl.globalFilter,
@@ -37,6 +37,7 @@ export function RolesTable() {
     features,
     data: data?.items ?? [],
     columns,
+    getRowId: (row) => row.id,
     state: {
       columnVisibility,
       rowSelection,
@@ -57,8 +58,8 @@ export function RolesTable() {
   })
 
   useEffect(() => {
-    tableUrl.ensurePageInRange(data?.pageCount ?? 0)
-  }, [data?.pageCount, tableUrl])
+    if (data && !isPlaceholderData && !error) tableUrl.ensurePageInRange(Math.max(1, data.pageCount))
+  }, [data, isPlaceholderData, error, tableUrl])
 
   const rows = table.getRowModel().rows
   const tableContainerRef = useRef<HTMLDivElement>(null)

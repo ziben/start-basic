@@ -5,7 +5,7 @@ import { dedupeTabs, getTitleForPath, normalizeTabPath } from './tab-utils'
 describe('tab utils', () => {
   it('normalizes admin root and settings children to stable tab paths', () => {
     expect(normalizeTabPath('/admin')).toBe('/admin/dashboard')
-    expect(normalizeTabPath('/admin/profile/settings/appearance')).toBe('/admin/profile/settings')
+    expect(normalizeTabPath('/settings/appearance')).toBe('/settings')
   })
 
   it('dedupes restored tabs by scope and normalized path', () => {
@@ -40,7 +40,7 @@ describe('tab utils', () => {
       {
         id: 'settings-child',
         title: '外观设置',
-        path: '/admin/profile/settings/appearance',
+        path: '/settings/appearance',
         order: 3,
         closable: true,
         sortable: true,
@@ -49,7 +49,7 @@ describe('tab utils', () => {
       {
         id: 'settings-root',
         title: '账号设置',
-        path: '/admin/profile/settings',
+        path: '/settings',
         order: 4,
         closable: true,
         sortable: true,
@@ -60,7 +60,7 @@ describe('tab utils', () => {
     expect(dedupeTabs(tabs).map((tab) => [tab.id, tab.path])).toEqual([
       ['admin-dashboard', '/admin/dashboard'],
       ['old-modules', '/admin/modules'],
-      ['settings-child', '/admin/profile/settings'],
+      ['settings-child', '/settings'],
     ])
   })
 

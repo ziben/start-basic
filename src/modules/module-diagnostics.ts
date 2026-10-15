@@ -99,4 +99,12 @@ export const moduleDiagnostics: ModuleDiagnosticsItem[] = [
     betterAuthServerPluginIds: [],
     betterAuthClientPluginIds: [],
   },
+  {
+    key: 'question-bank',
+    version: '1.0.0',
+    dependencies: ['auth'],
+    exports: [{ name: 'services', keys: ['QuestionBankService'] }],
+    betterAuthServerPluginIds: [],
+    betterAuthClientPluginIds: [],
+  },
 ]

@@ -1,8 +1,8 @@
 import type { ReactElement } from 'react'
-import { Activity, LayoutDashboard, ListTodo, MessagesSquare, Package, Users } from 'lucide-react'
-import { useLayout } from '~/shared/context/layout-provider'
-import { useSidebar } from '~/modules/admin/shared/sidebar'
 import { iconResolver } from '@/shared/utils/icon-resolver'
+import { Activity, BookOpen, LayoutDashboard, ListTodo, MessagesSquare, Package, Users } from 'lucide-react'
+import { useSidebar } from '~/modules/admin/shared/sidebar'
+import { useLayout } from '~/shared/context/layout-provider'
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from '@/components/ui/sidebar'
 import { NavGroup as NavGroupComponent } from '@/components/layout/nav-group'
 import { NavUser } from '@/components/layout/nav-user'
@@ -66,6 +66,16 @@ export function AppSidebar(): ReactElement {
 
   const fallbackData = createDefaultAppSidebarData()
   const navGroups = sidebarData?.navGroups?.length > 0 ? sidebarData.navGroups : fallbackData.navGroups
+  const hasQuestionBank = navGroups.some((group: NavGroupType) =>
+    group.items.some(
+      (item) =>
+        ('url' in item && item.url?.startsWith('/question-bank')) ||
+        ('items' in item && item.items?.some((child) => child.url?.startsWith('/question-bank')))
+    )
+  )
+  const appNavGroups: NavGroupType[] = hasQuestionBank
+    ? navGroups
+    : [...navGroups, { title: '学习与备课', items: [{ title: '题库与组卷', url: '/question-bank', icon: BookOpen }] }]
 
   return (
     <Sidebar collapsible={collapsible} variant={variant}>
@@ -73,7 +83,7 @@ export function AppSidebar(): ReactElement {
         <AppTitle />
       </SidebarHeader>
       <SidebarContent>
-        {navGroups.map((props: NavGroupType) => (
+        {appNavGroups.map((props: NavGroupType) => (
           <NavGroupComponent key={props.title} {...props} />
         ))}
       </SidebarContent>
@@ -84,4 +94,3 @@ export function AppSidebar(): ReactElement {
     </Sidebar>
   )
 }
-

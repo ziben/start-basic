@@ -161,27 +161,27 @@ export const createSidebarData = (t: (key: string) => string): SidebarData => ({
           items: [
             {
               title: t('settings.profile.title'),
-              url: '/admin/profile/settings',
+              url: '/settings',
               icon: UserCog,
             },
             {
               title: t('settings.account.title'),
-              url: '/admin/profile/settings/account',
+              url: '/settings/account',
               icon: Wrench,
             },
             {
               title: t('settings.appearance.title'),
-              url: '/admin/profile/settings/appearance',
+              url: '/settings/appearance',
               icon: Palette,
             },
             {
               title: t('settings.notifications.title'),
-              url: '/admin/profile/settings/notifications',
+              url: '/settings/notifications',
               icon: Bell,
             },
             {
               title: t('settings.display.title'),
-              url: '/admin/profile/settings/display',
+              url: '/settings/display',
               icon: Monitor,
             },
           ],

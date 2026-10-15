@@ -1,4 +1,5 @@
 import { getRouteApi } from '@tanstack/react-router'
+import { QueryState } from '@/shared/components/query-state'
 import { toTableNavigate } from '@/shared/hooks/use-table-url-state'
 import { ConfigDrawer } from '~/components/config-drawer'
 import { AppHeaderMain } from '~/components/layout/app-header-main'
@@ -15,7 +16,7 @@ export function AdminTranslations() {
   const { t } = useTranslation()
   const search = route.useSearch()
   const navigate = route.useNavigate()
-  const { data: translationList = [] } = useTranslations()
+  const { data: translationList = [], isLoading, error, refetch, isRefetching } = useTranslations()
 
   return (
     <TranslationsProvider>
@@ -31,7 +32,17 @@ export function AdminTranslations() {
         </div>
 
         <div className='-mx-4 flex flex-1 flex-col overflow-hidden px-4 py-1'>
-          <TranslationsTable data={translationList} search={search} navigate={toTableNavigate(navigate)} />
+          <TranslationsTable
+            data={translationList}
+            isLoading={isLoading}
+            errorState={
+              error ? <QueryState error={error} onRetry={() => void refetch()} isRetrying={isRefetching} /> : undefined
+            }
+            onReload={() => void refetch()}
+            isReloading={isRefetching}
+            search={search}
+            navigate={toTableNavigate(navigate)}
+          />
         </div>
       </AppHeaderMain>
 

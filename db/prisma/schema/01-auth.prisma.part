@@ -37,6 +37,10 @@ model User {
   healthPersons HealthPerson[]
   healthReports HealthReport[]
 
+  questionBanks QuestionBank[] @relation("QuestionBankOwner")
+  questionPapers QuestionPaper[] @relation("QuestionPaperOwner")
+  questionImports QuestionImportBatch[] @relation("QuestionImportActor")
+
   @@unique([email])
   @@unique([username])
   @@map("user")

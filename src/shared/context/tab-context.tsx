@@ -113,10 +113,8 @@ export function TabProvider({ children }: { children: React.ReactNode }): React.
     let matchingTab = scopedTabs.find((tab) => tab.path === normalizedPath)
 
     // 3. 如果没有精确匹配，尝试匹配父级路径（针对设置页等嵌套页面）
-    if (!matchingTab) {
-      if (normalizedPath.startsWith('/admin/profile/settings')) {
-        matchingTab = scopedTabs.find((tab) => tab.path === '/admin/profile/settings')
-      }
+    if (!matchingTab && normalizedPath.startsWith('/settings/')) {
+      matchingTab = scopedTabs.find((tab) => tab.path === '/settings')
     }
 
     if (matchingTab) return matchingTab.id

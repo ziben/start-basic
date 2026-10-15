@@ -1,0 +1,135 @@
+enum QuestionBankScope {
+  PERSONAL
+  PUBLIC
+}
+
+enum BankQuestionStatus {
+  DRAFT
+  READY
+  DISABLED
+}
+
+model QuestionBank {
+  id          String   @id @default(cuid())
+  name        String
+  description String   @default("")
+  scope       QuestionBankScope @default(PERSONAL)
+  ownerId     String?
+  owner       User? @relation("QuestionBankOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  archived    Boolean @default(false)
+  version     Int @default(1)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  questions   BankQuestion[]
+  knowledgePoints QuestionKnowledgePoint[]
+  imports     QuestionImportBatch[]
+
+  @@index([ownerId, scope, archived])
+  @@index([scope, archived])
+  @@map("question_bank")
+}
+
+model BankQuestion {
+  id          String @id @default(cuid())
+  bankId      String
+  bank        QuestionBank @relation(fields: [bankId], references: [id], onDelete: Cascade)
+  content     Json
+  stem        String
+  type        String
+  stage       String
+  grade       String @default("")
+  subject     String
+  difficulty  Int
+  status      BankQuestionStatus @default(DRAFT)
+  fingerprint String
+  sourceQuestionId String?
+  sourceBankName String?
+  version     Int @default(1)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  knowledgePoints QuestionKnowledgePoint[]
+
+  @@unique([bankId, fingerprint])
+  @@index([bankId, status, updatedAt])
+  @@index([subject, stage, type])
+  @@map("bank_question")
+}
+
+model QuestionKnowledgePoint {
+  id       String @id @default(cuid())
+  bankId   String
+  bank     QuestionBank @relation(fields: [bankId], references: [id], onDelete: Cascade)
+  name     String
+  parentId String?
+  parent   QuestionKnowledgePoint? @relation("KnowledgePointTree", fields: [parentId], references: [id], onDelete: SetNull)
+  children QuestionKnowledgePoint[] @relation("KnowledgePointTree")
+  questions BankQuestion[]
+
+  @@unique([bankId, name])
+  @@index([parentId])
+  @@map("question_knowledge_point")
+}
+
+model QuestionPaper {
+  id          String @id @default(cuid())
+  ownerId     String
+  owner       User @relation("QuestionPaperOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  title       String
+  instructions String @default("")
+  archived    Boolean @default(false)
+  version     Int @default(1)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  sections    QuestionPaperSection[]
+
+  @@index([ownerId, archived, updatedAt])
+  @@map("question_paper")
+}
+
+model QuestionPaperSection {
+  id       String @id @default(cuid())
+  paperId  String
+  paper    QuestionPaper @relation(fields: [paperId], references: [id], onDelete: Cascade)
+  title    String
+  position Int
+  items    QuestionPaperItem[]
+
+  @@unique([paperId, position])
+  @@map("question_paper_section")
+}
+
+model QuestionPaperItem {
+  id          String @id @default(cuid())
+  sectionId   String
+  section     QuestionPaperSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  sourceQuestionId String
+  sourceBankName String
+  snapshot    Json
+  position    Int
+  score       Decimal @db.Decimal(6, 2)
+  answerLines Int @default(3)
+
+  @@unique([sectionId, position])
+  @@map("question_paper_item")
+}
+
+model QuestionImportBatch {
+  id          String @id @default(cuid())
+  bankId      String
+  bank        QuestionBank @relation(fields: [bankId], references: [id], onDelete: Cascade)
+  actorId     String
+  actor       User @relation("QuestionImportActor", fields: [actorId], references: [id], onDelete: Cascade)
+  fileName    String
+  requestKey  String @unique
+  contentHash String
+  totalCount  Int
+  importedCount Int
+  duplicateCount Int
+  errorCount  Int
+  details     Json
+  createdAt   DateTime @default(now())
+
+  @@index([actorId, createdAt])
+  @@index([bankId, createdAt])
+  @@map("question_import_batch")
+}

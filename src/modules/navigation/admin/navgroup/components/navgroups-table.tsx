@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import type { ReactNode } from 'react'
 import { getRouteApi } from '@tanstack/react-router'
 import {
   type NavigateFn,
@@ -19,7 +20,6 @@ import {
   useTable,
 } from '~/shared/lib/tanstack-table'
 import { DataTable, DataTablePagination, DataTableToolbar } from '@/components/data-table'
-import { DataTableBulkActions } from './data-table-bulk-actions'
 import { useNavGroupColumns } from './navgroups-columns'
 
 const features = tableFeatures({
@@ -39,14 +39,15 @@ type DataTableProps = {
   navigate?: NavigateFn
   onReload?: () => void
   isReloading?: boolean
+  isLoading?: boolean
+  errorState?: ReactNode
 }
 
-function NavGroupsTableInner({ data, search, navigate, onReload, isReloading }: DataTableProps) {
+function NavGroupsTableInner({ data, search, navigate, onReload, isReloading, isLoading, errorState }: DataTableProps) {
   const { t } = useTranslation()
   const routeSearch = route.useSearch()
   const routeNavigate = route.useNavigate()
   const columns = useNavGroupColumns()
-  const [rowSelection, setRowSelection] = useState({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 
   const {
@@ -65,6 +66,7 @@ function NavGroupsTableInner({ data, search, navigate, onReload, isReloading }: 
     columnFilters: [
       { columnId: 'title', searchKey: 'title', type: 'string' },
       { columnId: 'description', searchKey: 'description', type: 'string' },
+      { columnId: 'scope', searchKey: 'scope', type: 'array' },
     ],
   })
 
@@ -74,13 +76,11 @@ function NavGroupsTableInner({ data, search, navigate, onReload, isReloading }: 
     columns,
     state: {
       columnVisibility,
-      rowSelection,
       columnFilters,
       globalFilter,
       pagination,
     },
-    enableRowSelection: true,
-    onRowSelectionChange: setRowSelection,
+    enableRowSelection: false,
     onColumnVisibilityChange: setColumnVisibility,
     globalFilterFn: (row, _columnId, filterValue) => {
       const id = String(row.getValue('id')).toLowerCase()
@@ -97,8 +97,8 @@ function NavGroupsTableInner({ data, search, navigate, onReload, isReloading }: 
 
   const pageCount = table.getPageCount()
   useEffect(() => {
-    ensurePageInRange?.(pageCount)
-  }, [pageCount, ensurePageInRange])
+    if (!isLoading && !errorState) ensurePageInRange(Math.max(1, pageCount))
+  }, [isLoading, errorState, pageCount, ensurePageInRange])
 
   const rows = table.getRowModel().rows
 
@@ -123,16 +123,25 @@ function NavGroupsTableInner({ data, search, navigate, onReload, isReloading }: 
       <DataTable
         table={table}
         columnsLength={columns.length}
+        isLoading={isLoading}
+        errorState={errorState}
         emptyState={t('admin.common.noData')}
         containerClassName='min-h-0 flex-1'
       />
       <DataTablePagination table={table} />
-      <DataTableBulkActions table={table} />
     </div>
   )
 }
 
-export function NavGroupsTable({ data, search, navigate, onReload, isReloading }: DataTableProps) {
+export function NavGroupsTable({
+  data,
+  search,
+  navigate,
+  onReload,
+  isReloading,
+  isLoading,
+  errorState,
+}: DataTableProps) {
   const resolvedSearch = search ?? route.useSearch()
   const resolvedNavigate = navigate ?? toTableNavigate(route.useNavigate())
 
@@ -143,6 +152,8 @@ export function NavGroupsTable({ data, search, navigate, onReload, isReloading }
       navigate={resolvedNavigate}
       onReload={onReload}
       isReloading={isReloading}
+      isLoading={isLoading}
+      errorState={errorState}
     />
   )
 }

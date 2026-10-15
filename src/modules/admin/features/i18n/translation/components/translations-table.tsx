@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import type { ReactNode } from 'react'
 import { type NavigateFn, useTableUrlState } from '@/shared/hooks/use-table-url-state'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import type { Translation } from '~/modules/admin/features/i18n/translation/types/translation'
@@ -14,7 +15,6 @@ import {
   useTable,
 } from '~/shared/lib/tanstack-table'
 import { DataTable, DataTablePagination, DataTableToolbar } from '@/components/data-table'
-import { DataTableBulkActions } from './data-table-bulk-actions'
 import { useTranslationColumns } from './translations-columns'
 
 const features = tableFeatures({
@@ -30,12 +30,23 @@ type DataTableProps = {
   data: Translation[]
   search: Record<string, unknown>
   navigate: NavigateFn
+  isLoading?: boolean
+  errorState?: ReactNode
+  onReload?: () => void
+  isReloading?: boolean
 }
 
-export function TranslationsTable({ data, search, navigate }: DataTableProps) {
+export function TranslationsTable({
+  data,
+  search,
+  navigate,
+  isLoading,
+  errorState,
+  onReload,
+  isReloading,
+}: DataTableProps) {
   const { t } = useTranslation()
   const columns = useTranslationColumns()
-  const [rowSelection, setRowSelection] = useState({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 
   const {
@@ -54,6 +65,7 @@ export function TranslationsTable({ data, search, navigate }: DataTableProps) {
     columnFilters: [
       { columnId: 'key', searchKey: 'key', type: 'string' },
       { columnId: 'description', searchKey: 'description', type: 'string' },
+      { columnId: 'locale', searchKey: 'locale', type: 'array' },
     ],
   })
 
@@ -63,13 +75,11 @@ export function TranslationsTable({ data, search, navigate }: DataTableProps) {
     columns,
     state: {
       columnVisibility,
-      rowSelection,
       columnFilters,
       globalFilter,
       pagination,
     },
-    enableRowSelection: true,
-    onRowSelectionChange: setRowSelection,
+    enableRowSelection: false,
     onColumnVisibilityChange: setColumnVisibility,
     globalFilterFn: (row, _columnId, filterValue) => {
       const key = String(row.getValue('key')).toLowerCase()
@@ -85,8 +95,8 @@ export function TranslationsTable({ data, search, navigate }: DataTableProps) {
 
   const pageCount = table.getPageCount()
   useEffect(() => {
-    ensurePageInRange(pageCount)
-  }, [pageCount, ensurePageInRange])
+    if (!isLoading && !errorState) ensurePageInRange(Math.max(1, pageCount))
+  }, [isLoading, errorState, pageCount, ensurePageInRange])
 
   const rows = table.getRowModel().rows
   const tableContainerRef = useRef<HTMLDivElement>(null)
@@ -107,6 +117,8 @@ export function TranslationsTable({ data, search, navigate }: DataTableProps) {
       <DataTableToolbar
         table={table}
         searchPlaceholder={t('admin.translation.searchPlaceholder')}
+        onReload={onReload}
+        isReloading={isReloading}
         filters={[
           {
             columnId: 'locale',
@@ -121,6 +133,8 @@ export function TranslationsTable({ data, search, navigate }: DataTableProps) {
       <DataTable
         table={table}
         columnsLength={columns.length}
+        isLoading={isLoading}
+        errorState={errorState}
         skeletonCount={pagination.pageSize}
         containerRef={tableContainerRef}
         rowVirtualizer={rowVirtualizer}
@@ -128,7 +142,6 @@ export function TranslationsTable({ data, search, navigate }: DataTableProps) {
         containerClassName='min-h-0 flex-1'
       />
       <DataTablePagination table={table} />
-      <DataTableBulkActions table={table} />
     </div>
   )
 }

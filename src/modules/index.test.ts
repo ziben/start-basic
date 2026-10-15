@@ -10,10 +10,11 @@ import {
   paymentModule,
   rbacModule,
   systemConfigModule,
+  questionBankModule,
 } from './index'
 
 describe('moduleRegistry', () => {
-  it('registers auth, payment, health, identity, audit, navigation, organization, rbac, and system-config explicitly', () => {
+  it('registers application modules explicitly, including the question bank', () => {
     expect(moduleRegistry.modules).toEqual([
       authModule,
       paymentModule,
@@ -24,6 +25,7 @@ describe('moduleRegistry', () => {
       organizationModule,
       rbacModule,
       systemConfigModule,
+      questionBankModule,
     ])
     expect(moduleRegistry.getModule('payment')).toBe(paymentModule)
     expect(moduleRegistry.getModule('payment').dependencies).toContain('auth')
