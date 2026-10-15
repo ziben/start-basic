@@ -10,6 +10,8 @@ import { authClient } from '~/modules/auth/shared/lib/auth-client'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { ConfirmDialog } from '@/components/confirm-dialog'
 import { getAdminAccountFn, setAdminPasswordFn, unlinkAdminAccountFn } from './server-fns/account.fn'
 import { type AdminAccountOverview } from './services/account.service'
 
@@ -17,6 +19,12 @@ export default function AdminAccount(): React.ReactElement {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
   const [newPassword, setNewPassword] = useState('')
+  const [pendingAction, setPendingAction] = useState<{
+    type: 'password' | 'unlink'
+    userId: string
+    userLabel: string
+    accountId?: string
+  } | null>(null)
   const search = useSearch({ from: '/_authenticated/admin/account' })
   const targetUserId = search.userId
   const sessionQuery = useQuery({
@@ -39,6 +47,7 @@ export default function AdminAccount(): React.ReactElement {
       setAdminPasswordFn({ data: { ...payload, userId: targetUserId } }),
     onSuccess: () => {
       setNewPassword('')
+      setPendingAction(null)
       toast.success('密码已重置')
     },
     onError: (error) => {
@@ -50,6 +59,7 @@ export default function AdminAccount(): React.ReactElement {
     mutationFn: async ({ accountId }: { accountId: string }) =>
       unlinkAdminAccountFn({ data: { accountId, userId: targetUserId } }),
     onSuccess: async () => {
+      setPendingAction(null)
       await queryClient.invalidateQueries({ queryKey: ['admin', 'account', 'overview'] })
       toast.success('已解绑账号')
     },
@@ -64,6 +74,7 @@ export default function AdminAccount(): React.ReactElement {
   const hasAccounts = accounts.length > 0
   const userId = overview?.user?.id
   const isBusy = resetPassword.isPending || unlinkAccount.isPending
+  const canManageAccount = !!userId && !overviewQuery.isFetching && !overviewQuery.error
 
   return (
     <AppHeaderMain>
@@ -155,14 +166,17 @@ export default function AdminAccount(): React.ReactElement {
 
         <Card>
           <CardHeader>
-            <CardTitle>Linked Accounts</CardTitle>
+            <CardTitle>绑定账号</CardTitle>
           </CardHeader>
           <CardContent>
             {hasAccounts ? (
               <div className='space-y-3 text-sm'>
                 {accounts.map((account) => (
-                  <div key={account.id} className='flex items-center justify-between rounded-md border px-3 py-2'>
-                    <div>
+                  <div
+                    key={account.id}
+                    className='flex flex-wrap items-center justify-between gap-3 rounded-md border px-3 py-2'
+                  >
+                    <div className='min-w-0 break-all'>
                       <div className='font-medium'>{account.providerId}</div>
                       <div className='text-xs text-muted-foreground'>{account.accountId}</div>
                     </div>
@@ -171,8 +185,16 @@ export default function AdminAccount(): React.ReactElement {
                       <Button
                         size='sm'
                         variant='outline'
-                        disabled={isBusy}
-                        onClick={() => unlinkAccount.mutate({ accountId: account.id })}
+                        disabled={isBusy || !canManageAccount}
+                        onClick={() => {
+                          if (!userId) return
+                          setPendingAction({
+                            type: 'unlink',
+                            userId,
+                            userLabel: overview?.user?.name || userId,
+                            accountId: account.id,
+                          })
+                        }}
                       >
                         解绑
                       </Button>
@@ -188,25 +210,53 @@ export default function AdminAccount(): React.ReactElement {
 
         <Card>
           <CardHeader>
-            <CardTitle>Reset Password</CardTitle>
+            <CardTitle>重置密码</CardTitle>
           </CardHeader>
           <CardContent className='space-y-3'>
+            <Label htmlFor='admin-new-password'>新密码</Label>
             <Input
+              id='admin-new-password'
               placeholder='新密码'
               type='password'
+              autoComplete='new-password'
+              disabled={isBusy || !!pendingAction || !canManageAccount}
               value={newPassword}
               onChange={(event) => setNewPassword(event.target.value)}
             />
             <Button
               size='sm'
-              disabled={isBusy || !newPassword.trim()}
-              onClick={() => resetPassword.mutate({ newPassword: newPassword.trim() })}
+              disabled={isBusy || !canManageAccount || !newPassword.trim()}
+              onClick={() => {
+                if (!userId) return
+                setPendingAction({ type: 'password', userId, userLabel: overview?.user?.name || userId })
+              }}
             >
               重置密码
             </Button>
           </CardContent>
         </Card>
       </div>
+      <ConfirmDialog
+        open={!!pendingAction}
+        onOpenChange={(next) => {
+          if (!next && !isBusy) setPendingAction(null)
+        }}
+        title={pendingAction?.type === 'unlink' ? '确认解绑账号？' : '确认重置密码？'}
+        desc={`即将${pendingAction?.type === 'unlink' ? '解绑账号' : '重置密码'}，目标用户：${pendingAction?.userLabel ?? ''}。请确认操作对象。`}
+        confirmText='确认'
+        cancelBtnText='取消'
+        destructive
+        isLoading={isBusy}
+        disabled={!canManageAccount || pendingAction?.userId !== userId}
+        handleConfirm={() => {
+          if (!pendingAction || isBusy || !canManageAccount || pendingAction.userId !== userId) return
+          if (pendingAction.type === 'unlink' && pendingAction.accountId) {
+            unlinkAccount.mutate({ accountId: pendingAction.accountId })
+          } else if (pendingAction.type === 'password' && newPassword.trim()) {
+            resetPassword.mutate({ newPassword })
+          }
+        }}
+      />
     </AppHeaderMain>
   )
 }
