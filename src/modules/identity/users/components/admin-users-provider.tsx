@@ -2,7 +2,7 @@ import React from 'react'
 import { useDialogRowState } from '@/shared/hooks/use-dialog-row-state'
 import { type AdminUser } from '../data/schema'
 
-type AdminUserDialogType = 'create' | 'update' | 'delete' | 'import'
+type AdminUserDialogType = 'create' | 'update' | 'delete'
 
 type AdminUserContextType = {
   open: AdminUserDialogType | null

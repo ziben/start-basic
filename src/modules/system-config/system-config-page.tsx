@@ -1,17 +1,18 @@
 import type { ReactElement } from 'react'
 import { getRouteApi } from '@tanstack/react-router'
+import { ErrorBoundary } from '@/shared/components/error-boundary'
+import { QueryState } from '@/shared/components/query-state'
 import { AppHeaderMain } from '~/components/layout/app-header-main'
 import { SystemConfigDialogs } from './components/system-config-dialogs'
 import { SystemConfigPrimaryButtons } from './components/system-config-primary-buttons'
 import { SystemConfigProvider } from './components/system-config-provider'
 import { SystemConfigTable } from './components/system-config-table'
 import { useSystemConfigs } from './hooks/use-system-config-query'
-import { ErrorBoundary } from '@/shared/components/error-boundary'
 
 const route = getRouteApi('/_authenticated/admin/system-config')
 
 export default function AdminSystemConfigPage(): ReactElement {
-  const { data: configs = [], isLoading } = useSystemConfigs()
+  const { data: configs = [], isLoading, error, refetch, isRefetching } = useSystemConfigs()
   const search = route.useSearch()
   const navigate = route.useNavigate()
 
@@ -27,8 +28,20 @@ export default function AdminSystemConfigPage(): ReactElement {
         </div>
 
         <div className='-mx-4 flex flex-1 flex-col overflow-hidden px-4 py-1'>
-          <ErrorBoundary fallbackMessage="配置表格渲染失败">
-            <SystemConfigTable data={configs} isLoading={isLoading} search={search} navigate={navigate} />
+          <ErrorBoundary fallbackMessage='配置表格渲染失败'>
+            <SystemConfigTable
+              data={configs}
+              isLoading={isLoading}
+              errorState={
+                error ? (
+                  <QueryState error={error} onRetry={() => void refetch()} isRetrying={isRefetching} />
+                ) : undefined
+              }
+              onReload={() => void refetch()}
+              isReloading={isRefetching}
+              search={search}
+              navigate={navigate}
+            />
           </ErrorBoundary>
         </div>
       </AppHeaderMain>

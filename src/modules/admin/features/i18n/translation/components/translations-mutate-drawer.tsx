@@ -3,9 +3,12 @@ import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
+import {
+  useCreateTranslation,
+  useUpdateTranslation,
+} from '~/modules/admin/features/i18n/translation/hooks/use-translation-api'
 import type { Translation } from '~/modules/admin/features/i18n/translation/types/translation'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
-import { useCreateTranslation, useUpdateTranslation } from '~/modules/admin/features/i18n/translation/hooks/use-translation-api'
 import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
@@ -61,6 +64,7 @@ export function TranslationsMutateDrawer({ open, onOpenChange, currentRow }: Tra
   }, [open, currentRow])
 
   const onSubmit = async (data: TranslationForm) => {
+    if (createMutation.isPending || updateMutation.isPending) return
     try {
       if (isUpdate && currentRow) {
         await updateMutation.mutateAsync({ id: currentRow.id, data: { value: data.value ?? '' } })
@@ -87,6 +91,7 @@ export function TranslationsMutateDrawer({ open, onOpenChange, currentRow }: Tra
     <Sheet
       open={open}
       onOpenChange={(v) => {
+        if (isSubmitting) return
         onOpenChange(v)
         if (!v) form.reset()
       }}
@@ -176,8 +181,3 @@ export function TranslationsMutateDrawer({ open, onOpenChange, currentRow }: Tra
     </Sheet>
   )
 }
-
-
-
-
-

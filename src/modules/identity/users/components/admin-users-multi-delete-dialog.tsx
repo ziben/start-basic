@@ -65,14 +65,14 @@ export function AdminUsersMultiDeleteDialog<TData extends RowData>({
   })
 
   const handleDelete = () => {
+    if (bulkDeleteMutation.isPending) return
     const selectedUsers = selectedRows.map((row) => row.original as AdminUser)
     const ids = selectedUsers.map((u) => u.id)
     if (ids.length === 0) return
 
-    onOpenChange(false)
-
     const promise = bulkDeleteMutation.mutateAsync({ ids }).then(() => {
       table.resetRowSelection()
+      onOpenChange(false)
     })
 
     toast.promise(promise, {
@@ -85,7 +85,9 @@ export function AdminUsersMultiDeleteDialog<TData extends RowData>({
   return (
     <ConfirmDeleteDialog
       open={open}
-      onOpenChange={onOpenChange}
+      onOpenChange={(next) => {
+        if (!bulkDeleteMutation.isPending) onOpenChange(next)
+      }}
       onConfirm={handleDelete}
       title={t('admin.user.bulk.delete.title')}
       description={
@@ -100,6 +102,8 @@ export function AdminUsersMultiDeleteDialog<TData extends RowData>({
       itemCount={selectedRows.length}
       itemName={t('admin.user.entity')}
       isLoading={bulkDeleteMutation.isPending}
+      warningTitle='危险操作'
+      warningDescription='删除后无法恢复，请确认所选用户。'
     />
   )
 }

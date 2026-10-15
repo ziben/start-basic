@@ -1,14 +1,17 @@
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { QueryState } from '@/shared/components/query-state'
 import { toast } from 'sonner'
+import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
+import { type AdminNavgroup, createNavgroupSchema } from '~/modules/navigation/shared/navgroup/data/schema'
+import type { CreateNavgroupData } from '~/modules/navigation/shared/navgroup/data/schema'
 import { useCreateNavgroup, useUpdateNavgroup } from '~/modules/navigation/shared/navgroup/hooks/use-navgroup-api'
 import { useAllRoles } from '~/modules/rbac/system-roles/hooks/use-role-api'
-import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Checkbox } from '@/components/ui/checkbox'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import {
   Sheet,
@@ -19,8 +22,6 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet'
-import { type AdminNavgroup, createNavgroupSchema } from '~/modules/navigation/shared/navgroup/data/schema'
-import type { CreateNavgroupData } from '~/modules/navigation/shared/navgroup/data/schema'
 
 type NavGroupsMutateDrawerProps = {
   open: boolean
@@ -36,8 +37,10 @@ export function NavGroupsMutateDrawer({ open, onOpenChange, currentRow }: NavGro
   const isUpdate = !!currentRow
   const createMutation = useCreateNavgroup()
   const updateMutation = useUpdateNavgroup()
-  const { data: roles = [] } = useAllRoles()
+  const rolesQuery = useAllRoles()
+  const roles = rolesQuery.data ?? []
   const { t } = useTranslation()
+  const isSubmitting = createMutation.isPending || updateMutation.isPending
 
   const form = useForm<NavGroupForm>({
     resolver: zodResolver(formSchema) as any,
@@ -57,6 +60,7 @@ export function NavGroupsMutateDrawer({ open, onOpenChange, currentRow }: NavGro
   })
 
   const onSubmit = (data: NavGroupForm) => {
+    if (isSubmitting || rolesQuery.isLoading || rolesQuery.error) return
     const payload = {
       title: data.title,
       scope: data.scope,
@@ -88,6 +92,7 @@ export function NavGroupsMutateDrawer({ open, onOpenChange, currentRow }: NavGro
     <Sheet
       open={open}
       onOpenChange={(v) => {
+        if (isSubmitting) return
         onOpenChange(v)
         form.reset()
       }}
@@ -179,29 +184,39 @@ export function NavGroupsMutateDrawer({ open, onOpenChange, currentRow }: NavGro
                 <FormItem>
                   <FormLabel>{t('admin.navgroup.fields.roles') || 'Roles'}</FormLabel>
                   <FormControl>
-                    <div className='flex flex-wrap gap-4'>
-                      {roles.map((role: any) => (
-                        <div key={role.id} className='flex items-center space-x-2'>
-                          <Checkbox
-                            id={`role-${role.id}`}
-                            checked={(field.value || []).includes(role.name)}
-                            onCheckedChange={(checked) => {
-                              const cur = Array.isArray(field.value) ? field.value : []
-                              if (checked) {
-                                field.onChange([...cur, role.name])
-                              } else {
-                                field.onChange(cur.filter((r) => r !== role.name))
-                              }
-                            }}
-                          />
-                          <label
-                            htmlFor={`role-${role.id}`}
-                            className='text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
-                          >
-                            {role.displayName || role.name}
-                          </label>
+                    <div>
+                      <QueryState
+                        isLoading={rolesQuery.isLoading}
+                        error={rolesQuery.error}
+                        onRetry={() => void rolesQuery.refetch()}
+                        isRetrying={rolesQuery.isRefetching}
+                      >
+                        <div className='flex flex-wrap gap-4'>
+                          {roles.map((role: any) => (
+                            <div key={role.id} className='flex items-center space-x-2'>
+                              <Checkbox
+                                id={`role-${role.id}`}
+                                checked={(field.value || []).includes(role.name)}
+                                onCheckedChange={(checked) => {
+                                  const cur = Array.isArray(field.value) ? field.value : []
+                                  if (checked) {
+                                    field.onChange([...cur, role.name])
+                                  } else {
+                                    field.onChange(cur.filter((r) => r !== role.name))
+                                  }
+                                }}
+                                disabled={isSubmitting}
+                              />
+                              <label
+                                htmlFor={`role-${role.id}`}
+                                className='text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
+                              >
+                                {role.displayName || role.name}
+                              </label>
+                            </div>
+                          ))}
                         </div>
-                      ))}
+                      </QueryState>
                     </div>
                   </FormControl>
                   <FormMessage />
@@ -212,9 +227,15 @@ export function NavGroupsMutateDrawer({ open, onOpenChange, currentRow }: NavGro
         </Form>
         <SheetFooter className='gap-2'>
           <SheetClose asChild>
-            <Button variant='outline'>{t('common.cancel')}</Button>
+            <Button variant='outline' disabled={isSubmitting}>
+              {t('common.cancel')}
+            </Button>
           </SheetClose>
-          <Button form='navgroups-form' type='submit'>
+          <Button
+            form='navgroups-form'
+            type='submit'
+            disabled={isSubmitting || rolesQuery.isLoading || !!rolesQuery.error}
+          >
             {t('common.save')}
           </Button>
         </SheetFooter>
@@ -222,8 +243,3 @@ export function NavGroupsMutateDrawer({ open, onOpenChange, currentRow }: NavGro
     </Sheet>
   )
 }
-
-
-
-
-

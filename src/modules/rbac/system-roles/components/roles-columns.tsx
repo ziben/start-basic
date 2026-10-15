@@ -137,7 +137,7 @@ export function useRolesColumns() {
               <DropdownMenuContent align='end' className='w-[160px]'>
                 <DropdownMenuLabel>{t('admin.common.actions')}</DropdownMenuLabel>
                 <PermissionGuard permission='role:update'>
-                  <DropdownMenuItem onClick={() => openPermissionsDialog(role)}>
+                  <DropdownMenuItem onClick={() => openPermissionsDialog(role)} disabled={role.isSystem}>
                     <Users className='mr-2 h-4 w-4 text-muted-foreground' />
                     {t('admin.role.actions.permissions')}
                   </DropdownMenuItem>

@@ -2,7 +2,6 @@ import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import { type AdminNavgroup } from '~/modules/navigation/shared/navgroup/data/schema'
 import { type ColumnDef } from '~/shared/lib/tanstack-table'
 import { Badge } from '@/components/ui/badge'
-import { Checkbox } from '@/components/ui/checkbox'
 import { DataTableRowActions } from './data-table-row-actions'
 
 const formatDate = (date: string | Date | null | undefined) => {
@@ -14,27 +13,6 @@ export function useNavGroupColumns(): ColumnDef<AdminNavgroup>[] {
   const { t } = useTranslation()
 
   return [
-    {
-      id: 'select',
-      header: ({ table }) => (
-        <Checkbox
-          checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate')}
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label={t('admin.table.selectAll')}
-          className='translate-y-[2px]'
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label={t('admin.table.selectRow')}
-          className='translate-y-[2px]'
-        />
-      ),
-      enableSorting: false,
-      enableHiding: false,
-    },
     {
       accessorKey: 'title',
       header: () => t('admin.navgroup.table.title'),

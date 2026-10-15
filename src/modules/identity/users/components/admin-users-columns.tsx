@@ -21,6 +21,7 @@ export function useAdminUsersColumns(): ColumnDef<AdminUser>[] {
           <Checkbox
             checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate')}
             onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+            disabled={!table.options.enableRowSelection}
             aria-label={t('admin.table.selectAll')}
             className='translate-y-[2px]'
           />
@@ -32,6 +33,7 @@ export function useAdminUsersColumns(): ColumnDef<AdminUser>[] {
           <Checkbox
             checked={row.getIsSelected()}
             onCheckedChange={(value) => row.toggleSelected(!!value)}
+            disabled={!row.getCanSelect()}
             aria-label={t('admin.table.selectRow')}
             className='translate-y-[2px]'
           />
@@ -75,6 +77,7 @@ export function useAdminUsersColumns(): ColumnDef<AdminUser>[] {
       },
       {
         accessorKey: 'accounts',
+        enableSorting: false,
         header: ({ column }) => <DataTableColumnHeader column={column} title='登录方式' />,
         cell: ({ row }) => {
           const accounts = row.original.accounts || []
@@ -201,6 +204,7 @@ export function useAdminUsersColumns(): ColumnDef<AdminUser>[] {
       },
       {
         accessorKey: 'banReason',
+        enableSorting: false,
         header: ({ column }) => <DataTableColumnHeader column={column} title={t('admin.user.table.banReason')} />,
         cell: ({ row }) => {
           const value = row.getValue('banReason') as string | null
@@ -210,6 +214,7 @@ export function useAdminUsersColumns(): ColumnDef<AdminUser>[] {
       },
       {
         accessorKey: 'banExpires',
+        enableSorting: false,
         header: ({ column }) => <DataTableColumnHeader column={column} title={t('admin.user.table.banExpires')} />,
         cell: ({ row }) => {
           const value = formatDate(row.getValue('banExpires'))

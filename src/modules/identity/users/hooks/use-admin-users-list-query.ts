@@ -62,6 +62,8 @@ export function useAdminUsersListQuery(input: UseAdminUsersListQueryInput) {
     error,
     refetch,
     isRefetching,
+    isLoading,
+    isPlaceholderData,
   } = useQuery<PageData>({
     queryKey,
     placeholderData: keepPreviousData,
@@ -104,5 +106,7 @@ export function useAdminUsersListQuery(input: UseAdminUsersListQueryInput) {
     error,
     refetch,
     isRefetching,
+    isLoading,
+    isPlaceholderData,
   }
 }

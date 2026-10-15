@@ -5,8 +5,8 @@
  * [迁移自 admin/shared/hooks/use-role-api.ts]
  */
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { permissionsQueryKeys, roleQueryKeys } from '~/shared/lib/query-keys'
 import { assignRoleNavGroupsFn } from '~/modules/navigation/shared/server-fns/role-nav-groups.fn'
+import { permissionsQueryKeys, roleQueryKeys, sidebarQueryKeys } from '~/shared/lib/query-keys'
 import {
   getRolesFn,
   getRoleFn,
@@ -125,7 +125,8 @@ export function useAssignRoleNavGroups() {
       return await assignRoleNavGroupsFn({ data: { id, navGroupIds } })
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: roleQueryKeys.detail(variables.id) })
+      queryClient.invalidateQueries({ queryKey: roleQueryKeys.all })
+      queryClient.invalidateQueries({ queryKey: sidebarQueryKeys.all })
     },
   })
 }

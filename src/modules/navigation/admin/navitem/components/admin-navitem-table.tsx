@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { QueryState } from '@/shared/components/query-state'
 import { useTranslation } from '~/modules/admin/shared/hooks/use-translation'
 import { AdminNavItem } from '~/modules/navigation/shared/navitem/data/schema'
 import { dataTableFeatures, tableFeatures } from '~/shared/lib/tanstack-table'
@@ -206,11 +207,8 @@ export default function AdminNavItemTable({ data, isLoading, error, navGroupId, 
   const rows = table.getRowModel().rows
 
   // 处理加载、错误和空数据状态
-  if (isLoading) return <div className='py-8 text-center'>{t('common.loading')}</div>
-  if (error)
-    return (
-      <div className='py-8 text-center text-red-500'>{t('admin.navitem.loadError', { message: error.message })}</div>
-    )
+  if (isLoading || error)
+    return <QueryState isLoading={isLoading} error={error} onRetry={() => onReload?.()} isRetrying={isReloading} />
 
   return (
     <div className='flex min-h-0 flex-1 flex-col gap-4'>
