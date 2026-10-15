@@ -12,6 +12,7 @@ import {
   createFacetedRowModel,
   createFacetedUniqueValues,
   useTable,
+  type SortingState,
 } from '~/shared/lib/tanstack-table'
 import { banned } from '../data/schema'
 import { useAdminUsersListQuery } from '../hooks/use-admin-users-list-query'
@@ -32,6 +33,10 @@ type AdminUsersTableProps = {
 
 export function AdminUsersTable({ search, navigate }: AdminUsersTableProps) {
   const [rowSelection, setRowSelection] = useState({})
+  const sorting = useMemo<SortingState>(
+    () => (typeof search.sortBy === 'string' ? [{ id: search.sortBy, desc: search.sortDir === 'desc' }] : []),
+    [search.sortBy, search.sortDir]
+  )
   const { t } = useTranslation()
 
   const {
@@ -70,23 +75,25 @@ export function AdminUsersTable({ search, navigate }: AdminUsersTableProps) {
     return getSingleBooleanFromArrayFilter(columnFilters, 'banned')
   }, [columnFilters])
 
-  const { data, serverPageCount, refetch, isRefetching, pageData, error } = useAdminUsersListQuery({
-    pageIndex: pagination.pageIndex,
-    pageSize: pagination.pageSize,
-    filter: globalFilter ?? undefined,
-    sorting: [],
-    banned: bannedFilter,
-  })
-
-  const isLoading = !pageData && !data.length
+  const { data, serverPageCount, refetch, isRefetching, pageData, error, isLoading, isPlaceholderData } =
+    useAdminUsersListQuery({
+      pageIndex: pagination.pageIndex,
+      pageSize: pagination.pageSize,
+      filter: globalFilter ?? undefined,
+      sorting,
+      banned: bannedFilter,
+    })
 
   const table = useTable({
     features,
     data,
     columns,
+    getRowId: (row) => row.id,
+    enableMultiSort: false,
     state: {
       columnVisibility,
-      rowSelection,
+      rowSelection: isPlaceholderData ? {} : rowSelection,
+      sorting,
       columnFilters,
       globalFilter,
       pagination,
@@ -94,7 +101,8 @@ export function AdminUsersTable({ search, navigate }: AdminUsersTableProps) {
     pageCount: serverPageCount,
     manualPagination: true,
     manualFiltering: true,
-    enableRowSelection: true,
+    manualSorting: true,
+    enableRowSelection: !isPlaceholderData,
     onRowSelectionChange: setRowSelection,
     onColumnVisibilityChange: setColumnVisibility,
     globalFilterFn: (row, _columnId, filterValue) => {
@@ -104,14 +112,35 @@ export function AdminUsersTable({ search, navigate }: AdminUsersTableProps) {
       return id.includes(searchValue) || name.includes(searchValue)
     },
 
-    onPaginationChange,
-    onGlobalFilterChange,
-    onColumnFiltersChange,
+    onSortingChange: (next) => {
+      setRowSelection({})
+      const value = typeof next === 'function' ? next(sorting) : next
+      navigate({
+        search: (previous) => ({
+          ...previous,
+          sortBy: value[0]?.id,
+          sortDir: value[0] ? (value[0].desc ? 'desc' : 'asc') : undefined,
+          page: undefined,
+        }),
+      })
+    },
+    onPaginationChange: (next) => {
+      setRowSelection({})
+      onPaginationChange(next)
+    },
+    onGlobalFilterChange: (next) => {
+      setRowSelection({})
+      onGlobalFilterChange?.(next)
+    },
+    onColumnFiltersChange: (next) => {
+      setRowSelection({})
+      onColumnFiltersChange(next)
+    },
   })
 
   useEffect(() => {
-    ensurePageInRange(serverPageCount)
-  }, [serverPageCount, ensurePageInRange])
+    if (pageData && !isPlaceholderData && !error) ensurePageInRange(Math.max(1, serverPageCount))
+  }, [pageData, isPlaceholderData, error, serverPageCount, ensurePageInRange])
 
   const rows = table.getRowModel().rows
   const tableContainerRef = useRef<HTMLDivElement>(null)

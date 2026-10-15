@@ -65,6 +65,7 @@ export function TranslationsTable({
     columnFilters: [
       { columnId: 'key', searchKey: 'key', type: 'string' },
       { columnId: 'description', searchKey: 'description', type: 'string' },
+      { columnId: 'locale', searchKey: 'locale', type: 'array' },
     ],
   })
 
@@ -94,8 +95,8 @@ export function TranslationsTable({
 
   const pageCount = table.getPageCount()
   useEffect(() => {
-    ensurePageInRange(pageCount)
-  }, [pageCount, ensurePageInRange])
+    if (!isLoading && !errorState) ensurePageInRange(Math.max(1, pageCount))
+  }, [isLoading, errorState, pageCount, ensurePageInRange])
 
   const rows = table.getRowModel().rows
   const tableContainerRef = useRef<HTMLDivElement>(null)

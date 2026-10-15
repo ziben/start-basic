@@ -1,5 +1,5 @@
-import { createFileRoute } from '@tanstack/react-router'
 import { z } from 'zod'
+import { createFileRoute } from '@tanstack/react-router'
 import { AdminNavigationPage } from '~/modules/navigation/admin'
 
 const navigationSearchSchema = z.object({
@@ -8,6 +8,10 @@ const navigationSearchSchema = z.object({
   filter: z.string().optional().catch(undefined),
   title: z.string().optional().catch(undefined),
   description: z.string().optional().catch(undefined),
+  scope: z
+    .array(z.enum(['APP', 'ADMIN']))
+    .optional()
+    .catch(undefined),
   page: z.coerce.number().optional().catch(undefined),
   pageSize: z.coerce.number().optional().catch(undefined),
 })
@@ -16,6 +20,3 @@ export const Route = createFileRoute('/_authenticated/admin/navigation')({
   component: AdminNavigationPage,
   validateSearch: navigationSearchSchema,
 })
-
-
-

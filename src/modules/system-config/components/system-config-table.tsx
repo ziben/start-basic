@@ -97,8 +97,8 @@ export function SystemConfigTable({
 
   const pageCount = table.getPageCount()
   useEffect(() => {
-    ensurePageInRange(pageCount)
-  }, [ensurePageInRange, pageCount])
+    if (!isLoading && !errorState) ensurePageInRange(Math.max(1, pageCount))
+  }, [isLoading, errorState, ensurePageInRange, pageCount])
 
   return (
     <AdminDataTable

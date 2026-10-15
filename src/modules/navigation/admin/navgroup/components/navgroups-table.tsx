@@ -66,6 +66,7 @@ function NavGroupsTableInner({ data, search, navigate, onReload, isReloading, is
     columnFilters: [
       { columnId: 'title', searchKey: 'title', type: 'string' },
       { columnId: 'description', searchKey: 'description', type: 'string' },
+      { columnId: 'scope', searchKey: 'scope', type: 'array' },
     ],
   })
 
@@ -96,8 +97,8 @@ function NavGroupsTableInner({ data, search, navigate, onReload, isReloading, is
 
   const pageCount = table.getPageCount()
   useEffect(() => {
-    ensurePageInRange?.(pageCount)
-  }, [pageCount, ensurePageInRange])
+    if (!isLoading && !errorState) ensurePageInRange(Math.max(1, pageCount))
+  }, [isLoading, errorState, pageCount, ensurePageInRange])
 
   const rows = table.getRowModel().rows
 

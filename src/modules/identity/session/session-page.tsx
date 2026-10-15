@@ -296,6 +296,7 @@ export default function AdminSession() {
     error,
     refetch,
     isRefetching,
+    isPlaceholderData,
   } = useAdminSessions({
     page: tableUrl.pagination.pageIndex + 1,
     pageSize: tableUrl.pagination.pageSize,
@@ -312,10 +313,11 @@ export default function AdminSession() {
     features,
     data: sessions,
     columns,
+    getRowId: (row) => row.id,
     state: {
       sorting,
       columnVisibility,
-      rowSelection,
+      rowSelection: isPlaceholderData ? {} : rowSelection,
       columnFilters: tableUrl.columnFilters,
       globalFilter: tableUrl.globalFilter,
       pagination: tableUrl.pagination,
@@ -324,18 +326,30 @@ export default function AdminSession() {
     manualPagination: true,
     manualFiltering: true,
     manualSorting: true,
-    enableRowSelection: true,
+    enableRowSelection: !isPlaceholderData,
     onRowSelectionChange: setRowSelection,
-    onSortingChange: tableUrl.onSortingChange,
+    onSortingChange: (next) => {
+      setRowSelection({})
+      tableUrl.onSortingChange(next)
+    },
     onColumnVisibilityChange: setColumnVisibility,
-    onPaginationChange: tableUrl.onPaginationChange,
-    onGlobalFilterChange: tableUrl.onGlobalFilterChange,
-    onColumnFiltersChange: tableUrl.onColumnFiltersChange,
+    onPaginationChange: (next) => {
+      setRowSelection({})
+      tableUrl.onPaginationChange(next)
+    },
+    onGlobalFilterChange: (next) => {
+      setRowSelection({})
+      tableUrl.onGlobalFilterChange?.(next)
+    },
+    onColumnFiltersChange: (next) => {
+      setRowSelection({})
+      tableUrl.onColumnFiltersChange(next)
+    },
   })
 
   useEffect(() => {
-    tableUrl.ensurePageInRange(serverPageCount)
-  }, [serverPageCount, tableUrl])
+    if (pageData && !isPlaceholderData && !error) tableUrl.ensurePageInRange(Math.max(1, serverPageCount))
+  }, [pageData, isPlaceholderData, error, serverPageCount, tableUrl])
 
   const tableContainerRef = useRef<HTMLDivElement>(null)
   const rowVirtualizer = useVirtualizer({
@@ -346,6 +360,7 @@ export default function AdminSession() {
   })
 
   const handleConfirm = async () => {
+    if (isMutating) return
     try {
       if (confirmMode === 'single') {
         if (!pendingSingleId) return
