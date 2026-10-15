@@ -2,7 +2,7 @@ import type { Tab, TabScope } from '@/shared/types/tab-types'
 
 export function normalizeTabPath(path: string): string {
   if (path === '/admin') return '/admin/dashboard'
-  if (path.startsWith('/admin/profile/settings')) return '/admin/profile/settings'
+  if (path.startsWith('/settings/')) return '/settings'
   return path
 }
 
@@ -36,7 +36,7 @@ export function getTitleForPath(path: string): string {
     '/admin/rbac/org-roles': '组织角色',
     '/admin/rbac/permissions': '权限定义',
     '/admin/log': '日志与审计',
-    '/admin/profile/settings': '账号设置',
+    '/settings': '账号设置',
     '/admin/system-config': '系统设置',
     '/admin/ai-chat': 'AI 会话管理',
     '/admin/navigation': '菜单管理',

@@ -75,7 +75,7 @@ export function NavUser({ user }: NavUserProps) {
               <DropdownMenuSeparator />
               <DropdownMenuGroup>
                 <DropdownMenuItem asChild>
-                  <Link to='/admin/profile/settings'>
+                  <Link to='/settings'>
                     <BadgeCheck />
                     Account Settings
                   </Link>
