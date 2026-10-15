@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { handleAssignRoleNavGroups } from '~/modules/navigation/shared/server-fns/role-nav-groups.fn'
-import { handleAssignPermissions, handleUpdateRole } from './rbac.fn'
+import { handleAssignRoleNavGroups } from '~/modules/navigation/shared/navgroup/services/role-nav-groups.service'
+import { handleAssignPermissions, handleUpdateRole } from '../services/role-assignment.service'
 
 const mocks = vi.hoisted(() => ({
   requireAdmin: vi.fn(),
