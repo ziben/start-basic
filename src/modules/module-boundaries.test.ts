@@ -76,6 +76,13 @@ describe('module boundaries', () => {
       healthPerson: 'health',
       healthMetricResult: 'health',
       healthMetricCatalog: 'health',
+      questionBank: 'question-bank',
+      bankQuestion: 'question-bank',
+      questionKnowledgePoint: 'question-bank',
+      questionPaper: 'question-bank',
+      questionPaperSection: 'question-bank',
+      questionPaperItem: 'question-bank',
+      questionImportBatch: 'question-bank',
       aIConversation: 'ai',
       aIMessage: 'ai',
     }

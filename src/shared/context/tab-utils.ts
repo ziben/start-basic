@@ -51,9 +51,11 @@ export function getTitleForPath(path: string): string {
     '/health/reports': '体检报告',
     '/health/persons': '人员档案',
     '/health/compare': '跨期比较',
+    '/question-bank': '题库与组卷',
   }
 
   if (titleMap[path]) return titleMap[path]
+  if (path.startsWith('/question-bank/papers/')) return '试卷编辑'
 
   const segments = path.split('/').filter(Boolean)
   const lastSegment = segments.at(-1)
