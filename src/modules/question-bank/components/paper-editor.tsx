@@ -9,6 +9,7 @@ import { Textarea } from '~/components/ui/textarea'
 import { paperInputSchema, type QuestionContent } from '../shared/domain'
 import { useQuestionPaper, useQuestionBankCommand, type QuestionRow } from '../shared/hooks'
 import type { getQuestionPaperFn } from '../shared/server-fns/question-bank.fn'
+import { useEditorGuard } from '../shared/use-editor-guard'
 import { Field, selectClass, TextField } from './fields'
 import { paperPrintStyles, PrintPaper } from './paper-print'
 import { QuestionContentView } from './question-content'
@@ -81,9 +82,13 @@ export function PaperEditor({ initial, onCancel }: { initial: PaperDraft; onCanc
   const [preview, setPreview] = useState(false)
   const [error, setError] = useState('')
   const [printing, setPrinting] = useState(false)
-  const [dirty, setDirty] = useState(false)
+  const { dirty, setDirty, requestLeave, dialog } = useEditorGuard(
+    !initial.id || initial.sections.some((section) => section.items.some((item) => !item.id))
+  )
   const mutation = useQuestionBankCommand()
   const navigate = useNavigate()
+  const newerVersion = initial.id === draft.id && initial.version !== draft.version
+  if (newerVersion && !dirty) setDraft(initial)
   function change(next: PaperDraft) {
     setDraft(next)
     setDirty(true)
@@ -141,207 +146,219 @@ export function PaperEditor({ initial, onCancel }: { initial: PaperDraft; onCanc
           <CardTitle>{draft.id ? '编辑试卷' : '组卷编辑'}</CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={save} className='space-y-4'>
-            <TextField
-              label='试卷标题'
-              value={draft.title}
-              onChange={(title) => change({ ...draft, title })}
-              required
-              maxLength={150}
-            />
-            <Field label='考试说明'>
-              <Textarea
-                rows={3}
-                maxLength={2000}
-                value={draft.instructions}
-                onChange={(event) => change({ ...draft, instructions: event.target.value })}
+          <form onSubmit={save}>
+            <fieldset disabled={mutation.isPending} className='space-y-4'>
+              <TextField
+                label='试卷标题'
+                value={draft.title}
+                onChange={(title) => change({ ...draft, title })}
+                required
+                maxLength={150}
               />
-            </Field>
-            <p className='text-sm text-muted-foreground'>
-              已有题目使用保存时的内容快照。分值支持两位小数，答题留白按行设置。
-            </p>
-            {draft.sections.map((section, sectionIndex) => (
-              <div key={sectionIndex} className='space-y-3 rounded-md border p-4'>
-                <div className='flex flex-wrap items-end gap-2'>
-                  <div className='min-w-40 flex-1'>
-                    <TextField
-                      label={`第 ${sectionIndex + 1} 分组`}
-                      value={section.title}
-                      onChange={(title) => updateSection(sectionIndex, { title })}
-                      required
-                    />
-                  </div>
-                  <Button
-                    type='button'
-                    size='sm'
-                    variant='outline'
-                    aria-label={`分组 ${sectionIndex + 1} 上移`}
-                    disabled={sectionIndex === 0}
-                    onClick={() =>
-                      change({ ...draft, sections: reorder(draft.sections, sectionIndex, sectionIndex - 1) })
-                    }
-                  >
-                    上移
-                  </Button>
-                  <Button
-                    type='button'
-                    size='sm'
-                    variant='outline'
-                    aria-label={`分组 ${sectionIndex + 1} 下移`}
-                    disabled={sectionIndex === draft.sections.length - 1}
-                    onClick={() =>
-                      change({ ...draft, sections: reorder(draft.sections, sectionIndex, sectionIndex + 1) })
-                    }
-                  >
-                    下移
-                  </Button>
-                  <Button
-                    type='button'
-                    size='sm'
-                    variant='outline'
-                    disabled={section.items.length > 0 || draft.sections.length === 1}
-                    onClick={() =>
-                      change({ ...draft, sections: draft.sections.filter((_, index) => index !== sectionIndex) })
-                    }
-                  >
-                    移除空分组
-                  </Button>
-                </div>
-                {section.items.map((item, itemIndex) => (
-                  <div key={item.id ?? item.questionId} className='space-y-3 rounded-md bg-muted/40 p-3'>
-                    <details>
-                      <summary className='cursor-pointer text-sm font-medium'>
-                        第 {itemIndex + 1} 题 · {item.sourceBankName} · 展开题目
-                      </summary>
-                      <div className='mt-3'>
-                        <QuestionContentView content={item.snapshot} answers />
-                      </div>
-                    </details>
-                    <div className='flex flex-wrap items-end gap-3'>
-                      <div className='w-24'>
-                        <Field label='分值'>
-                          <Input
-                            type='number'
-                            min={0}
-                            max={9999}
-                            step='0.01'
-                            value={item.score}
-                            onChange={(event) =>
-                              updateItem(sectionIndex, itemIndex, { score: Number(event.target.value) })
-                            }
-                          />
-                        </Field>
-                      </div>
-                      <div className='w-24'>
-                        <Field label='留白行数'>
-                          <Input
-                            type='number'
-                            min={0}
-                            max={30}
-                            value={item.answerLines}
-                            onChange={(event) =>
-                              updateItem(sectionIndex, itemIndex, { answerLines: Number(event.target.value) })
-                            }
-                          />
-                        </Field>
-                      </div>
-                      <div className='min-w-32'>
-                        <Field label='所属分组'>
-                          <select
-                            className={selectClass}
-                            value={sectionIndex}
-                            onChange={(event) => {
-                              const target = Number(event.target.value)
-                              change({
-                                ...draft,
-                                sections: draft.sections.map((entry, index) => ({
-                                  ...entry,
-                                  items:
-                                    index === sectionIndex
-                                      ? entry.items.filter((_, offset) => offset !== itemIndex)
-                                      : index === target
-                                        ? [...entry.items, item]
-                                        : entry.items,
-                                })),
-                              })
-                            }}
-                          >
-                            {draft.sections.map((entry, index) => (
-                              <option key={index} value={index}>
-                                {entry.title}
-                              </option>
-                            ))}
-                          </select>
-                        </Field>
-                      </div>
-                      <Button
-                        type='button'
-                        size='sm'
-                        variant='outline'
-                        aria-label={`题目 ${itemIndex + 1} 上移`}
-                        disabled={itemIndex === 0}
-                        onClick={() =>
-                          updateSection(sectionIndex, { items: reorder(section.items, itemIndex, itemIndex - 1) })
-                        }
-                      >
-                        上移
-                      </Button>
-                      <Button
-                        type='button'
-                        size='sm'
-                        variant='outline'
-                        aria-label={`题目 ${itemIndex + 1} 下移`}
-                        disabled={itemIndex === section.items.length - 1}
-                        onClick={() =>
-                          updateSection(sectionIndex, { items: reorder(section.items, itemIndex, itemIndex + 1) })
-                        }
-                      >
-                        下移
-                      </Button>
-                      <Button
-                        type='button'
-                        size='sm'
-                        variant='ghost'
-                        onClick={() =>
-                          updateSection(sectionIndex, {
-                            items: section.items.filter((_, index) => index !== itemIndex),
-                          })
-                        }
-                      >
-                        移出试卷
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-                {!section.items.length && <p className='text-sm text-muted-foreground'>可将其他分组的题目移入此处</p>}
-              </div>
-            ))}
-            <div className='flex flex-wrap gap-2'>
-              <Button
-                type='button'
-                variant='outline'
-                disabled={draft.sections.length >= 20}
-                onClick={() =>
-                  change({
-                    ...draft,
-                    sections: [...draft.sections, { title: `第 ${draft.sections.length + 1} 部分`, items: [] }],
-                  })
-                }
-              >
-                添加分组
-              </Button>
-              <Button type='submit' disabled={mutation.isPending}>
-                {mutation.isPending ? '正在保存…' : '保存试卷'}
-              </Button>
-              <Button type='button' variant='ghost' onClick={onCancel}>
-                返回题库
-              </Button>
-            </div>
-            {error && (
-              <p role='alert' className='text-sm text-destructive'>
-                {error}
+              <Field label='考试说明'>
+                <Textarea
+                  rows={3}
+                  maxLength={2000}
+                  value={draft.instructions}
+                  onChange={(event) => change({ ...draft, instructions: event.target.value })}
+                />
+              </Field>
+              <p className='text-sm text-muted-foreground'>
+                已有题目使用保存时的内容快照。分值支持两位小数，答题留白按行设置。
               </p>
-            )}
+              {draft.sections.map((section, sectionIndex) => (
+                <div key={sectionIndex} className='space-y-3 rounded-md border p-4'>
+                  <div className='flex flex-wrap items-end gap-2'>
+                    <div className='min-w-40 flex-1'>
+                      <TextField
+                        label={`第 ${sectionIndex + 1} 分组`}
+                        value={section.title}
+                        onChange={(title) => updateSection(sectionIndex, { title })}
+                        required
+                      />
+                    </div>
+                    <Button
+                      type='button'
+                      size='sm'
+                      variant='outline'
+                      aria-label={`分组 ${sectionIndex + 1} 上移`}
+                      disabled={sectionIndex === 0}
+                      onClick={() =>
+                        change({ ...draft, sections: reorder(draft.sections, sectionIndex, sectionIndex - 1) })
+                      }
+                    >
+                      上移
+                    </Button>
+                    <Button
+                      type='button'
+                      size='sm'
+                      variant='outline'
+                      aria-label={`分组 ${sectionIndex + 1} 下移`}
+                      disabled={sectionIndex === draft.sections.length - 1}
+                      onClick={() =>
+                        change({ ...draft, sections: reorder(draft.sections, sectionIndex, sectionIndex + 1) })
+                      }
+                    >
+                      下移
+                    </Button>
+                    <Button
+                      type='button'
+                      size='sm'
+                      variant='outline'
+                      disabled={section.items.length > 0 || draft.sections.length === 1}
+                      onClick={() =>
+                        change({ ...draft, sections: draft.sections.filter((_, index) => index !== sectionIndex) })
+                      }
+                    >
+                      移除空分组
+                    </Button>
+                  </div>
+                  {section.items.map((item, itemIndex) => (
+                    <div key={item.id ?? item.questionId} className='space-y-3 rounded-md bg-muted/40 p-3'>
+                      <details>
+                        <summary className='cursor-pointer text-sm font-medium'>
+                          第 {itemIndex + 1} 题 · {item.sourceBankName} · 展开题目
+                        </summary>
+                        <div className='mt-3'>
+                          <QuestionContentView content={item.snapshot} answers />
+                        </div>
+                      </details>
+                      <div className='flex flex-wrap items-end gap-3'>
+                        <div className='w-24'>
+                          <Field label='分值'>
+                            <Input
+                              type='number'
+                              min={0}
+                              max={9999}
+                              step='0.01'
+                              value={item.score}
+                              onChange={(event) =>
+                                updateItem(sectionIndex, itemIndex, { score: Number(event.target.value) })
+                              }
+                            />
+                          </Field>
+                        </div>
+                        <div className='w-24'>
+                          <Field label='留白行数'>
+                            <Input
+                              type='number'
+                              min={0}
+                              max={30}
+                              value={item.answerLines}
+                              onChange={(event) =>
+                                updateItem(sectionIndex, itemIndex, { answerLines: Number(event.target.value) })
+                              }
+                            />
+                          </Field>
+                        </div>
+                        <div className='min-w-32'>
+                          <Field label='所属分组'>
+                            <select
+                              className={selectClass}
+                              value={sectionIndex}
+                              onChange={(event) => {
+                                const target = Number(event.target.value)
+                                change({
+                                  ...draft,
+                                  sections: draft.sections.map((entry, index) => ({
+                                    ...entry,
+                                    items:
+                                      index === sectionIndex
+                                        ? entry.items.filter((_, offset) => offset !== itemIndex)
+                                        : index === target
+                                          ? [...entry.items, item]
+                                          : entry.items,
+                                  })),
+                                })
+                              }}
+                            >
+                              {draft.sections.map((entry, index) => (
+                                <option key={index} value={index}>
+                                  {entry.title}
+                                </option>
+                              ))}
+                            </select>
+                          </Field>
+                        </div>
+                        <Button
+                          type='button'
+                          size='sm'
+                          variant='outline'
+                          aria-label={`题目 ${itemIndex + 1} 上移`}
+                          disabled={itemIndex === 0}
+                          onClick={() =>
+                            updateSection(sectionIndex, { items: reorder(section.items, itemIndex, itemIndex - 1) })
+                          }
+                        >
+                          上移
+                        </Button>
+                        <Button
+                          type='button'
+                          size='sm'
+                          variant='outline'
+                          aria-label={`题目 ${itemIndex + 1} 下移`}
+                          disabled={itemIndex === section.items.length - 1}
+                          onClick={() =>
+                            updateSection(sectionIndex, { items: reorder(section.items, itemIndex, itemIndex + 1) })
+                          }
+                        >
+                          下移
+                        </Button>
+                        <Button
+                          type='button'
+                          size='sm'
+                          variant='ghost'
+                          onClick={() =>
+                            updateSection(sectionIndex, {
+                              items: section.items.filter((_, index) => index !== itemIndex),
+                            })
+                          }
+                        >
+                          移出试卷
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                  {!section.items.length && <p className='text-sm text-muted-foreground'>可将其他分组的题目移入此处</p>}
+                </div>
+              ))}
+              <div className='flex flex-wrap gap-2'>
+                <Button
+                  type='button'
+                  variant='outline'
+                  disabled={draft.sections.length >= 20}
+                  onClick={() =>
+                    change({
+                      ...draft,
+                      sections: [...draft.sections, { title: `第 ${draft.sections.length + 1} 部分`, items: [] }],
+                    })
+                  }
+                >
+                  添加分组
+                </Button>
+                <Button type='submit' disabled={mutation.isPending}>
+                  {mutation.isPending ? '正在保存…' : '保存试卷'}
+                </Button>
+                <Button type='button' variant='ghost' onClick={() => requestLeave(onCancel)}>
+                  返回题库
+                </Button>
+              </div>
+              {dirty && (
+                <p className='text-xs text-muted-foreground' role='status'>
+                  试卷有未保存的修改。
+                </p>
+              )}
+              {newerVersion && dirty && (
+                <p className='text-xs text-destructive' role='alert'>
+                  试卷已有更新，当前未保存内容已保留。刷新后可查看最新版本。
+                </p>
+              )}
+              {error && (
+                <p role='alert' className='text-sm text-destructive'>
+                  {error}
+                </p>
+              )}
+            </fieldset>
           </form>
         </CardContent>
       </Card>
@@ -389,6 +406,7 @@ export function PaperEditor({ initial, onCancel }: { initial: PaperDraft; onCanc
           )}
         </>
       )}
+      {dialog}
     </div>
   )
 }
@@ -406,7 +424,7 @@ export function QuestionPaperPage({ paperId }: { paperId: string }) {
       )}
       {query.data && (
         <PaperEditor
-          key={`${query.data.id}-${query.data.version}`}
+          key={query.data.id}
           initial={draftFromPaper(query.data)}
           onCancel={() => void navigate({ to: '/question-bank', search: { view: 'papers' } })}
         />

@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { Link } from '@tanstack/react-router'
 import { BookOpen, FileText, Library, Plus, Search, Upload } from 'lucide-react'
 import { toast } from 'sonner'
+import { ConfirmDialog } from '~/components/confirm-dialog'
 import { AppHeaderMain } from '~/components/layout/app-header-main'
 import { Button } from '~/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
@@ -55,7 +56,17 @@ function Workspace({ data, view }: { data: Bootstrap; view: BankView }) {
   const [paperTarget, setPaperTarget] = useState('')
   const [editor, setEditor] = useState<{ bankId: string; question?: QuestionRow } | null>(null)
   const [paperDraft, setPaperDraft] = useState<PaperDraft | null>(null)
+  const [archivePaperTarget, setArchivePaperTarget] = useState<Bootstrap['papers'][number] | null>(null)
   const [assembling, setAssembling] = useState(false)
+  const [renderedView, setRenderedView] = useState(view)
+  // Reset editors only after navigation has passed the unsaved changes guard.
+  if (renderedView !== view) {
+    setRenderedView(view)
+    setEditor(null)
+    setPaperDraft(null)
+    setFilters(questionSearchSchema.parse({}))
+    setSearchText('')
+  }
   const maintenance = view === 'manage' && data.canManagePublic
   const scope = view === 'public' || view === 'manage' ? 'PUBLIC' : 'PERSONAL'
   const banks = data.banks.filter((bank) => bank.scope === scope)
@@ -99,6 +110,19 @@ function Workspace({ data, view }: { data: Bootstrap; view: BankView }) {
       setAssembling(false)
     }
   }
+  async function archivePaper() {
+    if (!archivePaperTarget) return
+    try {
+      await mutation.mutateAsync({
+        action: 'archivePaper',
+        id: archivePaperTarget.id,
+        version: archivePaperTarget.version,
+      })
+      setArchivePaperTarget(null)
+    } catch {
+      /* Keep the selected paper available for retry. */
+    }
+  }
   return (
     <div className='space-y-5'>
       <header className='flex flex-wrap items-start justify-between gap-3'>
@@ -108,7 +132,7 @@ function Workspace({ data, view }: { data: Bootstrap; view: BankView }) {
         </div>
         {isQuestionsView && (view === 'mine' || maintenance) && (
           <Button
-            disabled={!banks.length}
+            disabled={!banks.length || !!editor || !!paperDraft}
             onClick={() => {
               setPaperDraft(null)
               setEditor({ bankId: banks.find((bank) => bank.id === filters.bankId)?.id ?? banks[0]?.id ?? '' })
@@ -125,16 +149,7 @@ function Workspace({ data, view }: { data: Bootstrap; view: BankView }) {
           ...(data.canManagePublic ? [{ value: 'manage' as const, title: '公共维护', icon: Library }] : []),
         ].map((tab) => (
           <Button asChild key={tab.value} size='sm' variant={view === tab.value ? 'default' : 'outline'}>
-            <Link
-              to='/question-bank'
-              search={{ view: tab.value }}
-              onClick={() => {
-                setEditor(null)
-                setPaperDraft(null)
-                setFilters(questionSearchSchema.parse({}))
-                setSearchText('')
-              }}
-            >
+            <Link to='/question-bank' search={{ view: tab.value }}>
               <tab.icon className='mr-1 h-4 w-4' />
               {tab.title}
             </Link>
@@ -189,7 +204,7 @@ function Workspace({ data, view }: { data: Bootstrap; view: BankView }) {
                     size='sm'
                     variant='ghost'
                     disabled={mutation.isPending}
-                    onClick={() => mutation.mutate({ action: 'archivePaper', id: paper.id, version: paper.version })}
+                    onClick={() => setArchivePaperTarget(paper)}
                   >
                     归档
                   </Button>
@@ -197,6 +212,19 @@ function Workspace({ data, view }: { data: Bootstrap; view: BankView }) {
               </div>
             ))}
             {!data.papers.length && <p className='text-sm text-muted-foreground'>暂无试卷，请先选题组卷。</p>}
+            <ConfirmDialog
+              open={!!archivePaperTarget}
+              onOpenChange={(open) => {
+                if (!open && !mutation.isPending) setArchivePaperTarget(null)
+              }}
+              title='确认归档试卷'
+              desc={`归档后“${archivePaperTarget?.title ?? ''}”将不再出现在试卷列表，试卷内容和题目快照会保留。`}
+              cancelBtnText='取消'
+              confirmText={mutation.isPending ? '正在归档…' : '确认归档'}
+              destructive
+              isLoading={mutation.isPending}
+              handleConfirm={() => void archivePaper()}
+            />
           </CardContent>
         </Card>
       ) : (

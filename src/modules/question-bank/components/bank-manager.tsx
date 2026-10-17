@@ -1,4 +1,6 @@
 import { useState, type FormEvent } from 'react'
+import { Archive } from 'lucide-react'
+import { ConfirmDialog } from '~/components/confirm-dialog'
 import { Button } from '~/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
 import { Textarea } from '~/components/ui/textarea'
@@ -22,8 +24,18 @@ export function BankManager({
   const [pointId, setPointId] = useState('')
   const [pointName, setPointName] = useState('')
   const [parentId, setParentId] = useState('')
+  const [archiveTarget, setArchiveTarget] = useState<Bank | null>(null)
   const mutation = useQuestionBankCommand()
   const selectedBank = banks.find((bank) => bank.id === knowledgeBankId)
+  async function archive() {
+    if (!archiveTarget) return
+    try {
+      await mutation.mutateAsync({ action: 'archiveBank', id: archiveTarget.id, version: archiveTarget.version })
+      setArchiveTarget(null)
+    } catch {
+      /* Keep the selected bank available for retry. */
+    }
+  }
   async function save(event: FormEvent) {
     event.preventDefault()
     try {
@@ -135,12 +147,8 @@ export function BankManager({
                 >
                   知识点
                 </Button>
-                <Button
-                  size='sm'
-                  variant='ghost'
-                  disabled={mutation.isPending}
-                  onClick={() => mutation.mutate({ action: 'archiveBank', id: bank.id, version: bank.version })}
-                >
+                <Button size='sm' variant='ghost' disabled={mutation.isPending} onClick={() => setArchiveTarget(bank)}>
+                  <Archive className='mr-1 h-4 w-4' />
                   归档
                 </Button>
               </div>
@@ -150,6 +158,19 @@ export function BankManager({
         {!banks.length && (
           <p className='text-sm text-muted-foreground'>还没有题库，先新建一个题库，再录入或导入题目。</p>
         )}
+        <ConfirmDialog
+          open={!!archiveTarget}
+          onOpenChange={(open) => {
+            if (!open && !mutation.isPending) setArchiveTarget(null)
+          }}
+          title='确认归档题库'
+          desc={`归档后“${archiveTarget?.name ?? ''}”将不再出现在列表和检索中，已有试卷的内容快照会保留。`}
+          cancelBtnText='取消'
+          confirmText={mutation.isPending ? '正在归档…' : '确认归档'}
+          destructive
+          isLoading={mutation.isPending}
+          handleConfirm={() => void archive()}
+        />
         {selectedBank && (
           <div className='space-y-4 rounded-md border p-4'>
             <div className='flex items-center justify-between'>

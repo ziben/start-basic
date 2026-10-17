@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Button } from '~/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
 import { Input } from '~/components/ui/input'
@@ -18,19 +18,30 @@ function download(name: string, content: string, type: string) {
   setTimeout(() => URL.revokeObjectURL(url), 1000)
 }
 type Preview = Awaited<ReturnType<typeof previewQuestionImportFn>>
+type ImportSource = { bankId: string; format: 'csv' | 'json'; text: string; fileName: string }
 export function ImportWorkbench({ banks, batches }: { banks: Bank[]; batches: Bootstrap['batches'] }) {
   const [bankId, setBankId] = useState(banks[0]?.id ?? '')
   const [format, setFormat] = useState<'csv' | 'json'>('csv')
   const [fileName, setFileName] = useState('手工粘贴.csv')
   const [text, setText] = useState('')
-  const [preview, setPreview] = useState<Preview | null>(null)
-  const [requestKey, setRequestKey] = useState('')
+  const [checked, setChecked] = useState<{ result: Preview; source: ImportSource; requestKey: string } | null>(null)
+  const preview = checked?.result
+  const revision = useRef(0)
+  const [reading, setReading] = useState(false)
   const [pending, setPending] = useState(false)
   const [error, setError] = useState('')
   const mutation = useQuestionBankCommand()
+  useEffect(
+    () => () => {
+      revision.current++
+    },
+    []
+  )
   function invalidate() {
-    setPreview(null)
-    setRequestKey('')
+    revision.current++
+    setChecked(null)
+    setReading(false)
+    setPending(false)
     setError('')
   }
   async function readFile(file?: File) {
@@ -49,34 +60,45 @@ export function ImportWorkbench({ banks, batches }: { banks: Bank[]; batches: Bo
       setError('请选择 CSV 或 JSON 文件')
       return
     }
+    const current = revision.current
+    setReading(true)
     try {
+      const contents = await file.text()
+      if (current !== revision.current) return
       setFormat(nextFormat)
       setFileName(file.name)
-      setText(await file.text())
+      setText(contents)
     } catch {
-      setError('文件读取失败')
+      if (current === revision.current) setError('文件读取失败')
+    } finally {
+      if (current === revision.current) setReading(false)
     }
   }
   async function check() {
+    const current = ++revision.current
+    const source = { bankId, format, text, fileName }
     setPending(true)
     setError('')
-    setPreview(null)
+    setChecked(null)
     try {
-      const result = await previewQuestionImportFn({ data: { bankId, format, text, fileName } })
-      setPreview(result)
-      setRequestKey(crypto.randomUUID())
+      const result = await previewQuestionImportFn({ data: source })
+      if (current !== revision.current) return
+      setChecked({ result, source, requestKey: crypto.randomUUID() })
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : '校验失败')
+      if (current === revision.current) setError(cause instanceof Error ? cause.message : '校验失败')
     } finally {
-      setPending(false)
+      if (current === revision.current) setPending(false)
     }
   }
   async function confirmImport() {
+    if (!checked) return
+    const current = revision.current
     try {
-      await mutation.mutateAsync({ action: 'confirmImport', bankId, format, text, fileName, requestKey })
-      setPreview(null)
-      setRequestKey('')
-      setText('')
+      await mutation.mutateAsync({ action: 'confirmImport', ...checked.source, requestKey: checked.requestKey })
+      if (current === revision.current) {
+        invalidate()
+        setText('')
+      }
     } catch {
       /* Keep the same request key so a retry is idempotent. */
     }
@@ -109,6 +131,7 @@ export function ImportWorkbench({ banks, batches }: { banks: Bank[]; batches: Bo
               <select
                 className={selectClass}
                 value={bankId}
+                disabled={mutation.isPending}
                 onChange={(event) => {
                   setBankId(event.target.value)
                   invalidate()
@@ -127,6 +150,7 @@ export function ImportWorkbench({ banks, batches }: { banks: Bank[]; batches: Bo
               <select
                 className={selectClass}
                 value={format}
+                disabled={mutation.isPending}
                 onChange={(event) => {
                   const next = event.target.value as 'csv' | 'json'
                   setFormat(next)
@@ -142,6 +166,7 @@ export function ImportWorkbench({ banks, batches }: { banks: Bank[]; batches: Bo
               <Input
                 type='file'
                 accept='.csv,.json'
+                disabled={mutation.isPending}
                 onChange={(event) => {
                   void readFile(event.target.files?.[0])
                   event.target.value = ''
@@ -154,6 +179,7 @@ export function ImportWorkbench({ banks, batches }: { banks: Bank[]; batches: Bo
               rows={8}
               value={text}
               maxLength={5_000_000}
+              disabled={mutation.isPending}
               onChange={(event) => {
                 setText(event.target.value)
                 invalidate()
@@ -161,8 +187,8 @@ export function ImportWorkbench({ banks, batches }: { banks: Bank[]; batches: Bo
               placeholder='上传文件，或在此粘贴模板格式的内容'
             />
           </Field>
-          <Button onClick={() => void check()} disabled={pending || mutation.isPending || !bankId || !text}>
-            {pending ? '正在校验…' : '校验并预览'}
+          <Button onClick={() => void check()} disabled={reading || pending || mutation.isPending || !bankId || !text}>
+            {reading ? '正在读取文件…' : pending ? '正在校验…' : '校验并预览'}
           </Button>
           {error && (
             <p role='alert' className='text-destructive'>

@@ -5,6 +5,7 @@ import { QuestionEditor } from './question-editor'
 
 const { mutate } = vi.hoisted(() => ({ mutate: vi.fn() }))
 vi.mock('../shared/hooks', () => ({ useQuestionBankCommand: () => ({ mutateAsync: mutate, isPending: false }) }))
+vi.mock('@tanstack/react-router', () => ({ useBlocker: () => ({ status: 'idle' }) }))
 
 const bank = {
   id: 'bank',
@@ -25,6 +26,18 @@ beforeEach(() => {
 })
 
 describe('manual question entry', () => {
+  it('keeps manually entered content until discarding it is confirmed', () => {
+    const onCancel = vi.fn()
+    render(<QuestionEditor banks={[bank]} initialBankId='bank' onSaved={() => {}} onCancel={onCancel} />)
+    fireEvent.change(screen.getByLabelText('题干'), { target: { value: '保留这道未保存的题目' } })
+    fireEvent.click(screen.getByRole('button', { name: '返回列表' }))
+    expect(onCancel).not.toHaveBeenCalled()
+    fireEvent.click(screen.getByRole('button', { name: '继续编辑' }))
+    expect(screen.getByLabelText('题干')).toHaveValue('保留这道未保存的题目')
+    fireEvent.click(screen.getByRole('button', { name: '返回列表' }))
+    fireEvent.click(screen.getByRole('button', { name: '放弃修改并离开' }))
+    expect(onCancel).toHaveBeenCalledTimes(1)
+  })
   it('saves entered content, classification and usable state through the authenticated command', async () => {
     const onSaved = vi.fn()
     render(<QuestionEditor banks={[bank]} initialBankId='bank' onSaved={onSaved} onCancel={() => {}} />)
