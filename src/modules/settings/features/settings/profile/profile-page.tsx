@@ -3,7 +3,7 @@ import { ProfileForm } from './profile-form'
 
 export function SettingsProfile(): React.ReactElement {
   return (
-    <ContentSection title='Profile' desc='This is how others will see you on the site.'>
+    <ContentSection title='个人资料' desc='管理您的显示名称和头像，让账号资料保持最新。'>
       <ProfileForm />
     </ContentSection>
   )

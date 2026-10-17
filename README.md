@@ -60,3 +60,8 @@ pnpm baseline         # lint + typecheck + test + build
 ```
 
 数据库相关：`pnpm db:merge` / `db:gen` / `db:migrate` / `db:deploy` / `db:seed`。
+
+## 个人资料
+
+登录后访问 `/settings`，可修改当前账号的显示名称和头像地址。头像支持公开可访问的 HTTP(S) 图片地址，清空后使用名称缩写。登录邮箱只读；修改通过 Better Auth 的当前用户接口保存，并刷新当前用户和会话缓存。保存失败会保留编辑内容，可直接重试或撤销修改。
+
