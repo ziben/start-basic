@@ -1,7 +1,13 @@
 import { z } from 'zod'
 import { createServerFn } from '@tanstack/react-start'
 import { requireUser } from '~/modules/auth/shared/lib/require-auth'
-import { commandSchema, idSchema, importInputSchema, questionSearchSchema } from '../domain'
+import {
+  commandSchema,
+  idSchema,
+  importInputSchema,
+  paperSearchSchema,
+  questionSearchSchema,
+} from '../domain'
 
 const QuestionBankBootstrapSchema = z.object({}).strict()
 
@@ -35,6 +41,14 @@ export const getQuestionPaperFn = createServerFn({ method: 'GET' })
     const user = await requireUser()
     const { QuestionBankService } = await import('../services/question-bank.service')
     return QuestionBankService.getPaper(user, data.id)
+  })
+
+export const listQuestionPapersFn = createServerFn({ method: 'GET' })
+  .validator(paperSearchSchema.optional())
+  .handler(async ({ data }) => {
+    const user = await requireUser()
+    const { QuestionBankService } = await import('../services/question-bank.service')
+    return QuestionBankService.listPapers(user, data ?? {})
   })
 
 export const previewQuestionImportFn = createServerFn({ method: 'POST' })

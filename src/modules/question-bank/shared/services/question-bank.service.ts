@@ -6,6 +6,7 @@ import {
   canManagePublic,
   commandSchema,
   importInputSchema,
+  paperSearchSchema,
   questionContentSchema,
   questionSearchSchema,
   type QuestionActor,
@@ -203,6 +204,35 @@ async function getPaper(actor: QuestionActor, id: string) {
   })
   if (!paper) throw new Error('试卷不存在或没有访问权限')
   return presentPaper(paper)
+}
+
+// 按标题在当前用户全部未归档试卷中做服务端分页检索，弥补 bootstrap 只取最近 200 份的窗口限制。
+async function listPapers(actor: QuestionActor, raw: unknown) {
+  const input = paperSearchSchema.parse(raw)
+  const db = await getDb()
+  const keyword = input.filter.trim()
+  const where: Prisma.QuestionPaperWhereInput = {
+    ownerId: actor.id,
+    archived: false,
+    ...(keyword ? { title: { contains: keyword, mode: 'insensitive' } } : {}),
+  }
+  const [total, items] = await Promise.all([
+    db.questionPaper.count({ where }),
+    db.questionPaper.findMany({
+      where,
+      orderBy: [{ updatedAt: 'desc' }, { id: 'desc' }],
+      skip: (input.page - 1) * input.pageSize,
+      take: input.pageSize,
+      select: { id: true, title: true, version: true, updatedAt: true },
+    }),
+  ])
+  return {
+    items,
+    total,
+    page: input.page,
+    pageSize: input.pageSize,
+    pageCount: Math.ceil(total / input.pageSize),
+  }
 }
 
 async function previewImport(actor: QuestionActor, raw: unknown) {
@@ -494,4 +524,4 @@ async function command(actor: QuestionActor, raw: unknown): Promise<{ id?: strin
   }
 }
 
-export const QuestionBankService = { bootstrap, search, getQuestion, getPaper, previewImport, command }
+export const QuestionBankService = { bootstrap, search, listPapers, getQuestion, getPaper, previewImport, command }

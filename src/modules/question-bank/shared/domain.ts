@@ -123,6 +123,11 @@ export const questionSearchSchema = z.object({
   status: z.enum(['', 'DRAFT', 'READY', 'DISABLED']).default(''),
   page: z.number().int().min(1).max(100_000).default(1),
 })
+export const paperSearchSchema = z.object({
+  page: z.number().int().min(1).max(100_000).default(1),
+  pageSize: z.number().int().min(1).max(50).default(10),
+  filter: text.max(100).default(''),
+})
 export const paperInputSchema = z
   .object({
     id: idSchema.optional(),

@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react'
+import { useDeferredValue, useState, type FormEvent } from 'react'
 import { Link } from '@tanstack/react-router'
 import { BookOpen, FileText, Library, Plus, Search, Upload } from 'lucide-react'
 import { toast } from 'sonner'
@@ -13,12 +13,15 @@ import { ImportWorkbench } from './components/import-workbench'
 import { PaperEditor, draftFromPaper, paperFromSelection, type PaperDraft } from './components/paper-editor'
 import { QuestionContentView } from './components/question-content'
 import { QuestionEditor } from './components/question-editor'
-import { questionSearchSchema, questionTypes, stageLabels, statusLabels } from './shared/domain'
+import { paperSearchSchema, questionSearchSchema, questionTypes, stageLabels, statusLabels } from './shared/domain'
 import {
   useBankQuestions,
   useQuestionBankBootstrap,
   useQuestionBankCommand,
+  useQuestionPapers,
   type Bootstrap,
+  type PaperListItem,
+  type QuestionBankCommandMutation,
   type QuestionRow,
 } from './shared/hooks'
 import { getQuestionPaperFn } from './shared/server-fns/question-bank.fn'
@@ -56,7 +59,6 @@ function Workspace({ data, view }: { data: Bootstrap; view: BankView }) {
   const [paperTarget, setPaperTarget] = useState('')
   const [editor, setEditor] = useState<{ bankId: string; question?: QuestionRow } | null>(null)
   const [paperDraft, setPaperDraft] = useState<PaperDraft | null>(null)
-  const [archivePaperTarget, setArchivePaperTarget] = useState<Bootstrap['papers'][number] | null>(null)
   const [assembling, setAssembling] = useState(false)
   const [renderedView, setRenderedView] = useState(view)
   // Reset editors only after navigation has passed the unsaved changes guard.
@@ -110,19 +112,6 @@ function Workspace({ data, view }: { data: Bootstrap; view: BankView }) {
       setAssembling(false)
     }
   }
-  async function archivePaper() {
-    if (!archivePaperTarget) return
-    try {
-      await mutation.mutateAsync({
-        action: 'archivePaper',
-        id: archivePaperTarget.id,
-        version: archivePaperTarget.version,
-      })
-      setArchivePaperTarget(null)
-    } catch {
-      /* Keep the selected paper available for retry. */
-    }
-  }
   return (
     <div className='space-y-5'>
       <header className='flex flex-wrap items-start justify-between gap-3'>
@@ -171,62 +160,7 @@ function Workspace({ data, view }: { data: Bootstrap; view: BankView }) {
       ) : view === 'import' ? (
         <ImportWorkbench banks={editableBanks} batches={data.batches} />
       ) : view === 'papers' ? (
-        <Card>
-          <CardHeader>
-            <CardTitle>我的试卷</CardTitle>
-          </CardHeader>
-          <CardContent className='space-y-3'>
-            <p className='text-sm text-muted-foreground'>在题库中选择可用题目后组卷。此处显示最近 200 份未归档试卷。</p>
-            {data.papers.map((paper) => (
-              <div key={paper.id} className='flex flex-wrap items-center justify-between gap-3 rounded-md border p-4'>
-                <div>
-                  <Link
-                    to='/question-bank/papers/$paperId'
-                    params={{ paperId: paper.id }}
-                    className='font-medium underline underline-offset-4'
-                  >
-                    {paper.title}
-                  </Link>
-                  <p className='mt-1 text-xs text-muted-foreground'>
-                    {new Date(paper.updatedAt).toLocaleString('zh-CN')}
-                  </p>
-                </div>
-                <div className='flex gap-2'>
-                  <Button
-                    size='sm'
-                    variant='outline'
-                    disabled={mutation.isPending}
-                    onClick={() => mutation.mutate({ action: 'copyPaper', id: paper.id })}
-                  >
-                    复制
-                  </Button>
-                  <Button
-                    size='sm'
-                    variant='ghost'
-                    disabled={mutation.isPending}
-                    onClick={() => setArchivePaperTarget(paper)}
-                  >
-                    归档
-                  </Button>
-                </div>
-              </div>
-            ))}
-            {!data.papers.length && <p className='text-sm text-muted-foreground'>暂无试卷，请先选题组卷。</p>}
-            <ConfirmDialog
-              open={!!archivePaperTarget}
-              onOpenChange={(open) => {
-                if (!open && !mutation.isPending) setArchivePaperTarget(null)
-              }}
-              title='确认归档试卷'
-              desc={`归档后“${archivePaperTarget?.title ?? ''}”将不再出现在试卷列表，试卷内容和题目快照会保留。`}
-              cancelBtnText='取消'
-              confirmText={mutation.isPending ? '正在归档…' : '确认归档'}
-              destructive
-              isLoading={mutation.isPending}
-              handleConfirm={() => void archivePaper()}
-            />
-          </CardContent>
-        </Card>
+        <PapersPanel mutation={mutation} />
       ) : (
         <>
           {(view === 'mine' || maintenance) && <BankManager banks={banks} scope={scope} onSelect={selectBank} />}
@@ -501,20 +435,7 @@ function Workspace({ data, view }: { data: Bootstrap; view: BankView }) {
                       </Button>
                     </div>
                   ))}
-                  <Field label='组卷目标'>
-                    <select
-                      className={selectClass}
-                      value={paperTarget}
-                      onChange={(event) => setPaperTarget(event.target.value)}
-                    >
-                      <option value=''>新建试卷</option>
-                      {data.papers.map((paper) => (
-                        <option key={paper.id} value={paper.id}>
-                          {paper.title}
-                        </option>
-                      ))}
-                    </select>
-                  </Field>
+                  <PaperTargetPicker value={paperTarget} onChange={setPaperTarget} />
                   <Button className='w-full' disabled={!basket.length || assembling} onClick={() => void compose()}>
                     {assembling ? '正在准备…' : '进入组卷编辑'}
                   </Button>
@@ -530,5 +451,153 @@ function Workspace({ data, view }: { data: Bootstrap; view: BankView }) {
         </>
       )}
     </div>
+  )
+}
+
+function PapersPanel({ mutation }: { mutation: QuestionBankCommandMutation }) {
+  const [searchText, setSearchText] = useState('')
+  const [filter, setFilter] = useState('')
+  const [page, setPage] = useState(1)
+  const [archiveTarget, setArchiveTarget] = useState<PaperListItem | null>(null)
+  const query = useQuestionPapers(paperSearchSchema.parse({ page, pageSize: 10, filter }))
+  const papers = query.data?.items ?? []
+  const pageCount = query.data?.pageCount ?? 1
+
+  function submitSearch(event: FormEvent) {
+    event.preventDefault()
+    setFilter(searchText.trim())
+    setPage(1)
+  }
+
+  async function archivePaper() {
+    if (!archiveTarget) return
+    try {
+      await mutation.mutateAsync({ action: 'archivePaper', id: archiveTarget.id, version: archiveTarget.version })
+      setArchiveTarget(null)
+    } catch {
+      /* 归档失败时保留目标，可重试或取消。 */
+    }
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>我的试卷</CardTitle>
+      </CardHeader>
+      <CardContent className='space-y-3'>
+        <form onSubmit={submitSearch} className='flex gap-2'>
+          <Input
+            value={searchText}
+            onChange={(event) => setSearchText(event.target.value)}
+            placeholder='按标题检索全部未归档试卷'
+            className='max-w-xs'
+          />
+          <Button type='submit' variant='outline' size='sm' disabled={query.isFetching}>
+            <Search className='mr-1 h-4 w-4' />
+            搜索
+          </Button>
+        </form>
+        {query.isLoading ? (
+          <p className='text-sm text-muted-foreground'>正在加载试卷…</p>
+        ) : papers.length ? (
+          <>
+            {papers.map((paper) => (
+              <div key={paper.id} className='flex flex-wrap items-center justify-between gap-3 rounded-md border p-4'>
+                <div>
+                  <Link
+                    to='/question-bank/papers/$paperId'
+                    params={{ paperId: paper.id }}
+                    className='font-medium underline underline-offset-4'
+                  >
+                    {paper.title}
+                  </Link>
+                  <p className='mt-1 text-xs text-muted-foreground'>
+                    {new Date(paper.updatedAt).toLocaleString('zh-CN')}
+                  </p>
+                </div>
+                <div className='flex gap-2'>
+                  <Button
+                    size='sm'
+                    variant='outline'
+                    disabled={mutation.isPending}
+                    onClick={() => mutation.mutate({ action: 'copyPaper', id: paper.id })}
+                  >
+                    复制
+                  </Button>
+                  <Button size='sm' variant='ghost' disabled={mutation.isPending} onClick={() => setArchiveTarget(paper)}>
+                    归档
+                  </Button>
+                </div>
+              </div>
+            ))}
+            <div className='flex items-center justify-between text-sm text-muted-foreground'>
+              <span>
+                第 {query.data?.page ?? 1} / {pageCount} 页，共 {query.data?.total ?? 0} 份
+              </span>
+              <div className='flex gap-2'>
+                <Button size='sm' variant='outline' disabled={page <= 1 || query.isFetching} onClick={() => setPage(page - 1)}>
+                  上一页
+                </Button>
+                <Button
+                  size='sm'
+                  variant='outline'
+                  disabled={page >= pageCount || query.isFetching}
+                  onClick={() => setPage(page + 1)}
+                >
+                  下一页
+                </Button>
+              </div>
+            </div>
+          </>
+        ) : (
+          <p className='text-sm text-muted-foreground'>
+            {filter ? '没有匹配的未归档试卷，可调整关键词后重试。' : '暂无试卷，请先选题组卷。'}
+          </p>
+        )}
+        <ConfirmDialog
+          open={!!archiveTarget}
+          onOpenChange={(open) => {
+            if (!open && !mutation.isPending) setArchiveTarget(null)
+          }}
+          title='确认归档试卷'
+          desc={`归档后“${archiveTarget?.title ?? ''}”将不再出现在试卷列表，试卷内容和题目快照会保留。`}
+          cancelBtnText='取消'
+          confirmText={mutation.isPending ? '正在归档…' : '确认归档'}
+          destructive
+          isLoading={mutation.isPending}
+          handleConfirm={() => void archivePaper()}
+        />
+      </CardContent>
+    </Card>
+  )
+}
+
+function PaperTargetPicker({ value, onChange }: { value: string; onChange: (value: string) => void }) {
+  const [keyword, setKeyword] = useState('')
+  const deferredKeyword = useDeferredValue(keyword)
+  const query = useQuestionPapers(paperSearchSchema.parse({ page: 1, pageSize: 20, filter: deferredKeyword }))
+  const papers = query.data?.items ?? []
+  const selectedMissing = value && !papers.some((paper) => paper.id === value)
+
+  return (
+    <Field label='组卷目标'>
+      <div className='space-y-2'>
+        <Input
+          value={keyword}
+          onChange={(event) => setKeyword(event.target.value)}
+          placeholder='搜索历史试卷作为追加目标'
+          className='h-8 text-sm'
+        />
+        <select className={selectClass} value={value} onChange={(event) => onChange(event.target.value)}>
+          <option value=''>新建试卷</option>
+          {selectedMissing && <option value={value}>已选试卷（不在当前结果中）</option>}
+          {papers.map((paper) => (
+            <option key={paper.id} value={paper.id}>
+              {paper.title}
+            </option>
+          ))}
+        </select>
+      </div>
+    </Field>
   )
 }
