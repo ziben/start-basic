@@ -151,8 +151,9 @@ export const HealthReportService = {
             rightMetric?.rawName ??
             code,
           unit: leftMetric?.unit ?? rightMetric?.unit ?? null,
-          left: toComparableMetric(leftMetric, rightMetric?.unit),
-          right: toComparableMetric(rightMetric, leftMetric?.unit),
+          comparable: compatibleUnits(leftMetric?.unit, rightMetric?.unit),
+          left: toMetricSide(leftMetric),
+          right: toMetricSide(rightMetric),
         }
       }),
     }
@@ -234,7 +235,7 @@ function toListItem(report: {
   }
 }
 
-function toComparableMetric(
+function toMetricSide(
   metric:
     | {
         valueText: string
@@ -242,10 +243,9 @@ function toComparableMetric(
         unit: string | null
         flag: string
       }
-    | undefined,
-  otherUnit: string | null | undefined
+    | undefined
 ) {
-  if (!metric || !compatibleUnits(metric.unit, otherUnit)) return null
+  if (!metric) return null
   return {
     valueText: metric.valueText,
     numericValue: metric.numericValue,

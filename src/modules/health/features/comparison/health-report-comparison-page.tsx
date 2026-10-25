@@ -110,8 +110,15 @@ export function HealthReportComparisonPage(): ReactElement {
               <TableBody>
                 {comparison.data.metrics.map((metric) => (
                   <TableRow key={metric.code}>
-                    <TableCell className='font-medium'>{metric.name}</TableCell>
-                    <TableCell>{metric.unit ?? '-'}</TableCell>
+                    <TableCell className='font-medium'>
+                      <span>{metric.name}</span>
+                      {!metric.comparable && (
+                        <span className='ml-2 text-xs text-amber-600 dark:text-amber-400'>
+                          单位不一致，不可直接比较
+                        </span>
+                      )}
+                    </TableCell>
+                    <TableCell>{formatUnits(metric.left?.unit ?? null, metric.right?.unit ?? null)}</TableCell>
                     <MetricCell metric={metric.left} />
                     <MetricCell metric={metric.right} />
                   </TableRow>
@@ -150,11 +157,12 @@ function SelectField({
   )
 }
 
-function MetricCell({ metric }: { metric: { valueText: string; flag: string } | null }): ReactElement {
-  if (!metric) return <TableCell>-</TableCell>
+function MetricCell({ metric }: { metric: { valueText: string; unit: string | null; flag: string } | null }) {
+  if (!metric) return <TableCell className='text-muted-foreground'>本期缺项</TableCell>
   return (
     <TableCell>
       <span className='mr-2'>{metric.valueText}</span>
+      {metric.unit && <span className='mr-2 text-xs text-muted-foreground'>{metric.unit}</span>}
       <Badge variant={metric.flag === 'NORMAL' ? 'outline' : 'destructive'}>{formatFlag(metric.flag)}</Badge>
     </TableCell>
   )
@@ -162,6 +170,11 @@ function MetricCell({ metric }: { metric: { valueText: string; flag: string } | 
 
 function formatDate(value: Date | string | null): string {
   return value ? new Date(value).toLocaleDateString('zh-CN') : '未填写日期'
+}
+
+function formatUnits(left: string | null, right: string | null): string {
+  if (left && right) return left === right ? left : `${left} / ${right}`
+  return left ?? right ?? '-'
 }
 
 function formatFlag(flag: string): string {
