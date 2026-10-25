@@ -5,6 +5,7 @@ import {
   getConversationMsgsFn,
   createConversationFn,
   deleteConversationFn,
+  renameConversationFn,
 } from '../server-fns/ai-chat.fn'
 
 export function useConversationsQuery() {
@@ -31,6 +32,17 @@ export function useDeleteConversation() {
     mutationFn: (conversationId: string) => deleteConversationFn({ data: { conversationId } }),
     onSuccess: (_, conversationId) => {
       queryClient.removeQueries({ queryKey: ['ai', 'messages', conversationId], exact: true })
+      queryClient.invalidateQueries({ queryKey: ['ai', 'conversations'] })
+    },
+  })
+}
+
+export function useRenameConversation() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ conversationId, title }: { conversationId: string; title: string }) =>
+      renameConversationFn({ data: { conversationId, title } }),
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['ai', 'conversations'] })
     },
   })

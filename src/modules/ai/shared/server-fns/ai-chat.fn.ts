@@ -32,6 +32,18 @@ export const createConversationFn = createServerFn({ method: 'POST' })
     return AiChatService.createConversation(userId, data.title)
   })
 
+export const RenameConversationSchema = z.object({
+  conversationId: z.string().min(1),
+  title: z.string().trim().min(1, '标题不能为空').max(100, '标题最多 100 个字符'),
+})
+
+export const renameConversationFn = createServerFn({ method: 'POST' })
+  .validator(RenameConversationSchema)
+  .handler(async ({ data }) => {
+    const userId = await requireUserId()
+    return AiChatService.renameConversation(data.conversationId, userId, data.title)
+  })
+
 export const deleteConversationFn = createServerFn({ method: 'POST' })
   .validator(z.object({ conversationId: z.string().min(1) }))
   .handler(async ({ data }) => {

@@ -55,6 +55,24 @@ export class AiChatService {
   }
 
   /**
+   * 重命名对话（仅会话所有者可操作）
+   */
+  static async renameConversation(conversationId: string, userId: string, title: string) {
+    const db = await getDb()
+    const conv = await db.aIConversation.findFirst({
+      where: { id: conversationId, userId },
+      select: { id: true },
+    })
+    if (!conv) {
+      throw new Error('Conversation not found')
+    }
+    return db.aIConversation.update({
+      where: { id: conversationId },
+      data: { title },
+    })
+  }
+
+  /**
    * 删除对话
    */
   static async deleteConversation(conversationId: string, userId: string) {

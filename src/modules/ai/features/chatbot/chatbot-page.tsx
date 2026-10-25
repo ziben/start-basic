@@ -12,6 +12,7 @@ import {
   useConversationMessagesQuery,
   useConversationsQuery,
   useDeleteConversation,
+  useRenameConversation,
 } from '~/modules/ai/shared/hooks/use-chat-history'
 import { cn } from '~/shared/lib/utils'
 import {
@@ -60,6 +61,8 @@ function ConversationSkeleton() {
 }
 
 // ─── 子组件：单条对话 Item ────────────────────────────────────────────────────
+type RenameResult = { ok: true } | { ok: false; error: string }
+
 
 interface ConvItemProps {
   id: string
@@ -68,20 +71,36 @@ interface ConvItemProps {
   isActive: boolean
   onSelect: () => void
   onDelete: () => void
-  onRename: (newTitle: string) => void
+  onRename: (newTitle: string) => Promise<RenameResult>
 }
 
 function ConvItem({ id, title, updatedAt, isActive, onSelect, onDelete, onRename }: ConvItemProps) {
   const [editing, setEditing] = useState(false)
   const [editValue, setEditValue] = useState(title)
+  const [renameError, setRenameError] = useState<string | null>(null)
+  const [isRenaming, setIsRenaming] = useState(false)
 
-  const commitRename = () => {
+  const cancelRename = () => {
+    setEditValue(title)
+    setRenameError(null)
+    setEditing(false)
+  }
+
+  const commitRename = async () => {
+    if (isRenaming) return
     const trimmed = editValue.trim()
-    if (trimmed && trimmed !== title) {
-      onRename(trimmed)
-    } else {
-      setEditValue(title)
+    if (!trimmed || trimmed === title) {
+      cancelRename()
+      return
     }
+    setIsRenaming(true)
+    const result = await onRename(trimmed)
+    setIsRenaming(false)
+    if (!result.ok) {
+      setRenameError(result.error)
+      return
+    }
+    setRenameError(null)
     setEditing(false)
   }
 
@@ -99,21 +118,23 @@ function ConvItem({ id, title, updatedAt, isActive, onSelect, onDelete, onRename
 
       <div className='min-w-0 flex-1'>
         {editing ? (
-          <Input
-            autoFocus
-            value={editValue}
-            onChange={(e) => setEditValue(e.target.value)}
-            onBlur={commitRename}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') commitRename()
-              if (e.key === 'Escape') {
-                setEditValue(title)
-                setEditing(false)
-              }
-            }}
-            onClick={(e) => e.stopPropagation()}
-            className='h-6 rounded px-1.5 py-0 text-xs'
-          />
+          <div className='w-full'>
+            <Input
+              autoFocus
+              disabled={isRenaming}
+              value={editValue}
+              onChange={(e) => setEditValue(e.target.value)}
+              onBlur={() => void commitRename()}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') void commitRename()
+                if (e.key === 'Escape') cancelRename()
+              }}
+              onClick={(e) => e.stopPropagation()}
+              className='h-6 rounded px-1.5 py-0 text-xs'
+            />
+            {renameError && <p className='mt-1 text-[11px] text-destructive'>{renameError}</p>}
+            {isRenaming && <p className='mt-1 text-[11px] text-muted-foreground'>保存中…</p>}
+          </div>
         ) : (
           <>
             <p className='truncate text-sm leading-tight font-medium'>{title}</p>
@@ -174,6 +195,7 @@ export function ChatbotPage() {
   const conversations = conversationPages?.pages.flat()
   const { data: messages, isLoading: isLoadingMessages } = useConversationMessagesQuery(activeConversationId)
   const { mutate: deleteConversation, isPending: isDeleting } = useDeleteConversation()
+  const { mutateAsync: renameConversation } = useRenameConversation()
 
   const activeTitle = activeConversationId
     ? (conversations?.find((c) => c.id === activeConversationId)?.title ?? '对话')
@@ -207,11 +229,18 @@ export function ChatbotPage() {
   }
 
   const handleRename = useCallback(
-    async (_id: string, _newTitle: string) => {
-      // TODO: 实现重命名 API，目前仅本地刷新
-      refreshConversations()
+    async (id: string, newTitle: string): Promise<RenameResult> => {
+      try {
+        await renameConversation({ conversationId: id, title: newTitle })
+        return { ok: true }
+      } catch (error) {
+        return {
+          ok: false,
+          error: error instanceof Error && error.message ? error.message : '重命名失败，请重试',
+        }
+      }
     },
-    [refreshConversations]
+    [renameConversation]
   )
 
   // DB 消息 → UIMessage 格式
