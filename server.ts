@@ -641,7 +641,13 @@ async function initializeServer() {
   const shutdown = async (signal: string) => {
     log.warning(`\nReceived ${signal}, shutting down gracefully...`)
     server.stop()
-    await flushLogs()
+    const flushResult = await flushLogs()
+    const remaining = flushResult.remainingSystem + flushResult.remainingAudit
+    if (remaining > 0) {
+      log.warning(
+        `日志队列退出时尚有 ${remaining} 条未写入数据库（system=${flushResult.remainingSystem}, audit=${flushResult.remainingAudit}），本地 JSONL 副本保留可离线恢复`
+      )
+    }
     log.success('Server stopped')
     process.exit(0)
   }

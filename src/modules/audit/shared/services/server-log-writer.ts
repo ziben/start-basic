@@ -39,10 +39,17 @@ function getLogMaxBodyBytes(): number {
   return getRuntimeConfig('log.maxBodyBytes')
 }
 
+export interface LogQueueStats {
+  droppedOverflow: number
+  dbWriteFailures: number
+  localWriteFailures: number
+}
+
 type QueueState = {
   system: Array<Omit<SystemLogInput, 'meta'> & { meta?: Prisma.InputJsonValue | null; createdAt: Date }>
   audit: Array<Omit<AuditLogInput, 'meta'> & { meta?: Prisma.InputJsonValue | null; createdAt: Date }>
   scheduled: boolean
+  stats: LogQueueStats
 }
 
 const MAX_PENDING_LOGS = 5000
@@ -51,15 +58,31 @@ const globalForLogs = globalThis as unknown as { __logQueue?: QueueState }
 
 function getQueue(): QueueState {
   if (!globalForLogs.__logQueue) {
-    globalForLogs.__logQueue = { system: [], audit: [], scheduled: false }
+    globalForLogs.__logQueue = {
+      system: [],
+      audit: [],
+      scheduled: false,
+      stats: { droppedOverflow: 0, dbWriteFailures: 0, localWriteFailures: 0 },
+    }
   }
   return globalForLogs.__logQueue
 }
 
-function enqueue<T>(queue: T[], entry: T) {
+export function getLogQueueStats(): { pendingSystem: number; pendingAudit: number } & LogQueueStats {
+  const queue = getQueue()
+  return {
+    pendingSystem: queue.system.length,
+    pendingAudit: queue.audit.length,
+    ...queue.stats,
+  }
+}
+
+function enqueue<T>(queue: T[], entry: T, stats: { droppedOverflow: number }) {
   queue.push(entry)
   if (queue.length > MAX_PENDING_LOGS) {
-    queue.splice(0, queue.length - MAX_PENDING_LOGS)
+    const dropped = queue.length - MAX_PENDING_LOGS
+    queue.splice(0, dropped)
+    stats.droppedOverflow += dropped
   }
 }
 
@@ -237,6 +260,7 @@ export async function writeSystemLog(input: SystemLogInput) {
   const now = new Date()
   if (!shouldSample(input.level)) return
 
+  const queue = getQueue()
   const dir = await ensureLogsDir()
   const filePath = path.join(dir, `system-${toDateKey(now)}-${input.level}.jsonl`)
 
@@ -254,20 +278,24 @@ export async function writeSystemLog(input: SystemLogInput) {
   try {
     await appendJsonl(filePath, entry)
   } catch {
-    // ignore
+    queue.stats.localWriteFailures += 1
   }
 
-  const queue = getQueue()
-  enqueue(queue.system, {
-    ...normalized,
-    meta: normalized.meta ?? null,
-    createdAt: now,
-  })
+  enqueue(
+    queue.system,
+    {
+      ...normalized,
+      meta: normalized.meta ?? null,
+      createdAt: now,
+    },
+    queue.stats
+  )
   scheduleFlush()
 }
 
 export async function writeAuditLog(input: AuditLogInput) {
   const now = new Date()
+  const queue = getQueue()
   const dir = await ensureLogsDir()
   const filePath = path.join(dir, `audit-${toDateKey(now)}.jsonl`)
 
@@ -287,15 +315,18 @@ export async function writeAuditLog(input: AuditLogInput) {
   try {
     await appendJsonl(filePath, entry)
   } catch {
-    // ignore
+    queue.stats.localWriteFailures += 1
   }
 
-  const queue = getQueue()
-  enqueue(queue.audit, {
-    ...normalized,
-    meta: normalized.meta ?? null,
-    createdAt: now,
-  })
+  enqueue(
+    queue.audit,
+    {
+      ...normalized,
+      meta: normalized.meta ?? null,
+      createdAt: now,
+    },
+    queue.stats
+  )
   scheduleFlush()
 }
 
@@ -316,14 +347,16 @@ function scheduleFlush() {
   }, 100)
 }
 
-export async function flushLogs() {
+export async function flushLogs(): Promise<{ remainingSystem: number; remainingAudit: number }> {
   for (let attempt = 0; attempt < 25; attempt += 1) {
     const queue = getQueue()
-    if (queue.system.length === 0 && queue.audit.length === 0) return
+    if (queue.system.length === 0 && queue.audit.length === 0) break
     const before = queue.system.length + queue.audit.length
     await flushDb()
-    if (queue.system.length + queue.audit.length >= before) return
+    if (queue.system.length + queue.audit.length >= before) break
   }
+  const queue = getQueue()
+  return { remainingSystem: queue.system.length, remainingAudit: queue.audit.length }
 }
 
 async function flushDb() {
@@ -352,9 +385,12 @@ async function flushDb() {
         })),
       })
     } catch {
+      queue.stats.dbWriteFailures += 1
       queue.system.unshift(...system)
       if (queue.system.length > MAX_PENDING_LOGS) {
-        queue.system.splice(0, queue.system.length - MAX_PENDING_LOGS)
+        const dropped = queue.system.length - MAX_PENDING_LOGS
+        queue.system.splice(0, dropped)
+        queue.stats.droppedOverflow += dropped
       }
     }
   }
@@ -379,9 +415,12 @@ async function flushDb() {
         })),
       })
     } catch {
+      queue.stats.dbWriteFailures += 1
       queue.audit.unshift(...audit)
       if (queue.audit.length > MAX_PENDING_LOGS) {
-        queue.audit.splice(0, queue.audit.length - MAX_PENDING_LOGS)
+        const dropped = queue.audit.length - MAX_PENDING_LOGS
+        queue.audit.splice(0, dropped)
+        queue.stats.droppedOverflow += dropped
       }
     }
   }
