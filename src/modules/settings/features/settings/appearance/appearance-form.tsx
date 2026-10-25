@@ -1,7 +1,6 @@
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { showSubmittedData } from '@/shared/utils/show-submitted-data'
 import { useTheme } from '@/shared/context/theme-provider'
 import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
@@ -27,7 +26,6 @@ export function AppearanceForm(): React.ReactElement {
 
   function onSubmit(data: AppearanceFormValues): void {
     if (data.theme !== theme) setTheme(data.theme)
-    showSubmittedData(data)
   }
 
   return (

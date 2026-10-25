@@ -1,98 +1,34 @@
-import { z } from 'zod'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { showSubmittedData } from '@/shared/utils/show-submitted-data'
-import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-
-const items = [
-  {
-    id: 'recents',
-    label: 'Recents',
-  },
-  {
-    id: 'home',
-    label: 'Home',
-  },
-  {
-    id: 'applications',
-    label: 'Applications',
-  },
-  {
-    id: 'desktop',
-    label: 'Desktop',
-  },
-  {
-    id: 'downloads',
-    label: 'Downloads',
-  },
-  {
-    id: 'documents',
-    label: 'Documents',
-  },
-] as const
-
-const displayFormSchema = z.object({
-  items: z.array(z.string()).refine((value) => value.some((item) => item), {
-    message: 'You have to select at least one item.',
-  }),
-})
-
-type DisplayFormValues = z.infer<typeof displayFormSchema>
-
-const defaultValues: Partial<DisplayFormValues> = {
-  items: ['recents', 'home'],
-}
+import { Label } from '@/components/ui/label'
 
 export function DisplayForm(): React.ReactElement {
-  const form = useForm<DisplayFormValues>({
-    resolver: zodResolver(displayFormSchema),
-    defaultValues,
-  })
-
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit((data) => showSubmittedData(data))} className='space-y-8'>
-        <FormField
-          control={form.control}
-          name='items'
-          render={() => (
-            <FormItem>
-              <div className='mb-4'>
-                <FormLabel className='text-base'>Sidebar</FormLabel>
-                <FormDescription>Select the items you want to display in the sidebar.</FormDescription>
-              </div>
-              {items.map((item) => (
-                <FormField
-                  key={item.id}
-                  control={form.control}
-                  name='items'
-                  render={({ field }) => {
-                    return (
-                      <FormItem key={item.id} className='flex flex-row items-start'>
-                        <FormControl>
-                          <Checkbox
-                            checked={field.value?.includes(item.id)}
-                            onCheckedChange={(checked) => {
-                              return checked
-                                ? field.onChange([...field.value, item.id])
-                                : field.onChange(field.value?.filter((value) => value !== item.id))
-                            }}
-                          />
-                        </FormControl>
-                        <FormLabel className='font-normal'>{item.label}</FormLabel>
-                      </FormItem>
-                    )
-                  }}
-                />
-              ))}
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button type='submit'>Update display</Button>
-      </form>
-    </Form>
+    <div className='space-y-8'>
+      <div className='flex items-center gap-2'>
+        <Badge variant='outline'>未开放</Badge>
+        <p className='text-sm text-muted-foreground'>显示偏好暂未接入保存，以下为当前支持的选项预览。</p>
+      </div>
+
+      <div className='space-y-3'>
+        <Label className='text-base'>侧边栏</Label>
+        <p className='text-sm text-muted-foreground'>选择希望显示在侧边栏中的项目。</p>
+        {[
+          { id: 'recents', label: '最近访问', checked: true },
+          { id: 'home', label: '首页', checked: true },
+          { id: 'applications', label: '应用', checked: false },
+          { id: 'desktop', label: '桌面', checked: false },
+          { id: 'downloads', label: '下载', checked: false },
+          { id: 'documents', label: '文档', checked: false },
+        ].map((item) => (
+          <div key={item.id} className='flex flex-row items-start'>
+            <Checkbox id={item.id} checked={item.checked} disabled className='mt-1' />
+            <Label htmlFor={item.id} className='ml-2 font-normal'>
+              {item.label}
+            </Label>
+          </div>
+        ))}
+      </div>
+    </div>
   )
 }
