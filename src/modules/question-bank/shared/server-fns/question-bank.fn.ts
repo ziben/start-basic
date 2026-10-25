@@ -3,11 +3,15 @@ import { createServerFn } from '@tanstack/react-start'
 import { requireUser } from '~/modules/auth/shared/lib/require-auth'
 import { commandSchema, idSchema, importInputSchema, questionSearchSchema } from '../domain'
 
-export const questionBankBootstrapFn = createServerFn({ method: 'GET' }).handler(async () => {
-  const user = await requireUser()
-  const { QuestionBankService } = await import('../services/question-bank.service')
-  return QuestionBankService.bootstrap(user)
-})
+const QuestionBankBootstrapSchema = z.object({}).strict()
+
+export const questionBankBootstrapFn = createServerFn({ method: 'GET' })
+  .validator(QuestionBankBootstrapSchema.optional().default({}))
+  .handler(async () => {
+    const user = await requireUser()
+    const { QuestionBankService } = await import('../services/question-bank.service')
+    return QuestionBankService.bootstrap(user)
+  })
 
 export const searchBankQuestionsFn = createServerFn({ method: 'GET' })
   .validator(questionSearchSchema)

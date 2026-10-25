@@ -2,6 +2,8 @@ import { z } from 'zod'
 import { createServerFn } from '@tanstack/react-start'
 import { requireUser } from '~/modules/auth/shared/lib/require-auth'
 
+const ListHealthPersonsSchema = z.object({}).strict()
+
 const CreateHealthPersonSchema = z.object({
   name: z.string().trim().min(1, '健康档案人员姓名不能为空').max(50),
   gender: z.string().trim().max(20).optional(),
@@ -17,11 +19,13 @@ async function requireUserId(): Promise<string> {
   return (await requireUser()).id
 }
 
-export const listHealthPersonsFn = createServerFn({ method: 'GET' }).handler(async () => {
-  const userId = await requireUserId()
-  const { HealthPersonService } = await import('../services/health-person.service')
-  return HealthPersonService.listForUser(userId)
-})
+export const listHealthPersonsFn = createServerFn({ method: 'GET' })
+  .validator(ListHealthPersonsSchema.optional().default({}))
+  .handler(async () => {
+    const userId = await requireUserId()
+    const { HealthPersonService } = await import('../services/health-person.service')
+    return HealthPersonService.listForUser(userId)
+  })
 
 export const createHealthPersonFn = createServerFn({ method: 'POST' })
   .validator((data: z.infer<typeof CreateHealthPersonSchema>) => CreateHealthPersonSchema.parse(data))
