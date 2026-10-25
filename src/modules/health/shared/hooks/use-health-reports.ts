@@ -6,6 +6,7 @@ import {
   createHealthReportFn,
   getHealthReportFn,
   listHealthReportsFn,
+  previewHealthReportFn,
 } from '../server-fns/health-report.fn'
 
 export interface HealthReportFilters {
@@ -39,6 +40,21 @@ export function useHealthReportsQuery(
     queryKey: healthReportKeys.list(filters),
     queryFn: () => listHealthReportsFn({ data: filters }),
     staleTime: CACHE_TIME.SHORT,
+  })
+}
+
+export interface PreviewHealthReportData {
+  readonly ocrText: string
+  readonly sourceFileName?: string
+}
+
+export function usePreviewHealthReport(): UseMutationResult<
+  Awaited<ReturnType<typeof previewHealthReportFn>>,
+  Error,
+  PreviewHealthReportData
+> {
+  return useMutation({
+    mutationFn: (data: PreviewHealthReportData) => previewHealthReportFn({ data }),
   })
 }
 

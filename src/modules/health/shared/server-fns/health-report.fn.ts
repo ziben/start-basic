@@ -10,6 +10,13 @@ const CreateHealthReportSchema = z.object({
   ocrText: z.string().trim().min(1, 'OCR 文本不能为空'),
 })
 
+const PreviewHealthReportSchema = z.object({
+  ocrText: z.string().trim().min(1, 'OCR 文本不能为空').max(20000, 'OCR 文本过长，请分批录入'),
+  sourceFileName: z.string().optional(),
+  personId: z.string().trim().min(1).optional(),
+  examDate: z.string().optional(),
+})
+
 const ListHealthReportsSchema = z.object({
   page: z.number().int().positive().optional(),
   pageSize: z.number().int().positive().max(50).optional(),
@@ -32,6 +39,14 @@ export const createHealthReportFn = createServerFn({ method: 'POST' })
     const userId = await requireUserId()
     const { HealthReportService } = await import('../services/health-report.service')
     return HealthReportService.createFromManualText(userId, data)
+  })
+
+export const previewHealthReportFn = createServerFn({ method: 'POST' })
+  .validator((data: z.infer<typeof PreviewHealthReportSchema>) => PreviewHealthReportSchema.parse(data))
+  .handler(async ({ data }) => {
+    await requireUserId()
+    const { HealthReportService } = await import('../services/health-report.service')
+    return HealthReportService.previewForUser(data)
   })
 
 export const listHealthReportsFn = createServerFn({ method: 'GET' })

@@ -9,7 +9,8 @@ import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
 import { Textarea } from '~/components/ui/textarea'
 import { useCreateHealthPerson, useHealthPersonsQuery } from '../../shared/hooks/use-health-persons'
-import { useCreateHealthReport } from '../../shared/hooks/use-health-reports'
+import { useCreateHealthReport, usePreviewHealthReport } from '../../shared/hooks/use-health-reports'
+import type { HealthReportPreview } from '../../shared/services/health-report.service'
 
 const sampleText = `白细胞 6.21 10^9/L 3.5-9.5 正常
 谷丙转氨酶 58 U/L 0-40 偏高
@@ -19,6 +20,7 @@ export function NewHealthReportPage(): ReactElement {
   const navigate = useNavigate()
   const createReport = useCreateHealthReport()
   const createPerson = useCreateHealthPerson()
+  const previewReport = usePreviewHealthReport()
   const { data: persons = [] } = useHealthPersonsQuery()
   const [title, setTitle] = useState('年度体检报告')
   const [personId, setPersonId] = useState('')
@@ -26,13 +28,39 @@ export function NewHealthReportPage(): ReactElement {
   const [examDate, setExamDate] = useState('')
   const [sourceFileName, setSourceFileName] = useState('')
   const [ocrText, setOcrText] = useState('')
+  const [preview, setPreview] = useState<HealthReportPreview | null>(null)
+  const [previewedText, setPreviewedText] = useState('')
+  const [acknowledgedSkipped, setAcknowledgedSkipped] = useState(false)
 
-  useEffect(() => {
-    if (!personId && persons.length > 0) setPersonId(persons[0].id)
-  }, [personId, persons])
+  const previewStale = preview !== null && previewedText !== ocrText
+  const confirmDisabled =
+    !preview ||
+    previewStale ||
+    (preview.skippedLines.length > 0 && !acknowledgedSkipped) ||
+    createReport.isPending ||
+    createPerson.isPending
+
+  async function handlePreview(): Promise<void> {
+    if (!ocrText.trim()) {
+      toast.error('请先粘贴 OCR 文本')
+      return
+    }
+    try {
+      const result = await previewReport.mutateAsync({ ocrText, sourceFileName: sourceFileName || undefined })
+      setPreview(result)
+      setPreviewedText(ocrText)
+      setAcknowledgedSkipped(false)
+      if (result.metricCount === 0) {
+        toast.error('未能从 OCR 文本中解析出体检指标，请检查文本格式')
+      }
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : '解析预览失败')
+    }
+  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault()
+    if (confirmDisabled) return
 
     try {
       let selectedPersonId = personId
@@ -147,14 +175,88 @@ export function NewHealthReportPage(): ReactElement {
               <Button type='button' variant='outline' onClick={() => void navigate({ to: '/health/reports' })}>
                 返回
               </Button>
-              <Button type='submit' disabled={createReport.isPending || createPerson.isPending}>
+              <Button
+                type='button'
+                variant='outline'
+                disabled={previewReport.isPending}
+                onClick={() => void handlePreview()}
+              >
+                {previewReport.isPending && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
+                解析预览
+              </Button>
+              <Button type='submit' disabled={confirmDisabled}>
                 {(createReport.isPending || createPerson.isPending) && (
                   <Loader2 className='mr-2 h-4 w-4 animate-spin' />
                 )}
-                解析并入库
+                确认入库
               </Button>
             </div>
           </form>
+
+          {preview && (
+            <div className='mt-6 space-y-4 border-t pt-4' data-testid='parse-preview'>
+              <div className='flex items-center justify-between'>
+                <h3 className='text-sm font-semibold'>解析预览</h3>
+                <span className='text-sm text-muted-foreground'>共识别 {preview.metricCount} 项指标</span>
+              </div>
+              {previewStale && (
+                <p className='text-sm text-amber-600 dark:text-amber-400'>
+                  OCR 文本已修改，预览结果失效，请重新解析后再确认入库。
+                </p>
+              )}
+              {preview.metrics.length > 0 && (
+                <div className='overflow-x-auto'>
+                  <table className='w-full text-sm'>
+                    <thead>
+                      <tr className='border-b text-left text-muted-foreground'>
+                        <th className='py-1.5 pr-2 font-medium'>指标</th>
+                        <th className='py-1.5 pr-2 font-medium'>原文</th>
+                        <th className='py-1.5 pr-2 font-medium'>结果</th>
+                        <th className='py-1.5 pr-2 font-medium'>单位</th>
+                        <th className='py-1.5 pr-2 font-medium'>参考范围</th>
+                        <th className='py-1.5 font-medium'>标记</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {preview.metrics.map((metric) => (
+                        <tr key={metric.rawLine} className='border-b last:border-b-0'>
+                          <td className='py-1.5 pr-2'>{metric.rawName}</td>
+                          <td className='py-1.5 pr-2 font-mono text-xs text-muted-foreground'>{metric.rawLine}</td>
+                          <td className='py-1.5 pr-2'>{metric.valueText}</td>
+                          <td className='py-1.5 pr-2'>{metric.unit ?? '-'}</td>
+                          <td className='py-1.5 pr-2'>{metric.referenceRange ?? '-'}</td>
+                          <td className='py-1.5'>{metric.flag}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+              {preview.skippedLines.length > 0 && (
+                <div className='space-y-2'>
+                  <p className='text-sm text-amber-600 dark:text-amber-400'>
+                    以下 {preview.skippedLines.length} 行未能解析，入库后将不包含这些内容：
+                  </p>
+                  <ul className='space-y-1'>
+                    {preview.skippedLines.map((line) => (
+                      <li key={line.rawLine} className='text-xs text-muted-foreground'>
+                        <span className='mr-2'>{line.reason}</span>
+                        <span className='font-mono'>{line.rawLine}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <label className='flex items-center gap-2 text-sm'>
+                    <input
+                      type='checkbox'
+                      checked={acknowledgedSkipped}
+                      onChange={(event) => setAcknowledgedSkipped(event.target.checked)}
+                    />
+                    我已确认上述无法解析的行可以遗漏
+                  </label>
+                </div>
+              )}
+            </div>
+          )}
         </CardContent>
       </Card>
     </AppHeaderMain>

@@ -1,7 +1,13 @@
 import prisma from '@/shared/lib/db'
 import type { Prisma } from '~/generated/prisma/client'
 import { ManualTextOcrProvider } from '../ocr/manual-text-ocr-provider'
-import { parseHealthReportText, type ParsedHealthMetric } from '../ocr/parse-health-report-text'
+import {
+  parseHealthReportText,
+  parseHealthReportTextDetailed,
+  type ParsedHealthMetric,
+  type ParsedHealthMetricFlag,
+  type SkippedLine,
+} from '../ocr/parse-health-report-text'
 
 export interface CreateHealthReportInput {
   readonly title: string
@@ -9,6 +15,28 @@ export interface CreateHealthReportInput {
   readonly examDate?: string
   readonly sourceFileName?: string
   readonly ocrText: string
+}
+
+export interface PreviewHealthReportInput {
+  readonly ocrText: string
+  readonly sourceFileName?: string
+  readonly personId?: string
+  readonly examDate?: string
+}
+
+export interface HealthReportPreviewMetric {
+  readonly rawLine: string
+  readonly rawName: string
+  readonly valueText: string
+  readonly unit?: string
+  readonly referenceRange?: string
+  readonly flag: ParsedHealthMetricFlag
+}
+
+export interface HealthReportPreview {
+  readonly metricCount: number
+  readonly metrics: HealthReportPreviewMetric[]
+  readonly skippedLines: SkippedLine[]
 }
 
 export interface ListHealthReportsInput {
@@ -47,6 +75,27 @@ type HealthReportWithMetrics = Prisma.HealthReportGetPayload<{
 }>
 
 export const HealthReportService = {
+  /** 入库前的纯解析预览：只读 OCR 文本，不做任何数据库读写 */
+  async previewForUser(input: PreviewHealthReportInput): Promise<HealthReportPreview> {
+    const ocrResult = await defaultOcrProvider.extractText({
+      text: input.ocrText,
+      sourceFileName: input.sourceFileName,
+    })
+    const { metrics, skippedLines } = parseHealthReportTextDetailed(ocrResult.text)
+
+    return {
+      metricCount: metrics.length,
+      metrics: metrics.map((metric) => ({
+        rawLine: metric.rawLine,
+        rawName: metric.rawName,
+        valueText: metric.valueText,
+        unit: metric.unit,
+        referenceRange: metric.referenceRange,
+        flag: metric.flag,
+      })),
+      skippedLines,
+    }
+  },
   async createFromManualText(userId: string, input: CreateHealthReportInput) {
     const ocrResult = await defaultOcrProvider.extractText({
       text: input.ocrText,

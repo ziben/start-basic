@@ -31,16 +31,48 @@ const valuePattern = /^(.+?)\s+([<>≤≥]?\s*-?\d+(?:\.\d+)?|阴性|阳性|未�
 const rangePattern = /^[<>≤≥]?\s*-?\d+(?:\.\d+)?\s*(?:[-~—至]\s*[<>≤≥]?\s*-?\d+(?:\.\d+)?)$/
 
 export function parseHealthReportText(text: string): ParsedHealthMetric[] {
-  return normalizeLines(text)
-    .map((line, index) => parseMetricLine(line, index))
-    .filter((metric): metric is ParsedHealthMetric => metric !== null)
+  return parseHealthReportTextDetailed(text).metrics
+}
+
+export type SkippedLineReason = '非指标行' | '无法识别数值'
+
+export interface SkippedLine {
+  readonly rawLine: string
+  readonly reason: SkippedLineReason
+}
+
+export interface HealthReportParseResult {
+  readonly metrics: ParsedHealthMetric[]
+  readonly skippedLines: SkippedLine[]
+}
+
+export function parseHealthReportTextDetailed(text: string): HealthReportParseResult {
+  const metrics: ParsedHealthMetric[] = []
+  const skippedLines: SkippedLine[] = []
+
+  for (const line of normalizeLines(text)) {
+    if (ignoredLinePattern.test(line)) {
+      skippedLines.push({ rawLine: line, reason: '非指标行' })
+      continue
+    }
+
+    const metric = parseMetricLine(line, metrics.length)
+    if (!metric) {
+      skippedLines.push({ rawLine: line, reason: '无法识别数值' })
+      continue
+    }
+
+    metrics.push(metric)
+  }
+
+  return { metrics, skippedLines }
 }
 
 function normalizeLines(text: string): string[] {
   return text
     .split(/\r?\n/)
     .map((line) => line.replace(/\t/g, ' ').replace(/\s+/g, ' ').trim())
-    .filter((line) => line.length > 0 && !ignoredLinePattern.test(line))
+    .filter((line) => line.length > 0)
 }
 
 function parseMetricLine(line: string, orderIndex: number): ParsedHealthMetric | null {
