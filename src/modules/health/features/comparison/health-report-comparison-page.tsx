@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactElement, type ReactNode } from 'react'
+import { useState, type ReactElement, type ReactNode } from 'react'
 import { Link } from '@tanstack/react-router'
 import { AlertCircle, ArrowLeft, GitCompareArrows, Loader2 } from 'lucide-react'
 import { AppHeaderMain } from '~/components/layout/app-header-main'
@@ -13,9 +13,15 @@ import { useCompareHealthReportsQuery, useHealthReportsQuery } from '../../share
 
 export function HealthReportComparisonPage(): ReactElement {
   const { data: persons = [] } = useHealthPersonsQuery()
-  const [personId, setPersonId] = useState('')
-  const [leftReportId, setLeftReportId] = useState('')
-  const [rightReportId, setRightReportId] = useState('')
+  const [selectedPersonId, setSelectedPersonId] = useState('')
+  const personId = selectedPersonId || persons[0]?.id || ''
+  const [reportSelection, setReportSelection] = useState({
+    personId: '',
+    leftReportId: '',
+    rightReportId: '',
+  })
+  const leftReportId = reportSelection.personId === personId ? reportSelection.leftReportId : ''
+  const rightReportId = reportSelection.personId === personId ? reportSelection.rightReportId : ''
   const { data: reportsData, isLoading: reportsLoading } = useHealthReportsQuery({
     personId,
     pageSize: 50,
@@ -23,14 +29,10 @@ export function HealthReportComparisonPage(): ReactElement {
   const reports = reportsData?.items ?? []
   const comparison = useCompareHealthReportsQuery(leftReportId, rightReportId)
 
-  useEffect(() => {
-    if (!personId && persons.length > 0) setPersonId(persons[0].id)
-  }, [personId, persons])
-
-  useEffect(() => {
-    setLeftReportId('')
-    setRightReportId('')
-  }, [personId])
+  function handlePersonChange(value: string): void {
+    setSelectedPersonId(value)
+    setReportSelection({ personId: value, leftReportId: '', rightReportId: '' })
+  }
 
   return (
     <AppHeaderMain fixed>
@@ -53,7 +55,7 @@ export function HealthReportComparisonPage(): ReactElement {
           </CardTitle>
         </CardHeader>
         <CardContent className='grid gap-4 sm:grid-cols-3'>
-          <SelectField label='人员' value={personId} onChange={setPersonId}>
+          <SelectField label='人员' value={personId} onChange={handlePersonChange}>
             <option value=''>选择人员</option>
             {persons.map((person) => (
               <option key={person.id} value={person.id}>
@@ -61,7 +63,11 @@ export function HealthReportComparisonPage(): ReactElement {
               </option>
             ))}
           </SelectField>
-          <SelectField label='较早报告' value={leftReportId} onChange={setLeftReportId}>
+          <SelectField
+            label='较早报告'
+            value={leftReportId}
+            onChange={(value) => setReportSelection({ personId, leftReportId: value, rightReportId })}
+          >
             <option value=''>选择报告</option>
             {reports.map((report) => (
               <option key={report.id} value={report.id}>
@@ -69,7 +75,11 @@ export function HealthReportComparisonPage(): ReactElement {
               </option>
             ))}
           </SelectField>
-          <SelectField label='较晚报告' value={rightReportId} onChange={setRightReportId}>
+          <SelectField
+            label='较晚报告'
+            value={rightReportId}
+            onChange={(value) => setReportSelection({ personId, leftReportId, rightReportId: value })}
+          >
             <option value=''>选择报告</option>
             {reports.map((report) => (
               <option key={report.id} value={report.id}>
